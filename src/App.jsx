@@ -1,9 +1,24 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import reactLogo from "./assets/react.svg";
+import "./App.css";
+import { getScript, setup_scripts } from "./utils/script_handler";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const f = async () => {
+      console.log("requesting data from:", process.env.BASE_LORE_URL);
+      await setup_scripts(process.env.BASE_LORE_URL);
+      const script = getScript("lore-model")
+      if (script !== undefined) {
+        const res = await eval(script)
+        console.log(res)
+      } 
+      console.log("test");
+    };
+    f();
+  });
 
   return (
     <div className="App">
@@ -28,7 +43,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
