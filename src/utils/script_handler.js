@@ -1,29 +1,24 @@
 import { download_content } from "./web_utils";
-import url from "url";
-import path from "path";
+import data from "./urls.json";
 
 const scripts = [];
 
-export async function setup_scripts(urls) {
+export async function setup_scripts() {
+  const urls = data.urls;
   if (!urls || urls?.length <= 0) {
     return;
   }
 
   scripts.splice(0, scripts.length);
 
-  const _urls = urls.split("|");
-  for (const _url of _urls) {
-    if (_url && _url?.length > 0) {
-      const parsedUrl = url.parse(_url);
-      const fileName = path
-        .basename(parsedUrl.pathname)
-        .replace(".js", "")
-        .replace(".txt", "");
+  for (const _url of urls) {
+    if (_url && _url.name?.length && _url.url?.length > 0) {
+      const fileName = _url.name;
       if (getScript(fileName) === undefined) {
-        const file = await download_content(_url);
+        const file = await download_content(_url.url);
         scripts.push({
           name: fileName,
-          code: file,
+          code: Function("{ return " + file + " }"),
         });
       } else {
         console.log(`Script ${fileName} already exists.`);

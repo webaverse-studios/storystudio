@@ -8,14 +8,17 @@ function App() {
 
   useEffect(() => {
     const f = async () => {
-      console.log("requesting data from:", process.env.BASE_LORE_URL);
-      await setup_scripts(process.env.BASE_LORE_URL);
-      const script = getScript("lore-model")
-      if (script !== undefined) {
-        const res = await eval(script)
-        console.log(res)
-      } 
-      console.log("test");
+      await setup_scripts();
+      const hash = getScript("lore-model");
+      if (hash !== undefined && hash) {
+        console.log("running script");
+        const res = await hash
+          .call(null)
+          .call(null, ["test"], [{ name: "test" }], [], [{ name: "test" }], "");
+        console.log(res);
+      } else {
+        console.log("empty scripts");
+      }
     };
     f();
   });
