@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import styles from "./Modals.module.css";
-
 
 // todo
 
@@ -55,7 +53,7 @@ function EditModal({data, cancelCallback, mode = 'add', editCallback, addCallbac
   };
 
   return (
-    <div className={styles.modal}>
+    <div className={modal}>
       <label>{mode ? "Edit" : "Add"} Scene</label>
       <br />
       <br />
