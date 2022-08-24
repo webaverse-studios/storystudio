@@ -4,11 +4,8 @@ import { entityPrototypes, contextTypes, defaultEntityData } from "./constants";
 import Header from "./Header";
 import ListBox from "./ListBox";
 import Context from "./ContextSelector";
-import EditModal from "./EditModal";
 
 function App() {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [modalData, setModalData] = useState();
   const [entityData, setEntityData] = useState(defaultEntityData);
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
   const [baseData, setBaseData] = useState({base: './src/lore-model.js', type: 'url', json: {}});
@@ -16,23 +13,6 @@ function App() {
   useEffect(() => {
     console.log("entityData changed", entityData);
   }, [entityData]);
-
-  useEffect(() => {
-    /* const setup = async () => {
-      await setup_scripts();
-      const hash = getScript("lore-model");
-      if (hash !== undefined && hash) {
-        console.log("running script");
-        const res = await hash
-          .call(null)
-          .call(null, ["test"], [{ name: "test" }], [], [{ name: "test" }], "");
-        console.log(res);
-      } else {
-        console.log("empty scripts");
-      }
-    };
-    setup();*/
-  });
 
   const addEntityHandler = (type) => {
     setModalData({ type: type, mode: 'add', data: {} });
@@ -126,18 +106,6 @@ function App() {
               editEntityHandler={(data) => editEntityHandler(data)}
               deleteEntityHandler={(data) => deleteEntityHandler(data)}
             />
-        {modalData && (
-          <div className="modalWrapper">
-            <div className={'backdrop'} onClick={closeModal} />
-            <EditModal
-            addCallback={addEntityCallback}
-            editCallback={editEntityCallback}
-            cancelCallback={closeModal}
-            mode={modalData.mode}
-            data={modalData.data}
-          />
-        </div>
-        )}
       </div>
     </div>
   );

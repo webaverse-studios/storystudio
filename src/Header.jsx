@@ -1,6 +1,5 @@
 import React from "react";
 import "./App.css";
-import Logo from "./Logo";
 
 async function getFile() {
     // get a file from the local user's computer and return the File object
@@ -16,13 +15,13 @@ async function getFile() {
 }
 
 
-const Header = ({data, setData, exportHandler, importHandler}) => {
+const Header = ({ data, setData, exportHandler, importHandler }) => {
 
     const handleLoad = async (data, fromUrl = true) => {
         if (fromUrl) {
             const response = await fetch(data.base);
             const json = await response.json();
-            setData({base, type: 'url', json});
+            setData({ base, type: 'url', json });
         } else {
             // open a file picker and get the file from disk
             const file = await getFile();
@@ -30,13 +29,16 @@ const Header = ({data, setData, exportHandler, importHandler}) => {
             const text = await file.text();
             // parse the text as JSON
             const json = JSON.parse(text);
-            setData({base: file.name, type: 'file', json});
+            setData({ base: file.name, type: 'file', json });
         }
     }
 
     return (
         <div className='header'>
-            <Logo />
+            <div className="logo">
+                <h1>Webaverse</h1>
+                <h2>Story Studio</h2>
+            </div>
             <div className={'base'}>
                 <span className={'baseLabel'}>Base: </span>
                 <input className={'baseInput'} type="text" value={data.base} onChange={(e) => setData(e.target.value)} onFocus={(e) => setData(e.target.value)} />
