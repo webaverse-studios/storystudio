@@ -11,7 +11,7 @@ const ListBox = ({ header, data, type = '', addEntityHandler, editEntityHandler,
         <div className={'sectionWrapper ' + type + '_wrapped'}>
             <div className={'sectionHeader ' + type + '_header'}>
                 <h1>{header}</h1>
-                <button onClick={() => addEntityHandler(data)}>Add</button>
+                <button onClick={() => addEntityHandler(type)}>Add</button>
             </div>
             <div className={'section ' + type}>
                 {data.map((entityData, index) => {
