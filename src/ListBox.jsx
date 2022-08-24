@@ -14,7 +14,7 @@ const ListBox = ({ header, data, type = '', addEntityHandler, editEntityHandler,
                 <button onClick={() => addEntityHandler(type)}>Add</button>
             </div>
             <div className={'section ' + type}>
-                {data.map((entityData, index) => {
+                {data?.map((entityData, index) => {
                     return (
                         <Entity key={index} entityData={entityData} editEntityHandler={editEntityHandler} deleteEntityHandler={deleteEntityHandler} />
                     );

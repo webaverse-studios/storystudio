@@ -4,8 +4,7 @@ import { setup_scripts } from "./utils/script_handler";
 import { entityPrototypes, contextTypes, defaultEntityData } from "./constants";
 import Header from "./Header";
 import ListBox from "./ListBox";
-import Context from "./ContextEditor";
-import Generator from "./ContextGenerator";
+import Context from "./ContextSelector";
 import Backdrop from "./Backdrop";
 import NPCAdd from "./NPCAdd";
 import ObjectAdd from "./ObjectAdd";
@@ -107,8 +106,9 @@ function App() {
             />
           );
         })}
-        <Context data={entityData.data} currentContentType={currentContentType} />
+        <Context data={entityData.data} currentContentType={currentContentType} setCurrentContentType={setCurrentContentType} />
         <ListBox
+              type={'output'}
               data={entityData.data[currentContentType]}
               header={"output"}
               addEntityHandler={(data) => addEntityHandler(data)}

@@ -31,15 +31,28 @@
   margin-block-end:0;
 }
 
-.radio-group {
+.context-group {
+  margin-top: 1em;
   width:100%;
 }
 
-.radio-group span {
+.context-group span {
   background: #000000;
   border: 1px solid #FFFFFF;
   margin: .2em;
   display:inline-block;
+  width: 100%;
+}
+
+.context-group-button {
+  margin-bottom: .4em;
+  width: 100%;
+}
+
+.context-group-button-active {
+  background: #FFFFFF;
+  border: 1px solid #000000;
+  color: #000000;
 }
 
 .sections {
@@ -130,8 +143,7 @@
 }
 
 .context_wrapped {
-  width: 100%!important;
-  height: 2em;
+  width: 20%!important;
 }
 
 .generator_wrapped {
@@ -215,7 +227,11 @@
   background: none;
 }
 
-.context-radio {
+.context-group-button {
   display: inline-block;
   margin-right: .5em;
+}
+
+.output_wrapped {
+  width: 80%;
 }

@@ -2,19 +2,19 @@ import React from "react";
 import "./App.css"
 import { contextTypes } from "./constants";
 
-const ContextEditor = ({ data, currentContentType, setCurrentContentType }) => {
+const ContextSelector = ({ data, currentContentType, setCurrentContentType }) => {
     return (
         <div className="sectionWrapper context_wrapped">
-            <div className="radio-group">
+            <div className="context-group">
                 {contextTypes.map((type, index) => {
                     return (
-                        <span
+                        <button
                             key={index}
-                            onClick={(e) => setCurrentContentType(e.target.value)}
-                            className={'context-radio' + type === currentContentType ? ' context-radio-active' : 'context-radio-inactive'}
+                            onClick={(e) => setCurrentContentType(type)}
+                            className={'context-group-button' + (type === currentContentType ? ' context-group-button-active' : ' context-group-button-inactive')}
                         >
                             {type}|{data[type].length}
-                        </span>
+                        </button>
                     )
                 }
                 )}
@@ -23,4 +23,4 @@ const ContextEditor = ({ data, currentContentType, setCurrentContentType }) => {
     );
 }
 
-export default ContextEditor;
+export default ContextSelector;
