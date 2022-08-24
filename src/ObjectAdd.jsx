@@ -3,28 +3,43 @@ import styles from "./Modals.module.css";
 
 function ObjectAdd(props) {
   const [name, setName] = useState("");
-  const [shortName, setShortName] = useState("");
+  const [shortName, setshortName] = useState("");
   const [enabled, setEnabled] = useState(true);
   const [description, setDescription] = useState("");
 
   const addObject = () => {
-    props.onConfirm();
+    if (name?.length <= 0 || shortName?.length <= 0) {
+      return;
+    }
+
+    const entity = {
+      type: "object",
+      name: name,
+      shortname: shortName,
+      enabled: enabled,
+      description: description,
+    };
+    if (props.edit) {
+      props.onConfirmEdit(props.data, entity);
+    } else {
+      props.onConfirm(entity);
+    }
   };
 
   useEffect(() => {
     if (props.edit) {
       setName(props.data.name);
-      setShortName(props.data.shortName);
+      setshortName(props.data.shortname);
       setEnabled(props.data.enabled);
       setDescription(props.data.description);
     }
   }, []);
 
   const generateObject = () => {
-    setName("Test Scene");
-    setShortName("TS");
+    setName("Test Object");
+    setshortName("TO");
     setEnabled(true);
-    setDescription("This is a test scene");
+    setDescription("This is a test object");
     setInventory("");
   };
 
@@ -48,7 +63,7 @@ function ObjectAdd(props) {
         type="text"
         placeholder="Short Name"
         value={shortName}
-        onChange={(e) => setShortName(e.target.value)}
+        onChange={(e) => setshortName(e.target.value)}
       />
       <br />
       <label>Description</label>

@@ -8,13 +8,29 @@ function SceneAdd(props) {
   const [description, setDescription] = useState("");
 
   const addScene = () => {
-    props.onConfirm();
+    if (name?.length <= 0 || shortName?.length <= 0) {
+      return;
+    }
+
+    const entity = {
+      type: "scene",
+      name: name,
+      shortname: shortName,
+      enabled: enabled,
+      description: description,
+    };
+    if (props.edit) {
+      props.onConfirmEdit(props.data, entity);
+    } else {
+      props.onConfirm(entity);
+    }
   };
 
   useEffect(() => {
+    console.log(props.data);
     if (props.edit) {
       setName(props.data.name);
-      setShortName(props.data.shortName);
+      setShortName(props.data.shortname);
       setEnabled(props.data.enabled);
       setDescription(props.data.description);
     }
