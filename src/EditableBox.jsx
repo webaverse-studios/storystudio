@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './App.css';
 
-export const EditableBox = ({header, text, setText, saveInterval = 20}) => {
+export const EditableBox = ({text, setText, saveInterval = 20}) => {
     const [count, setCount] = React.useState(0);
     useEffect(() => {
         const text = localStorage.getItem('text');
@@ -20,9 +20,6 @@ export const EditableBox = ({header, text, setText, saveInterval = 20}) => {
     }, [text]);
 
     return (
-        <div>
-            <h1>{header}</h1>
-            <textarea value={text} onChange={(e) => setText(e.target.value)} onfocusout={(e) => setText(e.target.value)} />
-        </div>
+        <textarea value={text} onChange={(e) => setText(e.target.value)} onFocus={(e) => setText(e.target.value)} />
     );
 }

@@ -1,28 +1,25 @@
-import React, { useEffect } from 'react';
-import './App.css';
+// List editor box
+// React component for editing a list of entities
 
-export const EditableBox = ({header, text, setText, saveInterval = 20}) => {
-    const [count, setCount] = React.useState(0);
-    useEffect(() => {
-        const text = localStorage.getItem('text');
-        if (text) {
-            setText(text);
-        }
-    }, []);
+import React from "react";
+import "./App.css";
+import { useEffect } from "react";
 
-    useEffect(() => {
-        if (count > saveInterval) {
-            localStorage.setItem('text', text);
-            setCount(0);
-        } else {
-            setCount(count + 1);
-        }
-    }, [text]);
-
+const ListBox = ({ header, data, addEntityHandler, editEntityHandler, deleteEntityHandler }) => {
     return (
-        <div>
+        <div className='section'>
             <h1>{header}</h1>
-            <textarea value={text} onChange={(e) => setText(e.target.value)} onfocusout={(e) => setText(e.target.value)} />
+            <button onClick={() => addEntityHandler(data)}>Add</button>
+            {data.map((entityData, index) => {
+                return (
+                    <div key={index}>
+                        <Entity entityData={entityData} editEntityHandler={editEntityHandler} deleteEntityHandler={deleteEntityHandler} />
+                    </div>
+                );
+            })
+            }
         </div>
     );
 }
+
+export default ListBox;

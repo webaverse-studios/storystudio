@@ -1,10 +1,24 @@
 import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
 import "./App.css";
 import { getScript, setup_scripts } from "./utils/script_handler";
+import { entityPrototypes } from "./constants";
+import Header from "./Header";
+import ListBox from "./ListBox";
+import Context from "./ContextEditor";
+import Generator from "./ContextGenerator";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [entityData, setEntityData] = useState({
+    object: [],
+    character: [],
+    mob: [],
+    scene: [],
+    npc: []
+  });
+
+  useEffect(() => {
+    console.log('entityData changed', entityData);
+  }, [entityData]);
 
   useEffect(() => {
     const f = async () => {
@@ -23,28 +37,40 @@ function App() {
     f();
   });
 
+  const addEntityHandler = (entity) => {
+    console.log("addEntityHandler", entity);
+    const newEntityData = { ...entityData };
+    newEntityData[entity.type].push(entity);
+    setEntityData(newEntityData);
+  }
+
+  const deleteEntityHandler = (entity) => {
+    console.log("deleteEntityHandler", entity);
+    const newData = { ...entityData };
+    newData[entity.type] = entityData[entity.type].filter(e => e.name !== entity.name);
+    setEntityData(newData);
+  }
+  const editEntityHandler = (entity) => {
+    console.log("editEntityHandler", entity);
+    const newData = { ...entityData };
+    newData[entity.type] = entity;
+    setEntityData(newData);
+  }
+
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <Header />
+      <div className="sections">
+      {/* map entityPrototypesMap to ListBox react components */}
+      {entityPrototypes.map((entity, index) => {
+        return (
+          <ListBox key={index} data={entityData[entity.type]} header={entity.type} addEntityHandler={(data) => addEntityHandler(data)} editEntityHandler={(data) => editEntityHandler(data)} deleteEntityHandler={(data) => deleteEntityHandler(data)} />
+        );
+      })
+      }
+      <Context />
+      <Generator />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </div>
   );
 }
