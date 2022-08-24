@@ -1,12 +1,12 @@
-import { murmurhash3 } from "./murmurhash3.js";
+import {murmurhash3} from './murmurhash3.js';
 
-export const defaultPlayerName = "Anon";
-export const defaultPlayerBio = "A new player. Not much is known about them.";
-export const defaultObjectName = "Thing";
-export const defaultObjectDescription = "A thing. Not much is known about it.";
+export const defaultPlayerName = 'Anon';
+export const defaultPlayerBio = 'A new player. Not much is known about them.';
+export const defaultObjectName = 'Thing';
+export const defaultObjectDescription = 'A thing. Not much is known about it.';
 
 // fairly shuffle the array
-const shuffleArray = (array) => {
+const shuffleArray = array => {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
@@ -14,8 +14,8 @@ const shuffleArray = (array) => {
   return array;
 };
 
-const hash = (s) => murmurhash3(s).toString(16);
-const thingHash = (o, index) => `${hash(o.name)}/${o.name}#${index + 1}`;
+const hash = s => murmurhash3(s).toString(16);
+const thingHash = (o, index) => `${hash(o.name)}/${o.name}#${index+1}`;
 const characterLore = `\
 # Overview
 AI anime avatars in a virtual world. They have human-level intelligence and unique and interesting personalities.
@@ -29,18 +29,20 @@ export const makeLorePrompt = ({
 }) => `\
 ${characterLore}
 # Setting
-${settings.join("\n\n")}
+${settings.join('\n\n')}
 ## Characters
-${characters
-  .map((c, i) => {
+${
+  characters.map((c, i) => {
     return `Id: ${thingHash(c, i)}
 Name: ${c.name}
 Bio: ${c.bio}
 `;
-  })
-  .join("\n\n")}
+  }).join('\n\n')
+}
 # Objects
-${objects.map((o, i) => thingHash(o, i)).join("\n")}
+${
+  objects.map((o, i) => thingHash(o, i)).join('\n')
+}
 # Basic Reactions 
 Reaction: headShake
 Description:  When the Character does not agree with what is in the Input.
@@ -180,23 +182,21 @@ Input:
 Output:
 +9f493510/Hyacinth#2: My favorite book is The Lord of the Rings. I love the story and the world that J.R.R. Tolkien created. (react = normal, action = none, object = none, target = none)
 Input:
-${messages
-  .map((m) => {
+${
+  messages.map(m => {
     const characterIndex = characters.indexOf(m.character);
     // const suffix = `[emote=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
     // return `+${thingHash(m.character, characterIndex)}: ${m.message} ${suffix}`;
-    const suffix = `react=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
+    const suffix = `react=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`
     return `+${thingHash(m.character, characterIndex)}: ${m.message}`;
-  })
-  .join("\n")}
+  }).join('\n')
+}
 +${
-  dstCharacter
-    ? `${thingHash(dstCharacter, characters.indexOf(dstCharacter))}:`
-    : ""
+  dstCharacter ? `${thingHash(dstCharacter, characters.indexOf(dstCharacter))}:` : ''
 }
 Output:`;
 
-const parseLoreResponse = (response) => {
+const parseLoreResponse = response => {
   let match;
   // console.log("Response: ", response)
   // console.log('parse lore', response, match);
@@ -219,11 +219,7 @@ const parseLoreResponse = (response) => {
       object,
       target,
     };
-  } else */ if (
-    (match = response?.match(
-      /^\+([^\/]+?)\/([^#]+?)#([0-9]+?):([^\[]*?)\[emote=([\s\S]*?),action=([\s\S]*?),object=([\s\S]*?),target=([\s\S]*?)\]$/
-    ))
-  ) {
+  } else */if (match = response?.match(/^\+([^\/]+?)\/([^#]+?)#([0-9]+?):([^\[]*?)\[emote=([\s\S]*?),action=([\s\S]*?),object=([\s\S]*?),target=([\s\S]*?)\]$/)) {
     // console.log('match 1', match);
     const hash = match[1];
     const name = match[2];
@@ -243,20 +239,16 @@ const parseLoreResponse = (response) => {
       object,
       target,
     };
-  } else if (
-    (match = response?.match(
-      /^\+([^\/]+?)\/([^#]+?)#([0-9]+?):([^\(]*?)\((\s*react\s*=([\s\S]*?))*,*(\s*action\s*=([\s\S]*?))*,*(\s*object\s*=([\s\S]*?))*,*(\s*target\s*=([\s\S]*?))*\)*$/
-    ))
-  ) {
-    console.log("match2 found", match);
+  } else if (match = response?.match(/^\+([^\/]+?)\/([^#]+?)#([0-9]+?):([^\(]*?)\((\s*react\s*=([\s\S]*?))*,*(\s*action\s*=([\s\S]*?))*,*(\s*object\s*=([\s\S]*?))*,*(\s*target\s*=([\s\S]*?))*\)*$/)){
+    console.log("match2 found", match)
     const hash = match[1];
     const name = match[2];
     const nonce = parseInt(match[3], 10);
     const message = match[4].trim();
-    const emote = match[5] ? match[6].trim() : "none";
-    const action = match[7] ? match[8].trim() : "none";
-    const object = match[9] ? match[10].trim() : "none";
-    const target = match[11] ? match[12].trim() : "none";
+    const emote = match[5] ? match[6].trim() : 'none';
+    const action = match[7] ? match[8].trim() : 'none';
+    const object = match[9] ? match[10].trim() : 'none';
+    const target = match[11] ? match[12].trim() : 'none';
     return {
       hash,
       name,
@@ -267,20 +259,16 @@ const parseLoreResponse = (response) => {
       object,
       target,
     };
-  } else if (
-    (match = response?.match(
-      /^\+([^\/]+?)\/([^#]+?)#([0-9]+?):([^\(]*?)\(([\s\S]*?)\)*$/
-    ))
-  ) {
-    console.log("match3 found", match);
+  } else if (match = response?.match(/^\+([^\/]+?)\/([^#]+?)#([0-9]+?):([^\(]*?)\(([\s\S]*?)\)*$/)){
+    console.log("match3 found", match)
     const hash = match[1];
     const name = match[2];
     const nonce = parseInt(match[3], 10);
     const message = match[4].trim();
-    const emote = "none";
-    const action = "none";
-    const object = "none";
-    const target = "none";
+    const emote = 'none';
+    const action = 'none';
+    const object = 'none';
+    const target = 'none';
     return {
       hash,
       name,
@@ -291,18 +279,17 @@ const parseLoreResponse = (response) => {
       object,
       target,
     };
-  } else if (
-    (match = response?.match(/^\+([^\/]+?)\/([^#]+?)#([0-9]+?):([^\[]*?)$/))
-  ) {
+  }
+  else if (match = response?.match(/^\+([^\/]+?)\/([^#]+?)#([0-9]+?):([^\[]*?)$/)) {
     // console.log('match 2', match);
     const hash = match[1];
     const name = match[2];
     const nonce = parseInt(match[3], 10);
     const message = match[4].trim();
-    const emote = "normal";
-    const action = "none";
-    const object = "none";
-    const target = "none";
+    const emote = 'normal';
+    const action = 'none';
+    const object = 'none';
+    const target = 'none';
     return {
       hash,
       name,
@@ -318,8 +305,7 @@ const parseLoreResponse = (response) => {
     return null;
   }
 };
-export const makeLoreStop = (localCharacter, localCharacterIndex) =>
-  `\n+${thingHash(localCharacter, localCharacterIndex)}`;
+export const makeLoreStop = (localCharacter, localCharacterIndex) => `\n+${thingHash(localCharacter, localCharacterIndex)}`;
 export const postProcessResponse = (response, characters, dstCharacter) => {
   response = response.trim();
   // if (dstCharacter) {
@@ -329,11 +315,10 @@ export const postProcessResponse = (response, characters, dstCharacter) => {
   // }
   return response;
 };
-export const parseLoreResponses = (response) =>
-  response
-    .split("\n")
-    .map((s) => parseLoreResponse(s))
-    .filter((o) => o !== null);
+export const parseLoreResponses = response => response
+  .split('\n')
+  .map(s => parseLoreResponse(s))
+  .filter(o => o !== null);
 
 const commentLore = `\
 AI anime avatars in a virtual world. They have human-level intelligence and unique and interesting personalities.
@@ -359,7 +344,7 @@ response: What a dump. I can't believe anyone would want to live here. The smell
   `\
 prompt: The Great Tree
 response: It's really not that great, but the music is nice. Yeah apparently they decided trees should come with music.`,
-  `\
+ `\
 prompt: The Trash
 response: Ugh, the dregs of society live here. It's the worst. It's just a disgusting slum. I'm honestly surprised there's not more crime.`,
   `\
@@ -417,7 +402,7 @@ response: They really need to stop letting those things run around freely! They'
   `\
 prompt: Crunchy Apple
 response: The food is here really delicious! The apples are so crunchy, I bet they're made of pure sugar. They say it's really bad for you but it's irresistible.`,
-]).join("\n\n")}`;
+]).join('\n\n')}`;
 export const makeCommentPrompt = ({
   name,
   // age,
@@ -431,7 +416,9 @@ response:`;
 export const makeCommentStop = () => {
   return `\n\n`;
 };
-export const parseCommentResponse = (response) => response.replace(/^ /, "");
+export const parseCommentResponse = response => response.replace(/^ /, '');
+
+
 
 /* export const makeCharacterIntroPrompt = ({
   name,
@@ -525,6 +512,8 @@ First scene monologue 1: "`;
 export const makeCharacterIntroStop = () => `"`;
 export const parseCharacterIntroResponse = s => s; */
 
+
+
 /* Anime script for a dark children's show.
 # Inspirations
 Final Fantasy
@@ -571,9 +560,12 @@ Aesther (17/F AI Mechanic. She is looking for the ArcWeld, a mythical tool that 
 Oak (16/M environmental terrorist. He is looking to save the world, but his methods are...questionable.): I'm fighting for the right to spray paint. To show the world that we are here, and that we will not be silenced. We will make them listen, even if it means destroying everything they hold dear. (onselect: This is for the trees!)
 Hakui (11/M brain hacker. He can hack anyone's brain and make them do what he wants.): I can make you do anything I want. Just give me a few seconds with your mind, and I'll have you eating out of the palm of my hand. (onselect: Note, I did not wash my hands.) */
 
-const _cleanName = (name) =>
-  JSON.stringify(name.replace(/[\_\-]+/g, " ").replace(/\s+/g, " "));
-export const makeSelectTargetPrompt = ({ name, description }) => {
+
+const _cleanName = name => JSON.stringify(name.replace(/[\_\-]+/g, ' ').replace(/\s+/g, ' '));
+export const makeSelectTargetPrompt = ({
+  name,
+  description,
+}) => {
   return `\
 # Instruction manual rip
 Press Z to target an object, then press A to select it. Your character will say fucking hilarious lines!
@@ -597,7 +589,7 @@ response: "This sword looks like it's been here for eons. It's hard to see where
   `\
 prompt: "Tree" A basic tree in the park.
 response: "This tree is important. I hang out here all the time and that makes it important to me."`,
-  `\
+`\
 prompt: "Bench" A basic bench in the park.
 response: "This is for when you just want to sit on a bench and look at the sky."`,
   `\
@@ -672,18 +664,19 @@ response: "This helmet is so strong, it can probably stop a bullet. But let's no
   `\
 prompt: "sword.png" Image of a sword being drawn from a sheath.
 response: "Swords are so cool! They're like the ultimate weapon. This one is up there."`,
-]).join("\n\n")}
-prompt: ${_cleanName(name)}${
-    description ? ` ${description}` : ""
-  }\nresponse: "`;
+]).join('\n\n')}
+prompt: ${_cleanName(name)}${description ? ` ${description}` : ''}\nresponse: "`;
 };
 export const makeSelectTargetStop = () => `"`;
-export const parseSelectTargetResponse = (response) => {
+export const parseSelectTargetResponse = response => {
   const match = response.match(/\s*([^\n]*)/);
-  return match ? match[1] : "";
+  return match ? match[1] : '';
 };
 
-export const makeSelectCharacterPrompt = ({ name, description }) => {
+export const makeSelectCharacterPrompt = ({
+  name,
+  description,
+}) => {
   return `\
 # Instruction manual rip
 Press Z to target a character. The cursor will highlight in green, then press A to talk to them. The dialogue in this game is hilarious!
@@ -737,15 +730,13 @@ response: "Hey Sora, what brings you to this world?"`,
   `\
 prompt: "Cloud Strife (Final Fantasy)" A SOLDIER in armor. He has spiky blond hair and is carrying a huge sword on his back.
 response: "Yo Cloud! Can I borrow your sword?"`,
-]).join("\n\n")}
-prompt: ${_cleanName(name + " (Character)")}${
-    description ? ` ${description}` : ""
-  }\nresponse: "`;
+]).join('\n\n')}
+prompt: ${_cleanName(name + ' (Character)')}${description ? ` ${description}` : ''}\nresponse: "`;
 };
 export const makeSelectCharacterStop = () => `"`;
-export const parseSelectCharacterResponse = (response) => {
+export const parseSelectCharacterResponse = response => {
   const match = response.match(/([^\n]*)/);
-  const value = match ? match[1] : "";
+  const value = match ? match[1] : '';
   const done = !value;
   return {
     value,
@@ -753,7 +744,10 @@ export const parseSelectCharacterResponse = (response) => {
   };
 };
 
-export const makeBattleIntroductionPrompt = ({ name, bio }) => {
+export const makeBattleIntroductionPrompt = ({
+  name,
+  bio,
+}) => {
   return `\
 # Character battle introductions
 Final fantasy
@@ -798,7 +792,7 @@ Squall: "Whatever. I'll just finish this and go."
 ${name}: "`;
 };
 export const makeBattleIntroductionStop = () => `"`;
-export const parseBattleIntroductionResponse = (response) => response;
+export const parseBattleIntroductionResponse = response => response;
 
 // const actionsExamples = `\
 // Millie: Hey, have I seen you around before?"
@@ -904,42 +898,34 @@ export const makeChatPrompt = ({
   // Modifying messages to include emotes
   return `\
 ${actionsExamples}
-${messages
-  .map((message) => {
-    return `${message.name}: "${message.text} (react = ${
-      message.emote ? message.emote : "normal"
-    })"`;
-  })
-  .join("\n")}
+${messages.map(message => {
+  return `${message.name}: "${message.text} (react = ${(message.emote ? message.emote : 'normal')})"`;
+}).join('\n')}
 ${nextCharacter}: "`;
 };
 export const makeChatStop = () => `\n`;
-export const parseChatResponse = (response) => {
+export const parseChatResponse = response => {
   response = '"' + response;
 
   let match;
-  if (
-    (match = response.match(
-      /\s*"(.*)\(react\s*=\s*([\s\S]*?)\s*\)"\s*(\*END\*)?/
-    ))
-  ) {
-    const value = match ? match[1] : "";
-    const emote = match ? match[2] : "";
+  if (match = response.match(/\s*"(.*)\(react\s*=\s*([\s\S]*?)\s*\)"\s*(\*END\*)?/) ){
+    const value = match ? match[1] : '';
+    const emote = match ?match[2] : '';
     const done = match ? !!match[3] : true;
 
-    console.log("Emotion: ", emote);
+    console.log("Emotion: ", emote)
 
     return {
       value,
       emote,
       done,
     };
-  } else if ((match = response.match(/\s*"(.*)\s*"\s*(\*END\*)?/))) {
-    const value = match ? match[1] : "";
-    const emote = "normal";
+  } else if (match = response.match(/\s*"(.*)\s*"\s*(\*END\*)?/) ){
+    const value = match ? match[1] : '';
+    const emote = 'normal';
     const done = match ? !!match[3] : true;
 
-    console.log("Emotion: ", emote);
+    console.log("Emotion: ", emote)
 
     return {
       value,
@@ -947,6 +933,7 @@ export const parseChatResponse = (response) => {
       done,
     };
   }
+  
 };
 
 export const makeOptionsPrompt = ({
@@ -957,23 +944,19 @@ export const makeOptionsPrompt = ({
 }) => {
   return `\
 ${actionsExamples}
-${messages
-  .map((message) => {
-    return `${message.name}: "${message.text} (react = ${
-      message.emote ? message.emote : "normal"
-    })"`;
-  })
-  .join("\n")}
+${messages.map(message => {
+  return `${message.name}: "${message.text} (react = ${(message.emote ? message.emote : 'normal')})"`;
+}).join('\n')}
 Options for ${nextCharacter}: [`;
 };
 export const makeOptionsStop = () => `\n`;
-export const parseOptionsResponse = (response) => {
-  response = "[" + response;
-
+export const parseOptionsResponse = response => {
+  response = '[' + response;
+  
   const options = [];
   const r = /\s*\[(.*?)\(react\s*=\s*([\s\S]*?)\)\s*\]\s*/g;
   let match;
-  while ((match = r.exec(response))) {
+  while (match = r.exec(response)) {
     const option = match[1];
 
     // Parsing the emotion from the list of options.
@@ -983,10 +966,10 @@ export const parseOptionsResponse = (response) => {
     // Passing both text respons and emotes
     options.push({
       message: option,
-      emote: emote,
+      emote: emote
     });
   }
-
+  
   const done = options.length === 0;
 
   return {
@@ -1042,19 +1025,22 @@ Aesther (17/F AI Mechanic. She is looking for the ArcWeld, a mythical tool that 
 Oak (16/M environmental terrorist. He is looking to save the world, but his methods are...questionable.): I'm fighting for the right to spray paint. To show the world that we are here, and that we will not be silenced. We will make them listen, even if it means destroying everything they hold dear. (onselect: This is for the trees!)
 Hakui (11/M brain hacker. He can hack anyone's brain and make them do what he wants.): I can make you do anything I want. Just give me a few seconds with your mind, and I'll have you eating out of the palm of my hand. (onselect: Note, I did not wash my hands.)`;
 
-export const makeCharacterIntroPrompt = ({ name, bio }) => {
+export const makeCharacterIntroPrompt = ({
+  name,
+  bio,
+}) => {
   return `\
 ${characterIntroLore}
-${name}${bio ? ` (${bio})` : ""}:`;
+${name}${bio ? ` (${bio})` : ''}:`;
 };
 export const makeCharacterIntroStop = () => `\n`;
-export const parseCharacterIntroResponse = (response) => {
-  response = response.replace(/^ /, "");
+export const parseCharacterIntroResponse = response => {
+  response = response.replace(/^ /, '');
   const match = response.match(/^(.*)\s+\(onselect:\s+(.*)\)$/);
 
   if (match) {
-    const message = match[1] || "";
-    const onselect = match[2] || "";
+    const message = match[1] || '';
+    const onselect = match[2] || '';
 
     return {
       message,
