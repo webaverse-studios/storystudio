@@ -48,7 +48,6 @@
 .section {
   background: #000000;
   border: 2px solid #FFFFFF;
-  min-height:200px;
   margin:1em;
   width: calc(100% - 2em);
   overflow-y: scroll;
@@ -101,7 +100,6 @@
 .sectionWrapper {
   display: inline-block;
   width: 45%;
-  min-height:300px;
   vertical-align: top;
 }
 
@@ -128,7 +126,8 @@
 }
 
 .context_wrapped {
-  width: 60%!important;
+  width: 100%!important;
+  height: 2em;
 }
 
 .generator_wrapped {
@@ -210,4 +209,9 @@
   margin-right: 1em;
   font-weight: bold;
   background: none;
+}
+
+.context-radio {
+  display: inline-block;
+  margin-right: .5em;
 }
