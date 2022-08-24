@@ -6,6 +6,7 @@ const Logo = () => {
     return (
         <div className="logo">
             <h1>Webaverse</h1>
+            <h2>Story Studio</h2>
         </div>
     );
     }

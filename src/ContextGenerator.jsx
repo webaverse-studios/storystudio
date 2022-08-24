@@ -5,13 +5,15 @@ const ContextGenerator = ({input, generationCallback}) => {
     const [text, setText] = React.useState('');
 
     return (
-        <div className="section">
-            <h1>Context Generator</h1>
-            {/* Generate button, which calls generate() */}
-            <button onClick={() => generate()}>Generate</button>
-            {/* Save button, which calls save() */}
-            <button onClick={() => generationCallback(text)}>Save</button>
-            <textarea value={text} onChange={(e) => setText(e.target.value)} onFocus={(e) => setText(e.target.value)} />
+        <div className="sectionWrapper generator_wrapped">
+            <div className={'sectionHeader context_header'}>
+                <h1>generator</h1>
+                <button onClick={() => generate()}>Generate</button>
+            </div>
+            <div className="section">
+                <button onClick={() => generationCallback(text)}>Save</button>
+                <textarea value={text} onChange={(e) => setText(e.target.value)} onFocus={(e) => setText(e.target.value)} />
+            </div>
         </div>
     );
 }

@@ -9,10 +9,10 @@ import Generator from "./ContextGenerator";
 
 function App() {
   const [entityData, setEntityData] = useState({
+    scene: [],
     object: [],
     character: [],
     mob: [],
-    scene: [],
     npc: []
   });
 
@@ -64,7 +64,7 @@ function App() {
       {/* map entityPrototypesMap to ListBox react components */}
       {entityPrototypes.map((entity, index) => {
         return (
-          <ListBox key={index} data={entityData[entity.type]} header={entity.type} addEntityHandler={(data) => addEntityHandler(data)} editEntityHandler={(data) => editEntityHandler(data)} deleteEntityHandler={(data) => deleteEntityHandler(data)} />
+          <ListBox key={index} type={entity.type} data={entityData[entity.type]} header={entity.type + 's'} addEntityHandler={(data) => addEntityHandler(data)} editEntityHandler={(data) => editEntityHandler(data)} deleteEntityHandler={(data) => deleteEntityHandler(data)} />
         );
       })
       }

@@ -5,19 +5,23 @@ import React from "react";
 import "./App.css";
 import { useEffect } from "react";
 
-const ListBox = ({ header, data, addEntityHandler, editEntityHandler, deleteEntityHandler }) => {
+const ListBox = ({ header, data, type = '', addEntityHandler, editEntityHandler, deleteEntityHandler }) => {
     return (
-        <div className='section'>
-            <h1>{header}</h1>
-            <button onClick={() => addEntityHandler(data)}>Add</button>
-            {data.map((entityData, index) => {
-                return (
-                    <div key={index}>
-                        <Entity entityData={entityData} editEntityHandler={editEntityHandler} deleteEntityHandler={deleteEntityHandler} />
-                    </div>
-                );
-            })
-            }
+        <div className={'sectionWrapper ' + type + '_wrapped'}>
+            <div className={'sectionHeader ' + type + '_header'}>
+                <h1>{header}</h1>
+                <button onClick={() => addEntityHandler(data)}>Add</button>
+            </div>
+            <div className={'section ' + type}>
+                {data.map((entityData, index) => {
+                    return (
+                        <div key={index}>
+                            <Entity entityData={entityData} editEntityHandler={editEntityHandler} deleteEntityHandler={deleteEntityHandler} />
+                        </div>
+                    );
+                })
+                }
+            </div>
         </div>
     );
 }

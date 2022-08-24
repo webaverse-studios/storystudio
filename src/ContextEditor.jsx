@@ -17,14 +17,14 @@ const ContextEditor = ({ data }) => {
     }, [currentContentType]);
 
     return (
-        <div className="section">
+        <div className="sectionWrapper context_wrapped">
             <div className="radio-group">
                 {contextTypes.map((type, index) => {
                     return (
-                        <div key={index}>
+                        <span key={index}>
                             <input type="radio" name="contextType" value={type} onChange={(e) => setCurrentContentType(e.target.value)} />
                             <label>{type}</label>
-                        </div>
+                        </span>
                     )
                 }
                 )}

@@ -5,20 +5,19 @@ import Logo from "./Logo";
 const Header = ({base, setBase, exportHandler, importHandler}) => {
 
     const headerStyle = {
-        fontSize: "1.5em",
-        fontWeight: "bold",
+        fontSize: "1em",
     }
 
     return (
         <div className='header'>
             <Logo />
-            <div style={headerStyle}>
-                <span>Base: </span>
-                <input type="text" value={base} onChange={(e) => setBase(e.target.value)} onFocus={(e) => setBase(e.target.value)} />
-                <button onClick={() => setBase(base)}>Change</button>
+            <div className={'base'}>
+                <span className={'baseLabel'}>Base: </span>
+                <input className={'baseInput'} type="text" value={base} onChange={(e) => setBase(e.target.value)} onFocus={(e) => setBase(e.target.value)} />
+                <button className={'baseButton'} onClick={() => setBase(base)}>Change</button>
             </div>
-            <button onClick={() => exportHandler()}>Export</button>
-            <button onClick={() => importHandler()}>Import</button>
+            <button className={'importButton'} onClick={() => importHandler()}>Import</button>
+            <button className={'exportButton'} onClick={() => exportHandler()}>Export</button>
         </div>
     );
 }
