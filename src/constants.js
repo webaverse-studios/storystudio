@@ -41,7 +41,19 @@ export const entityPrototypes = [
     }
 ]
 
-export const defaultEntities = {
+export const defaultEntityData = {
+    data: {
+        objectComment: ['example object comment'],
+        npcComment: ['example npc comment'],
+        mobComment: ['example mob comment'],
+        loadingComment: ['example loading comment'],
+        banter: ['example banter'],
+        loreExposition: ['example lore exposition'],
+        rpgDialogue: ['example rpg dialogue'],
+        reactions: ['example reactions'],
+        cutscenes: ['example cutscenes'],
+        quests: ['example quests']
+    },
     scene: [{
         type: 'scene',
         name: 'My Scene',

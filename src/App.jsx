@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { setup_scripts } from "./utils/script_handler";
-import { entityPrototypes, defaultEntities } from "./constants";
+import { entityPrototypes, contextTypes, defaultEntityData } from "./constants";
 import Header from "./Header";
 import ListBox from "./ListBox";
 import Context from "./ContextEditor";
@@ -16,7 +16,8 @@ import SceneAdd from "./SceneAdd";
 function App() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalType, setModalType] = useState("");
-  const [entityData, setEntityData] = useState(defaultEntities);
+  const [entityData, setEntityData] = useState(defaultEntityData);
+  const [currentContentType, setCurrentContentType] = useState(contextTypes[0])
 
   useEffect(() => {
     console.log("entityData changed", entityData);
@@ -106,8 +107,14 @@ function App() {
             />
           );
         })}
-        <Context />
-        <Generator />
+        <Context data={entityData.data} currentContentType={currentContentType} />
+        <ListBox
+              data={entityData.data[currentContentType]}
+              header={"output"}
+              addEntityHandler={(data) => addEntityHandler(data)}
+              editEntityHandler={(data) => editEntityHandler(data)}
+              deleteEntityHandler={(data) => deleteEntityHandler(data)}
+            />
         {modalIsOpen && modalType?.length > 0 && (
           <Backdrop onClick={closeModal} />
         )}

@@ -16,7 +16,7 @@ const ListBox = ({ header, data, type = '', addEntityHandler, editEntityHandler,
             <div className={'section ' + type}>
                 {data.map((entityData, index) => {
                     return (
-                            <Entity key={index} entityData={entityData} editEntityHandler={editEntityHandler} deleteEntityHandler={deleteEntityHandler} />
+                        <Entity key={index} entityData={entityData} editEntityHandler={editEntityHandler} deleteEntityHandler={deleteEntityHandler} />
                     );
                 })
                 }
