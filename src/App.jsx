@@ -4,22 +4,14 @@ import { entityPrototypes, contextTypes, defaultEntityData } from "./constants";
 import Header from "./Header";
 import ListBox from "./ListBox";
 import Context from "./ContextSelector";
-import Backdrop from "./Backdrop";
-import NPCAdd from "./NPCAdd";
-import ObjectAdd from "./ObjectAdd";
-import CharacterAdd from "./CharacterAdd";
-import MobAdd from "./MobAdd";
-import SceneAdd from "./SceneAdd";
+import EditModal from "./EditModal";
 
 function App() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [modalData, setModalData] = useState({
-    type: "",
-    edit: false,
-    data: {},
-  });
+  const [modalData, setModalData] = useState();
   const [entityData, setEntityData] = useState(defaultEntityData);
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
+  const [baseData, setBaseData] = useState({base: './src/lore-model.js', type: 'url', json: {}});
 
   useEffect(() => {
     console.log("entityData changed", entityData);
@@ -43,14 +35,9 @@ function App() {
   });
 
   const addEntityHandler = (type) => {
-    if (modalIsOpen) {
-      return;
-    }
-
-    setModalData({ type: type, edit: false, data: {} });
-    openModal();
+    setModalData({ type: type, mode: 'add', data: {} });
   };
-  const _addEntityHandler = (entity) => {
+  const addEntityCallback = (entity) => {
     closeModal();
     console.log("addEntityHandler", entity);
     for (let i = 0; i < entityData[entity.type].length; i++) {
@@ -81,9 +68,8 @@ function App() {
     }
 
     setModalData({ type: entity.type, edit: true, data: entity });
-    openModal();
   };
-  const _editEntityHandler = (oldEntity, entity) => {
+  const editEntityCallback = (oldEntity, entity) => {
     console.log("entity:", entity);
     closeModal();
     console.log("editEntityHandler", entity);
@@ -95,28 +81,27 @@ function App() {
     }
     setEntityData(newData);
   };
-
-  const openModal = () => {
-    if (modalIsOpen) {
-      return false;
-    }
-
-    setModalIsOpen(true);
-    return true;
-  };
   const closeModal = () => {
-    if (!modalIsOpen) {
-      return false;
-    }
-
-    setModalIsOpen(false);
-    setModalData({ type: "", edit: false, data: {} });
-    return true;
+    setModalData(null);
   };
+
+  const handleImport = () => {
+    console.log("import");
+  }
+
+  const handleExport = () => {
+    console.log("export");
+  }
+
+  const setBase = (data) => {
+    console.log("set base", data);
+    setBaseData(data);
+  }
+
 
   return (
     <div className="App">
-      <Header />
+      <Header importHandler={() => handleImport()} exportHandler={() => handleExport()} data={baseData} setData={setBase} />
       <div className="sections">
         {/* map entityPrototypesMap to ListBox react components */}
         {entityPrototypes.map((entity, index) => {
@@ -141,50 +126,18 @@ function App() {
               editEntityHandler={(data) => editEntityHandler(data)}
               deleteEntityHandler={(data) => deleteEntityHandler(data)}
             />
-        {modalIsOpen && modalType?.length > 0 && (
-          <Backdrop onClick={closeModal} />
+        {modalData && (
+          <div className="modalWrapper">
+            <div className={'backdrop'} onClick={closeModal} />
+            <EditModal
+            addCallback={addEntityCallback}
+            editCallback={editEntityCallback}
+            cancelCallback={closeModal}
+            mode={modalData.mode}
+            data={modalData.data}
+          />
+        </div>
         )}
-        {modalIsOpen && modalData.type === "object" ? (
-          <ObjectAdd
-            onConfirm={_addEntityHandler}
-            onConfirmEdit={_editEntityHandler}
-            onCancel={closeModal}
-            edit={modalData.edit}
-            data={modalData.data}
-          />
-        ) : modalData.type === "character" ? (
-          <CharacterAdd
-            onConfirm={_addEntityHandler}
-            onConfirmEdit={_editEntityHandler}
-            onCancel={closeModal}
-            edit={modalData.edit}
-            data={modalData.data}
-          />
-        ) : modalData.type === "npc" ? (
-          <NPCAdd
-            onConfirm={_addEntityHandler}
-            onConfirmEdit={_editEntityHandler}
-            onCancel={closeModal}
-            edit={modalData.edit}
-            data={modalData.data}
-          />
-        ) : modalData.type === "mob" ? (
-          <MobAdd
-            onConfirm={_addEntityHandler}
-            onConfirmEdit={_editEntityHandler}
-            onCancel={closeModal}
-            edit={modalData.edit}
-            data={modalData.data}
-          />
-        ) : modalData.type === "scene" ? (
-          <SceneAdd
-            onConfirm={_addEntityHandler}
-            onConfirmEdit={_editEntityHandler}
-            onCancel={closeModal}
-            edit={modalData.edit}
-            data={modalData.data}
-          />
-        ) : null}
       </div>
     </div>
   );
