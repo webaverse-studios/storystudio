@@ -40,7 +40,10 @@ function App() {
   });
 
   const addEntityHandler = (type) => {
-    console.log(type);
+    if (modalIsOpen) {
+      return;
+    }
+
     setModalType(type);
     openModal();
   };

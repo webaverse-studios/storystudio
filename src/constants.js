@@ -7,7 +7,6 @@ export const entityPrototypes = [
         shortname: 'scene#234',
         enabled: true,
         description: 'This is a description of my scene',
-        inventory: []
     },
     {
         type: 'character',
