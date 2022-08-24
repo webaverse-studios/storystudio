@@ -1,7 +1,5 @@
-import styles from "./Modals.module.css";
-
-function Backdrop() {
-  return <div className={styles.backdrop} />;
+function Backdrop(props) {
+  return <div className="backdrop" onClick={props.onClick}/>;
 }
 
 export default Backdrop;

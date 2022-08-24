@@ -105,7 +105,9 @@ function App() {
         })}
         <Context />
         <Generator />
-        {modalIsOpen && modalType?.length > 0 && <Backdrop />}
+        {modalIsOpen && modalType?.length > 0 && (
+          <Backdrop onClick={closeModal} />
+        )}
         {modalIsOpen && modalType === "object" ? (
           <ObjectAdd onConfirm={_addEntityHandler} onCancel={closeModal} />
         ) : modalType === "character" ? (
