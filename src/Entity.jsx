@@ -3,7 +3,7 @@ import "./App.css";
 
 const Entity = ({ entityData, editEntityHandler, deleteEntityHandler }) => {
     return (
-        <div>
+        <div className={'entity'}>
             <h1>{entityData.name}</h1>
             <h2>{entityData.shortname}</h2>
             <p>{entityData.description}</p>
