@@ -19,20 +19,5 @@ export default defineConfig(async (command) => {
     },
   };
 
-  if (command.command === "build" && process.env.VITE_LOCAL_BUILD !== "true") {
-    returned.build.rollupOptions.plugins = [
-      inject({
-        process: "process",
-      }),
-    ];
-  }
-
-  if (command.command !== "build" || process.env.VITE_LOCAL_BUILD === "true") {
-    returned.define = {
-      "process.env": process.env,
-      "process.browser": process.browser,
-    };
-  }
-
   return returned;
 });

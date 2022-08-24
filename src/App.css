@@ -31,6 +31,10 @@
   margin-block-end:0;
 }
 
+.radio-group {
+  width:100%;
+}
+
 .radio-group span {
   background: #000000;
   border: 1px solid #FFFFFF;
