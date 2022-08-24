@@ -1,20 +1,14 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { getScript, setup_scripts } from "./utils/script_handler";
-import { entityPrototypes } from "./constants";
+import { entityPrototypes, defaultEntities } from "./constants";
 import Header from "./Header";
 import ListBox from "./ListBox";
 import Context from "./ContextEditor";
 import Generator from "./ContextGenerator";
 
 function App() {
-  const [entityData, setEntityData] = useState({
-    scene: [],
-    object: [],
-    character: [],
-    mob: [],
-    npc: []
-  });
+  const [entityData, setEntityData] = useState(defaultEntities);
 
   useEffect(() => {
     console.log('entityData changed', entityData);

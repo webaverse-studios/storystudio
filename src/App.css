@@ -46,18 +46,21 @@
 }
 
 .section {
-  width: 95%;
   background: #000000;
   border: 2px solid #FFFFFF;
   min-height:200px;
-  margin:2.5%;
+  margin:1em;
+  width: calc(100% - 2em);
 }
 
 
 .sectionHeader {
-  width: 98%;
   text-align: left;
-  vertical-align: bottom;
+  vertical-align: top;
+  padding-left: 1em;
+  padding-right: 1em;
+  /* width is 100% minus padding */
+  width: calc(100% - 2em);
 }
 
 .sectionHeader h1 {
@@ -67,7 +70,9 @@
 
 .sectionHeader button {
   display:inline;
+  margin-top: .5em;
   margin-left: .5em;
+  float:right;
 }
 
 .sectionWrapper {

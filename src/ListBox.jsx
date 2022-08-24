@@ -4,6 +4,7 @@
 import React from "react";
 import "./App.css";
 import { useEffect } from "react";
+import Entity from "./Entity";
 
 const ListBox = ({ header, data, type = '', addEntityHandler, editEntityHandler, deleteEntityHandler }) => {
     return (
