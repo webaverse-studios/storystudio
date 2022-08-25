@@ -26,6 +26,7 @@ function App() {
     setEntityData(newEntityData);
   };
   const deleteEntityCallback = (entity) => {
+    const entityType = entity.type
     console.log("deleteEntityCallback", entity);
     const newData = { ...entityData };
     newData[entity.type] = entityData[entityType].filter(
