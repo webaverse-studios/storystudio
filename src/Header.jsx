@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import {getOpenAIKey, setOpenAIKey} from './utils/openai_utils';
+import { getOpenAIKey, setOpenAIKey } from './utils/openai_utils';
 
 async function getFile() {
     // get a file from the local user's computer and return the File object
@@ -37,24 +37,26 @@ const Header = ({ data, setData, exportHandler, importHandler }) => {
     return (
         <div className='header'>
             <div className="logo">
-                <h1>Webaverse</h1>
-                <h2>Story Studio</h2>
+                <img src="/logo.png" alt="logo" width="48px" height="48px" />
+                <h1>Story Studio</h1>
             </div>
-            <div className={'base'}>
-                <span className={'baseLabel'}>Base: </span>
-                <input className={'baseInput'} type="text" value={data.base} onChange={(e) => setData(e.target.value)} onFocus={(e) => setData(e.target.value)} />
-                <button className={'baseButton'} onClick={() => handleLoad(data)}>[From URL]</button>
-                <button className={'baseButton'} onClick={() => handleLoad(data, false)}>[From Disk]</button>
+            <div className="headerright">
+                <div className={'base'}>
+                    <span className={'baseLabel'}>Base: </span>
+                    <input className={'baseInput'} type="text" value={data.base} onChange={(e) => setData(e.target.value)} onFocus={(e) => setData(e.target.value)} />
+                    <button className={'baseButton'} onClick={() => handleLoad(data)}>[From URL]</button>
+                    <button className={'baseButton'} onClick={() => handleLoad(data, false)}>[From Disk]</button>
+                </div>
+                <div className={'openai'}>
+                    <span className={'baseLabel'}>OpenAI Key: </span>
+                    <input className={'baseInput'} type="input" defaultValue={getOpenAIKey()} onChange={(e) => console.log('change', e.target.value) || setOpenAIKey(e.target.value)} onFocus={(e) => setOpenAIKey(e.target.value)} />
+                </div>
+                <div className={'importExportButtons'}>
+                    <button className={'importButton'} onClick={() => importHandler()}>Import</button>
+                    <button className={'exportButton'} onClick={() => exportHandler()}>Export</button>
+                </div>
             </div>
-            <div className={'openai'}>
-                <span className={'baseLabel'}>OpenAI Key: </span>
-                <input className={'baseInput'} type="input" defaultValue={getOpenAIKey()} onChange={(e) => console.log('change', e.target.value) || setOpenAIKey(e.target.value)} onFocus={(e) => setOpenAIKey(e.target.value)} />
-            </div>
-            <div className={'importExportButtons'}>
-                <button className={'importButton'} onClick={() => importHandler()}>Import</button>
-                <button className={'exportButton'} onClick={() => exportHandler()}>Export</button>
-            </div>
-            </div>
+        </div>
     );
 }
 
