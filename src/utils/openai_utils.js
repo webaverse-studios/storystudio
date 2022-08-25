@@ -1,5 +1,10 @@
 import { Configuration, OpenAIApi } from "openai";
-import { makeLorePrompt, parseLoreResponses } from "./lore/lore-model";
+import {
+  makeBattleIntroductionPrompt,
+  makeBattleIntroductionStop,
+  makeLorePrompt,
+  parseLoreResponses,
+} from "./lore/lore-model";
 
 const configuration = new Configuration({
   apiKey: localStorage.getItem("openai_key") ?? "",
@@ -176,8 +181,19 @@ const generateLore = async (data) => {
       256
     );
 
+    const battleDialoguePrompt = makeBattleIntroductionPrompt({
+      name: data["character"][i].name,
+      bio: data["character"][i].description,
+    });
+
+    const resp2 = await openaiRequest(
+      battleDialoguePrompt,
+      makeBattleIntroductionStop()
+    );
+
     const loreResp = parseLoreResponses(resp);
     for (let i = 0; i < loreResp.length; i++) {
+      loreResp[i].rpgDialogue = resp2;
       _resp.push(loreResp[i]);
     }
   }

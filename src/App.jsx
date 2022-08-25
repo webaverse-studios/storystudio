@@ -35,15 +35,13 @@ function App() {
   };
 
   const editEntityCallback = (entity) => {
-    console.log("entity:", entity);
-    console.log("editEntityCallback", entity);
     const newData = { ...entityData };
-    console.log('newData', newData);
-    for (let i = 0; i < newData[entity.type].length; i++) {
-      if (newData[entity.type][i] === oldEntity) {
-        newData[entity.type][i] = entity;
-      }
-    }
+
+    const entityIndex = newData[entity.type].findIndex(
+      (e) => e.name === entity.name
+    );
+    newData[entity.type][entityIndex] = entity;
+
     setEntityData(newData);
   };
 
