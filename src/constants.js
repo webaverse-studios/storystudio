@@ -7,6 +7,7 @@ export const entityPrototypes = [
         shortname: 'scene#234',
         enabled: true,
         description: 'This is a description of my scene',
+        id: '234',
     },
     {
         type: 'character',
@@ -14,7 +15,8 @@ export const entityPrototypes = [
         shortname: 'character#234',
         enabled: true,
         description: 'This is a description of my character',
-        inventory: []
+        inventory: [],
+        id: '234',
     },
     {
         type: 'object',
@@ -22,6 +24,7 @@ export const entityPrototypes = [
         shortname: 'object#234',
         enabled: true,
         description: 'This is a description of my object',
+        id: '234',
     },
     {
         type: 'npc',
@@ -29,7 +32,8 @@ export const entityPrototypes = [
         shortname: 'npc#234',
         enabled: true,
         description: 'This is a description of my NPC',
-        inventory: []
+        inventory: [],
+        id: '234',
     },
     {
         type: 'mob',
@@ -37,7 +41,8 @@ export const entityPrototypes = [
         shortname: 'mob#234',
         enabled: true,
         description: 'This is a description of my mob',
-        inventory: []
+        inventory: [],
+        id: '234',
     }
 ]
 
@@ -60,7 +65,8 @@ export const defaultEntityData = {
         shortname: 'scene#234',
         enabled: true,
         description: 'This is a description of my scene',
-        inventory: []
+        inventory: [],
+        id: '234',
     }],
     object: [{
         type: 'object',
@@ -68,6 +74,7 @@ export const defaultEntityData = {
         shortname: 'object#234',
         enabled: true,
         description: 'This is a description of my object',
+        id: '234',
     },
     {
         type: 'object',
@@ -75,6 +82,7 @@ export const defaultEntityData = {
         shortname: 'object#234',
         enabled: true,
         description: 'This is a description of my object',
+        id: '234',
     },
     {
         type: 'object',
@@ -82,6 +90,7 @@ export const defaultEntityData = {
         shortname: 'object#234',
         enabled: true,
         description: 'This is a description of my object',
+        id: '234',
     }],
     character: [{
         type: 'character',
@@ -89,7 +98,8 @@ export const defaultEntityData = {
         shortname: 'character#234',
         enabled: true,
         description: 'This is a description of my character',
-        inventory: []
+        inventory: [],
+        id: '234',
     }],
     mob: [{
         type: 'mob',
@@ -97,7 +107,8 @@ export const defaultEntityData = {
         shortname: 'mob#234',
         enabled: true,
         description: 'This is a description of my mob',
-        inventory: []
+        inventory: [],
+        id: '234',
     },
     {
         type: 'mob',
@@ -105,7 +116,8 @@ export const defaultEntityData = {
         shortname: 'mob#234',
         enabled: true,
         description: 'This is a description of my mob',
-        inventory: []
+        inventory: [],
+        id: '234',
     },
     {
         type: 'mob',
@@ -113,7 +125,8 @@ export const defaultEntityData = {
         shortname: 'mob#234',
         enabled: true,
         description: 'This is a description of my mob',
-        inventory: []
+        inventory: [],
+        id: '234',
     }],
     npc: [{
         type: 'npc',
@@ -121,7 +134,8 @@ export const defaultEntityData = {
         shortname: 'npc#234',
         enabled: true,
         description: 'This is a description of my NPC',
-        inventory: []
+        inventory: [],
+        id: '234',
     },
     {
         type: 'npc',
@@ -129,7 +143,8 @@ export const defaultEntityData = {
         shortname: 'npc#234',
         enabled: true,
         description: 'This is a description of my NPC',
-        inventory: []
+        inventory: [],
+        id: '234',
     },
     {
         type: 'npc',
@@ -137,7 +152,8 @@ export const defaultEntityData = {
         shortname: 'npc#234',
         enabled: true,
         description: 'This is a description of my NPC',
-        inventory: []
+        inventory: [],
+        id: '234',
     },
     {
         type: 'npc',
@@ -145,6 +161,7 @@ export const defaultEntityData = {
         shortname: 'npc#234',
         enabled: true,
         description: 'This is a description of my NPC',
-        inventory: []
+        inventory: [],
+        id: '234',
     }]
   };

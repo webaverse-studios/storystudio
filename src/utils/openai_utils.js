@@ -247,8 +247,11 @@ export async function generate(type, data) {
   }
 
   if (res.name?.length > 0) {
+    res.id = makeId(5);
     res.shortname =
-      res.name.replace(" ", "").trim().toLowerCase() + "#" + makeId(5);
+      res.name.replace(" ", "").trim().toLowerCase().substring(0, 7) +
+      "#" +
+      res.id;
   }
 
   return res;

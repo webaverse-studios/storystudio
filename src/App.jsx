@@ -45,7 +45,7 @@ function App() {
     const newData = { ...entityData };
 
     const entityIndex = newData[entity.type].findIndex(
-      (e) => e.name === entity.name
+      (e) => e.id === entity.id
     );
     newData[entity.type][entityIndex] = entity;
 
