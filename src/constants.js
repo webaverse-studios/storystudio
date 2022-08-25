@@ -42,7 +42,7 @@ export const entityPrototypes = [
 ]
 
 export const defaultEntityData = {
-    data: {
+    dialog: {
         objectComment: ['example object comment'],
         npcComment: ['example npc comment'],
         mobComment: ['example mob comment'],
