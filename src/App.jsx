@@ -32,7 +32,7 @@ function App() {
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
   const [baseData, setBaseData] = useState({
     base: null,
-    url: '/lore-model.js', // "https://webaverse.github.io/lore/lore-model.js",
+    url: "https://webaverse.github.io/lore/lore-model.js",
     type: "url",
     funcs: {},
   });
