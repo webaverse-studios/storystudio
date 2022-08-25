@@ -92,11 +92,11 @@ const Header = ({ data, setData, exportHandler, importHandler }) => {
             onChange={(e) => setData({...data, url: e.target.value})}
             onFocus={(e) => setData({...data, url: e.target.value})}
           />
-          <button className={"baseButton"} onClick={() => handleLoad(data, true)}>
+          <button className={"baseButton baseButtonUrl"} onClick={() => handleLoad(data, true)}>
             [From URL]
           </button>
           <button
-            className={"baseButton"}
+            className={"baseButton baseButtonFile"}
             onClick={() => handleLoad(data, false)}
           >
             [From Disk]
