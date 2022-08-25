@@ -1,8 +1,8 @@
 import { Configuration, OpenAIApi } from "openai";
 
-let openai = new OpenAIApi({
+let openai = new OpenAIApi(new Configuration({
   apiKey: localStorage.getItem("openai_key") ?? "",
-});
+}));
 
 export function setOpenAIKey(newKey) {
   localStorage.setItem("openai_key", newKey);
