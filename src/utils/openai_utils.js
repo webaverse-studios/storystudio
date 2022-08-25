@@ -131,6 +131,7 @@ function makeId(length) {
 }
 
 export async function generate(type, data, baseData) {
+  console.log('baseData is', baseData);
   if (
     !baseData ||
     !baseData.funcs ||

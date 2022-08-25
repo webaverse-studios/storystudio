@@ -33,6 +33,7 @@ function App() {
   }, [entityData])
 
   const addEntityCallback = async (entityType, data) => {
+    console.log('calling baseData', baseData)
     // generate new using openai callback
     const entity = await generate(entityType, data, baseData);
     if (!entity || entity === undefined) {
@@ -88,7 +89,6 @@ function App() {
   };
 
   const setBase = (data) => {
-    console.log("set base", data);
     setBaseData(data);
   };
 
@@ -101,7 +101,6 @@ function App() {
         setData={setBase}
       />
       <div className="sections">
-        {/* map entityPrototypesMap to ListBox react components */}
         {entityPrototypes.map((entity, index) => {
           return (
             <ListBox
@@ -120,7 +119,6 @@ function App() {
           currentContentType={currentContentType}
           setCurrentContentType={setCurrentContentType}
         />
-        {console.log("xx entityData.dialog[currentContentType]", entityData.dialog[currentContentType])}
         <ListBox
           type={"dialog"}
           data={entityData.dialog[currentContentType]}

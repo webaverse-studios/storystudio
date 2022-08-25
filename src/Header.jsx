@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect } from "react";
 import "./App.css";
 import { getOpenAIKey, setOpenAIKey } from "./utils/openai_utils";
-import { murmurhash3String } from "./murmurhash3String";
+import { lore_header } from "./lore_header";
 
 async function getFile() {
   const file = await new Promise((resolve, reject) => {
@@ -17,14 +17,12 @@ async function getFile() {
 }
 
 export async function download_content(url) {
-  console.log('downloading url', url);
   const file = await axios.get(url);
   return file.data;
 }
 
 const Header = ({ data, setData, exportHandler, importHandler }) => {
   const handleLoad = async (data, fromUrl = true) => {
-    console.log('data is', data, new Error().stack);
     if (fromUrl) {
       const response = await download_content(data.url)
       let blob = new Blob([response], { type: "application/x-javascript;base64" });
@@ -34,13 +32,13 @@ const Header = ({ data, setData, exportHandler, importHandler }) => {
       reader.onload = async function () {
         let content = reader.result;
         // find the line in content (a long delimited string) that contains import and murmurhash3
-        // replace that line with murmurhash3String
+        // replace that line with lore_header
         const contentArray = content.split('\n');
         const importLineIndex = contentArray.findIndex(line => line.includes('murmurhash3.js'));
         if(importLineIndex !== -1) {
-          contentArray[importLineIndex] = murmurhash3String;
+          contentArray[importLineIndex] = lore_header;
           content = contentArray.join('\n');
-
+          console.log('injected content', content);
           // convert content back to a blob with the x-javascript base64 type
           blob = new Blob([content], { type: "application/x-javascript;base64" });
         }
