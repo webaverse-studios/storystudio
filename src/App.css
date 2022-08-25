@@ -8,7 +8,6 @@
 .header {
   width: 100%;
   min-height: 100px;
-  background-color: #ffffff;
 }
 
 .headerright {
@@ -65,7 +64,7 @@
   margin: 1em;
   width: calc(100% - 2em);
   overflow-y: scroll;
-  max-height: 20em;
+  height: 25em;
 }
 
 /* width */
@@ -177,7 +176,6 @@
   border-right: 1px solid #000000;
   margin: 0;
   padding: 0.5em;
-  background-color: #ffffff;
 }
 
 .baseButton {
