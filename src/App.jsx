@@ -45,9 +45,9 @@ function App() {
     console.log('calling baseData', baseData)
     // generate new using openai callback
     let entity = await generate(entityType, data, baseData);
-    if(entity[0]) entity = entity[0];
+    if (entity[0]) entity = entity[0];
     console.log('generate entity', entity);
-    if(!entity.id) {
+    if (!entity.id) {
       entity.id = makeId(5);
     }
     if (!entity || entity === undefined) {
@@ -70,7 +70,7 @@ function App() {
     console.log('entityData["dialog"][entity.type]', entityData['dialog'][currentContentType])
     console.log('entityData[entity.type]', entityData[entity.type]);
 
-    if(dialog){
+    if (dialog) {
       newData['dialog'][currentContentType] = entityData['dialog'][currentContentType].filter(e => e.id && e.id !== entity.id);
     } else {
       newData[entity.type] = entityData[entity.type].filter(e => e.id !== entity.id);
@@ -80,12 +80,23 @@ function App() {
   };
 
   const editEntityCallback = (entity) => {
-    const newData = { ...entityData };
+    let newData = { ...entityData };
 
-    const entityIndex = newData[entity.type].findIndex(
-      (e) => e.id === entity.id
-    );
-    newData[entity.type][entityIndex] = entity;
+    console.log('gotta edit dis entity', entity);
+
+    if (entity.message !== undefined) {
+      newData['dialog'][currentContentType]
+
+      const entityIndex = newData['dialog'][currentContentType].findIndex(
+        (e) => e.id === entity.id
+      );
+      newData['dialog'][currentContentType][entityIndex] = entity;
+    } else {
+      const entityIndex = newData[entity.type].findIndex(
+        (e) => e.id === entity.id
+      );
+      newData[entity.type][entityIndex] = entity;
+    }
 
     setEntityData(newData);
   };
@@ -146,7 +157,7 @@ function App() {
           type={"dialog"}
           data={entityData.dialog[currentContentType]}
           header={"dialog"}
-          addEntityCallback={(data) => { console.log('entityData is', entityData); addEntityCallback("dialog", entityData)}}
+          addEntityCallback={(data) => { console.log('entityData is', entityData); addEntityCallback("dialog", entityData) }}
           editEntityCallback={(data) => editEntityCallback(data)}
           deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
           showLabels={true}
