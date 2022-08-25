@@ -22,7 +22,8 @@ function App() {
   const [entityData, setEntityData] = useState(storedEntityData);
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
   const [baseData, setBaseData] = useState({
-    base: "./src/lore-model.js",
+    base: null,
+    url: "https://webaverse.github.io/lore/lore-model.js",
     type: "url",
     funcs: {},
   });

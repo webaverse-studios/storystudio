@@ -1,7 +1,8 @@
 import axios from "axios";
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import { getOpenAIKey, setOpenAIKey } from "./utils/openai_utils";
+import { murmurhash3String } from "./murmurhash3String";
 
 async function getFile() {
   const file = await new Promise((resolve, reject) => {
@@ -16,25 +17,46 @@ async function getFile() {
 }
 
 export async function download_content(url) {
+  console.log('downloading url', url);
   const file = await axios.get(url);
   return file.data;
 }
 
 const Header = ({ data, setData, exportHandler, importHandler }) => {
   const handleLoad = async (data, fromUrl = true) => {
+    console.log('data is', data, new Error().stack);
     if (fromUrl) {
-      const response = await download_content(data)
-      const blob = new Blob([response], { type: "application/x-javascript;base64" });
-      const fileUri = await fileToDataUri(blob);
-      console.log(fileUri)
-      const importedFile = await import(fileUri);
-      setData({ base: fileUri, type: "file", funcs: importedFile });
+      const response = await download_content(data.url)
+      let blob = new Blob([response], { type: "application/x-javascript;base64" });
+      // decode blob to a string
+      const reader = new FileReader();
+      reader.readAsText(blob);
+      reader.onload = async function () {
+        let content = reader.result;
+        // find the line in content (a long delimited string) that contains import and murmurhash3
+        // replace that line with murmurhash3String
+        const contentArray = content.split('\n');
+        const importLineIndex = contentArray.findIndex(line => line.includes('murmurhash3.js'));
+        if(importLineIndex !== -1) {
+          contentArray[importLineIndex] = murmurhash3String;
+          content = contentArray.join('\n');
+
+          // convert content back to a blob with the x-javascript base64 type
+          blob = new Blob([content], { type: "application/x-javascript;base64" });
+        }
+
+        const fileUri = await fileToDataUri(blob);
+        // fileUri is a base64 javascript document
+        // we want to inject some code into the file before we 
+        const importedFile = await import(fileUri);
+        setData({ base: fileUri, type: "file", funcs: importedFile, url: data.url });
+      }
     } else {
       // open a file picker and get the file from disk
       const file = await getFile();
       const fileUri = await fileToDataUri(file);
       const importedFile = await import(fileUri);
-      setData({ base: fileUri, type: "file", funcs: importedFile });
+      setData({ base: fileUri, type: "file", funcs: importedFile, url: file.name });
     }
   };
 
@@ -54,6 +76,8 @@ const Header = ({ data, setData, exportHandler, importHandler }) => {
       reader.readAsDataURL(file);
     });
 
+  useEffect(() => { handleLoad (data) }, [])
+
   return (
     <div className="header">
       <div className="logo">
@@ -66,11 +90,11 @@ const Header = ({ data, setData, exportHandler, importHandler }) => {
           <input
             className={"baseInput"}
             type="text"
-            value={data.base}
-            onChange={(e) => setData(e.target.value)}
-            onFocus={(e) => setData(e.target.value)}
+            value={data.url}
+            onChange={(e) => setData({...data, url: e.target.value})}
+            onFocus={(e) => setData({...data, url: e.target.value})}
           />
-          <button className={"baseButton"} onClick={() => handleLoad(data)}>
+          <button className={"baseButton"} onClick={() => handleLoad(data, true)}>
             [From URL]
           </button>
           <button
