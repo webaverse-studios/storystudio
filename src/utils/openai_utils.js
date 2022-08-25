@@ -254,5 +254,9 @@ export async function generate(type, data) {
       res.id;
   }
 
+  if (res.description.endsWith(",")) {
+    res.description = res.description.slice(0, -1);
+  }
+
   return res;
 }
