@@ -12,14 +12,24 @@ import {
   colors,
 } from "unique-names-generator";
 
+
+if (!localStorage.getItem('entityData') || localStorage.getItem('entityData') === '[object Object]') {
+  localStorage.setItem('entityData', JSON.stringify(defaultEntityData));
+}
+const storedEntityData = JSON.parse(localStorage.getItem('entityData'));
+
 function App() {
-  const [entityData, setEntityData] = useState(defaultEntityData);
+  const [entityData, setEntityData] = useState(storedEntityData);
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
   const [baseData, setBaseData] = useState({
     base: "./src/lore-model.js",
     type: "url",
     funcs: {},
   });
+
+  useEffect(() => {
+    localStorage.setItem('entityData', JSON.stringify(entityData));
+  }, [entityData])
 
   const addEntityCallback = async (entityType, data) => {
     // generate new using openai callback
