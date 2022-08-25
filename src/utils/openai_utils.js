@@ -1,10 +1,17 @@
 import { Configuration, OpenAIApi } from "openai";
 import { getNewId } from "./misc_utils";
 
-const openai_key = "";
-
-const configuration = new Configuration({ apiKey: openai_key });
+const configuration = new Configuration({ apiKey: localStorage.getItem("openai_key") ?? '' });
 const openai = new OpenAIApi(configuration);
+
+export function setOpenAIKey(newKey){
+  localStorage.setItem("openai_key", newKey);
+  configuration.apiKey = newKey;
+}
+
+export function getOpenAIKey(){
+  return configuration.apiKey;
+}
 
 async function openaiRequest(prompt, stop, model = "davinci") {
   const completion = await openai.createCompletion({

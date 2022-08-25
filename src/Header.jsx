@@ -1,5 +1,6 @@
 import React from "react";
 import "./App.css";
+import {getOpenAIKey, setOpenAIKey} from './utils/openai_utils';
 
 async function getFile() {
     // get a file from the local user's computer and return the File object
@@ -44,6 +45,10 @@ const Header = ({ data, setData, exportHandler, importHandler }) => {
                 <input className={'baseInput'} type="text" value={data.base} onChange={(e) => setData(e.target.value)} onFocus={(e) => setData(e.target.value)} />
                 <button className={'baseButton'} onClick={() => handleLoad(data)}>[From URL]</button>
                 <button className={'baseButton'} onClick={() => handleLoad(data, false)}>[From Disk]</button>
+            </div>
+            <div className={'openai'}>
+                <span className={'baseLabel'}>OpenAI Key: </span>
+                <input className={'baseInput'} type="password" defaultValue={getOpenAIKey()} onChange={(e) => setOpenAIKey(e.target.value)} onFocus={(e) => setOpenAIKey(e.target.value)} />
             </div>
             <button className={'importButton'} onClick={() => importHandler()}>Import</button>
             <button className={'exportButton'} onClick={() => exportHandler()}>Export</button>

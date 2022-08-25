@@ -4,24 +4,22 @@ import { entityPrototypes, contextTypes, defaultEntityData } from "./constants";
 import Header from "./Header";
 import ListBox from "./ListBox";
 import Context from "./ContextSelector";
-import { generate } from "./utils/openai_utils";
 
 function App() {
   const [entityData, setEntityData] = useState(defaultEntityData);
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
-  const [baseData, setBaseData] = useState({
-    base: "./src/lore-model.js",
-    type: "url",
-    json: {},
-  });
+  const [baseData, setBaseData] = useState({base: './src/lore-model.js', type: 'url', json: {}});
 
   useEffect(() => {
+    console.log("entityData changed", entityData);
   }, [entityData]);
 
-  const addEntityCallback = async (type) => {
-    console.log("generating:", type);
-    const entity = await generate(type, entityData);
-
+  const addEntityHandler = (type) => {
+    setModalData({ type: type, mode: 'add', data: {} });
+  };
+  const addEntityCallback = (entity) => {
+    closeModal();
+    console.log("addEntityHandler", entity);
     for (let i = 0; i < entityData[entity.type].length; i++) {
       if (
         entityData[entity.type][i].name == entity.name &&
@@ -35,7 +33,6 @@ function App() {
     newEntityData[entity.type].push(entity);
     setEntityData(newEntityData);
   };
-
   const deleteEntityHandler = (entity) => {
     console.log("deleteEntityHandler", entity);
     const newData = { ...entityData };
@@ -69,25 +66,21 @@ function App() {
 
   const handleImport = () => {
     console.log("import");
-  };
+  }
 
   const handleExport = () => {
     console.log("export");
-  };
+  }
 
   const setBase = (data) => {
     console.log("set base", data);
     setBaseData(data);
-  };
+  }
+
 
   return (
     <div className="App">
-      <Header
-        importHandler={() => handleImport()}
-        exportHandler={() => handleExport()}
-        data={baseData}
-        setData={setBase}
-      />
+      <Header importHandler={() => handleImport()} exportHandler={() => handleExport()} data={baseData} setData={setBase} />
       <div className="sections">
         {/* map entityPrototypesMap to ListBox react components */}
         {entityPrototypes.map((entity, index) => {
@@ -97,25 +90,21 @@ function App() {
               type={entity.type}
               data={entityData[entity.type]}
               header={entity.type + "s"}
-              addEntityHandler={(data) => addEntityCallback(data)}
+              addEntityHandler={(data) => addEntityHandler(data)}
               editEntityHandler={(data) => editEntityHandler(data)}
               deleteEntityHandler={(data) => deleteEntityHandler(data)}
             />
           );
         })}
-        <Context
-          data={entityData.data}
-          currentContentType={currentContentType}
-          setCurrentContentType={setCurrentContentType}
-        />
+        <Context data={entityData.data} currentContentType={currentContentType} setCurrentContentType={setCurrentContentType} />
         <ListBox
-          type={"output"}
-          data={entityData.data[currentContentType]}
-          header={"output"}
-          addEntityHandler={(data) => addEntityCallback(data)}
-          editEntityHandler={(data) => editEntityHandler(data)}
-          deleteEntityHandler={(data) => deleteEntityHandler(data)}
-        />
+              type={'output'}
+              data={entityData.data[currentContentType]}
+              header={"output"}
+              addEntityHandler={(data) => addEntityHandler(data)}
+              editEntityHandler={(data) => editEntityHandler(data)}
+              deleteEntityHandler={(data) => deleteEntityHandler(data)}
+            />
       </div>
     </div>
   );
