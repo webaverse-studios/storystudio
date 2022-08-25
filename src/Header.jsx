@@ -1,3 +1,4 @@
+import axios from "axios";
 import React from "react";
 import "./App.css";
 import { getOpenAIKey, setOpenAIKey } from "./utils/openai_utils";
@@ -14,13 +15,18 @@ async function getFile() {
   return file;
 }
 
+export async function download_content(url) {
+  const file = await axios.get(url);
+  return file.data;
+}
+
 const Header = ({ data, setData, exportHandler, importHandler }) => {
   const handleLoad = async (data, fromUrl = true) => {
     if (fromUrl) {
-      const response = await fetch(
-        "https://github.com/webaverse/lore/blob/main/lore-model.js"
-      );
-      const fileUri = await fileToDataUri(base.base);
+      const response = await download_content(data)
+      const blob = new Blob([response], { type: "application/x-javascript;base64" });
+      const fileUri = await fileToDataUri(blob);
+      console.log(fileUri)
       const importedFile = await import(fileUri);
       setData({ base: fileUri, type: "file", funcs: importedFile });
     } else {
