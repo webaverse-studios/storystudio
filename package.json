@@ -17,6 +17,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "require": "^2.4.20",
+    "unique-names-generator": "^4.7.1",
     "url": "^0.11.0"
   },
   "browser": {
