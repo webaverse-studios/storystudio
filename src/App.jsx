@@ -18,12 +18,15 @@ function App() {
   const [baseData, setBaseData] = useState({
     base: "./src/lore-model.js",
     type: "url",
-    json: {},
+    funcs: {},
   });
 
   const addEntityCallback = async (entityType, data) => {
     // generate new using openai callback
-    const entity = await generate(entityType, data);
+    const entity = await generate(entityType, data, baseData);
+    if (!entity || entity === undefined) {
+      return;
+    }
 
     const newEntityData = { ...entityData };
 
