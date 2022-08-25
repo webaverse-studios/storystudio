@@ -80,16 +80,6 @@
   background: #000000;
 }
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #eeeeee;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #eeeeee;
-}
-
 
 .sectionHeader {
   text-align: left;
