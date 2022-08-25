@@ -30,6 +30,7 @@ function App() {
         newEntityData["data"]["objectComment"].push(entity[i]["object"]);
         newEntityData["data"]["banter"].push(entity[i]["message"]);
         newEntityData["data"]["reactions"].push(entity[i]["emote"]);
+        newEntityData["data"]["rpgDialogue"].push(entity[i]["rpgDialogue"]);
       }
     } else {
       newEntityData[entityType].push(entity);
