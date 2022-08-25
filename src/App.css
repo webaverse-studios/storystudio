@@ -59,7 +59,7 @@
 }
 
 .section {
-  background: #ffffff;
+  background: none;
   border: 1px solid #000000;
   margin: 1em;
   width: calc(100% - 2em);
@@ -237,7 +237,7 @@
   display: inline-block;
   border: 0;
   color: #000000;
-  background: #ffffff;
+  background: none;
   padding: 0;
   margin: 0;
 }
@@ -248,7 +248,7 @@
   display: inline-block;
   border: 0;
   color: #000000;
-  background: #ffffff;
+  background: none;
   padding: 0;
   margin: 0;
   min-width: 100%;
