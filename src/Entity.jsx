@@ -1,86 +1,95 @@
 import React from "react";
+import ClearIcon from '@mui/icons-material/Clear';
+import DeleteForever from '@mui/icons-material/DeleteForever';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+
 import "./App.css";
 
 const Entity = ({ entityData, editEntityCallback, deleteEntityCallback }) => {
-  const updateEntity = (entityData, field, data) => {
-    if (field === "shortname") {
-      return;
-    }
 
-    console.log("updating entity", entityData, field, data);
-    const newData = { ...entityData };
-    newData[field] = data;
-    if (field === "name") {
-      console.log("name updated:", newData);
-      newData["shortname"] =
-        data.replace(" ", "").trim().toLowerCase().substring(0, 7) +
-        "#" +
-        newData["id"];
-    } else if (field === "id") {
-      newData["shortname"] =
-        newData["name"].replace(" ", "").trim().toLowerCase().substring(0, 7) +
-        "#" +
-        data;
-    }
-    editEntityCallback(newData);
-  };
+    const [shouldDelete, setShouldDelete] = React.useState(false);
 
-  return (
-    <div className={"entity"}>
-      {typeof entityData === "object" && (
-        <React.Fragment>
-          {/* Basic inputs for a 'name', 'description' and 'shortname' field */}
-          {/* whenever the user edits the form, the updateEntity function is called with the field and value sent to the function */}
-          {Object.keys(entityData).map((field, index) => {
-            if (
-              field === "enabled" ||
-              field === "type" ||
-              field === "inventory" ||
-              field === "id"
-            )
-              return null;
-            return (
-              <div key={index} className={"entityField " + field}>
-                {field === "description" ? (
-                  <textarea
-                    value={entityData[field]}
-                    onChange={(e) =>
-                      updateEntity(entityData, field, e.target.value)
+    const updateEntity = (entityData, field, data) => {
+        if (field === "shortname") {
+            return;
+        }
+        const newData = { ...entityData };
+        newData[field] = data;
+        if (field === "name") {
+            console.log("name updated:", newData);
+            newData["shortname"] =
+                data.replace(" ", "").trim().toLowerCase().substring(0, 7) +
+                "#" +
+                newData["id"];
+        } else if (field === "id") {
+            newData["shortname"] =
+                newData["name"].replace(" ", "").trim().toLowerCase().substring(0, 7) +
+                "#" +
+                data;
+        }
+        editEntityCallback(newData);
+    };
+
+    return (
+        <div className={"entity"}>
+            {!shouldDelete &&
+                <span className='entityDelete'>
+                    <button onClick={() => setShouldDelete(true)}><ClearIcon /></button>
+                </span>
+            }
+            {shouldDelete &&
+                <span className='entityDelete'>
+                    <button onClick={() => setShouldDelete(false)}><ClearIcon /></button>
+                    <button onClick={() => deleteEntityCallback(entityData)}><DeleteForever /></button>
+                </span>
+            }
+            {
+                <button
+                    className='entityVisibility'
+                    value={entityData.enabled}
+                    onClick={(e) =>
+                        updateEntity(entityData, "enabled", !entityData.enabled)
                     }
-                  />
-                ) : (
-                  <input
-                    type="text"
-                    value={entityData[field]}
-                    onChange={(e) => {
-                      e.preventDefault();
-                      updateEntity(entityData, field, e.target.value);
-                    }}
-                  />
-                )}
-              </div>
-            );
-          })}
-          {
-            <button
-              value={entityData.enabled}
-              onClick={(e) =>
-                updateEntity(entityData, "enabled", !entityData.enabled)
-              }
-            >
-              {entityData.enabled ? "Disable" : "Enable"}
-            </button>
-          }
-        </React.Fragment>
-      )}
-      {typeof entityData === "string" && (
-        <React.Fragment>
-          <p>{entityData}</p>
-        </React.Fragment>
-      )}
-      <button onClick={() => deleteEntityCallback(entityData)}>x</button>
-    </div>
-  );
+                >
+                    {entityData.enabled ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                </button>
+            }
+            {typeof entityData === "object" && (
+                <React.Fragment>
+                    {Object.keys(entityData).map((field, index) => {
+                        if (field === "enabled" || field === "type" || field === "inventory" || field === "id") return null;
+                        return (
+                            <div key={index} className={"entityField " + field}>
+                                {field === "description" ? (
+                                    <textarea
+                                        value={entityData[field]}
+                                        onChange={(e) =>
+                                            updateEntity(entityData, field, e.target.value)
+                                        }
+                                    />
+                                ) : (
+                                    <input
+                                        type="text"
+                                        value={entityData[field]}
+                                        onChange={(e) => {
+                                            e.preventDefault();
+                                            updateEntity(entityData, field, e.target.value);
+                                        }}
+                                    />
+                                )}
+                            </div>
+                        );
+                    })}
+                </React.Fragment>
+            )}
+            {typeof entityData === "string" && (
+                <React.Fragment>
+                    <p>{entityData}</p>
+                </React.Fragment>
+            )}
+        </div>
+    );
 };
 
 export default Entity;
