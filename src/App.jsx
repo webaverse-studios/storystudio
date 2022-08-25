@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { entityPrototypes, contextTypes, defaultEntityData } from "./constants";
+import { generate } from "./utils/openai_utils";
 import Header from "./Header";
 import ListBox from "./ListBox";
 import Context from "./ContextSelector";
@@ -14,44 +15,28 @@ function App() {
     console.log("entityData changed", entityData);
   }, [entityData]);
 
-  const addEntityHandler = (type) => {
-    setModalData({ type: type, mode: 'add', data: {} });
-  };
-  const addEntityCallback = (entity) => {
-    closeModal();
-    console.log("addEntityHandler", entity);
-    for (let i = 0; i < entityData[entity.type].length; i++) {
-      if (
-        entityData[entity.type][i].name == entity.name &&
-        entityData[entity.type][i].shortname == entity.shortname
-      ) {
-        return;
-      }
-    }
+  const addEntityCallback = async (entityType, data) => {
+    console.log('entityData is', entityType)
+
+    // generate new using openai callback
+    const entity = await generate(entityType, data);
 
     const newEntityData = { ...entityData };
-    newEntityData[entity.type].push(entity);
+    newEntityData[entityType].push(entity);
     setEntityData(newEntityData);
   };
-  const deleteEntityHandler = (entity) => {
-    console.log("deleteEntityHandler", entity);
+  const deleteEntityCallback = (entity) => {
+    console.log("deleteEntityCallback", entity);
     const newData = { ...entityData };
-    newData[entity.type] = entityData[entity.type].filter(
+    newData[entity.type] = entityData[entityType].filter(
       (e) => e.name !== entity.name
     );
     setEntityData(newData);
   };
-  const editEntityHandler = (entity) => {
-    if (modalIsOpen) {
-      return;
-    }
 
-    setModalData({ type: entity.type, edit: true, data: entity });
-  };
   const editEntityCallback = (oldEntity, entity) => {
     console.log("entity:", entity);
-    closeModal();
-    console.log("editEntityHandler", entity);
+    console.log("editEntityCallback", entity);
     const newData = { ...entityData };
     for (let i = 0; i < newData[entity.type].length; i++) {
       if (newData[entity.type][i] === oldEntity) {
@@ -59,9 +44,6 @@ function App() {
       }
     }
     setEntityData(newData);
-  };
-  const closeModal = () => {
-    setModalData(null);
   };
 
   const handleImport = () => {
@@ -77,7 +59,6 @@ function App() {
     setBaseData(data);
   }
 
-
   return (
     <div className="App">
       <Header importHandler={() => handleImport()} exportHandler={() => handleExport()} data={baseData} setData={setBase} />
@@ -90,9 +71,9 @@ function App() {
               type={entity.type}
               data={entityData[entity.type]}
               header={entity.type + "s"}
-              addEntityHandler={(data) => addEntityHandler(data)}
-              editEntityHandler={(data) => editEntityHandler(data)}
-              deleteEntityHandler={(data) => deleteEntityHandler(data)}
+              addEntityCallback={(data) => addEntityCallback(entity.type, data)}
+              editEntityCallback={(data) => editEntityCallback(data)}
+              deleteEntityCallback={(data) => deleteEntityCallback(data)}
             />
           );
         })}
@@ -101,9 +82,9 @@ function App() {
               type={'output'}
               data={entityData.data[currentContentType]}
               header={"output"}
-              addEntityHandler={(data) => addEntityHandler(data)}
-              editEntityHandler={(data) => editEntityHandler(data)}
-              deleteEntityHandler={(data) => deleteEntityHandler(data)}
+              addEntityCallback={(data) => addEntityCallback('output', data)}
+              editEntityCallback={(data) => editEntityCallback(data)}
+              deleteEntityCallback={(data) => deleteEntityCallback(data)}
             />
       </div>
     </div>

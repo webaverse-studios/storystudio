@@ -97,6 +97,16 @@ async function generateObject() {
   };
 }
 
+ function makeId(length) {
+  let result = '';
+  const characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+
 export async function generate(type, existingData) {
   const res = {
     type: type,
@@ -142,8 +152,7 @@ export async function generate(type, existingData) {
   if (res.name?.length > 0) {
     res.shortname =
       res.name.replace(" ", "").trim().toLowerCase() +
-      "#" +
-      getNewId(existingData[type]);
+      "#" + makeId(5);
   }
 
   return res;

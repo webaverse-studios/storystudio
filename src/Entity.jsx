@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 
-const Entity = ({ entityData, toggleEntityHandler = null, editEntityHandler, deleteEntityHandler }) => {
+const Entity = ({ entityData, toggleEntityHandler = null, editEntityCallback, deleteEntityCallback }) => {
     return (
         <div className={'entity'}>
         {typeof entityData === 'object' && (
@@ -17,8 +17,8 @@ const Entity = ({ entityData, toggleEntityHandler = null, editEntityHandler, del
             <p>{entityData}</p>
             </React.Fragment>
         )}
-        <button onClick={() => editEntityHandler(entityData)}>Edit</button>
-        <button onClick={() => deleteEntityHandler(entityData)}>Delete</button>
+        <button onClick={() => editEntityCallback(entityData)}>Edit</button>
+        <button onClick={() => deleteEntityCallback(entityData)}>Delete</button>
         </div>
     );
 }
