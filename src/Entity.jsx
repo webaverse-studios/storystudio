@@ -28,7 +28,7 @@ const Entity = ({ entityData, editEntityCallback, deleteEntityCallback }) => {
                     </div>
                 );
             })}
-            {<button value={entityData.enabled} onClick={(e) => updateEntity(entityData, 'enabled', !e.target.value)}>{entityData.enabled ? 'Disable' : 'Enable'}</button>}
+            {<button value={entityData.enabled} onClick={(e) => updateEntity(entityData, 'enabled', !entityData.enabled)}>{entityData.enabled ? 'Disable' : 'Enable'}</button>}
             </React.Fragment>
         )}
         {typeof entityData === 'string' && (
