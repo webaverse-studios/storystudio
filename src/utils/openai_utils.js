@@ -1,17 +1,24 @@
 import { Configuration, OpenAIApi } from "openai";
 
-const configuration = new Configuration({
+let openai = new OpenAIApi({
   apiKey: localStorage.getItem("openai_key") ?? "",
 });
-const openai = new OpenAIApi(configuration);
 
 export function setOpenAIKey(newKey) {
   localStorage.setItem("openai_key", newKey);
-  configuration.apiKey = newKey;
+  if(newKey.includes('-')){
+    openai = new OpenAIApi(new Configuration({
+      apiKey: newKey,
+    }));
+  }
+  console.log('openai is', openai);
+
 }
 
 export function getOpenAIKey() {
-  return configuration.apiKey;
+  console.log('openai is', openai);
+  console.log('openai.configuration is', openai.configuration);
+  return openai.configuration.apiKey;
 }
 
 async function openaiRequest(
