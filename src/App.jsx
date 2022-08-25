@@ -28,16 +28,17 @@ function App() {
   const deleteEntityCallback = (entity) => {
     console.log("deleteEntityCallback", entity);
     const newData = { ...entityData };
-    newData[entity.type] = entityData[entityType].filter(
+    newData[entity.type] = entityData[entity.type].filter(
       (e) => e.name !== entity.name
     );
     setEntityData(newData);
   };
 
-  const editEntityCallback = (oldEntity, entity) => {
+  const editEntityCallback = (entity) => {
     console.log("entity:", entity);
     console.log("editEntityCallback", entity);
     const newData = { ...entityData };
+    console.log('newData', newData);
     for (let i = 0; i < newData[entity.type].length; i++) {
       if (newData[entity.type][i] === oldEntity) {
         newData[entity.type][i] = entity;
@@ -79,10 +80,10 @@ function App() {
         })}
         <Context data={entityData.data} currentContentType={currentContentType} setCurrentContentType={setCurrentContentType} />
         <ListBox
-              type={'output'}
+              type={'dialog'}
               data={entityData.data[currentContentType]}
-              header={"output"}
-              addEntityCallback={(data) => addEntityCallback('output', data)}
+              header={"dialog"}
+              addEntityCallback={(data) => addEntityCallback('dialog', data)}
               editEntityCallback={(data) => editEntityCallback(data)}
               deleteEntityCallback={(data) => deleteEntityCallback(data)}
             />

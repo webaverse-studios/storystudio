@@ -1,9 +1,5 @@
-// List editor box
-// React component for editing a list of entities
-
 import React from "react";
 import "./App.css";
-import { useEffect } from "react";
 import Entity from "./Entity";
 
 const ListBox = ({ header, data, type = '', addEntityCallback, editEntityCallback, deleteEntityCallback }) => {
@@ -11,10 +7,10 @@ const ListBox = ({ header, data, type = '', addEntityCallback, editEntityCallbac
         <div className={'sectionWrapper ' + type + '_wrapped'}>
             <div className={'sectionHeader ' + type + '_header'}>
                 <h1>{header}</h1>
-                <button onClick={() => addEntityCallback(data)}>Add</button>
+                <button onClick={() => addEntityCallback(data)}>Generate</button>
             </div>
             <div className={'section ' + type}>
-                {data?.map((entityData, index) => {
+                {data && data.map((entityData, index) => {
                     return (
                         <Entity key={index} entityData={entityData} editEntityCallback={editEntityCallback} deleteEntityCallback={deleteEntityCallback} />
                     );

@@ -1,15 +1,34 @@
 import React from "react";
 import "./App.css";
 
-const Entity = ({ entityData, toggleEntityHandler = null, editEntityCallback, deleteEntityCallback }) => {
+const Entity = ({ entityData, editEntityCallback, deleteEntityCallback }) => {
+
+    const updateEntity = (entityData, field, data) => {
+        console.log('updating entity', entityData, field, data);
+        const newData = { ...entityData };
+        newData[field] = data;
+        editEntityCallback(newData);
+    }
+
     return (
         <div className={'entity'}>
         {typeof entityData === 'object' && (
             <React.Fragment>
-            {entityData.name && <h1>{entityData.name}</h1>}
-            {entityData.shortname && <h2>{entityData.shortname}</h2>}
-            {entityData.description && <p>{entityData.description}</p>}
-            {toggleEntityHandler && <button onClick={() => toggleEntityHandler(entityData)}>{entityData.enabled ? 'Disable' : 'Enable'}</button>}
+            {/* Basic inputs for a 'name', 'description' and 'shortname' field */}
+            {/* whenever the user edits the form, the updateEntity function is called with the field and value sent to the function */}
+            {Object.keys(entityData).map((field, index) => {
+                if(field === 'enabled' || field === 'type' || field === 'inventory') return null;
+                return (
+                    <div key={index} className={'entityField ' + field}>
+                        {field === 'description' ? (
+                            <textarea value={entityData[field]} onChange={(e) => updateEntity(entityData, field, e.target.value)} />
+                        ) : (
+                            <input type="text" value={entityData[field]} onChange={(e) => updateEntity(entityData, field, e.target.value)} />
+                        )}
+                    </div>
+                );
+            })}
+            {<button value={entityData.enabled} onClick={(e) => updateEntity(entityData, 'enabled', !e.target.value)}>{entityData.enabled ? 'Disable' : 'Enable'}</button>}
             </React.Fragment>
         )}
         {typeof entityData === 'string' && (
@@ -17,8 +36,7 @@ const Entity = ({ entityData, toggleEntityHandler = null, editEntityCallback, de
             <p>{entityData}</p>
             </React.Fragment>
         )}
-        <button onClick={() => editEntityCallback(entityData)}>Edit</button>
-        <button onClick={() => deleteEntityCallback(entityData)}>Delete</button>
+        <button onClick={() => deleteEntityCallback(entityData)}>x</button>
         </div>
     );
 }
