@@ -150,6 +150,37 @@
   width: 40%!important;
 }
 
+/* create a media query for the mobile view */
+/* scene_wrapped should be 100% width */
+@media (max-width: 1200px) {
+  .scene_wrapped {
+    width: 100%!important;
+  }
+  .character_wrapped {
+    width: 50%!important;
+  }
+  
+  .object_wrapped {
+    width: 50%!important;
+  }
+  
+  .npc_wrapped {
+    width: 50%!important;
+  }
+  
+  .mob_wrapped {
+    width: 50%!important;
+  }
+  
+  .context_wrapped {
+    width: 20%!important;
+  }
+  
+  .generator_wrapped {
+    width: 40%!important;
+  }
+}
+
 .importButton, .exportButton {
   margin: 1em;
   float: left;
