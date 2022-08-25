@@ -50,9 +50,11 @@ const Header = ({ data, setData, exportHandler, importHandler }) => {
                 <span className={'baseLabel'}>OpenAI Key: </span>
                 <input className={'baseInput'} type="password" defaultValue={getOpenAIKey()} onChange={(e) => setOpenAIKey(e.target.value)} onFocus={(e) => setOpenAIKey(e.target.value)} />
             </div>
-            <button className={'importButton'} onClick={() => importHandler()}>Import</button>
-            <button className={'exportButton'} onClick={() => exportHandler()}>Export</button>
-        </div>
+            <div className={'importExportButtons'}>
+                <button className={'importButton'} onClick={() => importHandler()}>Import</button>
+                <button className={'exportButton'} onClick={() => exportHandler()}>Export</button>
+            </div>
+            </div>
     );
 }
 

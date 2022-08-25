@@ -181,13 +181,17 @@
   }
 }
 
+.importExportButtons {
+  float: right;
+}
+
 .importButton, .exportButton {
-  margin: 1em;
-  float: left;
+  margin: .5em;
+  margin-top: 1em;
 }
 
 .openai {
-float: left;
+float: right;
 margin: 1em;
 border: 1px solid #FFFFFF;
 }
@@ -201,7 +205,7 @@ border: 1px solid #FFFFFF;
 
 
 .base {
-  float: left;
+  float: right;
   margin: 1em;
   border: 1px solid #FFFFFF;
 }
