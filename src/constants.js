@@ -2,11 +2,11 @@ export const contextTypes = ['objectComment', 'npcComment', 'mobComment', 'loadi
 
 export const entityPrototypes = [
     {
-        type: 'scene',
+        type: 'setting',
         name: 'My Scene',
-        shortname: 'scene#234',
+        shortname: 'setting#234',
         enabled: true,
-        description: 'This is a description of my scene',
+        description: 'This is a description of my setting',
         id: '234',
     },
     {
@@ -48,43 +48,97 @@ export const entityPrototypes = [
 
 export const defaultEntityData = {
     dialog: {
-        objectComment: ['example object comment'],
-        npcComment: ['example npc comment'],
-        mobComment: ['example mob comment'],
-        loadingComment: ['example loading comment'],
-        banter: ['example banter'],
-        loreExposition: ['example lore exposition'],
-        rpgDialogue: ['example rpg dialogue'],
-        reactions: ['example reactions'],
-        cutscenes: ['example cutscenes'],
-        quests: ['example quests']
+        objectComment: [{
+            action: "none",
+            emote: "normal",
+            message: "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
+            name: "Volt (Pokemon)",
+            object: "electricball#1",
+            target: "voltstadium-3.0#4"
+        }],
+        npcComment: [{
+            action: "none",
+            emote: "normal",
+            message: "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
+            name: "Volt (Pokemon)",
+            object: "electricball#1",
+            target: "voltstadium-3.0#4"
+        }],
+        mobComment: [{
+            action: "none",
+            emote: "normal",
+            message: "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
+            name: "Volt (Pokemon)",
+            object: "electricball#1",
+            target: "voltstadium-3.0#4"
+        }],
+        loadingComment: [{
+            action: "none",
+            emote: "normal",
+            message: "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
+            name: "Volt (Pokemon)",
+            object: "electricball#1",
+            target: "voltstadium-3.0#4"
+        }],
+        banter: [{
+            action: "none",
+            emote: "normal",
+            message: "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
+            name: "Volt (Pokemon)",
+            object: "electricball#1",
+            target: "voltstadium-3.0#4"
+        }],
+        loreExposition: [{
+            action: "none",
+            emote: "normal",
+            message: "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
+            name: "Volt (Pokemon)",
+            object: "electricball#1",
+            target: "voltstadium-3.0#4"
+        }],
+        rpgDialogue: [{
+            action: "none",
+            emote: "normal",
+            message: "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
+            name: "Volt (Pokemon)",
+            object: "electricball#1",
+            target: "voltstadium-3.0#4"
+        }],
+        reactions: [{
+            action: "none",
+            emote: "normal",
+            message: "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
+            name: "Volt (Pokemon)",
+            object: "electricball#1",
+            target: "voltstadium-3.0#4"
+        }],
+        cutscenes: [{
+            action: "none",
+            emote: "normal",
+            message: "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
+            name: "Volt (Pokemon)",
+            object: "electricball#1",
+            target: "voltstadium-3.0#4"
+        }],
+        quests: [{
+            action: "none",
+            emote: "normal",
+            message: "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
+            name: "Volt (Pokemon)",
+            object: "electricball#1",
+            target: "voltstadium-3.0#4"
+        }]
     },
-    scene: [{
-        type: 'scene',
+    setting: [{
+        type: 'setting',
         name: 'My Scene',
-        shortname: 'scene#234',
+        shortname: 'setting#234',
         enabled: true,
-        description: 'This is a description of my scene',
+        description: 'This is a description of my setting',
         inventory: [],
         id: '234',
     }],
     object: [{
-        type: 'object',
-        name: 'My Object',
-        shortname: 'object#234',
-        enabled: true,
-        description: 'This is a description of my object',
-        id: '234',
-    },
-    {
-        type: 'object',
-        name: 'My Object',
-        shortname: 'object#234',
-        enabled: true,
-        description: 'This is a description of my object',
-        id: '234',
-    },
-    {
         type: 'object',
         name: 'My Object',
         shortname: 'object#234',
@@ -109,53 +163,8 @@ export const defaultEntityData = {
         description: 'This is a description of my mob',
         inventory: [],
         id: '234',
-    },
-    {
-        type: 'mob',
-        name: 'My Mob',
-        shortname: 'mob#234',
-        enabled: true,
-        description: 'This is a description of my mob',
-        inventory: [],
-        id: '234',
-    },
-    {
-        type: 'mob',
-        name: 'My Mob',
-        shortname: 'mob#234',
-        enabled: true,
-        description: 'This is a description of my mob',
-        inventory: [],
-        id: '234',
     }],
     npc: [{
-        type: 'npc',
-        name: 'My NPC',
-        shortname: 'npc#234',
-        enabled: true,
-        description: 'This is a description of my NPC',
-        inventory: [],
-        id: '234',
-    },
-    {
-        type: 'npc',
-        name: 'My NPC',
-        shortname: 'npc#234',
-        enabled: true,
-        description: 'This is a description of my NPC',
-        inventory: [],
-        id: '234',
-    },
-    {
-        type: 'npc',
-        name: 'My NPC',
-        shortname: 'npc#234',
-        enabled: true,
-        description: 'This is a description of my NPC',
-        inventory: [],
-        id: '234',
-    },
-    {
         type: 'npc',
         name: 'My NPC',
         shortname: 'npc#234',

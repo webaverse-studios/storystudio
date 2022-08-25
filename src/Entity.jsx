@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ClearIcon from '@mui/icons-material/Clear';
 import DeleteForever from '@mui/icons-material/DeleteForever';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -6,7 +6,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 import "./App.css";
 
-const Entity = ({ entityData, editEntityCallback, deleteEntityCallback }) => {
+const Entity = ({ entityData, editEntityCallback, deleteEntityCallback, showLabels = false }) => {
 
     const [shouldDelete, setShouldDelete] = React.useState(false);
 
@@ -30,7 +30,11 @@ const Entity = ({ entityData, editEntityCallback, deleteEntityCallback }) => {
         }
         editEntityCallback(newData);
     };
-
+    useEffect(() => {
+        if(entityData){
+            console.log(entityData);
+        }
+        }, [entityData]);
     return (
         <div className={"entity"}>
             {!shouldDelete &&
@@ -41,7 +45,7 @@ const Entity = ({ entityData, editEntityCallback, deleteEntityCallback }) => {
             {shouldDelete &&
                 <span className='entityDelete'>
                     <button onClick={() => setShouldDelete(false)}><ClearIcon /></button>
-                    <button onClick={() => deleteEntityCallback(entityData)}><DeleteForever /></button>
+                    <button onClick={() => deleteEntityCallback(entityData) || setShouldDelete(false)}><DeleteForever /></button>
                 </span>
             }
             {
@@ -58,10 +62,11 @@ const Entity = ({ entityData, editEntityCallback, deleteEntityCallback }) => {
             {typeof entityData === "object" && (
                 <React.Fragment>
                     {Object.keys(entityData).map((field, index) => {
-                        if (field === "enabled" || field === "type" || field === "inventory" || field === "id") return null;
+                        if (field === "enabled" || field === "type" || field === "inventory" || field === "id" || field === "hash" || field === "nonce") return null;
                         return (
                             <div key={index} className={"entityField " + field}>
-                                {field === "description" ? (
+                            {showLabels && field !== 'name' && field !== 'message' && <label style={{display: 'inline'}}>{field}</label>}
+                                {field === "description" || field === "message" ? (
                                     <textarea
                                         value={entityData[field]}
                                         onChange={(e) =>

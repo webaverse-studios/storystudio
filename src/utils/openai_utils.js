@@ -55,14 +55,14 @@ async function generateScene(funcs) {
 
 async function generateCharacter(funcs) {
   const characterPrompt = funcs.createCharacterPrompt();
-
+  console.log('characterPrompt is', characterPrompt);
   const resp = await openaiRequest(characterPrompt, [".,\n", "Character:"]);
   const lines = resp.split("\n");
   const inventory =
     lines.length > 2 ? lines[2].replace("Inventory: ", "").trim() : "";
   return {
-    name: lines[0].trim(),
-    description: lines[1].replace("Description: ", "").trim(),
+    name: lines[0].trim().replaceAll('"',''),
+    description: lines[1].replace("Description: ", "").trim().replaceAll('"',''),
     inventory: inventory,
   };
 }
@@ -80,41 +80,39 @@ async function generateObject(funcs) {
 
 const generateLore = async (data, funcs) => {
   const _resp = [];
-  for (let i = 0; i < data["character"].length; i++) {
-    const lorePrompt = funcs.makeLorePrompt({
-      settings: [],
-      characters: data["character"],
-      messages: [],
-      objects: data["object"],
-      dstCharacter: data["character"][i],
-    });
+  console.log('data is', data);
+  console.log('data["setting"] is', data["setting"]);
+  const lorePrompt = funcs.makeLorePrompt({
+    settings: data["setting"],
+    characters: data["character"],
+    messages: [],
+    objects: data["object"],
+    dstCharacter: data["character"][Math.floor(Math.random() * data["character"].length)],
+  });
 
-    const resp = await openaiRequest(
-      lorePrompt,
-      ["Input:", "Output:"],
-      "davinci",
-      1,
-      1,
-      1,
-      1,
-      256
-    );
+  console.log('lorePrompt is', lorePrompt);
 
-    const battleDialoguePrompt = funcs.makeBattleIntroductionPrompt({
-      name: data["character"][i].name,
-      bio: data["character"][i].description,
-    });
+  const resp = await openaiRequest(
+    lorePrompt,
+    ["Input:", "Output:"]
+  );
 
-    const resp2 = await openaiRequest(
-      battleDialoguePrompt,
-      funcs.makeBattleIntroductionStop()
-    );
+  const battleDialoguePrompt = ''
+  // funcs.makeBattleIntroductionPrompt({
+  //   name: data["character"][i].name,
+  //   bio: data["character"][i].description,
+  // });
 
-    const loreResp = funcs.parseLoreResponses(resp);
-    for (let i = 0; i < loreResp.length; i++) {
-      loreResp[i].rpgDialogue = resp2;
-      _resp.push(loreResp[i]);
-    }
+  // const resp2 = await openaiRequest(
+  //   battleDialoguePrompt,
+  //   funcs.makeBattleIntroductionStop()
+  // );
+
+  const loreResp = funcs.parseLoreResponses(resp);
+  console.log('loreResp', loreResp)
+  for (let i = 0; i < loreResp.length; i++) {
+    // loreResp[i].rpgDialogue = resp2;
+    _resp.push(loreResp[i]);
   }
 
   return _resp;
@@ -131,7 +129,6 @@ function makeId(length) {
 }
 
 export async function generate(type, data, baseData) {
-  console.log('baseData is', baseData);
   if (
     !baseData ||
     !baseData.funcs ||
@@ -151,7 +148,7 @@ export async function generate(type, data, baseData) {
   };
   let resp = undefined;
   switch (type) {
-    case "scene":
+    case "setting":
       resp = await generateScene(baseData.funcs);
       res.name = resp.name;
       res.description = resp.description;
@@ -179,10 +176,11 @@ export async function generate(type, data, baseData) {
       res.description = resp.description;
       res.inventory = resp.inventory;
       break;
-    case "data":
+    case "dialog":
       resp = await generateLore(data, baseData.funcs);
       return resp;
     default:
+      console.log('unknown type', type);
       return null;
   }
 

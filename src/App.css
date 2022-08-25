@@ -105,7 +105,7 @@
   vertical-align: top;
 }
 
-.scene_wrapped {
+.setting_wrapped {
   width: 66.66% !important;
 }
 
@@ -188,6 +188,8 @@
 }
 
 .entity {
+  font-size: .8em;
+  line-height: 1em;
   text-align: left;
   margin: 0.5em;
   border-bottom: 1px white solid;
@@ -225,12 +227,22 @@
 }
 
 .entityField {
-  width: calc(100% - 5em);
+  width: calc(100% - 4em);
   display: inline-block;
-  max-width: calc(100% - 5em);
+  min-width: calc(100% - 4em);
+  max-width: calc(100% - 4em);
 }
 
-.entityField input,
+.entityField input {
+  width: 85%;
+  display: inline-block;
+  border: 0;
+  color: #fff;
+  background: #000;
+  padding: 0;
+  margin: 0;
+}
+
 .entityField textarea {
   width: 100%;
   display: inline-block;
@@ -239,7 +251,15 @@
   background: #000;
   padding: 0;
   margin: 0;
+  min-width: 100%;
   max-width: 100%;
+}
+
+.entityField label {
+  width: calc(20% - 1em);
+  margin-right: .5em;
+  font-weight: bold;
+  display: inline-block;
 }
 
 /* hide all border and style details that happen to the entity on focus, right now there is a white border */
@@ -247,10 +267,6 @@
 .entityField textarea:focus {
   outline: none;
   border: 0;
-}
-
-.entityField textarea:focus {
-  height: 5em;
 }
 
 .entityDelete {
@@ -278,9 +294,9 @@
 }
 
 /* create a media query for the mobile view */
-/* scene_wrapped should be 100% width */
+/* setting_wrapped should be 100% width */
 @media (max-width: 1200px) {
-  .scene_wrapped {
+  .setting_wrapped {
     width: 100% !important;
   }
   .character_wrapped {

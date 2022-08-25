@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 import Entity from "./Entity";
 
-const ListBox = ({ header, data, type = '', addEntityCallback, editEntityCallback, deleteEntityCallback }) => {
+const ListBox = ({ header, data, type = '', addEntityCallback, editEntityCallback, deleteEntityCallback, showLabels = false }) => {
     return (
         <div className={'sectionWrapper ' + type + '_wrapped'}>
             <div className={'sectionHeader ' + type + '_header'}>
@@ -12,7 +12,7 @@ const ListBox = ({ header, data, type = '', addEntityCallback, editEntityCallbac
             <div className={'section ' + type}>
                 {data && data.map((entityData, index) => {
                     return (
-                        <Entity key={index} entityData={entityData} editEntityCallback={editEntityCallback} deleteEntityCallback={deleteEntityCallback} />
+                        <Entity key={index} entityData={entityData} editEntityCallback={editEntityCallback} deleteEntityCallback={deleteEntityCallback} showLabels={showLabels} />
                     );
                 })
                 }

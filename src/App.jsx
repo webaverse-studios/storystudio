@@ -12,6 +12,15 @@ import {
   colors,
 } from "unique-names-generator";
 
+function makeId(length) {
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
 
 if (!localStorage.getItem('entityData') || localStorage.getItem('entityData') === '[object Object]') {
   localStorage.setItem('entityData', JSON.stringify(defaultEntityData));
@@ -23,7 +32,7 @@ function App() {
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
   const [baseData, setBaseData] = useState({
     base: null,
-    url: "https://webaverse.github.io/lore/lore-model.js",
+    url: '/lore-model.js', // "https://webaverse.github.io/lore/lore-model.js",
     type: "url",
     funcs: {},
   });
@@ -35,7 +44,12 @@ function App() {
   const addEntityCallback = async (entityType, data) => {
     console.log('calling baseData', baseData)
     // generate new using openai callback
-    const entity = await generate(entityType, data, baseData);
+    let entity = await generate(entityType, data, baseData);
+    if(entity[0]) entity = entity[0];
+    console.log('generate entity', entity);
+    if(!entity.id) {
+      entity.id = makeId(5);
+    }
     if (!entity || entity === undefined) {
       return;
     }
@@ -48,11 +62,20 @@ function App() {
 
     setEntityData(newEntityData);
   };
-  const deleteEntityCallback = (entity) => {
+  const deleteEntityCallback = (entity, dialog) => {
+    console.log('entity', entity)
     const newData = { ...entityData };
-    newData[entity.type] = entityData[entity.type].filter(
-      (e) => e.id !== entity.id
-    );
+    console.log('entityData', entityData);
+    console.log('currentContentType', currentContentType)
+    console.log('entityData["dialog"][entity.type]', entityData['dialog'][currentContentType])
+    console.log('entityData[entity.type]', entityData[entity.type]);
+
+    if(dialog){
+      newData['dialog'][currentContentType] = entityData['dialog'][currentContentType].filter(e => e.id && e.id !== entity.id);
+    } else {
+      newData[entity.type] = entityData[entity.type].filter(e => e.id !== entity.id);
+    }
+
     setEntityData(newData);
   };
 
@@ -123,9 +146,10 @@ function App() {
           type={"dialog"}
           data={entityData.dialog[currentContentType]}
           header={"dialog"}
-          addEntityCallback={(data) => addEntityCallback("dialog", data)}
+          addEntityCallback={(data) => { console.log('entityData is', entityData); addEntityCallback("dialog", entityData)}}
           editEntityCallback={(data) => editEntityCallback(data)}
-          deleteEntityCallback={(data) => deleteEntityCallback(data)}
+          deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
+          showLabels={true}
         />
       </div>
     </div>
