@@ -246,6 +246,7 @@
 
 .entityField textarea {
   width: 100%;
+  height: 1em;
   display: inline-block;
   border: 0;
   color: #000000;
