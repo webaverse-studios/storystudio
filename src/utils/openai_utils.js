@@ -41,7 +41,6 @@ async function openaiRequest(
     temperature: temperature,
     max_tokens: max_tokens,
   });
-  console.log(completion);
   if (completion.data.choices?.length > 0) {
     return completion.data.choices[0].text;
   } else {
@@ -62,7 +61,7 @@ async function generateScene(funcs) {
 
 async function generateCharacter(funcs) {
   const characterPrompt = funcs.createCharacterPrompt();
-  console.log('characterPrompt is', characterPrompt);
+  //console.log('characterPrompt is', characterPrompt);
   const resp = await openaiRequest(characterPrompt, [".,\n", "Character:"]);
   const lines = resp.split("\n");
   const inventory =
@@ -87,8 +86,8 @@ async function generateObject(funcs) {
 
 const generateLore = async (data, funcs) => {
   const _resp = [];
-  console.log('data is', data);
-  console.log('data["setting"] is', data["setting"]);
+  //console.log('data is', data);
+  //console.log('data["setting"] is', data["setting"]);
   const lorePrompt = funcs.makeLorePrompt({
     settings: data["setting"],
     characters: data["character"],
@@ -97,7 +96,7 @@ const generateLore = async (data, funcs) => {
     dstCharacter: data["character"][Math.floor(Math.random() * data["character"].length)],
   });
 
-  console.log('lorePrompt is', lorePrompt);
+  //console.log('lorePrompt is', lorePrompt);
 
   const resp = await openaiRequest(
     lorePrompt,
@@ -116,7 +115,7 @@ const generateLore = async (data, funcs) => {
   // );
 
   const loreResp = funcs.parseLoreResponses(resp);
-  console.log('loreResp', loreResp)
+  //console.log('loreResp', loreResp)
   for (let i = 0; i < loreResp.length; i++) {
     // loreResp[i].rpgDialogue = resp2;
     _resp.push(loreResp[i]);
@@ -141,7 +140,6 @@ export async function generate(type, data, baseData) {
     !baseData.funcs ||
     Object.entries(baseData.funcs).length === 0
   ) {
-    console.log("empty base data");
     return null;
   }
 
