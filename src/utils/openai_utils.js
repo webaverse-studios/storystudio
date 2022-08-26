@@ -1,18 +1,21 @@
 import { Configuration, OpenAIApi } from "openai";
 
-let openai = new OpenAIApi(new Configuration({
-  apiKey: localStorage.getItem("openai_key") ?? "",
-}));
+let openai = new OpenAIApi(
+  new Configuration({
+    apiKey: localStorage.getItem("openai_key") ?? "",
+  })
+);
 
 export function setOpenAIKey(newKey) {
   localStorage.setItem("openai_key", newKey);
-  if(newKey.includes('-')){
-    openai = new OpenAIApi(new Configuration({
-      apiKey: newKey,
-    }));
+  if (newKey.includes("-")) {
+    openai = new OpenAIApi(
+      new Configuration({
+        apiKey: newKey,
+      })
+    );
   }
   //console.log('openai is', openai);
-
 }
 
 export function getOpenAIKey() {
@@ -26,10 +29,11 @@ async function openaiRequest(
   stop,
   model = "davinci",
   top_p = 1,
-  frequency_penalty = 0.8,
-  presence_penalty = 0.8,
-  temperature = 0.8,
-  max_tokens = 128
+  frequency_penalty = 1.5,
+  presence_penalty = 1.5,
+  temperature = 1,
+  max_tokens = 256,
+  best_off = 5
 ) {
   const completion = await openai.createCompletion({
     model: model,
@@ -40,6 +44,7 @@ async function openaiRequest(
     presence_penalty: presence_penalty,
     temperature: temperature,
     max_tokens: max_tokens,
+    best_of: best_off,
   });
   if (completion.data.choices?.length > 0) {
     return completion.data.choices[0].text;
@@ -67,8 +72,11 @@ async function generateCharacter(funcs) {
   const inventory =
     lines.length > 2 ? lines[2].replace("Inventory: ", "").trim() : "";
   return {
-    name: lines[0].trim().replaceAll('"',''),
-    description: lines[1].replace("Description: ", "").trim().replaceAll('"',''),
+    name: lines[0].trim().replaceAll('"', ""),
+    description: lines[1]
+      .replace("Description: ", "")
+      .trim()
+      .replaceAll('"', ""),
     inventory: inventory,
   };
 }
@@ -76,7 +84,7 @@ async function generateCharacter(funcs) {
 async function generateObject(funcs) {
   const objectPrompt = funcs.createObjectPrompt();
 
-  console.log(objectPrompt)
+  console.log(objectPrompt);
   const resp = await openaiRequest(objectPrompt, [".,\n", "Object:"]);
   const lines = resp.split("\n");
   return {
@@ -94,17 +102,15 @@ const generateLore = async (data, funcs) => {
     characters: data["character"],
     messages: [],
     objects: data["object"],
-    dstCharacter: data["character"][Math.floor(Math.random() * data["character"].length)],
+    dstCharacter:
+      data["character"][Math.floor(Math.random() * data["character"].length)],
   });
 
   //console.log('lorePrompt is', lorePrompt);
 
-  const resp = await openaiRequest(
-    lorePrompt,
-    ["Input:", "Output:"]
-  );
+  const resp = await openaiRequest(lorePrompt, ["Input:", "Output:"]);
 
-  const battleDialoguePrompt = ''
+  const battleDialoguePrompt = "";
   // funcs.makeBattleIntroductionPrompt({
   //   name: data["character"][i].name,
   //   bio: data["character"][i].description,
@@ -186,7 +192,7 @@ export async function generate(type, data, baseData) {
       resp = await generateLore(data, baseData.funcs);
       return resp;
     default:
-      console.log('unknown type', type);
+      console.log("unknown type", type);
       return null;
   }
 
