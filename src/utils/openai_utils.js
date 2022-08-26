@@ -11,13 +11,13 @@ export function setOpenAIKey(newKey) {
       apiKey: newKey,
     }));
   }
-  console.log('openai is', openai);
+  //console.log('openai is', openai);
 
 }
 
 export function getOpenAIKey() {
-  console.log('openai is', openai);
-  console.log('openai.configuration is', openai.configuration);
+  //console.log('openai is', openai);
+  //console.log('openai.configuration is', openai.configuration);
   return openai.configuration.apiKey;
 }
 

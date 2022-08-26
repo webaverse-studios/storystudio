@@ -46,7 +46,7 @@ const Header = ({ data, setData, exportHandler, importHandler }) => {
         if (importLineIndex !== -1) {
           contentArray[importLineIndex] = lore_header;
           content = contentArray.join("\n");
-          console.log("injected content", content);
+          //console.log("injected content", content);
           // convert content back to a blob with the x-javascript base64 type
           blob = new Blob([content], {
             type: "application/x-javascript;base64",

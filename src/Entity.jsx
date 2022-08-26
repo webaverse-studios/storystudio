@@ -86,20 +86,18 @@ const Entity = ({
 
     updateEntity(entityData, "inventory", _inv.join(", "));
   };
-  const inventoryRender = (inventory) => {
+  const inventoryRender = (inventory, _key) => {
     const _inv =
       inventory && inventory?.length > 0 ? inventory.split(", ") : [];
     return (
-      <div>
+      <div key={_key}>
         <br />
         <br />
         {Object.keys(_inv).map((field, index) => {
-          console.log("field:", _inv[field]);
           return (
-            <div>
+            <div key={index}>
               <input
                 type="text"
-                key={index}
                 value={_inv[field]}
                 onChange={(e) => {
                   e.preventDefault();
@@ -162,7 +160,7 @@ const Entity = ({
                 entityData["type"] === "npc" ||
                 entityData["type"] === "mob")
             ) {
-              return inventoryRender(entityData["inventory"]);
+              return inventoryRender(entityData["inventory"], index);
             } else if (
               field === "enabled" ||
               field === "type" ||
