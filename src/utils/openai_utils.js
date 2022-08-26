@@ -196,6 +196,13 @@ export async function generate(type, data, baseData) {
       return null;
   }
 
+  for(let i = 0; i < data[type].length;i++) {
+    if (data[type].name === res.name) {
+      return generate(type, data, data)
+      //found a duplicate, so generate a new name
+    }
+  }
+
   if (res.name?.length > 0) {
     res.id = makeId(5);
     res.shortname =
