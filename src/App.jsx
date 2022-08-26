@@ -190,9 +190,9 @@ function App() {
           type={"dialog"}
           data={entityData.dialog[currentContentType]}
           header={"dialog"}
-          addEntityCallback={(data) => {
+          addEntityCallback={(data, setGenerating) => {
             console.log("entityData is", entityData);
-            addEntityCallback("dialog", entityData);
+            addEntityCallback("dialog", entityData, setGenerating);
           }}
           editEntityCallback={(data) => editEntityCallback(data)}
           deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
