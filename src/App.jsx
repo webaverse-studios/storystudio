@@ -66,6 +66,7 @@ function App() {
         entity.id = makeId(5);
       }
       if (!entity || entity === undefined) {
+        addEntityCallback(entityType, data, setGenerating, tries);
         return;
       }
 
