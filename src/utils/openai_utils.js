@@ -74,8 +74,9 @@ async function generateCharacter(funcs) {
 }
 
 async function generateObject(funcs) {
-  const objectPrompt = funcs.createObjectPrompt;
+  const objectPrompt = funcs.createObjectPrompt();
 
+  console.log(objectPrompt)
   const resp = await openaiRequest(objectPrompt, [".,\n", "Object:"]);
   const lines = resp.split("\n");
   return {

@@ -57,7 +57,7 @@ function App() {
     tries++;
     setGenerating(true);
     try {
-      console.log("calling baseData", baseData);
+      //console.log("calling baseData", baseData);
       // generate new using openai callback
       let entity = await generate(entityType, data, baseData);
       if (entity[0]) entity = entity[0];
