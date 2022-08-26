@@ -44,15 +44,17 @@ function App() {
     localStorage.setItem("entityData", JSON.stringify(entityData));
   }, [entityData]);
 
-  const addEntityCallback = async (entityType, data, setGenerating) => {
-    console.log(
-      "entityType:",
-      entityType,
-      "data:",
-      data,
-      "setGenerating:",
-      setGenerating
-    );
+  const addEntityCallback = async (
+    entityType,
+    data,
+    setGenerating,
+    tries = 0
+  ) => {
+    if (tries > 5) {
+      console.error("Could not generate entity");
+      return;
+    }
+    tries++;
     setGenerating(true);
     try {
       console.log("calling baseData", baseData);
@@ -79,6 +81,7 @@ function App() {
       setEntityData(newEntityData);
     } catch (e) {
       console.error(e);
+      addEntityCallback(entityType, data, setGenerating, tries);
     }
     setGenerating(false);
   };
