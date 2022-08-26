@@ -22,10 +22,13 @@ function makeId(length) {
   return result;
 }
 
-if (!localStorage.getItem('entityData') || localStorage.getItem('entityData') === '[object Object]') {
-  localStorage.setItem('entityData', JSON.stringify(defaultEntityData));
+if (
+  !localStorage.getItem("entityData") ||
+  localStorage.getItem("entityData") === "[object Object]"
+) {
+  localStorage.setItem("entityData", JSON.stringify(defaultEntityData));
 }
-const storedEntityData = JSON.parse(localStorage.getItem('entityData'));
+const storedEntityData = JSON.parse(localStorage.getItem("entityData"));
 
 function App() {
   const [entityData, setEntityData] = useState(storedEntityData);
@@ -38,42 +41,66 @@ function App() {
   });
 
   useEffect(() => {
-    localStorage.setItem('entityData', JSON.stringify(entityData));
-  }, [entityData])
+    localStorage.setItem("entityData", JSON.stringify(entityData));
+  }, [entityData]);
 
-  const addEntityCallback = async (entityType, data) => {
-    console.log('calling baseData', baseData)
-    // generate new using openai callback
-    let entity = await generate(entityType, data, baseData);
-    if (entity[0]) entity = entity[0];
-    console.log('generate entity', entity);
-    if (!entity.id) {
-      entity.id = makeId(5);
+  const addEntityCallback = async (entityType, data, setGenerating) => {
+    console.log(
+      "entityType:",
+      entityType,
+      "data:",
+      data,
+      "setGenerating:",
+      setGenerating
+    );
+    setGenerating(true);
+    try {
+      console.log("calling baseData", baseData);
+      // generate new using openai callback
+      let entity = await generate(entityType, data, baseData);
+      if (entity[0]) entity = entity[0];
+      console.log("generate entity", entity);
+      if (!entity.id) {
+        entity.id = makeId(5);
+      }
+      if (!entity || entity === undefined) {
+        return;
+      }
+
+      const newEntityData = { ...entityData };
+
+      const array =
+        entityType === "dialog"
+          ? newEntityData[entityType][currentContentType]
+          : newEntityData[entityType];
+      array.push(entity);
+      newEntityData[entityType][currentContentType] = array;
+
+      setEntityData(newEntityData);
+    } catch (e) {
+      console.error(e);
     }
-    if (!entity || entity === undefined) {
-      return;
-    }
-
-    const newEntityData = { ...entityData };
-
-    const array = entityType === 'dialog' ? newEntityData[entityType][currentContentType] : newEntityData[entityType];
-    array.push(entity);
-    newEntityData[entityType][currentContentType] = array;
-
-    setEntityData(newEntityData);
+    setGenerating(false);
   };
   const deleteEntityCallback = (entity, dialog) => {
-    console.log('entity', entity)
+    console.log("entity", entity);
     const newData = { ...entityData };
-    console.log('entityData', entityData);
-    console.log('currentContentType', currentContentType)
-    console.log('entityData["dialog"][entity.type]', entityData['dialog'][currentContentType])
-    console.log('entityData[entity.type]', entityData[entity.type]);
+    console.log("entityData", entityData);
+    console.log("currentContentType", currentContentType);
+    console.log(
+      'entityData["dialog"][entity.type]',
+      entityData["dialog"][currentContentType]
+    );
+    console.log("entityData[entity.type]", entityData[entity.type]);
 
     if (dialog) {
-      newData['dialog'][currentContentType] = entityData['dialog'][currentContentType].filter(e => e.id && e.id !== entity.id);
+      newData["dialog"][currentContentType] = entityData["dialog"][
+        currentContentType
+      ].filter((e) => e.id && e.id !== entity.id);
     } else {
-      newData[entity.type] = entityData[entity.type].filter(e => e.id !== entity.id);
+      newData[entity.type] = entityData[entity.type].filter(
+        (e) => e.id !== entity.id
+      );
     }
 
     setEntityData(newData);
@@ -82,15 +109,15 @@ function App() {
   const editEntityCallback = (entity) => {
     let newData = { ...entityData };
 
-    console.log('gotta edit dis entity', entity);
+    console.log("gotta edit dis entity", entity);
 
     if (entity.message !== undefined) {
-      newData['dialog'][currentContentType]
+      newData["dialog"][currentContentType];
 
-      const entityIndex = newData['dialog'][currentContentType].findIndex(
+      const entityIndex = newData["dialog"][currentContentType].findIndex(
         (e) => e.id === entity.id
       );
-      newData['dialog'][currentContentType][entityIndex] = entity;
+      newData["dialog"][currentContentType][entityIndex] = entity;
     } else {
       const entityIndex = newData[entity.type].findIndex(
         (e) => e.id === entity.id
@@ -142,7 +169,9 @@ function App() {
               type={entity.type}
               data={entityData[entity.type]}
               header={entity.type + "s"}
-              addEntityCallback={(data) => addEntityCallback(entity.type, data)}
+              addEntityCallback={(data, setGenerating) =>
+                addEntityCallback(entity.type, data, setGenerating)
+              }
               editEntityCallback={(data) => editEntityCallback(data)}
               deleteEntityCallback={(data) => deleteEntityCallback(data)}
             />
@@ -157,7 +186,10 @@ function App() {
           type={"dialog"}
           data={entityData.dialog[currentContentType]}
           header={"dialog"}
-          addEntityCallback={(data) => { console.log('entityData is', entityData); addEntityCallback("dialog", entityData) }}
+          addEntityCallback={(data) => {
+            console.log("entityData is", entityData);
+            addEntityCallback("dialog", entityData);
+          }}
           editEntityCallback={(data) => editEntityCallback(data)}
           deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
           showLabels={true}

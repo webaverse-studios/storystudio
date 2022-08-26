@@ -6,7 +6,7 @@ const ListBox = ({ header, data, type = '', addEntityCallback, editEntityCallbac
     const [generating, setGenerating] = React.useState(false);
     useEffect(() => {
         // if generating is true, set timer to check if the length of data is more than it was before
-        if (generating) {
+        /*if (generating) {
             const dataLength = data.length;
             let elapsedTime = 0;
             const maxTime = 5000;
@@ -17,13 +17,13 @@ const ListBox = ({ header, data, type = '', addEntityCallback, editEntityCallbac
                 }
                 elapsedTime += 500;
             }, 500);
-        }
+        }*/
     }, [generating]);
     return (
         <div className={'sectionWrapper ' + type + '_wrapped'}>
             <div className={'sectionHeader ' + type + '_header'}>
                 <h1>{header}</h1>
-                <button onClick={() => addEntityCallback(data) | setGenerating(true) }>{!generating ? 'Generate' : 'Generating...'}</button>
+                <button onClick={() => addEntityCallback(data, setGenerating)  }>{!generating ? 'Generate' : 'Generating...'}</button>
             </div>
             <div className={'section ' + type}>
                 {data && data.map((entityData, index) => {
