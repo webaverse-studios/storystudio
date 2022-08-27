@@ -158,7 +158,7 @@ function LoreBase({data, setData, examples, setExamples, exportHandler, importHa
     localStorage.setItem('codeEditorData', value);
   }
 
-  const exportFile = async () => {
+  const saveLoreFile = async () => {
     const file = await handleSave();
     // save the file to disk as lore-model.js
     const link = document.createElement("a");
@@ -288,19 +288,11 @@ function LoreBase({data, setData, examples, setExamples, exportHandler, importHa
         </button>
         <button
           className={"baseButton baseButtonFile"}
-          onClick={() => exportFile()}
+          onClick={() => saveLoreFile()}
         >
           [Export]
         </button>
       </div>
-      <div className={"importExportButtons"}>
-      <button className={"importButton"} onClick={() => importJson()}>
-        Import
-      </button>
-      <button className={"exportButton"} onClick={() => exportHandler()}>
-        Export
-      </button>
-    </div>
     <div className="sections">
       {/*<Context
         data={examples}
