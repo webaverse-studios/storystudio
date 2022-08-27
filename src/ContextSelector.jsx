@@ -1,19 +1,19 @@
 import React from "react";
 import "./App.css"
-import { contextTypes } from "./constants";
 
 const ContextSelector = ({ data, currentContentType, setCurrentContentType }) => {
+    console.log('ContextSelector is', data)
     return (
         <div className="sectionWrapper context_wrapped">
             <div className="context-group">
-                {contextTypes.map((type, index) => {
+                {Object.keys(data).map((type, index) => {
                     return (
                         <button
                             key={index}
                             onClick={(e) => setCurrentContentType(type)}
                             className={'context-group-button' + (type === currentContentType ? ' context-group-button-active' : ' context-group-button-inactive')}
                         >
-                            {type}|{data[type]}
+                        {type}|{console.log(data[currentContentType]) || data[currentContentType] && Object.keys(data[currentContentType]).length}
                         </button>
                     )
                 }

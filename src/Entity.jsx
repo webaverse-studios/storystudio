@@ -14,7 +14,7 @@ import {
 import "./App.css";
 
 const Entity = ({
-  ingredients,
+  data,
   editEntityCallback,
   deleteEntityCallback,
   showLabels = false,
@@ -49,17 +49,17 @@ const Entity = ({
     });
 
     updateEntity(
-      ingredients,
+      data,
       "inventory",
-      ingredients["inventory"] && ingredients["inventory"]?.length > 0
-        ? ingredients["inventory"] + ", " + newItem
+      data["inventory"] && data["inventory"]?.length > 0
+        ? data["inventory"] + ", " + newItem
         : newItem
     );
   };
   const removeInventoryItem = (item) => {
     const _inv =
-      ingredients["inventory"] && ingredients["inventory"]?.length > 0
-        ? ingredients["inventory"].split(", ")
+      data["inventory"] && data["inventory"]?.length > 0
+        ? data["inventory"].split(", ")
         : [];
 
     for (let i = 0; i < _inv.length; i++) {
@@ -69,12 +69,12 @@ const Entity = ({
       }
     }
 
-    updateEntity(ingredients, "inventory", _inv.join(", "));
+    updateEntity(data, "inventory", _inv.join(", "));
   };
   const updateInventoryItem = (oldName, newName) => {
     const _inv =
-      ingredients["inventory"] && ingredients["inventory"]?.length > 0
-        ? ingredients["inventory"].split(", ")
+      data["inventory"] && data["inventory"]?.length > 0
+        ? data["inventory"].split(", ")
         : [];
 
     for (let i = 0; i < _inv.length; i++) {
@@ -84,7 +84,7 @@ const Entity = ({
       }
     }
 
-    updateEntity(ingredients, "inventory", _inv.join(", "));
+    updateEntity(data, "inventory", _inv.join(", "));
   };
   const inventoryRender = (inventory, _key) => {
     const _inv =
@@ -133,7 +133,7 @@ const Entity = ({
           </button>
           <button
             onClick={() =>
-              deleteEntityCallback(ingredients) || setShouldDelete(false)
+              deleteEntityCallback(data) || setShouldDelete(false)
             }
           >
             <DeleteForever />
@@ -143,24 +143,24 @@ const Entity = ({
       {
         <button
           className="entityVisibility"
-          value={ingredients.enabled}
+          value={data.enabled}
           onClick={(e) =>
-            updateEntity(ingredients, "enabled", !ingredients.enabled)
+            updateEntity(data, "enabled", !data.enabled)
           }
         >
-          {ingredients.enabled ? <VisibilityIcon /> : <VisibilityOffIcon />}
+          {data.enabled ? <VisibilityIcon /> : <VisibilityOffIcon />}
         </button>
       }
-      {typeof ingredients === "object" && (
+      {typeof data === "object" && (
         <React.Fragment>
-          {Object.keys(ingredients).map((field, index) => {
+          {Object.keys(data).map((field, index) => {
             if (
               field === "inventory" &&
-              (ingredients["type"] === "character" ||
-                ingredients["type"] === "npc" ||
-                ingredients["type"] === "mob")
+              (data["type"] === "character" ||
+                data["type"] === "npc" ||
+                data["type"] === "mob")
             ) {
-              return inventoryRender(ingredients["inventory"], index);
+              return inventoryRender(data["inventory"], index);
             } else if (
               field === "enabled" ||
               field === "type" ||
@@ -176,18 +176,18 @@ const Entity = ({
                 )}
                 {field === "description" || field === "message" ? (
                   <textarea
-                    value={ingredients[field]}
+                    value={data[field]}
                     onChange={(e) =>
-                      updateEntity(ingredients, field, e.target.value)
+                      updateEntity(data, field, e.target.value)
                     }
                   />
                 ) : (
                   <input
                     type="text"
-                    value={ingredients[field]}
+                    value={data[field]}
                     onChange={(e) => {
                       e.preventDefault();
-                      updateEntity(ingredients, field, e.target.value);
+                      updateEntity(data, field, e.target.value);
                     }}
                   />
                 )}
@@ -196,9 +196,9 @@ const Entity = ({
           })}
         </React.Fragment>
       )}
-      {typeof ingredients === "string" && (
+      {typeof data === "string" && (
         <React.Fragment>
-          <p>{ingredients}</p>
+          <p>{data}</p>
         </React.Fragment>
       )}
     </div>

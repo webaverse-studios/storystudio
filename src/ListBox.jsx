@@ -4,8 +4,6 @@ import Entity from "./Entity";
 
 const ListBox = ({ header, data, type = '', addEntityCallback, editEntityCallback, deleteEntityCallback, showLabels = false }) => {
     const [generating, setGenerating] = React.useState(false);
-    console.log('data', data)
-
     useEffect(() => {
         // if generating is true, set timer to check if the length of data is more than it was before
         /*if (generating) {
@@ -28,9 +26,10 @@ const ListBox = ({ header, data, type = '', addEntityCallback, editEntityCallbac
                 <button onClick={() => addEntityCallback(data, setGenerating)  }>{!generating ? 'Generate' : 'Generating...'}</button>
             </div>
             <div className={'section ' + type}>
-                {data && data.map((ingredients, index) => {
+                {data && Object.keys(data).map((key, index) => {
+                    console.log('******** data', data)
                     return (
-                        <Entity key={index} ingredients={ingredients} editEntityCallback={editEntityCallback} deleteEntityCallback={deleteEntityCallback} showLabels={showLabels} />
+                        <Entity key={index} data={data[key]} editEntityCallback={editEntityCallback} deleteEntityCallback={deleteEntityCallback} showLabels={showLabels} />
                     );
                 })
                 }

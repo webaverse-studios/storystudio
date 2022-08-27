@@ -157,6 +157,8 @@ function makeId(length) {
 }
 
 export async function generate(type, data, baseData) {
+  console.log('generting...');
+  console.log(type, data, baseData)
   if (
     !baseData ||
     !baseData.module ||

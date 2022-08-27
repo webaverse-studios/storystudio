@@ -23,12 +23,11 @@ function makeId(length) {
 }
 
 if (
-  !localStorage.getItem("examples") ||
-  localStorage.getItem("examples") === "[object Object]"
+  !localStorage.getItem("loreData") ||
+  localStorage.getItem("loreData") === "[object Object]"
 ) {
-  localStorage.setItem("examples", JSON.stringify(lore));
+  localStorage.setItem("loreData", JSON.stringify(lore));
 }
-
 
 async function getFile() {
   const file = await new Promise((resolve, reject) => {
@@ -46,12 +45,14 @@ async function download_content(url) {
   const file = await axios.get(url);
   return file.data;
 }
-function LoreBase({data, setData, examples, setExamples, exportHandler, importHandler}) {
+function LoreBase({data, setData, loreData, setLoreData, exportHandler, importHandler}) {
   const [editorCode, setEditorCode] = useState("");
   const [loreHeader, setLoreHeader] = useState("");
 
   const handleLoad = async (data, fromUrl = true) => {
     const loreHeader = await download_content("./lore_header.js");
+    // convert to string
+    const loreHeaderString = loreHeader.toString();
     setLoreHeader(loreHeader);
     if (fromUrl) {
       const response = await download_content(data.url);
@@ -63,6 +64,14 @@ function LoreBase({data, setData, examples, setExamples, exportHandler, importHa
       reader.readAsText(blob);
       reader.onload = async function () {
         let content = reader.result;
+        // separate the content into an array of lines
+        const lines = content.split("\n");
+        // get the index of any line that includes the text LORE_HEADER
+        const headerStartIndex = lines.findIndex((line) => line.includes("LORE_HEADER_START"));
+        const headerEndIndex = lines.findIndex((line) => line.includes("LORE_HEADER_END"));
+        // remove the array values including and between headerStartIndex and headerEndIndex
+        const beforeHeader = lines.slice(-1, headerStartIndex+1);
+        content = beforeHeader + lines.splice(headerEndIndex+1, lines.length).join("\n");
         updateEditorCode(content);
         // find the line in content (a long delimited string) that contains import and murmurhash3
         // replace that line with loreHeader
@@ -87,11 +96,18 @@ function LoreBase({data, setData, examples, setExamples, exportHandler, importHa
       // open a file picker and get the file from disk
       const file = await getFile();
       // read the file as text
-      let text = await file.text();
-      updateEditorCode(text);
-      text = loreHeader + '\n' + text;
+      let content = await file.text();
+      const lines = content.split("\n");
+      // get the index of any line that includes the text LORE_HEADER
+      const headerStartIndex = lines.findIndex((line) => line.includes("LORE_HEADER_START"));
+      const headerEndIndex = lines.findIndex((line) => line.includes("LORE_HEADER_END"));
+      // remove the array values including and between headerStartIndex and headerEndIndex
+      const beforeHeader = lines.slice(-1, headerStartIndex+1);
+      content = beforeHeader + lines.splice(headerEndIndex+1, lines.length).join("\n");
+      updateEditorCode(content);
+      content = loreHeader + '\n' + content;
       // convert text to a blob with the x-javascript base64 type
-      const blob = new Blob([text], {
+      const blob = new Blob([content], {
         type: "application/x-javascript;base64",
       });
       const fileUri = await fileToDataUri(blob);
@@ -195,11 +211,11 @@ function LoreBase({data, setData, examples, setExamples, exportHandler, importHa
         return;
       }
 
-      const newEntityData = { ...examples };
+      const newEntityData = { ...loreData };
 
       newEntityData[currentContentType].push(entity);
 
-      setExamples(newEntityData);
+      setLoreData(newEntityData);
     } catch (e) {
       console.error(e);
       addEntityCallback(entityType, data, setGenerating, tries);
@@ -207,16 +223,16 @@ function LoreBase({data, setData, examples, setExamples, exportHandler, importHa
     setGenerating(false);
   };
   const deleteEntityCallback = (entity) => {
-    const newData = { ...examples };
-      newData[entity.type] = examples[entity.type].filter(
+    const newData = { ...loreData };
+      newData[entity.type] = loreData[entity.type].filter(
         (e) => e.id !== entity.id
       );
 
-    setExamples(newData);
+    setLoreData(newData);
   };
 
   const editEntityCallback = (entity) => {
-    let newData = { ...examples };
+    let newData = { ...loreData };
 
     if (entity.message !== undefined) {
       newData[currentContentType];
@@ -232,15 +248,15 @@ function LoreBase({data, setData, examples, setExamples, exportHandler, importHa
       newData[entity.type][entityIndex] = entity;
     }
 
-    setExamples(newData);
+    setLoreData(newData);
   };
 
   const handleImport = (data) => {
-    setExamples(data);
+    setLoreData(data);
   };
 
   const handleExport = () => {
-    const json = JSON.stringify(examples);
+    const json = JSON.stringify(loreData);
     console.log(json);
 
     const element = document.createElement("a");
@@ -262,7 +278,7 @@ function LoreBase({data, setData, examples, setExamples, exportHandler, importHa
     const json = JSON.parse(text);
     importHandler(json);
   };
-
+  console.log('loreData', loreData);
   return (
     <div className="view">
       <div className={"base"}>
@@ -294,22 +310,22 @@ function LoreBase({data, setData, examples, setExamples, exportHandler, importHa
         </button>
       </div>
     <div className="sections">
-      {/*<Context
-        data={examples}
+      <Context
+        data={loreData}
         currentContentType={currentContentType}
         setCurrentContentType={setCurrentContentType}
-  />
+      />
       <ListBox
         type={"lorebase"}
-        data={examples[currentContentType]}
+        data={loreData[currentContentType]}
         header={"lorebase"}
         addEntityCallback={(data, setGenerating) => {
-          addEntityCallback("lorebase", examples, setGenerating);
+          addEntityCallback("lorebase", loreData, setGenerating);
         }}
         editEntityCallback={(data) => editEntityCallback(data)}
         deleteEntityCallback={(data) => deleteEntityCallback(data)}
         showLabels={true}
-      />*/}
+      />
     </div>
       <MonacoEditor
         width="100%"

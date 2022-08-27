@@ -1,5 +1,6 @@
 // injected script variables
 // - config (object)
+// maxExamples: limit number of examples in any generation 
 // config = {
 //  maxExamples: 8
 // }
@@ -344,7 +345,7 @@ export const parseCharacterIntroResponse = response => {
 
 function shuffleArray(array) {
   const shortenArray = (array) => {
-      const maxLength = config.maxExamples;
+      const maxLength = config?.maxExamples ?? 20;
       if (array.length > maxLength) {
           return array.slice(0, maxLength);
       }

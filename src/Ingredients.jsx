@@ -21,7 +21,7 @@ function makeId(length) {
   return result;
 }
 
-function Ingredients({baseData, setBaseData, ingredients, setIngredients, exportHandler, importHandler}) {
+function Ingredients({dataType, baseData, ingredients, setIngredients, exportHandler, importHandler}) {
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
 
   const addEntityCallback = async (
@@ -53,7 +53,7 @@ function Ingredients({baseData, setBaseData, ingredients, setIngredients, export
       const newEntityData = { ...ingredients };
 
       const array =
-        entityType === "dialog"
+        entityType === dataType
           ? newEntityData[entityType][currentContentType]
           : newEntityData[entityType];
       array.push(entity);
@@ -66,10 +66,10 @@ function Ingredients({baseData, setBaseData, ingredients, setIngredients, export
     }
     setGenerating(false);
   };
-  const deleteEntityCallback = (entity, dialog) => {
+  const deleteEntityCallback = (entity, fromCurrentContentType) => {
     const newData = { ...ingredients };
-    if (dialog) {
-      newData["dialog"][currentContentType] = ingredients["dialog"][
+    if (fromCurrentContentType) {
+      newData[dataType][currentContentType] = ingredients[dataType][
         currentContentType
       ].filter((e) => e.id && e.id !== entity.id);
     } else {
@@ -85,12 +85,12 @@ function Ingredients({baseData, setBaseData, ingredients, setIngredients, export
     let newData = { ...ingredients };
 
     if (entity.message !== undefined) {
-      newData["dialog"][currentContentType];
+      newData[dataType][currentContentType];
 
-      const entityIndex = newData["dialog"][currentContentType].findIndex(
+      const entityIndex = newData[dataType][currentContentType].findIndex(
         (e) => e.id === entity.id
       );
-      newData["dialog"][currentContentType][entityIndex] = entity;
+      newData[dataType][currentContentType][entityIndex] = entity;
     } else {
       const entityIndex = newData[entity.type].findIndex(
         (e) => e.id === entity.id
@@ -155,18 +155,18 @@ function Ingredients({baseData, setBaseData, ingredients, setIngredients, export
             />
           );
         })}
-        {/*<Context
-          data={ingredients.dialog}
+        <Context
+          data={ingredients[dataType]}
+          contextTypes={contextTypes}
           currentContentType={currentContentType}
           setCurrentContentType={setCurrentContentType}
-        />*/}
+        />
         <ListBox
-          type={"dialog"}
-          data={ingredients.dialog[currentContentType]}
-          header={"dialog"}
+          type={dataType}
+          data={ingredients[dataType][currentContentType]}
+          header={dataType}
           addEntityCallback={(data, setGenerating) => {
-            console.log("ingredients is", ingredients);
-            addEntityCallback("dialog", ingredients, setGenerating);
+            addEntityCallback(dataType, ingredients, setGenerating);
           }}
           editEntityCallback={(data) => editEntityCallback(data)}
           deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
