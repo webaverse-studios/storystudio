@@ -308,7 +308,7 @@
 
 /* create a media query for the mobile view */
 /* setting_wrapped should be 100% width */
-@media (max-width: 1200px) {
+@media (max-width: 980) {
   .base {
     width: calc(100% - 1em);
   }

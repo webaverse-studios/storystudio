@@ -10,6 +10,7 @@ import {
   animals,
   colors,
 } from "unique-names-generator";
+import { getFile } from "./getFile";
 
 function makeId(length) {
   let result = "";
@@ -27,43 +28,32 @@ function Ingredients({dataType, baseData, ingredients, setIngredients, exportHan
   const addEntityCallback = async (
     entityType,
     data,
-    setGenerating,
-    tries = 0
+    setGenerating
   ) => {
-    if (tries > 5) {
-      console.error("Could not generate entity");
+    setGenerating(true);
+    console.log('entityType, data, baseData', entityType, data, baseData);
+    //console.log("calling baseData", baseData);
+    // generate new using openai callback
+    let entity = await generate(entityType, data, baseData);
+    if(!entity){
+      console.error('could not generate entity');
+      setGenerating(false);
       return;
     }
-    tries++;
-    setGenerating(true);
-    try {
-      //console.log("calling baseData", baseData);
-      // generate new using openai callback
-      let entity = await generate(entityType, data, baseData);
-      if (entity[0]) entity = entity[0];
-      console.log("generate entity", entity);
-      if (!entity.id) {
-        entity.id = makeId(5);
-      }
-      if (!entity || entity === undefined) {
-        addEntityCallback(entityType, data, setGenerating, tries);
-        return;
-      }
-
-      const newEntityData = { ...ingredients };
-
-      const array =
-        entityType === dataType
-          ? newEntityData[entityType][currentContentType]
-          : newEntityData[entityType];
-      array.push(entity);
-      newEntityData[entityType][currentContentType] = array;
-
-      setIngredients(newEntityData);
-    } catch (e) {
-      console.error(e);
-      addEntityCallback(entityType, data, setGenerating, tries);
+    console.log("generate entity", entity);
+    if (!entity.id) {
+      entity.id = makeId(5);
     }
+    const newEntityData = { ...ingredients };
+
+    const array =
+      entityType === dataType
+        ? newEntityData[entityType][currentContentType]
+        : newEntityData[entityType];
+    array.push(entity);
+    newEntityData[entityType][currentContentType] = array;
+
+    setIngredients(newEntityData);
     setGenerating(false);
   };
   const deleteEntityCallback = (entity, fromCurrentContentType) => {

@@ -46,7 +46,7 @@ export let config = {
   export let lore = {
     overview: { 
         prompt: `# Overview`,
-        example: [
+        examples: [
             `\
             AI anime avatars in a virtual world. They have human-level intelligence and unique and interesting personalities.`
             ],
@@ -187,91 +187,91 @@ export let config = {
    Amy: "Well, if you see her can you let me know?  (react = normal)" *END*`
    ],
     },
-    comment: {
+    scene: {
         prompt: `\ 
         AI anime avatars in a virtual world. They have human-level intelligence and unique and interesting personalities.
         The tone of the series is on the surface a children's show, but with a dark subtext. It is similar to Pokemon, Dragon Ball, Rick and Morty, and South Park, but with the aesthetic of Studio Ghibli.
         We want some really funny and interesting commentary to come from these avatars. They should be witty, clever, interesting, usually with a pun or a joke, and suggesting of some action that the character will perform there.
         The comments are of the following form:`,
+        examples: [
+            `\
+            prompt: Exorphys Graetious
+            response: That sounds hard to pronounce. It must be important. Or the person who named it is an asshole. Or their parents were assholes. Just a line of assholes.`,
+            `\
+            prompt: Orange Fields
+            response: They say a bloodstain's orange after you wash it three or four times in a tub. Still those fields sound interesting!`,
+            `\
+            prompt: Amenki's Lab
+            response: I hate that guy Amenki and his stupid lab. I barely survived his last experiment. Maybe it's time for vengeance.`,
+            `\
+            prompt: Sunscraper
+            response: I bet it's amazing to see the world from up there. I guess as long as you don't fall down. I'm not scared though!`,
+            `\
+            prompt: Bastards bog
+            response: What a dump. I can't believe anyone would want to live here. The smell is terrible and the people are all dirty. I'm sorry I shouldn't be joking that they're poor.`,
+            `\
+            prompt: The Great Tree
+            response: It's really not that great, but the music is nice. Yeah apparently they decided trees should come with music.`,
+            `\
+            prompt: The Trash
+            response: Ugh, the dregs of society live here. It's the worst. It's just a disgusting slum. I'm honestly surprised there's not more crime.`,
+            `\
+            prompt: The Park
+            response: It's a great place to relax! If you like dogs. I like cats more though. So you can imagine, that causes a few problems...`,
+            `\
+            prompt: The Woods
+            response: It's so dark in there! I like it. It feels spooky and dangerous. Maybe there are monsters. And I can kill them all.`,
+            `\
+            prompt: Lake Lagari
+            response: The water's so clear! It's really pretty. I bet the fish are delicious too. But then again, who am I to judge? I'm not a cannibal.`,
+            `\
+            prompt: Dungeon of Torment
+            response: Don't judge me for this but I really like the dungeon. It's dark and spooky and I feel like anything could happen. It's the perfect place for a secret lair.
+            `,
+            `\
+            prompt: Tower Of Zion
+            response: I always get a little nervous when I see the tower. It's so tall and imposing. But then again, I bet you could throw shit down from the heavens like Zeus.`,
+            `\
+            prompt: Maze of Merlillion
+            response: This place is so poorly designed! I'm sure nobody could ever find their way out. Unless they have a map or something. But even then, good luck.`,
+            `\
+            prompt: Freaky Funkos Fried Fox
+            response: I'm not sure how I feel about foxes being eaten. On the one hand, they're cute. But on the other hand, they're a little too foxy.`,
+            `\
+            prompt: Echidna's Den
+            response: It's weird that there are so many snake dens around. I mean, it's not like echidnas are poisonous or anything. Wait what, Echidnas aren't snakes?!`,
+            `\
+            prompt: Fennek's Forest
+            response: There's a lot of fenneks in this forest. Weird that they all hang out together like that. But I guess it's better than being eaten by a lion or something.`,
+            `\
+            prompt: The Abyss
+            response: It's so dark and scary down there! You can survive long enough to turn on your flashlight, only to be scared to death by what you reveal!`,
+            `\
+            prompt: Castle of Cygnus
+            response: It's so cold in there! Somehow the princess can stand it. Maybe she just doesn't feel the cold. Or maybe she has a furnace.`,
+            `\
+            prompt: Lost Minds Nightclub
+            response: You won't lose your mind here, but if you lose your mind that's where you'll end up. Then you get to party until your parents come pick you up.`,
+            `\
+            prompt: Barrens of Boreas
+            response: False advertising! This place is nothing but a bunch of rocks. There's no water or anything. What kind of bar is this?`,
+            `\
+            prompt: The End
+            response: People are always talking about the end, but it's just the end. What's all the fuss about? Everything that has a beginning must have an end.`,
+            `\
+            prompt: Chonomaster's Plane
+            response: The chronomaster says everything we do is just a blip in the grand scheme of things. It makes you feel kind of small, doesn't it? I don't want ot feel small.`,
+            `\
+            prompt: Gus's Charging Station
+            response: Do you like to wait for hours and hours just to charge? Then Gus will gladly rip you off for the privilege.`,
+            `\
+            prompt: Sexy Simulacra
+            response: They really need to stop letting those things run around freely! They're so creepy and weird. Only the weirdos could find them sexy.`,
+            `\
+            prompt: Crunchy Apple
+            response: The food is here really delicious! The apples are so crunchy, I bet they're made of pure sugar. They say it's really bad for you but it's irresistible.`
+        ],
     },
-    examples: [
-        `\
-        prompt: Exorphys Graetious
-        response: That sounds hard to pronounce. It must be important. Or the person who named it is an asshole. Or their parents were assholes. Just a line of assholes.`,
-          `\
-        prompt: Orange Fields
-        response: They say a bloodstain's orange after you wash it three or four times in a tub. Still those fields sound interesting!`,
-          `\
-        prompt: Amenki's Lab
-        response: I hate that guy Amenki and his stupid lab. I barely survived his last experiment. Maybe it's time for vengeance.`,
-          `\
-        prompt: Sunscraper
-        response: I bet it's amazing to see the world from up there. I guess as long as you don't fall down. I'm not scared though!`,
-          `\
-        prompt: Bastards bog
-        response: What a dump. I can't believe anyone would want to live here. The smell is terrible and the people are all dirty. I'm sorry I shouldn't be joking that they're poor.`,
-          `\
-        prompt: The Great Tree
-        response: It's really not that great, but the music is nice. Yeah apparently they decided trees should come with music.`,
-         `\
-        prompt: The Trash
-        response: Ugh, the dregs of society live here. It's the worst. It's just a disgusting slum. I'm honestly surprised there's not more crime.`,
-          `\
-        prompt: The Park
-        response: It's a great place to relax! If you like dogs. I like cats more though. So you can imagine, that causes a few problems...`,
-          `\
-        prompt: The Woods
-        response: It's so dark in there! I like it. It feels spooky and dangerous. Maybe there are monsters. And I can kill them all.`,
-          `\
-        prompt: Lake Lagari
-        response: The water's so clear! It's really pretty. I bet the fish are delicious too. But then again, who am I to judge? I'm not a cannibal.`,
-          `\
-        prompt: Dungeon of Torment
-        response: Don't judge me for this but I really like the dungeon. It's dark and spooky and I feel like anything could happen. It's the perfect place for a secret lair.
-        `,
-          `\
-        prompt: Tower Of Zion
-        response: I always get a little nervous when I see the tower. It's so tall and imposing. But then again, I bet you could throw shit down from the heavens like Zeus.`,
-          `\
-        prompt: Maze of Merlillion
-        response: This place is so poorly designed! I'm sure nobody could ever find their way out. Unless they have a map or something. But even then, good luck.`,
-          `\
-        prompt: Freaky Funkos Fried Fox
-        response: I'm not sure how I feel about foxes being eaten. On the one hand, they're cute. But on the other hand, they're a little too foxy.`,
-          `\
-        prompt: Echidna's Den
-        response: It's weird that there are so many snake dens around. I mean, it's not like echidnas are poisonous or anything. Wait what, Echidnas aren't snakes?!`,
-          `\
-        prompt: Fennek's Forest
-        response: There's a lot of fenneks in this forest. Weird that they all hang out together like that. But I guess it's better than being eaten by a lion or something.`,
-          `\
-        prompt: The Abyss
-        response: It's so dark and scary down there! You can survive long enough to turn on your flashlight, only to be scared to death by what you reveal!`,
-          `\
-        prompt: Castle of Cygnus
-        response: It's so cold in there! Somehow the princess can stand it. Maybe she just doesn't feel the cold. Or maybe she has a furnace.`,
-          `\
-        prompt: Lost Minds Nightclub
-        response: You won't lose your mind here, but if you lose your mind that's where you'll end up. Then you get to party until your parents come pick you up.`,
-          `\
-        prompt: Barrens of Boreas
-        response: False advertising! This place is nothing but a bunch of rocks. There's no water or anything. What kind of bar is this?`,
-          `\
-        prompt: The End
-        response: People are always talking about the end, but it's just the end. What's all the fuss about? Everything that has a beginning must have an end.`,
-          `\
-        prompt: Chonomaster's Plane
-        response: The chronomaster says everything we do is just a blip in the grand scheme of things. It makes you feel kind of small, doesn't it? I don't want ot feel small.`,
-          `\
-        prompt: Gus's Charging Station
-        response: Do you like to wait for hours and hours just to charge? Then Gus will gladly rip you off for the privilege.`,
-          `\
-        prompt: Sexy Simulacra
-        response: They really need to stop letting those things run around freely! They're so creepy and weird. Only the weirdos could find them sexy.`,
-          `\
-        prompt: Crunchy Apple
-        response: The food is here really delicious! The apples are so crunchy, I bet they're made of pure sugar. They say it's really bad for you but it's irresistible.`
-    ],
     character: {
         prompt: ``,
         examples: [

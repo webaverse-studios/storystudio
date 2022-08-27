@@ -17,7 +17,7 @@ const GettingStarted = ({ data, setData }) => {
     <span className={"baseLabel"}>OpenAI Key: </span>
     <input
       className={"baseInput"}
-      type={apiKeyVisible ? "input" : "password"}
+      type={"input"}
       defaultValue={getOpenAIKey()}
       onChange={(e) =>
         console.log("change", e.target.value) ||

@@ -4,21 +4,6 @@ import Entity from "./Entity";
 
 const ListBox = ({ header, data, type = '', addEntityCallback, editEntityCallback, deleteEntityCallback, showLabels = false }) => {
     const [generating, setGenerating] = React.useState(false);
-    useEffect(() => {
-        // if generating is true, set timer to check if the length of data is more than it was before
-        /*if (generating) {
-            const dataLength = data.length;
-            let elapsedTime = 0;
-            const maxTime = 5000;
-            const timer = setInterval(() => {
-                if (data.length > dataLength || elapsedTime > maxTime) {
-                    setGenerating(false);
-                    clearInterval(timer);
-                }
-                elapsedTime += 500;
-            }, 500);
-        }*/
-    }, [generating]);
     return (
         <div className={'sectionWrapper ' + type + '_wrapped'}>
             <div className={'sectionHeader ' + type + '_header'}>
@@ -27,7 +12,6 @@ const ListBox = ({ header, data, type = '', addEntityCallback, editEntityCallbac
             </div>
             <div className={'section ' + type}>
                 {data && Object.keys(data).map((key, index) => {
-                    console.log('******** data', data)
                     return (
                         <Entity key={index} data={data[key]} editEntityCallback={editEntityCallback} deleteEntityCallback={deleteEntityCallback} showLabels={showLabels} />
                     );

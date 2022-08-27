@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import MonacoEditor from "@monaco-editor/react";
 import { lore } from "./constants";
 import ListBox from "./ListBox";
+import { generate } from "./utils/openai_utils";
 import Context from "./ContextSelector";
 import "./App.css";
 import {
@@ -11,6 +12,7 @@ import {
   animals,
   colors,
 } from "unique-names-generator";
+import { getFile } from "./getFile";
 
 function makeId(length) {
   let result = "";
@@ -29,97 +31,15 @@ if (
   localStorage.setItem("loreData", JSON.stringify(lore));
 }
 
-async function getFile() {
-  const file = await new Promise((resolve, reject) => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.onchange = (e) => {
-      resolve(e.target.files[0]);
-    };
-    input.click();
-  });
-  return file;
-}
-
 async function download_content(url) {
   const file = await axios.get(url);
   return file.data;
 }
-function LoreBase({data, setData, loreData, setLoreData, exportHandler, importHandler}) {
+function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseData, loreData, setLoreData, exportHandler, importHandler }) {
   const [editorCode, setEditorCode] = useState("");
-  const [loreHeader, setLoreHeader] = useState("");
-
-  const handleLoad = async (data, fromUrl = true) => {
-    const loreHeader = await download_content("./lore_header.js");
-    // convert to string
-    const loreHeaderString = loreHeader.toString();
-    setLoreHeader(loreHeader);
-    if (fromUrl) {
-      const response = await download_content(data.url);
-      let blob = new Blob([response], {
-        type: "application/x-javascript;base64",
-      });
-      // decode blob to a string
-      const reader = new FileReader();
-      reader.readAsText(blob);
-      reader.onload = async function () {
-        let content = reader.result;
-        // separate the content into an array of lines
-        const lines = content.split("\n");
-        // get the index of any line that includes the text LORE_HEADER
-        const headerStartIndex = lines.findIndex((line) => line.includes("LORE_HEADER_START"));
-        const headerEndIndex = lines.findIndex((line) => line.includes("LORE_HEADER_END"));
-        // remove the array values including and between headerStartIndex and headerEndIndex
-        const beforeHeader = lines.slice(-1, headerStartIndex+1);
-        content = beforeHeader + lines.splice(headerEndIndex+1, lines.length).join("\n");
-        updateEditorCode(content);
-        // find the line in content (a long delimited string) that contains import and murmurhash3
-        // replace that line with loreHeader
-        content = loreHeaderString + content;
-        // convert content back to a blob with the x-javascript base64 type
-        blob = new Blob([content], {
-          type: "application/x-javascript;base64",
-        });
-
-        const fileUri = await fileToDataUri(blob);
-        // fileUri is a base64 javascript document
-        // we want to inject some code into the file before we
-        const importedFile = await import(fileUri);
-        setData({
-          base: fileUri,
-          type: "file",
-          module: importedFile,
-          url: data.url,
-        });
-      };
-    } else {
-      // open a file picker and get the file from disk
-      const file = await getFile();
-      // read the file as text
-      let content = await file.text();
-      const lines = content.split("\n");
-      // get the index of any line that includes the text LORE_HEADER
-      const headerStartIndex = lines.findIndex((line) => line.includes("LORE_HEADER_START"));
-      const headerEndIndex = lines.findIndex((line) => line.includes("LORE_HEADER_END"));
-      // remove the array values including and between headerStartIndex and headerEndIndex
-      const beforeHeader = lines.slice(-1, headerStartIndex+1);
-      content = beforeHeader + lines.splice(headerEndIndex+1, lines.length).join("\n");
-      updateEditorCode(content);
-      content = loreHeader + '\n' + content;
-      // convert text to a blob with the x-javascript base64 type
-      const blob = new Blob([content], {
-        type: "application/x-javascript;base64",
-      });
-      const fileUri = await fileToDataUri(blob);
-      const importedFile = await import(fileUri);
-      setData({
-        base: fileUri,
-        type: "file",
-        module: importedFile,
-        url: file.name,
-      });
-    }
-  };
+  const [currentContentType, setCurrentContentType] = useState(Object.keys(lore)[0]);
+  const [generating, setGenerating] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
 
   const fileToDataUri = (file) =>
     new Promise((resolve, reject) => {
@@ -137,13 +57,13 @@ function LoreBase({data, setData, loreData, setLoreData, exportHandler, importHa
       download_content("./lore_header.js").then(loreHeader => setLoreHeader(loreHeader));
     }
     else {
-      handleLoad(data);
+      loadBaseData(baseData);
     }
   }, []);
 
 
   // editorCode is a string
-  // if the user presses ctrl + s, create a new file from the editorCode text, get the URI and call setData
+  // if the user presses ctrl + s, create a new file from the editorCode text, get the URI and call setBaseData
   const handleSave = async () => {
     if (!editorCode) return;
     console.log('saving')
@@ -152,7 +72,7 @@ function LoreBase({data, setData, loreData, setLoreData, exportHandler, importHa
     });
     const fileUri = await fileToDataUri(blob);
     const importedFile = await import(fileUri);
-    setData({
+    setBaseData({
       base: fileUri,
       type: "file",
       module: importedFile,
@@ -183,50 +103,30 @@ function LoreBase({data, setData, loreData, setLoreData, exportHandler, importHa
     link.click();
   }
 
-  const [currentContentType, setCurrentContentType] = useState(Object.keys(lore)[0]);
-
   const addEntityCallback = async (
     entityType,
-    data,
-    setGenerating,
-    tries = 0
+    data
   ) => {
-    if (tries > 5) {
-      console.error("Could not generate entity");
-      return;
-    }
-    tries++;
     setGenerating(true);
-    try {
-      //console.log("calling baseData", baseData);
-      // generate new using openai callback
-      let entity = await generate(entityType, data, baseData);
-      if (entity[0]) entity = entity[0];
-      console.log("generate entity", entity);
-      if (!entity.id) {
-        entity.id = makeId(5);
-      }
-      if (!entity || entity === undefined) {
-        addEntityCallback(entityType, data, setGenerating, tries);
-        return;
-      }
+    console.log('baseData is', baseData)
+    let entity = await generate(entityType, data, baseData);
 
-      const newEntityData = { ...loreData };
-
-      newEntityData[currentContentType].push(entity);
-
-      setLoreData(newEntityData);
-    } catch (e) {
-      console.error(e);
-      addEntityCallback(entityType, data, setGenerating, tries);
+    if (!entity.id) {
+      entity.id = makeId(5);
     }
+
+    const newEntityData = { ...loreData };
+
+    newEntityData[currentContentType].push(entity);
+
+    setLoreData(newEntityData);
     setGenerating(false);
   };
   const deleteEntityCallback = (entity) => {
     const newData = { ...loreData };
-      newData[entity.type] = loreData[entity.type].filter(
-        (e) => e.id !== entity.id
-      );
+    newData[entity.type] = loreData[entity.type].filter(
+      (e) => e.id !== entity.id
+    );
 
     setLoreData(newData);
   };
@@ -278,63 +178,84 @@ function LoreBase({data, setData, loreData, setLoreData, exportHandler, importHa
     const json = JSON.parse(text);
     importHandler(json);
   };
-  console.log('loreData', loreData);
   return (
     <div className="view">
-      <div className={"base"}>
-        <span className={"baseLabel"}>Base: </span>
-        <input
-          className={"baseInput"}
-          type="text"
-          value={data.url}
-          onChange={(e) => setData({ ...data, url: e.target.value })}
-          onFocus={(e) => setData({ ...data, url: e.target.value })}
-        />
-        <button
-          className={"baseButton baseButtonUrl"}
-          onClick={() => handleLoad(data, true)}
-        >
-          [Open URL]
-        </button>
-        <button
-          className={"baseButton baseButtonFile"}
-          onClick={() => handleLoad(data, false)}
-        >
-          [Open File]
-        </button>
-        <button
-          className={"baseButton baseButtonFile"}
-          onClick={() => saveLoreFile()}
-        >
-          [Export]
+      <div className={"modeButtons"}>
+        <button className={"modeButton" + showEditor ? " active" : ''} onClick={() => setShowEditor(!showEditor)}>
+          Edit Pipeline JS
         </button>
       </div>
-    <div className="sections">
-      <Context
-        data={loreData}
-        currentContentType={currentContentType}
-        setCurrentContentType={setCurrentContentType}
-      />
-      <ListBox
-        type={"lorebase"}
-        data={loreData[currentContentType]}
-        header={"lorebase"}
-        addEntityCallback={(data, setGenerating) => {
-          addEntityCallback("lorebase", loreData, setGenerating);
-        }}
-        editEntityCallback={(data) => editEntityCallback(data)}
-        deleteEntityCallback={(data) => deleteEntityCallback(data)}
-        showLabels={true}
-      />
-    </div>
-      <MonacoEditor
-        width="100%"
-        height="100%"
-        language="javascript"
-        theme="light"
-        value={editorCode}
-        onChange={(value) => { updateEditorCode(value); }}
-      />
+      {!showEditor &&
+        <React.Fragment>
+          <div className={"importExportButtons"}>
+            <button className={"importButton"} onClick={() => importJson()}>
+              Import
+            </button>
+            <button className={"exportButton"} onClick={() => exportHandler()}>
+              Export
+            </button>
+          </div>
+          <div className="sections">
+            <Context
+              data={loreData}
+              currentContentType={currentContentType}
+              setCurrentContentType={setCurrentContentType}
+            />
+            <ListBox
+              type={"lorebase"}
+              data={loreData[currentContentType].examples}
+              header={"lorebase"}
+              addEntityCallback={(data) => {
+                console.log('addEntityCallback', data);
+                addEntityCallback(currentContentType, data);
+              }}
+              editEntityCallback={(data) => editEntityCallback(data)}
+              deleteEntityCallback={(data) => deleteEntityCallback(data)}
+              showLabels={true}
+            />
+          </div>
+        </React.Fragment>
+      }
+      {showEditor &&
+        <React.Fragment>
+          <div className={"base"}>
+            <span className={"baseLabel"}>Base: </span>
+            <input
+              className={"baseInput"}
+              type="text"
+              value={baseData.url}
+              onChange={(e) => setBaseData({ ...baseData, url: e.target.value })}
+              onFocus={(e) => setBaseData({ ...baseData, url: e.target.value })}
+            />
+            <button
+              className={"baseButton baseButtonUrl"}
+              onClick={() => loadBaseData(baseData, updateEditorCode, true)}
+            >
+              [Open URL]
+            </button>
+            <button
+              className={"baseButton baseButtonFile"}
+              onClick={() => loadBaseData(baseData, updateEditorCode, false)}
+            >
+              [Open File]
+            </button>
+            <button
+              className={"baseButton baseButtonFile"}
+              onClick={() => saveLoreFile()}
+            >
+              [Export]
+            </button>
+          </div>
+          <MonacoEditor
+            width="100%"
+            height="100%"
+            language="javascript"
+            theme="light"
+            value={editorCode}
+            onChange={(value) => { updateEditorCode(value); }}
+          />
+        </React.Fragment>
+      }
     </div>
   );
 };

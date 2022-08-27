@@ -1,19 +1,34 @@
 import { Configuration, OpenAIApi } from "openai";
 import { lore } from "../constants";
 
-const createScenePrompt = (module) => `\
-${lore.prompts.scene}
-${shuffleArray(lore.examples.scene).join('\n')}
+function shuffleArray(array, limit = 10) {
+  const shortenArray = (array) => {
+      if (array.length > limit) {
+          return array.slice(0, limit);
+      }
+      return array;
+  }
+  for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+  }
+  return shortenArray(array);
+};
+
+
+const createScenePrompt = () => `\
+${lore.scene.prompt}
+${shuffleArray(lore.scene.examples).join('\n')}
 Location:`;
 
-const createCharacterPrompt = (module) => `\
-${lore.prompts.character}
-${shuffleArray(lore.examples.character).join(`\n`)}
+const createCharacterPrompt = () => `\
+${lore.character.prompt}
+${shuffleArray(lore.character.examples).join(`\n`)}
 Character:`;
 
-const createObjectPrompt = (module) => `\
-${lore.prompts.object}
-${shuffleArray(lore.examples.object).join(`\n`)}
+const createObjectPrompt = () => `\
+${lore.object.prompt}
+${shuffleArray(lore.object.examples).join(`\n`)}
 Object:`;
 
 
@@ -70,8 +85,8 @@ async function openaiRequest(
   }
 }
 
-async function generateScene(module) {
-  const scenePrompt = createScenePrompt(module);
+async function generateScene() {
+  const scenePrompt = createScenePrompt();
 
   const resp = await openaiRequest(scenePrompt, [".,\n", "Location:"]);
   const lines = resp.split("\n");
@@ -81,8 +96,8 @@ async function generateScene(module) {
   };
 }
 
-async function generateCharacter(module) {
-  const characterPrompt = createCharacterPrompt(module);
+async function generateCharacter() {
+  const characterPrompt = createCharacterPrompt();
   //console.log('characterPrompt is', characterPrompt);
   const resp = await openaiRequest(characterPrompt, [".,\n", "Character:"]);
   const lines = resp.split("\n");
@@ -98,8 +113,8 @@ async function generateCharacter(module) {
   };
 }
 
-async function generateObject(module) {
-  const objectPrompt = createObjectPrompt(module);
+async function generateObject() {
+  const objectPrompt = createObjectPrompt();
   const resp = await openaiRequest(objectPrompt, [".,\n", "Object:"]);
   const lines = resp.split("\n");
   return {
@@ -157,15 +172,16 @@ function makeId(length) {
 }
 
 export async function generate(type, data, baseData) {
-  console.log('generting...');
+  console.log('generating...');
   console.log(type, data, baseData)
-  if (
-    !baseData ||
-    !baseData.module ||
-    Object.entries(baseData.module).length === 0
-  ) {
-    return null;
-  }
+  // if (
+  //   !baseData ||
+  //   !baseData.module ||
+  //   Object.entries(baseData.module).length === 0
+  // ) {
+  //   console.error('baseData isnull ', baseData);
+  //   return null;
+  // }
 
   const res = {
     type: type,
@@ -176,7 +192,11 @@ export async function generate(type, data, baseData) {
     inventory: [],
   };
   let resp = undefined;
+  console.log('handling type', type);
   switch (type) {
+    case "overview":
+      console.error('not implemented');
+      break;
     case "setting":
       resp = await generateScene(baseData.module);
       res.name = resp.name;
@@ -213,12 +233,12 @@ export async function generate(type, data, baseData) {
       return null;
   }
 
-  for(let i = 0; i < data[type].length;i++) {
-    if (data[type].name === res.name) {
-      return generate(type, data, data)
-      //found a duplicate, so generate a new name
-    }
-  }
+  // for(let i = 0; i < data[type].length;i++) {
+  //   if (data[type].name === res.name) {
+  //     return generate(type, data, data)
+  //     //found a duplicate, so generate a new name
+  //   }
+  // }
 
   if (res.name?.length > 0) {
     res.id = makeId(5);
