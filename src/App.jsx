@@ -35,9 +35,8 @@ if (
 const storedEntityData = JSON.parse(localStorage.getItem("ingredients"));
 
 function App() {
-  const [currentView, setCurrentView] = useState(Object.keys(views)[0]);
+  const [currentView, setCurrentView] = useState(localStorage.getItem('currentView') || Object.keys(views)[0]);
   const [ingredients, setIngredients] = useState(storedEntityData);
-  const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
   const [loreData, setLoreData] = useState(lore);
   const [baseData, setBaseData] = useState({
     base: null,
@@ -45,6 +44,10 @@ function App() {
     type: "url",
     module: {},
   });
+
+  useEffect(() => {
+    localStorage.setItem("currentView", currentView);
+  }, [currentView])
 
   useEffect(() => {
     localStorage.setItem("ingredients", JSON.stringify(ingredients));
