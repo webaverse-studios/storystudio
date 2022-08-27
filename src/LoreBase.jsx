@@ -2,7 +2,6 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import MonacoEditor from "@monaco-editor/react";
 import "./App.css";
-import { lore_header } from "./lore_header";
 
 async function getFile() {
   const file = await new Promise((resolve, reject) => {
@@ -22,8 +21,11 @@ async function download_content(url) {
 }
 const LoreBase = ({ data, setData }) => {
   const [editorCode, setEditorCode] = useState("");
+  const [loreHeader, setLoreHeader] = useState("");
 
   const handleLoad = async (data, fromUrl = true) => {
+    const loreHeader = await download_content("./lore_header.js");
+    setLoreHeader(loreHeader);
     if (fromUrl) {
       const response = await download_content(data.url);
       let blob = new Blob([response], {
@@ -36,19 +38,12 @@ const LoreBase = ({ data, setData }) => {
         let content = reader.result;
         updateEditorCode(content);
         // find the line in content (a long delimited string) that contains import and murmurhash3
-        // replace that line with lore_header
-        const contentArray = content.split("\n");
-        const importLineIndex = contentArray.findIndex((line) =>
-          line.includes("murmurhash3.js")
-        );
-        if (importLineIndex !== -1) {
-          contentArray[importLineIndex] = lore_header;
-          content = contentArray.join("\n");
-          // convert content back to a blob with the x-javascript base64 type
-          blob = new Blob([content], {
-            type: "application/x-javascript;base64",
-          });
-        }
+        // replace that line with loreHeader
+        content = loreHeaderString+content;
+        // convert content back to a blob with the x-javascript base64 type
+        blob = new Blob([content], {
+          type: "application/x-javascript;base64",
+        });
 
         const fileUri = await fileToDataUri(blob);
         // fileUri is a base64 javascript document
@@ -65,9 +60,14 @@ const LoreBase = ({ data, setData }) => {
       // open a file picker and get the file from disk
       const file = await getFile();
       // read the file as text
-      const text = await file.text();
+      let text = await file.text();
       updateEditorCode(text);
-      const fileUri = await fileToDataUri(file);
+      text = loreHeader+'\n'+text;
+      // convert text to a blob with the x-javascript base64 type
+      const blob = new Blob([text], {
+        type: "application/x-javascript;base64",
+      });
+      const fileUri = await fileToDataUri(blob);
       const importedFile = await import(fileUri);
       setData({
         base: fileUri,
@@ -89,7 +89,10 @@ const LoreBase = ({ data, setData }) => {
 
   useEffect(() => {
     const codeEditorData = localStorage.getItem('codeEditorData');
-    if(codeEditorData) setEditorCode(codeEditorData);
+    if(codeEditorData) {
+      setEditorCode(codeEditorData);
+      download_content("./lore_header.js").then (loreHeader => setLoreHeader(loreHeader));
+    }
     else {
       handleLoad(data);
     }
@@ -100,7 +103,8 @@ const LoreBase = ({ data, setData }) => {
   // if the user presses ctrl + s, create a new file from the editorCode text, get the URI and call setData
   const handleSave = async () => {
     if(!editorCode) return;
-    const blob = new Blob([editorCode], {
+    console.log('saving')
+    const blob = new Blob([loreHeader+'\n'+editorCode], {
       type: "application/x-javascript;base64",
     });
     const fileUri = await fileToDataUri(blob);
@@ -111,6 +115,7 @@ const LoreBase = ({ data, setData }) => {
       module: importedFile,
       url: "new file",
     });
+    return fileUri;
   }
 
 
@@ -124,6 +129,15 @@ const LoreBase = ({ data, setData }) => {
     }
     setEditorCode(value);
     localStorage.setItem('codeEditorData', value);
+  }
+
+  const exportFile = async () => {
+    const file = await handleSave();
+    // save the file to disk as lore-model.js
+    const link = document.createElement("a");
+    link.href = file;
+    link.download = "lore-model.js";
+    link.click();
   }
 
   return (
@@ -149,6 +163,12 @@ const LoreBase = ({ data, setData }) => {
           >
             [From Disk]
           </button>
+          <button
+          className={"baseButton baseButtonFile"}
+          onClick={() => exportFile()}
+        >
+          [Export]
+        </button>
         </div>
         <MonacoEditor
         width="100%"

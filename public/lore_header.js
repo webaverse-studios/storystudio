@@ -1,4 +1,3 @@
-export const lore_header = `\
 // LORE_HEADER_START
 const shuffleArray = array => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -7,8 +6,6 @@ const shuffleArray = array => {
     }
     return array;
 };
-
-const _cleanName = name => JSON.stringify(name.replace(/[\_\-]+/g, ' ').replace(/\s+/g, ' '));
 
 function murmurhash3(key, seed) {
     var remainder, bytes, h1, h1b, c1, c1b, c2, c2b, k1, i;
@@ -63,9 +60,9 @@ function murmurhash3(key, seed) {
 }
 
 const hash = s => murmurhash3(s).toString(16);
-export const thingHash = (o, index) => \`\${hash(o.name)}/\${o.name}#\${index + 1}\`;
+export const thingHash = (o, index) => `${hash(o.name)}/${o.name}#${index + 1}`;
 
-export const scenePrompt = \`\\
+export const scenePrompt = `\
     AI anime avatars in a virtual world. They have human-level intelligence and unique and interesting personalities.
 	The tone of the series is on the surface a children's show, but with a dark subtext. It is similar to Pokemon, Dragon Ball, Rick and Morty, and South Park, but with the aesthetic of Studio Ghibli.
 	We want some really funny and interesting commentary to come from these avatars. They should be witty, clever, interesting, usually with a pun or a joke, and suggesting of some action that the character will perform there.
@@ -89,9 +86,9 @@ export const scenePrompt = \`\\
 	Location: Castle of Cygnus\nDescription: It's so cold in there! Somehow the princess can stand it. Maybe she just doesn't feel the cold. Or maybe she has a furnace.,
 	Location: Lost Minds Nightclub\nDescription: You won't lose your mind here, but if you lose your mind that's where you'll end up. Then you get to party until your parents come pick you up.,
 	Location: Barrens of Boreas\nDescription: False advertising! This place is nothing but a bunch of rocks. There's no water or anything. What kind of bar is this?,
-	Location:\`;
+	Location:`;
 
-export const characterPrompt = \`\\
+export const characterPrompt = `\
       Character: "Bailey Scritch"\nDescription: A witch studying at the Witchcraft School for Witchcraft and Redundancy.\nInventory: 1 wand, 1 shield, 1 diamond
 	  Character: "Axel Brave"\nDescription: A tall and handsome boy. He is a hacker with a bad reputation.\nInventory: 1 keyboard, 1 laptop, 1 knife, 1 pistol
 	  Character: "Bailey Scritch"\nDescription: A witch studying at the Witchcraft School for Witchcraft and Redundancy.\nInventory: 1 wand, 1 bert, 10 potions
@@ -106,9 +103,9 @@ export const characterPrompt = \`\\
 	  Character: "Dawn (Pokemon)"\nDescription: A young girl with a Pikachu on her shoulder.\nInventory: Pikachu, pokeballs
 	  Character: "Terra Branford (Final Fantasy)"\nDescription: A magician in a mech.\nInventory: 1 2-hand sword, gold coins
 	  Character: "Sora (Kingdom Hearts)"\nDescription: A young boy with big spiky hair. He's wearing a black hoodie and has a keyblade at his side.\nInventory: 1 blade, 2 keys
-	  Character:\`;
+	  Character:`;
 
-export const objectPrompt = \`\\
+export const objectPrompt = `\
       Object: "The Great Deku Tree"\nDescription: An enormous, grey, old tree. It is partly petrified.
 	  Object: "The Enchiridion"\nDescription: A magical spellbook with very old pages. It is fragile.
 	  Object: "rainbow-dash.gif"\nDescription: Animaged gif image of Rainbow Dash from My Little Pony, in the style of Nyan Cat.
@@ -136,15 +133,15 @@ export const objectPrompt = \`\\
 	  Object: "doge.png"\nDescription: An image of the Doge meme.
 	  Object: "Magikarp"\nDescription: A common fish that is known for being very weak.
 	  Object: "Muscle Car"\nDescription: A car that is designed for speed and power. A very dark animal that hides in the shadows. Nobody knows much about it.
-	  Object:\`;
+	  Object:`;
 
-export const characterLore = \`\\
+export const characterLore = `\
 # Overview
 
 AI anime avatars in a virtual world. They have human-level intelligence and unique and interesting personalities.
-\`;
+`;
 
-export const reactionExamples = \`\\
+export const reactionExamples = `\
 Reaction: headShake
 Description:  When the Character does not agree with what is in the Input.
 Reaction: headNod
@@ -163,9 +160,9 @@ Reaction: embarrassed
 Description: When the Character is ashamed of what is in the Input.
 Reaction: surprised
 Description: When the Character did not expect what is in the Input.
-\`;
+`;
 
-export const actionExamples = \`\\
+export const actionExamples = `\
 Action: move to
 Description:  When the Input clearly indicates that a Character needs to move to another Object/Character, use this action.
 Action: follow
@@ -178,9 +175,9 @@ Action: none
 Description: When the Input clearly indicates that there is no need for any action to be taken by a Character, use this action.
 Action: stop
 Description: When the Input clearly indicates that a Character has to stop something, use this action.
-\`;
+`;
 
-export const inputParsingExamples = \`\\
+export const inputParsingExamples = `\
 Input:
 +a8e44f13/Scillia#4: Hi Drake! Whats up?.
 +707fbe84/Drake#3:
@@ -231,9 +228,9 @@ Input:
 +a6dfd77c/Juniper#5:
 Output:
 +a6dfd77c/Juniper#5: Wow! That is all I needed. Thank you so much. (react = surprised, action = none, object = none, target = none)
-\`;
+`;
 
-export const commentLore = \`\\
+export const commentLore = `\
 AI anime avatars in a virtual world. They have human-level intelligence and unique and interesting personalities.
 
 The tone of the series is on the surface a children's show, but with a dark subtext. It is similar to Pokemon, Dragon Ball, Rick and Morty, and South Park, but with the aesthetic of Studio Ghibli.
@@ -242,247 +239,247 @@ We want some really funny and interesting commentary to come from these avatars.
 
 The comments are of the following form:
 
-\${shuffleArray([
-    \`\\
+${shuffleArray([
+    `\
 prompt: Exorphys Graetious
-response: That sounds hard to pronounce. It must be important. Or the person who named it is an asshole. Or their parents were assholes. Just a line of assholes.\`,
-    \`\\
+response: That sounds hard to pronounce. It must be important. Or the person who named it is an asshole. Or their parents were assholes. Just a line of assholes.`,
+    `\
 prompt: Orange Fields
-response: They say a bloodstain's orange after you wash it three or four times in a tub. Still those fields sound interesting!\`,
-    \`\\
+response: They say a bloodstain's orange after you wash it three or four times in a tub. Still those fields sound interesting!`,
+    `\
 prompt: Amenki's Lab
-response: I hate that guy Amenki and his stupid lab. I barely survived his last experiment. Maybe it's time for vengeance.\`,
-    \`\\
+response: I hate that guy Amenki and his stupid lab. I barely survived his last experiment. Maybe it's time for vengeance.`,
+    `\
 prompt: Sunscraper
-response: I bet it's amazing to see the world from up there. I guess as long as you don't fall down. I'm not scared though!\`,
-    \`\\
+response: I bet it's amazing to see the world from up there. I guess as long as you don't fall down. I'm not scared though!`,
+    `\
 prompt: Bastards bog
-response: What a dump. I can't believe anyone would want to live here. The smell is terrible and the people are all dirty. I'm sorry I shouldn't be joking that they're poor.\`,
-    \`\\
+response: What a dump. I can't believe anyone would want to live here. The smell is terrible and the people are all dirty. I'm sorry I shouldn't be joking that they're poor.`,
+    `\
 prompt: The Great Tree
-response: It's really not that great, but the music is nice. Yeah apparently they decided trees should come with music.\`,
-    \`\\
+response: It's really not that great, but the music is nice. Yeah apparently they decided trees should come with music.`,
+    `\
 prompt: The Trash
-response: Ugh, the dregs of society live here. It's the worst. It's just a disgusting slum. I'm honestly surprised there's not more crime.\`,
-    \`\\
+response: Ugh, the dregs of society live here. It's the worst. It's just a disgusting slum. I'm honestly surprised there's not more crime.`,
+    `\
 prompt: The Park
-response: It's a great place to relax! If you like dogs. I like cats more though. So you can imagine, that causes a few problems...\`,
-    \`\\
+response: It's a great place to relax! If you like dogs. I like cats more though. So you can imagine, that causes a few problems...`,
+    `\
 prompt: The Woods
-response: It's so dark in there! I like it. It feels spooky and dangerous. Maybe there are monsters. And I can kill them all.\`,
-    \`\\
+response: It's so dark in there! I like it. It feels spooky and dangerous. Maybe there are monsters. And I can kill them all.`,
+    `\
 prompt: Lake Lagari
-response: The water's so clear! It's really pretty. I bet the fish are delicious too. But then again, who am I to judge? I'm not a cannibal.\`,
-    \`\\
+response: The water's so clear! It's really pretty. I bet the fish are delicious too. But then again, who am I to judge? I'm not a cannibal.`,
+    `\
 prompt: Dungeon of Torment
 response: Don't judge me for this but I really like the dungeon. It's dark and spooky and I feel like anything could happen. It's the perfect place for a secret lair.
-\`,
-    \`\\
+`,
+    `\
 prompt: Tower Of Zion
-response: I always get a little nervous when I see the tower. It's so tall and imposing. But then again, I bet you could throw shit down from the heavens like Zeus.\`,
-    \`\\
+response: I always get a little nervous when I see the tower. It's so tall and imposing. But then again, I bet you could throw shit down from the heavens like Zeus.`,
+    `\
 prompt: Maze of Merlillion
-response: This place is so poorly designed! I'm sure nobody could ever find their way out. Unless they have a map or something. But even then, good luck.\`,
-    \`\\
+response: This place is so poorly designed! I'm sure nobody could ever find their way out. Unless they have a map or something. But even then, good luck.`,
+    `\
 prompt: Freaky Funkos Fried Fox
-response: I'm not sure how I feel about foxes being eaten. On the one hand, they're cute. But on the other hand, they're a little too foxy.\`,
-    \`\\
+response: I'm not sure how I feel about foxes being eaten. On the one hand, they're cute. But on the other hand, they're a little too foxy.`,
+    `\
 prompt: Echidna's Den
-response: It's weird that there are so many snake dens around. I mean, it's not like echidnas are poisonous or anything. Wait what, Echidnas aren't snakes?!\`,
-    \`\\
+response: It's weird that there are so many snake dens around. I mean, it's not like echidnas are poisonous or anything. Wait what, Echidnas aren't snakes?!`,
+    `\
 prompt: Fennek's Forest
-response: There's a lot of fenneks in this forest. Weird that they all hang out together like that. But I guess it's better than being eaten by a lion or something.\`,
-    \`\\
+response: There's a lot of fenneks in this forest. Weird that they all hang out together like that. But I guess it's better than being eaten by a lion or something.`,
+    `\
 prompt: The Abyss
-response: It's so dark and scary down there! You can survive long enough to turn on your flashlight, only to be scared to death by what you reveal!\`,
-    \`\\
+response: It's so dark and scary down there! You can survive long enough to turn on your flashlight, only to be scared to death by what you reveal!`,
+    `\
 prompt: Castle of Cygnus
-response: It's so cold in there! Somehow the princess can stand it. Maybe she just doesn't feel the cold. Or maybe she has a furnace.\`,
-    \`\\
+response: It's so cold in there! Somehow the princess can stand it. Maybe she just doesn't feel the cold. Or maybe she has a furnace.`,
+    `\
 prompt: Lost Minds Nightclub
-response: You won't lose your mind here, but if you lose your mind that's where you'll end up. Then you get to party until your parents come pick you up.\`,
-    \`\\
+response: You won't lose your mind here, but if you lose your mind that's where you'll end up. Then you get to party until your parents come pick you up.`,
+    `\
 prompt: Barrens of Boreas
-response: False advertising! This place is nothing but a bunch of rocks. There's no water or anything. What kind of bar is this?\`,
-    \`\\
+response: False advertising! This place is nothing but a bunch of rocks. There's no water or anything. What kind of bar is this?`,
+    `\
 prompt: The End
-response: People are always talking about the end, but it's just the end. What's all the fuss about? Everything that has a beginning must have an end.\`,
-    \`\\
+response: People are always talking about the end, but it's just the end. What's all the fuss about? Everything that has a beginning must have an end.`,
+    `\
 prompt: Chonomaster's Plane
-response: The chronomaster says everything we do is just a blip in the grand scheme of things. It makes you feel kind of small, doesn't it? I don't want ot feel small.\`,
-    \`\\
+response: The chronomaster says everything we do is just a blip in the grand scheme of things. It makes you feel kind of small, doesn't it? I don't want ot feel small.`,
+    `\
 prompt: Gus's Charging Station
-response: Do you like to wait for hours and hours just to charge? Then Gus will gladly rip you off for the privilege.\`,
-    \`\\
+response: Do you like to wait for hours and hours just to charge? Then Gus will gladly rip you off for the privilege.`,
+    `\
 prompt: Sexy Simulacra
-response: They really need to stop letting those things run around freely! They're so creepy and weird. Only the weirdos could find them sexy.\`,
-    \`\\
+response: They really need to stop letting those things run around freely! They're so creepy and weird. Only the weirdos could find them sexy.`,
+    `\
 prompt: Crunchy Apple
-response: The food is here really delicious! The apples are so crunchy, I bet they're made of pure sugar. They say it's really bad for you but it's irresistible.\`,
-]).join('\n\n')}\`;
+response: The food is here really delicious! The apples are so crunchy, I bet they're made of pure sugar. They say it's really bad for you but it's irresistible.`,
+]).join('\n\n')}`;
 
-export const targetSelectPrompt = \`\\
+export const targetSelectPrompt = `\
 # Instruction manual rip
 
 Press Z to target an object, then press A to select it. Your character will say fucking hilarious lines!
 
-\\\`\\\`\\\`\\\`;
+\`\`\``;
 
 export const targetSelectExamples = shuffleArray([
-    \`\\
+    `\
 prompt: "The Great Deku Tree" An enormous, grey, old tree. It is partly petrified.
-response: "It's just an old tree. It's the kind of tree that makes me want to carve out an old mans face in it."\`,
-    \`\\
+response: "It's just an old tree. It's the kind of tree that makes me want to carve out an old mans face in it."`,
+    `\
 prompt: "The Enchiridion" A magical spellbook with very old pages. It is fragile.
-response: "This book has ancient written all over it. Well not really but you know what I mean."\`,
-    \`\\
+response: "This book has ancient written all over it. Well not really but you know what I mean."`,
+    `\
 prompt: "rainbow-dash.gif" Animaged gif image of Rainbow Dash from My Little Pony, in the style of Nyan Cat.
-response: "It's pretty good art, I guess. But I wish it had something more interesting besides this rainbow."\`,
-    \`\\
+response: "It's pretty good art, I guess. But I wish it had something more interesting besides this rainbow."`,
+    `\
 prompt: "The Stacks Warehouse" A cyberpunk container in a trailer park. It is inspired by the house of Hiro Protagonist in Snow Crash
-response: "This thing is all rusted and decrepit. They should probably tear it down and get a new place."\`,
-    \`\\
+response: "This thing is all rusted and decrepit. They should probably tear it down and get a new place."`,
+    `\
 prompt: "The Infinity Sword" An ancient sword planted in a stone. It is heavily overgrown and won't budge.
-response: "This sword looks like it's been here for eons. It's hard to see where the stone ends and the sword begins."\`,
-    \`\\
+response: "This sword looks like it's been here for eons. It's hard to see where the stone ends and the sword begins."`,
+    `\
 prompt: "Tree" A basic tree in the park.
-response: "This tree is important. I hang out here all the time and that makes it important to me."\`,
-    \`\\
+response: "This tree is important. I hang out here all the time and that makes it important to me."`,
+    `\
 prompt: "Bench" A basic bench in the park.
-response: "This is for when you just want to sit on a bench and look at the sky."\`,
-    \`\\
+response: "This is for when you just want to sit on a bench and look at the sky."`,
+    `\
 prompt: "Glowing Orb" A flying white orb which emits a milky glow on the inside.
-response: "This thing is floating by some mysterious power. I don't know how it works and I'm not sure I want to."\`,
-    \`\\
+response: "This thing is floating by some mysterious power. I don't know how it works and I'm not sure I want to."`,
+    `\
 prompt: "Lamp Post" A lamp post along the street. It lights up automatically at night
-response: "It's really bright. It hurts my eyeballs! Maybe one of these days I'll come here at night and break it."\`,
-    \`\\
+response: "It's really bright. It hurts my eyeballs! Maybe one of these days I'll come here at night and break it."`,
+    `\
 prompt: "Rustic House" A regular townhouse in the country.
-response: "This house is so nice! It's the kind of house befitting for a very nice person. Wouldn't you agree?"\`,
-    \`\\
+response: "This house is so nice! It's the kind of house befitting for a very nice person. Wouldn't you agree?"`,
+    `\
 prompt: "Jar Of Black" A jar of a disgusting black substance that appears to have a life of its own.
-response: "Yuck, this is nasty stuff. It's all sweet and sticky and it gets all over your clothes."\`,
-    \`\\
+response: "Yuck, this is nasty stuff. It's all sweet and sticky and it gets all over your clothes."`,
+    `\
 prompt: "Wooden Sign" A wooden sign with some writing on it. It can be chopped down with a sword.
-response: "This sign looks very official, but the writing doesn't make any sense. What a waste of perfectly good wood."\`,
-    \`\\
+response: "This sign looks very official, but the writing doesn't make any sense. What a waste of perfectly good wood."`,
+    `\
 prompt: "ACog" An piece of an ancient technology. It looks very advanced but very old.
-response: "This is a peculiar device. I've seen them around before, but never up close. I wonder if they will ever work?"\`,
-    \`\\
+response: "This is a peculiar device. I've seen them around before, but never up close. I wonder if they will ever work?"`,
+    `\
 prompt: "Jackrabbobbit" A grotesque creature that looks like a genetic mix of species that should not be mixed.
-response: "A very strange creature. I have no idea what it is but it looks like a cross between a rabbit and earthworm."\`,
-    \`\\
+response: "A very strange creature. I have no idea what it is but it looks like a cross between a rabbit and earthworm."`,
+    `\
 prompt: "Black One" A very dark animal that hides in the shadows. Nobody knows much about it.
-response: "This animal is quite interesting. I've never seen anything like it before. I wonder what it eats?"\`,
-    \`\\
+response: "This animal is quite interesting. I've never seen anything like it before. I wonder what it eats?"`,
+    `\
 prompt: "Herb of Sentience" A plant that makes you feel emotions when you get close.
-response: "It's just a plant, but for some reason it makes me feel uneasy. Get it away from me!"\`,
-    \`\\
+response: "It's just a plant, but for some reason it makes me feel uneasy. Get it away from me!"`,
+    `\
 prompt: "Flower Bed" An arrangement of flowers in their natural habitat.
-response: "So pretty! I feel like I am reborn. There is so much nature and life and healing here."\`,
-    \`\\
+response: "So pretty! I feel like I am reborn. There is so much nature and life and healing here."`,
+    `\
 prompt: "Ripe Fruit" A fruit that has fallen from a tree. It is starting to rot.
-response: "This fruit is starting to rot. I guess I'll just leave it here for the animals."\`,
-    \`\\
+response: "This fruit is starting to rot. I guess I'll just leave it here for the animals."`,
+    `\
 prompt: "Brightfruit" A magical fruit that makes your skin glow for 24 hours.
-response: "Wow, this fruit is amazing! It makes my skin glow! Even more than it already was."\`,
-    \`\\
+response: "Wow, this fruit is amazing! It makes my skin glow! Even more than it already was."`,
+    `\
 prompt: "Goblin" A small, green creature with pointy ears. It is very ugly.
-response: "This goblin is so ugly, I can't even look at it. It's like looking at a car accident.\`,
-    \`\\
+response: "This goblin is so ugly, I can't even look at it. It's like looking at a car accident.`,
+    `\
 prompt: "Trash Heap" A pile of garbage. It smells really bad.
-response: This is the most disgusting thing I have ever seen. It's like a mountain of death."\`,
-    \`\\
+response: This is the most disgusting thing I have ever seen. It's like a mountain of death."`,
+    `\
 prompt: "Gucci Bag" An exclusive designer bag that is very expensive.
-response: "This bag is so beautiful, I can't even put into words. It's like a piece of art."\`,
-    \`\\
+response: "This bag is so beautiful, I can't even put into words. It's like a piece of art."`,
+    `\
 prompt: "Pile Of Bones" A pile of bones. It looks like somebody died here.
-response: "This is a very sad sight. There was life and then the life was gone."\`,
-    \`\\
+response: "This is a very sad sight. There was life and then the life was gone."`,
+    `\
 prompt: "Crunchy Grass" A heavenly bite from nature. It is juicy, fresh grass.
-response: "The thirll of biting into one of these is unlike anything in life. It's so juicy!"\`,
-    \`\\
+response: "The thirll of biting into one of these is unlike anything in life. It's so juicy!"`,
+    `\
 prompt: "doge.png" An image of the Doge meme.
-response: "This is a dead meme. But I guess the artist gets points for being topical. Besides, it is really cute!"\`,
-    \`\\
+response: "This is a dead meme. But I guess the artist gets points for being topical. Besides, it is really cute!"`,
+    `\
 prompt: "Magikarp" A common fish that is known for being very weak.
-response: "This fish is so weak, it's not even worth my time. I can't believe people actually catch these things."\`,
-    \`\\
+response: "This fish is so weak, it's not even worth my time. I can't believe people actually catch these things."`,
+    `\
 prompt: "Muscle Car" A car that is designed for speed and power.
-response: "This car is so fast, it's like a bullet. Am I brave enough to take it for a spin?"\`,
-    \`\\
+response: "This car is so fast, it's like a bullet. Am I brave enough to take it for a spin?"`,
+    `\
 prompt: "Door OF Eternity" A magical portal that leads to a distant land. It only works one way.
-response: "We're not supposed to touch the Door of Eternity. It's dangerous."\`,
-    \`\\
+response: "We're not supposed to touch the Door of Eternity. It's dangerous."`,
+    `\
 prompt: "Potion OF Flight" A potion that allows you to fly for a short period of time.
-response: "So this is what it's like to fly! It's amazing!"\`,
-    \`\\
+response: "So this is what it's like to fly! It's amazing!"`,
+    `\
 prompt: "Helmet" A high-helmet designed to protect your head.
-response: "This helmet is so strong, it can probably stop a bullet. But let's not try."\`,
-    \`\\
+response: "This helmet is so strong, it can probably stop a bullet. But let's not try."`,
+    `\
 prompt: "sword.png" Image of a sword being drawn from a sheath.
-response: "Swords are so cool! They're like the ultimate weapon. This one is up there."\`,
+response: "Swords are so cool! They're like the ultimate weapon. This one is up there."`,
 ]).join('\n\n');
 
-export const selectCharacterPrompt = \`\\
+export const selectCharacterPrompt = `\
 # Instruction manual rip
 
 Press Z to target a character. The cursor will highlight in green, then press A to talk to them. The dialogue in this game is hilarious!
 
-\\\`\\\`\\\`\\\`;
+\`\`\``;
 
 export const selectCharacterExamples = shuffleArray([
-    \`\\
+    `\
 prompt: "Axel Brave" A tall and handsome boy. He is a hacker with a bad reputation.
-response: "Hey Axel, did you guess my password yet?"\`,
-    \`\\
+response: "Hey Axel, did you guess my password yet?"`,
+    `\
 prompt: "Bailey Scritch" A witch studying at the Witchcraft School for Witchcraft and Redundancy.
-response: "Hello there. How are your studies going? Did you finish teh assignment with the frog?"\`,
-    \`\\
+response: "Hello there. How are your studies going? Did you finish teh assignment with the frog?"`,
+    `\
 prompt: "Lillith Lecant" A painter who uses a magical multicolored brush which leaves marks in the air.
-response: "Lillith you're my idol. I'm in awe at how magical your paintings come out."\`,
-    \`\\
+response: "Lillith you're my idol. I'm in awe at how magical your paintings come out."`,
+    `\
 prompt: "Aerith Gainsborough (Final Fantasy)" A flower girl with long brown hair. She's wearing a pink dress and has a big smile on her face.
-response: "Can I buy a flower? Or are they not for sale?"\`,
-    \`\\
+response: "Can I buy a flower? Or are they not for sale?"`,
+    `\
 prompt: "Stephen Gestalt" A fine gentleman in a dress suit.
-response: "I must say you look like a gentleman of the highest order."\`,
-    \`\\
+response: "I must say you look like a gentleman of the highest order."`,
+    `\
 prompt: "Ghost Girl" A rotten girl in a nightgown, like from The Ring.
-response: "Hello ghost girl how are you? How's death treatingm you?"\`,
-    \`\\
+response: "Hello ghost girl how are you? How's death treatingm you?"`,
+    `\
 prompt: "Mister Miyazaki" A impish being from the 5th dimension.
-response: "Hey Mister Miyazaki! What's the square root of pi?"\`,
-    \`\\
+response: "Hey Mister Miyazaki! What's the square root of pi?"`,
+    `\
 prompt: "Wizard Barley" A bartender with a big beard and an even bigger hat.
-response: "Hey man, can I get a beer? It's been a rough day."\`,
-    \`\\
+response: "Hey man, can I get a beer? It's been a rough day."`,
+    `\
 prompt: "Fortune Teller" A gypsy woman with a crystal ball.
-response: "Hey you, tell me my future! It better be good!"\`,
-    \`\\
+response: "Hey you, tell me my future! It better be good!"`,
+    `\
 prompt: "Kitten" A small black kitten with big green eyes.
-response: "You're such a cute little kitty. Is it time for your nap?"\`,
-    \`\\
+response: "You're such a cute little kitty. Is it time for your nap?"`,
+    `\
 prompt: "Green Dragon" A chubby dragon with short wings. It is a very cartoony avatar.
-response: "You look like you're having fun. Do those wings let you fly?"\`,
-    \`\\
+response: "You look like you're having fun. Do those wings let you fly?"`,
+    `\
 prompt: "Purple Cube" A purple cube with a single blue eye.
-response: "Hello. You're weird. What are you supposed to be?"\`,
-    \`\\
+response: "Hello. You're weird. What are you supposed to be?"`,
+    `\
 prompt: "Dawn (Pokemon)" A young girl with a Pikachu on her shoulder.
-response: "You look like a  Pokemon trainer,"\`,
-    \`\\
+response: "You look like a  Pokemon trainer,"`,
+    `\
 prompt: "Terra Branford (Final Fantasy)" A magician in a mech.
-response: "Hey Terra, long time no see! How have you been?"\`,
-    \`\\
+response: "Hey Terra, long time no see! How have you been?"`,
+    `\
 prompt: "Sora (Kingdom Hearts)" A young boy with big spiky hair. He's wearing a black hoodie and has a keyblade at his side.
-response: "Hey Sora, what brings you to this world?"\`,
-    \`\\
+response: "Hey Sora, what brings you to this world?"`,
+    `\
 prompt: "Cloud Strife (Final Fantasy)" A SOLDIER in armor. He has spiky blond hair and is carrying a huge sword on his back.
-response: "Yo Cloud! Can I borrow your sword?"\`,
+response: "Yo Cloud! Can I borrow your sword?"`,
 ]).join('\n\n');
 
-export const battleIntroductionPrompt = \`\\
+export const battleIntroductionPrompt = `\
 # Character battle introductions
 
 Final fantasy
@@ -526,9 +523,9 @@ May: "Heeeeyyy! Don't hit me!"
 Luka: "I'll just be over here in the back... With my knife."
 Sine: "...It's dangerous to go alone! Take this."
 Lightning: "I'm not afraid of you. Not even a little bit!"
-Squall: "Whatever. I'll just finish this and go."\`;
+Squall: "Whatever. I'll just finish this and go."`;
 
-export const actionsExamples = \`\\
+export const actionsExamples = `\
 Available reactions:
 surprise
 victory
@@ -600,9 +597,9 @@ Jake: "What are you doing?  (react = surprised)"
 Amy: "I'm looking for my cat. Have you seen her?  (react = normal)"
 Options for Jake:[No, I haven't seen your cat. (react =  headShake)], [Yes, I saw your cat go into the treehouse. (react = headNod)] 
 Jake: "No, I haven't seen your cat. (react = headShake)"
-Amy: "Well, if you see her can you let me know?  (react = normal)" *END*\`;
+Amy: "Well, if you see her can you let me know?  (react = normal)" *END*`;
 
-export const characterIntroLore = \`\\
+export const characterIntroLore = `\
 Anime script for a dark children's show.
 
 # Inspirations
@@ -652,6 +649,5 @@ Violette (8/F shadow friend): What's wrong? You look like you've seen a ghost...
 Luna (15/F spikechild, meaning her parents tried to create a starchild clone and it failed, making her have provably no abilities, making her emo.): She should be careful with that blade... Don't want to accidentally hurt herself! No one ever said being a warrior was easy. It takes blood, sweat and tears. But she does it because she loves it. (onselect: The thrill of battle is like no other.)
 Aesther (17/F AI Mechanic. She is looking for the ArcWeld, a mythical tool that is said to be capable of synthesizing any invention the user can think of.): I'm looking for the ArcWeld. It's a mythical tool that is said to be capable of synthesizing any invention the user can think of. I've been searching for it my whole life, and I won't rest until I find it. (onselect: This might be my lucky day!)
 Oak (16/M environmental terrorist. He is looking to save the world, but his methods are...questionable.): I'm fighting for the right to spray paint. To show the world that we are here, and that we will not be silenced. We will make them listen, even if it means destroying everything they hold dear. (onselect: This is for the trees!)
-Hakui (11/M brain hacker. He can hack anyone's brain and make them do what he wants.): I can make you do anything I want. Just give me a few seconds with your mind, and I'll have you eating out of the palm of my hand. (onselect: Note, I did not wash my hands.)\`;
+Hakui (11/M brain hacker. He can hack anyone's brain and make them do what he wants.): I can make you do anything I want. Just give me a few seconds with your mind, and I'll have you eating out of the palm of my hand. (onselect: Note, I did not wash my hands.)`;
 // LORE_HEADER_END
-`
