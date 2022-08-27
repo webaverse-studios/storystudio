@@ -3,7 +3,6 @@
   font-size: 1em;
   line-height: 24px;
   font-weight: 400;
-  color: #000000;
   background-color: #ffffff;
 
   font-synthesis: none;
@@ -40,7 +39,6 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  color: #000000;
   background-color: #ffffff;
   cursor: pointer;
 }

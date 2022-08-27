@@ -1,15 +1,10 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { entityPrototypes, contextTypes, defaultIngredients, views } from "./constants";
+import { entityPrototypes, contextTypes, defaultIngredients } from "./constants";
 import { generate } from "./utils/openai_utils";
 import Header from "./Header";
 import ListBox from "./ListBox";
 import Context from "./ContextSelector";
-import Ingredients from "./Ingredients";
-import GettingStarted from "./GettingStarted";
-import LoreFiles from "./LoreFiles";
-import LoreBase from "./LoreBase";
-import MapView from "./MapView";
 import {
   uniqueNamesGenerator,
   adjectives,
@@ -33,22 +28,9 @@ if (
 ) {
   localStorage.setItem("ingredients", JSON.stringify(defaultIngredients));
 }
-const storedEntityData = JSON.parse(localStorage.getItem("ingredients"));
 
-function App() {
-  const [currentView, setCurrentView] = useState(Object.keys(views)[0]);
-  const [ingredients, setIngredients] = useState(storedEntityData);
+function Ingredients({baseData, setBaseData, ingredients, setIngredients, exportHandler, importHandler}) {
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
-  const [baseData, setBaseData] = useState({
-    base: null,
-    url: "./lore-model.js", // "https://webaverse.github.io/lore/lore-model.js",
-    type: "url",
-    module: {},
-  });
-
-  useEffect(() => {
-    localStorage.setItem("ingredients", JSON.stringify(ingredients));
-  }, [ingredients]);
 
   const addEntityCallback = async (
     entityType,
@@ -93,16 +75,7 @@ function App() {
     setGenerating(false);
   };
   const deleteEntityCallback = (entity, dialog) => {
-    console.log("entity", entity);
     const newData = { ...ingredients };
-    console.log("ingredients", ingredients);
-    console.log("currentContentType", currentContentType);
-    console.log(
-      'ingredients["dialog"][entity.type]',
-      ingredients["dialog"][currentContentType]
-    );
-    console.log("ingredients[entity.type]", ingredients[entity.type]);
-
     if (dialog) {
       newData["dialog"][currentContentType] = ingredients["dialog"][
         currentContentType
@@ -118,8 +91,6 @@ function App() {
 
   const editEntityCallback = (entity) => {
     let newData = { ...ingredients };
-
-    console.log("gotta edit dis entity", entity);
 
     if (entity.message !== undefined) {
       newData["dialog"][currentContentType];
@@ -160,29 +131,63 @@ function App() {
   };
 
   const setBase = (data) => {
-    console.log('local storage handler goes here...');
     setBaseData(data);
   };
 
+
+  const importJson = async () => {
+    const file = await getFile();
+    const text = await file.text();
+    const json = JSON.parse(text);
+    importHandler(json);
+  };
+
   return (
-    <div className="App">
-      <Header currentView={currentView} setCurrentView={setCurrentView} />
-      {
-        currentView === "gettingStarted" ? <GettingStarted /> :
-        currentView === "base" ? <LoreBase data={baseData} setData={setBase} /> :
-        currentView === "files" ? <LoreFiles /> :
-        currentView === "map" ? <MapView /> :
-        <Ingredients
-        importHandler={(data) => handleImport(data)}
-        exportHandler={() => handleExport()}
-        ingredients={ingredients}
-        setIngredients={setIngredients}
-        baseData={baseData}
-        setBaseData={setBaseData}
-      />
-      }
+    <div className="view">
+      <div className={"importExportButtons"}>
+        <button className={"importButton"} onClick={() => importJson()}>
+          Import
+        </button>
+        <button className={"exportButton"} onClick={() => exportHandler()}>
+          Export
+        </button>
+      </div>
+      <div className="sections">
+        {entityPrototypes.map((entity, index) => {
+          return (
+            <ListBox
+              key={index}
+              type={entity.type}
+              data={ingredients[entity.type]}
+              header={entity.type + "s"}
+              addEntityCallback={(data, setGenerating) =>
+                addEntityCallback(entity.type, data, setGenerating)
+              }
+              editEntityCallback={(data) => editEntityCallback(data)}
+              deleteEntityCallback={(data) => deleteEntityCallback(data)}
+            />
+          );
+        })}
+        <Context
+          data={ingredients.dialog}
+          currentContentType={currentContentType}
+          setCurrentContentType={setCurrentContentType}
+        />
+        <ListBox
+          type={"dialog"}
+          data={ingredients.dialog[currentContentType]}
+          header={"dialog"}
+          addEntityCallback={(data, setGenerating) => {
+            console.log("ingredients is", ingredients);
+            addEntityCallback("dialog", ingredients, setGenerating);
+          }}
+          editEntityCallback={(data) => editEntityCallback(data)}
+          deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
+          showLabels={true}
+        />
+      </div>
     </div>
   );
 }
 
-export default App;
+export default Ingredients;

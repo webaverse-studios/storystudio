@@ -26,9 +26,9 @@ const ListBox = ({ header, data, type = '', addEntityCallback, editEntityCallbac
                 <button onClick={() => addEntityCallback(data, setGenerating)  }>{!generating ? 'Generate' : 'Generating...'}</button>
             </div>
             <div className={'section ' + type}>
-                {data && data.map((entityData, index) => {
+                {data && data.map((ingredients, index) => {
                     return (
-                        <Entity key={index} entityData={entityData} editEntityCallback={editEntityCallback} deleteEntityCallback={deleteEntityCallback} showLabels={showLabels} />
+                        <Entity key={index} ingredients={ingredients} editEntityCallback={editEntityCallback} deleteEntityCallback={deleteEntityCallback} showLabels={showLabels} />
                     );
                 })
                 }

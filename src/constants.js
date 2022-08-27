@@ -1,3 +1,5 @@
+export const views = { gettingStarted: 'Getting Started', base: 'Base', ingredients: 'Ingredients',  files: 'Output', map: 'Map' };
+
 export const contextTypes = ['objectComment', 'npcComment', 'mobComment', 'loadingComment', 'banter', 'loreExposition', 'rpgDialogue', 'reactions', 'cutscenes', 'quests']
 
 export const entityPrototypes = [
@@ -10,20 +12,20 @@ export const entityPrototypes = [
         id: '234',
     },
     {
+        type: 'object',
+        name: 'My Object',
+        shortname: 'object#234',
+        enabled: true,
+        description: 'This is a description of my object',
+        id: '234',
+    },
+    {
         type: 'character',
         name: 'My Character',
         shortname: 'character#234',
         enabled: true,
         description: 'This is a description of my character',
         inventory: [],
-        id: '234',
-    },
-    {
-        type: 'object',
-        name: 'My Object',
-        shortname: 'object#234',
-        enabled: true,
-        description: 'This is a description of my object',
         id: '234',
     },
     {
@@ -46,7 +48,7 @@ export const entityPrototypes = [
     }
 ]
 
-export const defaultEntityData = {
+export const defaultIngredients = {
     dialog: {
         objectComment: [{
             action: "none",

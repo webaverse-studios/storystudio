@@ -53,8 +53,8 @@ async function openaiRequest(
   }
 }
 
-async function generateScene(funcs) {
-  const scenePrompt = funcs.createScenePrompt();
+async function generateScene(module) {
+  const scenePrompt = module.createScenePrompt();
 
   const resp = await openaiRequest(scenePrompt, [".,\n", "Location:"]);
   const lines = resp.split("\n");
@@ -64,8 +64,8 @@ async function generateScene(funcs) {
   };
 }
 
-async function generateCharacter(funcs) {
-  const characterPrompt = funcs.createCharacterPrompt();
+async function generateCharacter(module) {
+  const characterPrompt = module.createCharacterPrompt();
   //console.log('characterPrompt is', characterPrompt);
   const resp = await openaiRequest(characterPrompt, [".,\n", "Character:"]);
   const lines = resp.split("\n");
@@ -81,8 +81,8 @@ async function generateCharacter(funcs) {
   };
 }
 
-async function generateObject(funcs) {
-  const objectPrompt = funcs.createObjectPrompt();
+async function generateObject(module) {
+  const objectPrompt = module.objectPrompt;
 
   console.log(objectPrompt);
   const resp = await openaiRequest(objectPrompt, [".,\n", "Object:"]);
@@ -93,11 +93,11 @@ async function generateObject(funcs) {
   };
 }
 
-const generateLore = async (data, funcs) => {
+const generateLore = async (data, module) => {
   const _resp = [];
   //console.log('data is', data);
   //console.log('data["setting"] is', data["setting"]);
-  const lorePrompt = funcs.makeLorePrompt({
+  const lorePrompt = module.makeLorePrompt({
     settings: data["setting"],
     characters: data["character"],
     messages: [],
@@ -111,17 +111,17 @@ const generateLore = async (data, funcs) => {
   const resp = await openaiRequest(lorePrompt, ["Input:", "Output:"]);
 
   const battleDialoguePrompt = "";
-  // funcs.makeBattleIntroductionPrompt({
+  // module.makeBattleIntroductionPrompt({
   //   name: data["character"][i].name,
   //   bio: data["character"][i].description,
   // });
 
   // const resp2 = await openaiRequest(
   //   battleDialoguePrompt,
-  //   funcs.makeBattleIntroductionStop()
+  //   module.makeBattleIntroductionStop()
   // );
 
-  const loreResp = funcs.parseLoreResponses(resp);
+  const loreResp = module.parseLoreResponses(resp);
   //console.log('loreResp', loreResp)
   for (let i = 0; i < loreResp.length; i++) {
     // loreResp[i].rpgDialogue = resp2;
@@ -144,8 +144,8 @@ function makeId(length) {
 export async function generate(type, data, baseData) {
   if (
     !baseData ||
-    !baseData.funcs ||
-    Object.entries(baseData.funcs).length === 0
+    !baseData.module ||
+    Object.entries(baseData.module).length === 0
   ) {
     return null;
   }
@@ -161,35 +161,35 @@ export async function generate(type, data, baseData) {
   let resp = undefined;
   switch (type) {
     case "setting":
-      resp = await generateScene(baseData.funcs);
+      resp = await generateScene(baseData.module);
       res.name = resp.name;
       res.description = resp.description;
       break;
     case "character":
-      resp = await generateCharacter(baseData.funcs);
+      resp = await generateCharacter(baseData.module);
       res.name = resp.name;
       res.description = resp.description;
       res.inventory = resp.inventory;
       break;
     case "object":
-      resp = await generateObject(baseData.funcs);
+      resp = await generateObject(baseData.module);
       res.name = resp.name;
       res.description = resp.description;
       break;
     case "npc":
-      resp = await generateCharacter(baseData.funcs);
+      resp = await generateCharacter(baseData.module);
       res.name = resp.name;
       res.description = resp.description;
       res.inventory = resp.inventory;
       break;
     case "mob":
-      resp = await generateCharacter(baseData.funcs);
+      resp = await generateCharacter(baseData.module);
       res.name = resp.name;
       res.description = resp.description;
       res.inventory = resp.inventory;
       break;
     case "dialog":
-      resp = await generateLore(data, baseData.funcs);
+      resp = await generateLore(data, baseData.module);
       return resp;
     default:
       console.log("unknown type", type);
