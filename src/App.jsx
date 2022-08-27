@@ -9,7 +9,6 @@ import Ingredients from "./Ingredients";
 import GettingStarted from "./GettingStarted";
 import LoreFiles from "./LoreFiles";
 import LoreBase from "./LoreBase";
-import MapView from "./MapView";
 import {
   uniqueNamesGenerator,
   adjectives,
@@ -90,7 +89,6 @@ function App() {
           setData={setBase}
         /> :
         currentView === "files" ? <LoreFiles /> :
-        currentView === "map" ? <MapView /> :
         <Ingredients
           dataType={'dialog'}
           importHandler={(data) => handleImport(data)}
