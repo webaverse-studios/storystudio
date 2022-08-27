@@ -1,4 +1,21 @@
 import { Configuration, OpenAIApi } from "openai";
+import { lore } from "../constants";
+
+const createScenePrompt = (module) => `\
+${lore.prompts.scene}
+${shuffleArray(lore.examples.scene).join('\n')}
+Location:`;
+
+const createCharacterPrompt = (module) => `\
+${lore.prompts.character}
+${shuffleArray(lore.examples.character).join(`\n`)}
+Character:`;
+
+const createObjectPrompt = (module) => `\
+${lore.prompts.object}
+${shuffleArray(lore.examples.object).join(`\n`)}
+Object:`;
+
 
 let openai = new OpenAIApi(
   new Configuration({
@@ -54,7 +71,7 @@ async function openaiRequest(
 }
 
 async function generateScene(module) {
-  const scenePrompt = module.createScenePrompt();
+  const scenePrompt = createScenePrompt(module);
 
   const resp = await openaiRequest(scenePrompt, [".,\n", "Location:"]);
   const lines = resp.split("\n");
@@ -65,7 +82,7 @@ async function generateScene(module) {
 }
 
 async function generateCharacter(module) {
-  const characterPrompt = module.createCharacterPrompt();
+  const characterPrompt = createCharacterPrompt(module);
   //console.log('characterPrompt is', characterPrompt);
   const resp = await openaiRequest(characterPrompt, [".,\n", "Character:"]);
   const lines = resp.split("\n");
@@ -82,9 +99,7 @@ async function generateCharacter(module) {
 }
 
 async function generateObject(module) {
-  const objectPrompt = module.objectPrompt;
-
-  console.log(objectPrompt);
+  const objectPrompt = createObjectPrompt(module);
   const resp = await openaiRequest(objectPrompt, [".,\n", "Object:"]);
   const lines = resp.split("\n");
   return {

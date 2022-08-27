@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { entityPrototypes, contextTypes, defaultIngredients, views } from "./constants";
+import { entityPrototypes, contextTypes, defaultIngredients, views, lore } from "./constants";
 import { generate } from "./utils/openai_utils";
 import Header from "./Header";
 import ListBox from "./ListBox";
@@ -39,6 +39,7 @@ function App() {
   const [currentView, setCurrentView] = useState(Object.keys(views)[0]);
   const [ingredients, setIngredients] = useState(storedEntityData);
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
+  const [loreExamples, setLoreExamples] = useState(lore);
   const [baseData, setBaseData] = useState({
     base: null,
     url: "./lore-model.js", // "https://webaverse.github.io/lore/lore-model.js",
@@ -93,16 +94,7 @@ function App() {
     setGenerating(false);
   };
   const deleteEntityCallback = (entity, dialog) => {
-    console.log("entity", entity);
     const newData = { ...ingredients };
-    console.log("ingredients", ingredients);
-    console.log("currentContentType", currentContentType);
-    console.log(
-      'ingredients["dialog"][entity.type]',
-      ingredients["dialog"][currentContentType]
-    );
-    console.log("ingredients[entity.type]", ingredients[entity.type]);
-
     if (dialog) {
       newData["dialog"][currentContentType] = ingredients["dialog"][
         currentContentType
@@ -169,7 +161,7 @@ function App() {
       <Header currentView={currentView} setCurrentView={setCurrentView} />
       {
         currentView === "gettingStarted" ? <GettingStarted /> :
-        currentView === "base" ? <LoreBase data={baseData} setData={setBase} /> :
+        currentView === "base" ? <LoreBase examples={loreExamples} setExamples={setLoreExamples} data={baseData} setData={setBase} /> :
         currentView === "files" ? <LoreFiles /> :
         currentView === "map" ? <MapView /> :
         <Ingredients

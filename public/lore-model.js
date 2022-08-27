@@ -1,3 +1,23 @@
+// injected script variables
+// - config (object)
+// config = {
+//  maxExamples: 8
+// }
+// - examples (array)
+// inspirations = ['Final Fantasy']
+// availableReactions = ['surprise']
+// - availableActions (array)
+// availableActions = ['none', 'react']
+// - lore (object)
+// lore = {
+//  overview: {
+//    prompt: `What is the name of the game?`,
+//   examples: ['I am a meat popsicle`]
+//  }  
+// } 
+// how to use script variables:
+// eg console.log(lore)
+
 export const makeLorePrompt = ({
   settings,
   characters,
@@ -5,7 +25,8 @@ export const makeLorePrompt = ({
   objects,
   dstCharacter,
 }) => `\
-${characterLore}
+${lore.prompts.overview}
+${shuffleArray(lore.examples.overview).join(`\n`)}
 
 # Setting
 ${settings.join('\n\n')}
@@ -23,14 +44,15 @@ ${
 # Objects
 ${objects.map((o, i) => thingHash(o, i)).join('\n')}
 
-# Basic Reactions
-${reactionExamples}
+${lore.prompts.overviewReactions}
+${lore.examples.overviewReactions.join(`\n`)}
 
-# Basic Actions 
-${actionExamples}
+${lore.prompts.overviewActions}
+${lore.examples.overviewActions.join(`\n`)}
 
-# Examples of How to Parse Inputs
-${inputParsingExamples}
+${lore.prompts.inputParsing}
+${shuffleArray(lore.examples.inputParsing).join(`\n`)}
+
 ${messages.length > 0 ? 'Input:\n' : ''}
 ${messages.map(m => {
     const characterIndex = characters.indexOf(m.character);
@@ -143,7 +165,8 @@ export const makeCommentPrompt = ({
   // sex,
 }) => {
   return `\
-${commentLore}
+${lore.prompts.comment}
+${shuffleArray(lore.examples.comment).join(`\n`)}
 prompt: ${name}
 response:`;
 };
@@ -157,9 +180,8 @@ export const makeSelectTargetPrompt = ({
   description,
 }) => {
   return `\
-${targetSelectPrompt}
-${targetSelectExamples}
-
+${lore.prompts.targetSelect}
+${shuffleArray(lore.examples.targetSelect).join(`\n`)}
 prompt: ${_cleanName(name)}${description ? ` ${description}` : ''}\nresponse: "`;
 };
 export const makeSelectTargetStop = () => `"`;
@@ -173,8 +195,8 @@ export const makeSelectCharacterPrompt = ({
   description,
 }) => {
   return `\
-${selectCharacterPrompt}
-${selectCharacterExamples}
+${lore.prompts.characterSelect}
+${shuffleArray(lore.examples.characterSelect).join(`\n`)}
 
 prompt: ${_cleanName(name + ' (Character)')}${description ? ` ${description}` : ''}\nresponse: "`;
 };
@@ -194,7 +216,8 @@ export const makeBattleIntroductionPrompt = ({
   bio,
 }) => {
   return `\
-${battleIntroductionPrompt}
+${lore.prompts.battle}
+${shuffleArray(lore.examples.battle).join(`\n`)}
 ${name}: "`;
 };
 export const makeBattleIntroductionStop = () => `"`;
@@ -208,7 +231,8 @@ export const makeChatPrompt = ({
 }) => {
   // Modifying messages to include emotes
   return `\
-${actionsExamples}
+  ${lore.prompts.actions}
+  ${shuffleArray(lore.examples.actions).join(`\n`)}
 
 ${messages.map(message => {
   return `${message.name}: "${message.text} (react = ${(message.emote ? message.emote : 'normal')})"`;
@@ -296,7 +320,8 @@ export const makeCharacterIntroPrompt = ({
   bio,
 }) => {
   return `\
-${characterIntroLore}
+${lore.prompts.intros}
+${shuffleArray(lore.examples.intros).join(`\n`)}
 ${name}${bio ? ` (${bio})` : ''}:`;
 };
 export const makeCharacterIntroStop = () => `\n`;
@@ -315,4 +340,74 @@ export const parseCharacterIntroResponse = response => {
   } else {
     return null;
   }
+};
+
+function shuffleArray(array) {
+  const shortenArray = (array) => {
+      const maxLength = config.maxExamples;
+      if (array.length > maxLength) {
+          return array.slice(0, maxLength);
+      }
+      return array;
+  }
+  for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+  }
+  return shortenArray(array);
+};
+
+function thingHash(o, index) {
+  function murmurhash3(key, seed) {
+    var remainder, bytes, h1, h1b, c1, c1b, c2, c2b, k1, i;
+
+    remainder = key.length & 3; // key.length % 4
+    bytes = key.length - remainder;
+    h1 = seed;
+    c1 = 0xcc9e2d51;
+    c2 = 0x1b873593;
+    i = 0;
+
+    while (i < bytes) {
+        k1 =
+            ((key.charCodeAt(i) & 0xff)) |
+            ((key.charCodeAt(++i) & 0xff) << 8) |
+            ((key.charCodeAt(++i) & 0xff) << 16) |
+            ((key.charCodeAt(++i) & 0xff) << 24);
+        ++i;
+
+        k1 = ((((k1 & 0xffff) * c1) + ((((k1 >>> 16) * c1) & 0xffff) << 16))) & 0xffffffff;
+        k1 = (k1 << 15) | (k1 >>> 17);
+        k1 = ((((k1 & 0xffff) * c2) + ((((k1 >>> 16) * c2) & 0xffff) << 16))) & 0xffffffff;
+
+        h1 ^= k1;
+        h1 = (h1 << 13) | (h1 >>> 19);
+        h1b = ((((h1 & 0xffff) * 5) + ((((h1 >>> 16) * 5) & 0xffff) << 16))) & 0xffffffff;
+        h1 = (((h1b & 0xffff) + 0x6b64) + ((((h1b >>> 16) + 0xe654) & 0xffff) << 16));
+    }
+
+    k1 = 0;
+
+    switch (remainder) {
+        case 3: k1 ^= (key.charCodeAt(i + 2) & 0xff) << 16;
+        case 2: k1 ^= (key.charCodeAt(i + 1) & 0xff) << 8;
+        case 1: k1 ^= (key.charCodeAt(i) & 0xff);
+
+            k1 = (((k1 & 0xffff) * c1) + ((((k1 >>> 16) * c1) & 0xffff) << 16)) & 0xffffffff;
+            k1 = (k1 << 15) | (k1 >>> 17);
+            k1 = (((k1 & 0xffff) * c2) + ((((k1 >>> 16) * c2) & 0xffff) << 16)) & 0xffffffff;
+            h1 ^= k1;
+    }
+
+    h1 ^= key.length;
+
+    h1 ^= h1 >>> 16;
+    h1 = (((h1 & 0xffff) * 0x85ebca6b) + ((((h1 >>> 16) * 0x85ebca6b) & 0xffff) << 16)) & 0xffffffff;
+    h1 ^= h1 >>> 13;
+    h1 = ((((h1 & 0xffff) * 0xc2b2ae35) + ((((h1 >>> 16) * 0xc2b2ae35) & 0xffff) << 16))) & 0xffffffff;
+    h1 ^= h1 >>> 16;
+
+    return h1 >>> 0;
+  }
+  return`${murmurhash3(o.name).toString(16)}/${o.name}#${index + 1}`
 };

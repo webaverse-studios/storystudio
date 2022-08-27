@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { entityPrototypes, contextTypes, defaultIngredients } from "./constants";
+import { entityPrototypes, contextTypes } from "./constants";
 import { generate } from "./utils/openai_utils";
-import Header from "./Header";
 import ListBox from "./ListBox";
 import Context from "./ContextSelector";
 import {
@@ -20,13 +19,6 @@ function makeId(length) {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   return result;
-}
-
-if (
-  !localStorage.getItem("ingredients") ||
-  localStorage.getItem("ingredients") === "[object Object]"
-) {
-  localStorage.setItem("ingredients", JSON.stringify(defaultIngredients));
 }
 
 function Ingredients({baseData, setBaseData, ingredients, setIngredients, exportHandler, importHandler}) {
@@ -130,11 +122,6 @@ function Ingredients({baseData, setBaseData, ingredients, setIngredients, export
     element.remove();
   };
 
-  const setBase = (data) => {
-    setBaseData(data);
-  };
-
-
   const importJson = async () => {
     const file = await getFile();
     const text = await file.text();
@@ -168,11 +155,11 @@ function Ingredients({baseData, setBaseData, ingredients, setIngredients, export
             />
           );
         })}
-        <Context
+        {/*<Context
           data={ingredients.dialog}
           currentContentType={currentContentType}
           setCurrentContentType={setCurrentContentType}
-        />
+        />*/}
         <ListBox
           type={"dialog"}
           data={ingredients.dialog[currentContentType]}
@@ -184,7 +171,7 @@ function Ingredients({baseData, setBaseData, ingredients, setIngredients, export
           editEntityCallback={(data) => editEntityCallback(data)}
           deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
           showLabels={true}
-        />
+        /> 
       </div>
     </div>
   );

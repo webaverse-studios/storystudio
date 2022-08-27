@@ -1,3 +1,5 @@
+export { lore } from '../public/lore_header';
+
 export const views = { gettingStarted: 'Getting Started', base: 'Base', ingredients: 'Ingredients',  files: 'Output', map: 'Map' };
 
 export const contextTypes = ['objectComment', 'npcComment', 'mobComment', 'loadingComment', 'banter', 'loreExposition', 'rpgDialogue', 'reactions', 'cutscenes', 'quests']

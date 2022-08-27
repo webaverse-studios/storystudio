@@ -4,6 +4,8 @@ import Entity from "./Entity";
 
 const ListBox = ({ header, data, type = '', addEntityCallback, editEntityCallback, deleteEntityCallback, showLabels = false }) => {
     const [generating, setGenerating] = React.useState(false);
+    console.log('data', data)
+
     useEffect(() => {
         // if generating is true, set timer to check if the length of data is more than it was before
         /*if (generating) {
