@@ -58,20 +58,25 @@ function LoreFiles({dataType, baseData, ingredients, setIngredients, loreFiles, 
       );
     }
 
-    setIngredients(newData);
+    setLoreFiles(newData);
   };
 
-  const editEntityCallback = (entity) => {
-    console.log('editing entity', entity)
-    let newData = { ...loreFiles };
+  const editEntityCallback = (entity, index) => {
+    console.log('editing entity', entity, index)
+    let newData = [ ...loreFiles ];
     console.log('loreFiles is', loreFiles)
+    if(index !== undefined){
+      newData[index] = entity;
+      console.log('setting loreFiles to', newData)
+    } else {
 
       const entityIndex = newData.findIndex(
         (e) => e.id === entity.id
-      );
-      newData[entityIndex] = entity;
-
-    setIngredients(newData);
+        );
+        newData[entityIndex] = entity;
+      }
+        
+      setLoreFiles(newData);
   };
 
   const handleImport = (data) => {
@@ -120,7 +125,7 @@ function LoreFiles({dataType, baseData, ingredients, setIngredients, loreFiles, 
           addEntityCallback={(data, setGenerating) => {
             addEntityCallback(setGenerating);
           }}
-          editEntityCallback={(data) => editEntityCallback(data)}
+          editEntityCallback={editEntityCallback}
           deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
           showLabels={true}
         /> 

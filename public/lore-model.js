@@ -45,11 +45,11 @@ ${
 # Objects
 ${objects.map((o, i) => thingHash(o, i)).join('\n')}
 
-${lore.overviewReactions.prompt}
-${lore.overviewReactions.examples.join(`\n`)}
+${lore.reactionTypes.prompt}
+${lore.reactionTypes.examples.join(`\n`)}
 
-${lore.overviewActions.prompt}
-${lore.overviewActions.examples.join(`\n`)}
+${lore.actionTypes.prompt}
+${lore.actionTypes.examples.join(`\n`)}
 
 ${lore.inputParsing.prompt}
 ${shuffleArray(lore.inputParsing.examples).join(`\n`)}
@@ -60,12 +60,13 @@ ${messages.map(m => {
     // const suffix = `[emote=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
     // return `+${thingHash(m.character, characterIndex)}: ${m.message} ${suffix}`;
     const suffix = `react=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`
+    console.log('m.character', m.character, 'characterIndex', characterIndex, 'm', m);
     return `+${thingHash(m.character, characterIndex)}: ${m.message}`;
   }).join('\n')}
 +${dstCharacter ? `${thingHash(dstCharacter, characters.indexOf(dstCharacter))}:` : ''}
 Output:`;
 
-const parseLoreResponse = response => {
+export const parseLoreResponse = response => {
   let match;
 if (match = response?.match(/^\+([^\/]+?)\/([^#]+?)#([0-9]+?):([^\[]*?)\[emote=([\s\S]*?),action=([\s\S]*?),object=([\s\S]*?),target=([\s\S]*?)\]$/)) {
     const hash = match[1];
@@ -181,8 +182,8 @@ export const makeSelectTargetPrompt = ({
   description,
 }) => {
   return `\
-${lore.targetSelect.prompt}
-${shuffleArray(lore.targetSelect.examples).join(`\n`)}
+${lore.object.prompt}
+${shuffleArray(lore.object.examples).join(`\n`)}
 prompt: ${_cleanName(name)}${description ? ` ${description}` : ''}\nresponse: "`;
 };
 export const makeSelectTargetStop = () => `"`;
@@ -196,8 +197,8 @@ export const makeSelectCharacterPrompt = ({
   description,
 }) => {
   return `\
-${lore.characterSelect.prompt}
-${shuffleArray(lore.characterSelect.examples).join(`\n`)}
+${lore.character.prompt}
+${shuffleArray(lore.character.examples).join(`\n`)}
 
 prompt: ${_cleanName(name + ' (Character)')}${description ? ` ${description}` : ''}\nresponse: "`;
 };
@@ -345,7 +346,7 @@ export const parseCharacterIntroResponse = response => {
 
 function shuffleArray(array) {
   const shortenArray = (array) => {
-      const maxLength = config?.maxExamples ?? 10;
+      const maxLength = config?.maxExamples ?? 5;
       if (array.length > maxLength) {
           return array.slice(0, maxLength);
       }

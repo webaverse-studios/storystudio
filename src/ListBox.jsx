@@ -13,7 +13,7 @@ const ListBox = ({ header, data, type = '', addEntityCallback, editEntityCallbac
             <div className={'section ' + type}>
                 {data && Object.keys(data).map((key, index) => {
                     return (
-                        <Entity key={index} data={data[key]} editEntityCallback={editEntityCallback} deleteEntityCallback={deleteEntityCallback} showLabels={showLabels} />
+                        <Entity key={index} index={index} data={data[key]} editEntityCallback={editEntityCallback} deleteEntityCallback={deleteEntityCallback} showLabels={showLabels} />
                     );
                 })
                 }

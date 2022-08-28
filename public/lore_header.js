@@ -51,7 +51,7 @@ export let config = {
 AI anime avatars in a virtual world. They have human-level intelligence and unique and interesting personalities.`
             ],
     },
-    overviewReactions: {
+    reactionTypes: {
         prompt: `# Basic Reactions`,
         examples: [
 `\
@@ -84,7 +84,7 @@ Description: When the Character did not expect what is in the Input.
 `,
             ],
     },
-    overviewActions: {
+    actionTypes: {
         prompt: `# Basic Actions`,
         examples: [
 `\
@@ -274,7 +274,12 @@ response: The food is here really delicious! The apples are so crunchy, I bet th
         ],
     },
     character: {
-        prompt: ``,
+        prompt: `\
+# Instruction manual rip
+
+Press Z to target a character. The cursor will highlight in green, then press A to talk to them. The dialogue in this game is hilarious!
+
+\`\`\``,
         examples: [
 `\
 prompt: "Axel Brave" A tall and handsome boy. He is a hacker with a bad reputation.
@@ -327,7 +332,12 @@ response: "Yo Cloud! Can I borrow your sword?"`
             ],
     },
     object: {
-        prompt: ``,
+        prompt: `\
+# Instruction manual rip
+
+Press Z to target an object, then press A to select it. Your character will say fucking hilarious lines!
+
+\`\`\``,
         examples: [
 `\
 prompt: "The Great Deku Tree" An enormous, grey, old tree. It is partly petrified.
@@ -422,167 +432,6 @@ response: "This helmet is so strong, it can probably stop a bullet. But let's no
     `\
 prompt: "sword.png" Image of a sword being drawn from a sheath.
 response: "Swords are so cool! They're like the ultimate weapon. This one is up there."`
-        ],
-    },
-    targetSelect: {
-        prompt: `\
-# Instruction manual rip
-
-Press Z to target an object, then press A to select it. Your character will say fucking hilarious lines!
-
-\`\`\``,
-        examples: [
-`\
-prompt: "The Great Deku Tree" An enormous, grey, old tree. It is partly petrified.
-response: "It's just an old tree. It's the kind of tree that makes me want to carve out an old mans face in it."`,
-    `\
-prompt: "The Enchiridion" A magical spellbook with very old pages. It is fragile.
-response: "This book has ancient written all over it. Well not really but you know what I mean."`,
-    `\
-prompt: "rainbow-dash.gif" Animaged gif image of Rainbow Dash from My Little Pony, in the style of Nyan Cat.
-response: "It's pretty good art, I guess. But I wish it had something more interesting besides this rainbow."`,
-    `\
-prompt: "The Stacks Warehouse" A cyberpunk container in a trailer park. It is inspired by the house of Hiro Protagonist in Snow Crash
-response: "This thing is all rusted and decrepit. They should probably tear it down and get a new place."`,
-    `\
-prompt: "The Infinity Sword" An ancient sword planted in a stone. It is heavily overgrown and won't budge.
-response: "This sword looks like it's been here for eons. It's hard to see where the stone ends and the sword begins."`,
-    `\
-prompt: "Tree" A basic tree in the park.
-response: "This tree is important. I hang out here all the time and that makes it important to me."`,
-    `\
-prompt: "Bench" A basic bench in the park.
-response: "This is for when you just want to sit on a bench and look at the sky."`,
-    `\
-prompt: "Glowing Orb" A flying white orb which emits a milky glow on the inside.
-response: "This thing is floating by some mysterious power. I don't know how it works and I'm not sure I want to."`,
-    `\
-prompt: "Lamp Post" A lamp post along the street. It lights up automatically at night
-response: "It's really bright. It hurts my eyeballs! Maybe one of these days I'll come here at night and break it."`,
-    `\
-prompt: "Rustic House" A regular townhouse in the country.
-response: "This house is so nice! It's the kind of house befitting for a very nice person. Wouldn't you agree?"`,
-    `\
-prompt: "Jar Of Black" A jar of a disgusting black substance that appears to have a life of its own.
-response: "Yuck, this is nasty stuff. It's all sweet and sticky and it gets all over your clothes."`,
-    `\
-prompt: "Wooden Sign" A wooden sign with some writing on it. It can be chopped down with a sword.
-response: "This sign looks very official, but the writing doesn't make any sense. What a waste of perfectly good wood."`,
-    `\
-prompt: "ACog" An piece of an ancient technology. It looks very advanced but very old.
-response: "This is a peculiar device. I've seen them around before, but never up close. I wonder if they will ever work?"`,
-    `\
-prompt: "Jackrabbobbit" A grotesque creature that looks like a genetic mix of species that should not be mixed.
-response: "A very strange creature. I have no idea what it is but it looks like a cross between a rabbit and earthworm."`,
-    `\
-prompt: "Black One" A very dark animal that hides in the shadows. Nobody knows much about it.
-response: "This animal is quite interesting. I've never seen anything like it before. I wonder what it eats?"`,
-    `\
-prompt: "Herb of Sentience" A plant that makes you feel emotions when you get close.
-response: "It's just a plant, but for some reason it makes me feel uneasy. Get it away from me!"`,
-    `\
-prompt: "Flower Bed" An arrangement of flowers in their natural habitat.
-response: "So pretty! I feel like I am reborn. There is so much nature and life and healing here."`,
-    `\
-prompt: "Ripe Fruit" A fruit that has fallen from a tree. It is starting to rot.
-response: "This fruit is starting to rot. I guess I'll just leave it here for the animals."`,
-    `\
-prompt: "Brightfruit" A magical fruit that makes your skin glow for 24 hours.
-response: "Wow, this fruit is amazing! It makes my skin glow! Even more than it already was."`,
-    `\
-prompt: "Goblin" A small, green creature with pointy ears. It is very ugly.
-response: "This goblin is so ugly, I can't even look at it. It's like looking at a car accident.`,
-    `\
-prompt: "Trash Heap" A pile of garbage. It smells really bad.
-response: This is the most disgusting thing I have ever seen. It's like a mountain of death."`,
-    `\
-prompt: "Gucci Bag" An exclusive designer bag that is very expensive.
-response: "This bag is so beautiful, I can't even put into words. It's like a piece of art."`,
-    `\
-prompt: "Pile Of Bones" A pile of bones. It looks like somebody died here.
-response: "This is a very sad sight. There was life and then the life was gone."`,
-    `\
-prompt: "Crunchy Grass" A heavenly bite from nature. It is juicy, fresh grass.
-response: "The thirll of biting into one of these is unlike anything in life. It's so juicy!"`,
-    `\
-prompt: "doge.png" An image of the Doge meme.
-response: "This is a dead meme. But I guess the artist gets points for being topical. Besides, it is really cute!"`,
-    `\
-prompt: "Magikarp" A common fish that is known for being very weak.
-response: "This fish is so weak, it's not even worth my time. I can't believe people actually catch these things."`,
-    `\
-prompt: "Muscle Car" A car that is designed for speed and power.
-response: "This car is so fast, it's like a bullet. Am I brave enough to take it for a spin?"`,
-    `\
-prompt: "Door OF Eternity" A magical portal that leads to a distant land. It only works one way.
-response: "We're not supposed to touch the Door of Eternity. It's dangerous."`,
-    `\
-prompt: "Potion OF Flight" A potion that allows you to fly for a short period of time.
-response: "So this is what it's like to fly! It's amazing!"`,
-    `\
-prompt: "Helmet" A high-helmet designed to protect your head.
-response: "This helmet is so strong, it can probably stop a bullet. But let's not try."`,
-    `\
-prompt: "sword.png" Image of a sword being drawn from a sheath.
-response: "Swords are so cool! They're like the ultimate weapon. This one is up there."`,
-        ],
-    },
-    characterSelect: {
-        prompt: `\
-# Instruction manual rip
-
-Press Z to target a character. The cursor will highlight in green, then press A to talk to them. The dialogue in this game is hilarious!
-
-\`\`\``,
-        examples: [
-`\
-prompt: "Axel Brave" A tall and handsome boy. He is a hacker with a bad reputation.
-response: "Hey Axel, did you guess my password yet?"`,
-`\
-prompt: "Bailey Scritch" A witch studying at the Witchcraft School for Witchcraft and Redundancy.
-response: "Hello there. How are your studies going? Did you finish teh assignment with the frog?"`,
-`\
-prompt: "Lillith Lecant" A painter who uses a magical multicolored brush which leaves marks in the air.
-response: "Lillith you're my idol. I'm in awe at how magical your paintings come out."`,
-`\
-prompt: "Aerith Gainsborough (Final Fantasy)" A flower girl with long brown hair. She's wearing a pink dress and has a big smile on her face.
-response: "Can I buy a flower? Or are they not for sale?"`,
-`\
-prompt: "Stephen Gestalt" A fine gentleman in a dress suit.
-response: "I must say you look like a gentleman of the highest order."`,
-`\
-prompt: "Ghost Girl" A rotten girl in a nightgown, like from The Ring.
-response: "Hello ghost girl how are you? How's death treatingm you?"`,
-`\
-prompt: "Mister Miyazaki" A impish being from the 5th dimension.
-response: "Hey Mister Miyazaki! What's the square root of pi?"`,
-`\
-prompt: "Wizard Barley" A bartender with a big beard and an even bigger hat.
-response: "Hey man, can I get a beer? It's been a rough day."`,
-`\
-prompt: "Fortune Teller" A gypsy woman with a crystal ball.
-response: "Hey you, tell me my future! It better be good!"`,
-`\
-prompt: "Kitten" A small black kitten with big green eyes.
-response: "You're such a cute little kitty. Is it time for your nap?"`,
-`\
-prompt: "Green Dragon" A chubby dragon with short wings. It is a very cartoony avatar.
-response: "You look like you're having fun. Do those wings let you fly?"`,
-`\
-prompt: "Purple Cube" A purple cube with a single blue eye.
-response: "Hello. You're weird. What are you supposed to be?"`,
-`\
-prompt: "Dawn (Pokemon)" A young girl with a Pikachu on her shoulder.
-response: "You look like a  Pokemon trainer,"`,
-`\
-prompt: "Terra Branford (Final Fantasy)" A magician in a mech.
-response: "Hey Terra, long time no see! How have you been?"`,
-`\
-prompt: "Sora (Kingdom Hearts)" A young boy with big spiky hair. He's wearing a black hoodie and has a keyblade at his side.
-response: "Hey Sora, what brings you to this world?"`,
-`\
-prompt: "Cloud Strife (Final Fantasy)" A SOLDIER in armor. He has spiky blond hair and is carrying a huge sword on his back.
-response: "Yo Cloud! Can I borrow your sword?"`
         ],
     },
     inputParsing: {

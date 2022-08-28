@@ -61,17 +61,23 @@ function App() {
   const [baseData, setBaseData] = useState(
     localStorage.getItem('baseData') ? JSON.parse(localStorage.getItem('baseData')) : { 
     base: null,
-    url: "https://webaverse.github.io/lore/lore-model.js",
+    url: './lore-model.js', // "https://webaverse.github.io/lore/lore-model.js",
     type: "url",
     module: {},
   });
 
+  // useEffect(() => {
+  //   loadBaseData(baseData, null, true)
+  // }, []);
+
   useEffect(() => {
-    if(!localStorage.getItem('baseData') && !baseData.base) {
-      loadBaseData(baseData, false, true);
-    }
-    localStorage.setItem('baseData', JSON.stringify(baseData));
-  }, [baseData])
+    loadBaseData(baseData, false, !baseData.base);
+    console.log('baseData', baseData);
+  }, []);
+
+  // useEffect(() => {
+  //   if(baseData) localStorage.setItem('baseData', JSON.stringify(baseData));
+  // }, [baseData])
 
   useEffect(() => {
     localStorage.setItem("currentView", currentView);
@@ -105,6 +111,7 @@ function App() {
       if(callback) callback(displayContent);
     }
     if (fromUrl) {
+      console.log('**** loading from url ****');
       const response = await download_content(data.url);
       let blob = new Blob([response], {
         type: "application/x-javascript;base64",
@@ -153,6 +160,7 @@ function App() {
         end();
       };
     } else {
+      console.log('**** loading from file ****');
       // open a file picker and get the file from disk
       const file = await getFile();
       // read the file as text

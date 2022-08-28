@@ -14,6 +14,7 @@ import {
 import "./App.css";
 
 const Entity = ({
+  index,
   data,
   editEntityCallback,
   deleteEntityCallback,
@@ -21,11 +22,11 @@ const Entity = ({
 }) => {
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
-  const updateEntity = (ingredients, field, data) => {
+  const updateEntity = (ingredients, field, data, index) => {
     if (field === "shortname") {
       return;
     }
-    const newData = { ...ingredients };
+    let newData = { ...ingredients };
     newData[field] = data;
     if (field === "name") {
       console.log("name updated:", newData);
@@ -42,7 +43,7 @@ const Entity = ({
     if(!field) {
         newData = data;
     }
-    editEntityCallback(newData);
+    editEntityCallback(newData, index);
   };
   const addInventoryItem = () => {
     const newItem = uniqueNamesGenerator({
@@ -156,14 +157,14 @@ const Entity = ({
       }
       {typeof data === "object" && (
         <React.Fragment>
-          {Object.keys(data).map((field, index) => {
+          {Object.keys(data).map((field, i) => {
             if (
               field === "inventory" &&
               (data["type"] === "character" ||
                 data["type"] === "npc" ||
                 data["type"] === "mob")
             ) {
-              return inventoryRender(data["inventory"], index);
+              return inventoryRender(data["inventory"], i);
             } else if (
               field === "enabled" ||
               field === "type" ||
@@ -173,7 +174,7 @@ const Entity = ({
             )
               return null;
             return (
-              <div key={index} className={"entityField " + field}>
+              <div key={i} className={"entityField " + field}>
                 {showLabels && field !== "name" && field !== "message" && (
                   <label style={{ display: "inline" }}>{field}</label>
                 )}
@@ -181,7 +182,7 @@ const Entity = ({
                   <textarea
                     value={data[field]}
                     onChange={(e) =>
-                      updateEntity(data, field, e.target.value)
+                      updateEntity(data, field, e.target.value, index)
                     }
                   />
                 ) : (
@@ -190,7 +191,7 @@ const Entity = ({
                     value={data[field]}
                     onChange={(e) => {
                       e.preventDefault();
-                      updateEntity(data, field, e.target.value);
+                      updateEntity(data, field, e.target.value, index);
                     }}
                   />
                 )}
@@ -206,7 +207,7 @@ const Entity = ({
             value={data}
             onChange={(e) => {
             e.preventDefault();
-            updateEntity(data, null, e.target.value);
+            updateEntity(data, null, e.target.value, index);
             }}
         />
         </React.Fragment>

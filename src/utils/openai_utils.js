@@ -232,8 +232,10 @@ Scillia's treehouse. It's more of a floating island but they call it a tree hous
     for (let i = 0; i < loreResp.length; i++) {
       // loreResp[i].rpgDialogue = resp2;
       transcript.push(loreResp[i]);
+      newMessages.push(loreResp[i]);
     }
-    newMessages.push(parseLoreResponse(resp));
+    console.log('transcript is', transcript);
+    console.log('newMessages is', newMessages);
 
   }
 

@@ -39,7 +39,7 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
   const [editorCode, setEditorCode] = useState("");
   const [currentContentType, setCurrentContentType] = useState(Object.keys(lore)[0]);
   const [generating, setGenerating] = useState(false);
-  const [showEditor, setShowEditor] = useState(false);
+  const [showEditor, setShowEditor] = useState(true);
 
   const fileToDataUri = (file) =>
     new Promise((resolve, reject) => {

@@ -15,16 +15,16 @@ const GettingStarted = ({ data, setData }) => {
     <p>This tool uses external machine learning services. You will need an OpenAI API key to get started. These are free at <a href="https://beta.openai.com">their website</a> -- once you have signed up, get your API key and paste it below:</p>
     <div className={"openai"}>
     <span className={"baseLabel"}>OpenAI Key: </span>
-    <input
-      className={"baseInput"}
-      type={"input"}
-      defaultValue={getOpenAIKey()}
-      onChange={(e) =>
-        console.log("change", e.target.value) ||
-        setOpenAIKey(e.target.value)
-      }
-      onFocus={(e) => setOpenAIKey(e.target.value)}
-    />
+      <input
+        className={"baseInput"}
+        type={apiKeyVisible ? "input" : "password"}
+        defaultValue={getOpenAIKey()}
+        onChange={(e) =>
+          console.log("change", e.target.value) ||
+          setOpenAIKey(e.target.value)
+        }
+        onFocus={(e) => setOpenAIKey(e.target.value)}
+      />
     <button
       className="entityVisibility"
       value={apiKeyVisible}
