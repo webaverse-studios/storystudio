@@ -68,7 +68,7 @@
 }
 
 .section.lorebase {
-  min-height: 4em;
+  min-height: 35em;
 }
 
 /* width */
@@ -113,6 +113,7 @@
 .sectionWrapper {
   display: inline-block;
   width: 45%;
+  vertical-align: top;
 }
 
 .setting_wrapped {
@@ -148,7 +149,7 @@
 }
 
 .importExportButtons {
-  display: inline-block;
+  text-align: right;
 }
 
 .importButton,
@@ -163,7 +164,6 @@
 
 .openai {
   display: inline-block;
-  border: 1px solid #000000;
   margin: 0.5em;
   margin-left: auto;
   margin-right:auto;
@@ -173,8 +173,6 @@
 .base input {
   border-color: none;
   border-style: none;
-  border-left: 1px solid #000000;
-  border-right: 1px solid #000000;
 }
 
 .base {
@@ -194,10 +192,11 @@
 
 .baseInput {
   font-size: 1em;
-  border-left: 1px solid #000000;
-  border-right: 1px solid #000000;
+  border: none;
   margin: 0;
   padding: 0.5em;
+  border: none;
+  min-width: 20em;
 }
 
 .baseButton {
@@ -251,7 +250,7 @@
   width: calc(100% - 4em);
   display: inline-block;
   min-width: calc(100% - 4em);
-  max-width: calc(100% - 4em);
+  max-width: calc(100% - 2em);
 }
 
 .entityField input {
@@ -264,7 +263,7 @@
 }
 
 .entity textarea {
-  width: calc(100% - 5em);
+  width: calc(100%);
   height: 5em;
   min-height: 2em;
   display: inline-block;
@@ -272,7 +271,7 @@
   background: none;
   padding: 0;
   margin: 0;
-  max-width: calc(100% - 5em);
+  max-width: calc(100% - .5em);
   overflow: hidden;
 }
 
@@ -308,9 +307,6 @@
 
 .dialog_wrapped {
   width: 80%;
-}
-
-.baseInput {
 }
 
 .viewButton {
@@ -409,17 +405,10 @@
   .context-group-button {
     padding-left: 0.25em;
   }
-  .baseButton {
-    border-top: 1px solid #000000 !important;
-    width: 50%;
-  }
   .baseButtonUrl {
-    border-right: 1px solid #000000 !important;
-  }
-
-  .base input {
-    width: 75%;
-    border-right: none;
+    border: none;
+    border-left: 1px solid #000000 !important;
+    float: right;
   }
 
   .openai input {
