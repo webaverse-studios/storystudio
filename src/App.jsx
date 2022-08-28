@@ -66,9 +66,9 @@ function App() {
     module: {},
   });
 
-  // useEffect(() => {
-  //   loadBaseData(baseData, null, true)
-  // }, []);
+  useEffect(() => {
+    localStorage.setItem("loreFiles", JSON.stringify(loreFiles));
+  }, [loreFiles]);
 
   useEffect(() => {
     loadBaseData(baseData, false, !baseData.base);

@@ -153,7 +153,7 @@ function Ingredients({dataType, baseData, ingredients, setIngredients, exportHan
         />
         <ListBox
           type={dataType}
-          data={ingredients[dataType][currentContentType]}
+          data={console.log('ingredients', ingredients) | console.log('ingredients[dataType]') | console.log(ingredients[dataType]) | ingredients[dataType][currentContentType]}
           header={dataType}
           addEntityCallback={(data, setGenerating) => {
             addEntityCallback(dataType, ingredients, setGenerating);
