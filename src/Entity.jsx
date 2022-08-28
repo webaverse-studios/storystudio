@@ -39,6 +39,9 @@ const Entity = ({
         "#" +
         data;
     }
+    if(!field) {
+        newData = data;
+    }
     editEntityCallback(newData);
   };
   const addInventoryItem = () => {
@@ -198,7 +201,14 @@ const Entity = ({
       )}
       {typeof data === "string" && (
         <React.Fragment>
-          <p>{data}</p>
+        <textarea
+            type="text"
+            value={data}
+            onChange={(e) => {
+            e.preventDefault();
+            updateEntity(data, null, e.target.value);
+            }}
+        />
         </React.Fragment>
       )}
     </div>

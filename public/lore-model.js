@@ -26,11 +26,11 @@ export const makeLorePrompt = ({
   objects,
   dstCharacter,
 }) => `\
-${lore.prompts.overview}
-${shuffleArray(lore.examples.overview).join(`\n`)}
+${lore.overview.prompt}
+${shuffleArray(lore.overview.examples).join(`\n`)}
 
 # Setting
-${settings.join('\n\n')}
+${settings}
 
 ## Characters
 ${
@@ -45,14 +45,14 @@ ${
 # Objects
 ${objects.map((o, i) => thingHash(o, i)).join('\n')}
 
-${lore.prompts.overviewReactions}
-${lore.examples.overviewReactions.join(`\n`)}
+${lore.overviewReactions.prompt}
+${lore.overviewReactions.examples.join(`\n`)}
 
-${lore.prompts.overviewActions}
-${lore.examples.overviewActions.join(`\n`)}
+${lore.overviewActions.prompt}
+${lore.overviewActions.examples.join(`\n`)}
 
-${lore.prompts.inputParsing}
-${shuffleArray(lore.examples.inputParsing).join(`\n`)}
+${lore.inputParsing.prompt}
+${shuffleArray(lore.inputParsing.examples).join(`\n`)}
 
 ${messages.length > 0 ? 'Input:\n' : ''}
 ${messages.map(m => {
@@ -166,8 +166,8 @@ export const makeCommentPrompt = ({
   // sex,
 }) => {
   return `\
-${lore.prompts.comment}
-${shuffleArray(lore.examples.comment).join(`\n`)}
+${lore.scene.prompt}
+${shuffleArray(lore.scene.examples).join(`\n`)}
 prompt: ${name}
 response:`;
 };
@@ -181,8 +181,8 @@ export const makeSelectTargetPrompt = ({
   description,
 }) => {
   return `\
-${lore.prompts.targetSelect}
-${shuffleArray(lore.examples.targetSelect).join(`\n`)}
+${lore.targetSelect.prompt}
+${shuffleArray(lore.targetSelect.examples).join(`\n`)}
 prompt: ${_cleanName(name)}${description ? ` ${description}` : ''}\nresponse: "`;
 };
 export const makeSelectTargetStop = () => `"`;
@@ -196,8 +196,8 @@ export const makeSelectCharacterPrompt = ({
   description,
 }) => {
   return `\
-${lore.prompts.characterSelect}
-${shuffleArray(lore.examples.characterSelect).join(`\n`)}
+${lore.characterSelect.prompt}
+${shuffleArray(lore.characterSelect.examples).join(`\n`)}
 
 prompt: ${_cleanName(name + ' (Character)')}${description ? ` ${description}` : ''}\nresponse: "`;
 };
@@ -217,8 +217,8 @@ export const makeBattleIntroductionPrompt = ({
   bio,
 }) => {
   return `\
-${lore.prompts.battle}
-${shuffleArray(lore.examples.battle).join(`\n`)}
+${lore.battle.prompt}
+${shuffleArray(lore.battle.examples).join(`\n`)}
 ${name}: "`;
 };
 export const makeBattleIntroductionStop = () => `"`;
@@ -232,8 +232,8 @@ export const makeChatPrompt = ({
 }) => {
   // Modifying messages to include emotes
   return `\
-  ${lore.prompts.actions}
-  ${shuffleArray(lore.examples.actions).join(`\n`)}
+  ${lore.actions.prompt}
+  ${shuffleArray(lore.actions.examples).join(`\n`)}
 
 ${messages.map(message => {
   return `${message.name}: "${message.text} (react = ${(message.emote ? message.emote : 'normal')})"`;
@@ -321,8 +321,8 @@ export const makeCharacterIntroPrompt = ({
   bio,
 }) => {
   return `\
-${lore.prompts.intros}
-${shuffleArray(lore.examples.intros).join(`\n`)}
+${lore.intros.prompt}
+${shuffleArray(lore.intros.examples).join(`\n`)}
 ${name}${bio ? ` (${bio})` : ''}:`;
 };
 export const makeCharacterIntroStop = () => `\n`;
@@ -345,7 +345,7 @@ export const parseCharacterIntroResponse = response => {
 
 function shuffleArray(array) {
   const shortenArray = (array) => {
-      const maxLength = config?.maxExamples ?? 20;
+      const maxLength = config?.maxExamples ?? 10;
       if (array.length > maxLength) {
           return array.slice(0, maxLength);
       }

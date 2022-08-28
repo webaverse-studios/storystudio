@@ -50,6 +50,8 @@ export const entityPrototypes = [
     }
 ]
 
+export  { exampleLoreFiles } from './exampleLoreFiles';
+
 export const defaultIngredients = {
     dialog: {
         objectComment: [{

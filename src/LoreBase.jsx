@@ -65,8 +65,6 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
   // editorCode is a string
   // if the user presses ctrl + s, create a new file from the editorCode text, get the URI and call setBaseData
   const handleSave = async () => {
-    if (!editorCode) return;
-    console.log('saving')
     const blob = new Blob([loreHeader + '\n' + editorCode], {
       type: "application/x-javascript;base64",
     });
@@ -84,14 +82,14 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
 
   let isSaving = false;
   const updateEditorCode = (value) => {
+    localStorage.setItem('codeEditorData', value);
+    setEditorCode(value);
     if (!isSaving) {
       isSaving = true;
       handleSave().then(() => {
         isSaving = false;
       });
     }
-    setEditorCode(value);
-    localStorage.setItem('codeEditorData', value);
   }
 
   const saveLoreFile = async () => {
@@ -180,21 +178,20 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
   };
   return (
     <div className="view">
-      <div className={"modeButtons"}>
-        <button className={"modeButton" + showEditor ? " active" : ''} onClick={() => setShowEditor(!showEditor)}>
-          Edit Pipeline JS
-        </button>
-      </div>
-      {!showEditor &&
         <React.Fragment>
           <div className={"importExportButtons"}>
-            <button className={"importButton"} onClick={() => importJson()}>
+          <button className={"modeButton" + (showEditor ? " active" : '')} onClick={() => setShowEditor(!showEditor)}>
+            Edit Pipeline JS
+          </button>
+            <button className={"importButton"} onClick={() => !showEditor ? importJson() : loadBaseData(baseData, updateEditorCode, false)}>
               Import
             </button>
-            <button className={"exportButton"} onClick={() => exportHandler()}>
+            <button className={"exportButton"} onClick={() => !showEditor ? exportHandler() : saveLoreFile()}>
               Export
             </button>
           </div>
+        {!showEditor &&
+
           <div className="sections">
             <Context
               data={loreData}
@@ -214,8 +211,8 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
               showLabels={true}
             />
           </div>
+            }
         </React.Fragment>
-      }
       {showEditor &&
         <React.Fragment>
           <div className={"base"}>
@@ -232,18 +229,6 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
               onClick={() => loadBaseData(baseData, updateEditorCode, true)}
             >
               [Open URL]
-            </button>
-            <button
-              className={"baseButton baseButtonFile"}
-              onClick={() => loadBaseData(baseData, updateEditorCode, false)}
-            >
-              [Open File]
-            </button>
-            <button
-              className={"baseButton baseButtonFile"}
-              onClick={() => saveLoreFile()}
-            >
-              [Export]
             </button>
           </div>
           <MonacoEditor

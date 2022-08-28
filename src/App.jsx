@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { useEffect, useState } from "react";
 import "./App.css";
-import { entityPrototypes, contextTypes, defaultIngredients, views, lore } from "./constants";
+import { entityPrototypes, contextTypes, defaultIngredients, exampleLoreFiles, views, lore } from "./constants";
 import Header from "./Header";
 import ListBox from "./ListBox";
 import Context from "./ContextSelector";
@@ -10,6 +10,7 @@ import Ingredients from "./Ingredients";
 import GettingStarted from "./GettingStarted";
 import LoreFiles from "./LoreFiles";
 import LoreBase from "./LoreBase";
+import murmurhash3String from "./murmurhash3string";
 import {
   uniqueNamesGenerator,
   adjectives,
@@ -52,13 +53,15 @@ const storedEntityData = JSON.parse(localStorage.getItem("ingredients"));
 function App() {
   const [currentView, setCurrentView] = useState(localStorage.getItem('currentView') || Object.keys(views)[0]);
   const [ingredients, setIngredients] = useState(storedEntityData);
+  const [loreFiles, setLoreFiles] = useState(
+    localStorage.getItem('loreFiles') ? JSON.parse(localStorage.getItem('loreFiles')) : exampleLoreFiles);
   const [loreData, setLoreData] = useState(
     localStorage.getItem('loreData') ? JSON.parse(localStorage.getItem('loreData')) : lore);
   const [loreHeader, setLoreHeader] = useState("");
   const [baseData, setBaseData] = useState(
     localStorage.getItem('baseData') ? JSON.parse(localStorage.getItem('baseData')) : { 
     base: null,
-    url: "./lore-model.js", // "https://webaverse.github.io/lore/lore-model.js",
+    url: "https://webaverse.github.io/lore/lore-model.js",
     type: "url",
     module: {},
   });
@@ -94,7 +97,13 @@ function App() {
     const loreHeader = await download_content("./lore_header.js");
     // convert to string
     const loreHeaderString = loreHeader.toString();
-    setLoreHeader(loreHeader);
+    const murmurHashImportString = `import {murmurhash3} from './murmurhash3.js';`
+
+    let content, displayContent;
+    function end() {
+      setLoreHeader(loreHeader);
+      if(callback) callback(displayContent);
+    }
     if (fromUrl) {
       const response = await download_content(data.url);
       let blob = new Blob([response], {
@@ -104,19 +113,28 @@ function App() {
       const reader = new FileReader();
       reader.readAsText(blob);
       reader.onload = async function () {
-        let content = reader.result;
+        content = reader.result;
         // separate the content into an array of lines
         const lines = content.split("\n");
         // get the index of any line that includes the text LORE_HEADER
+        console.log('content is', content);
+
+        if(content.includes(murmurHashImportString)) {
+          content = content.replace(murmurHashImportString, murmurhash3String);
+          displayContent = content;
+          console.log('replace content is', content);
+        } else {
         const headerStartIndex = lines.findIndex((line) => line.includes("LORE_HEADER_START"));
         const headerEndIndex = lines.findIndex((line) => line.includes("LORE_HEADER_END"));
         // remove the array values including and between headerStartIndex and headerEndIndex
         const beforeHeader = lines.slice(-1, headerStartIndex+1);
         content = beforeHeader + lines.splice(headerEndIndex+1, lines.length).join("\n");
-        if(callback) callback(content);
         // find the line in content (a long delimited string) that contains import and murmurhash3
         // replace that line with loreHeader
+        displayContent = content;
         content = loreHeaderString + content;
+        }
+
         // convert content back to a blob with the x-javascript base64 type
         blob = new Blob([content], {
           type: "application/x-javascript;base64",
@@ -132,21 +150,27 @@ function App() {
           module: importedFile,
           url: data.url,
         });
+        end();
       };
     } else {
       // open a file picker and get the file from disk
       const file = await getFile();
       // read the file as text
-      let content = await file.text();
+      content = await file.text();
       const lines = content.split("\n");
       // get the index of any line that includes the text LORE_HEADER
-      const headerStartIndex = lines.findIndex((line) => line.includes("LORE_HEADER_START"));
-      const headerEndIndex = lines.findIndex((line) => line.includes("LORE_HEADER_END"));
-      // remove the array values including and between headerStartIndex and headerEndIndex
-      const beforeHeader = lines.slice(-1, headerStartIndex+1);
-      content = beforeHeader + lines.splice(headerEndIndex+1, lines.length).join("\n");
-      if(callback) callback(content);
-      content = loreHeader + '\n' + content;
+
+      if(content.includes(murmurHashImportString)) {
+        content = content.replace(murmurHashImportString, murmurhash3String);
+        displayContent = content;
+      } else {
+        const headerStartIndex = lines.findIndex((line) => line.includes("LORE_HEADER_START"));
+        const headerEndIndex = lines.findIndex((line) => line.includes("LORE_HEADER_END"));
+        // remove the array values including and between headerStartIndex and headerEndIndex
+        const beforeHeader = lines.slice(-1, headerStartIndex+1);
+        content = beforeHeader + lines.splice(headerEndIndex+1, lines.length).join("\n");
+        content = loreHeader + '\n' + content;
+      }
       // convert text to a blob with the x-javascript base64 type
       const blob = new Blob([content], {
         type: "application/x-javascript;base64",
@@ -159,6 +183,7 @@ function App() {
         module: importedFile,
         url: file.name,
       });
+      end();
     }
   };
 
@@ -192,7 +217,18 @@ function App() {
           importHandler={(data) => handleImport('lore', data)}
           exportHandler={() => handleExport('lore')}
         /> :
-        currentView === "files" ? <LoreFiles /> :
+        currentView === "files" ? 
+        <LoreFiles
+          dataType={'lore'}
+          importHandler={(data) => handleImport('output', data)}
+          exportHandler={() => handleExport('output')}
+          ingredients={ingredients}
+          setIngredients={setIngredients}
+          baseData={baseData}
+          setBaseData={setBaseData}
+          loreFiles={loreFiles}
+          setLoreFiles={setLoreFiles}
+        /> :
         <Ingredients
           dataType={'dialog'}
           importHandler={(data) => handleImport('ingredients', data)}
