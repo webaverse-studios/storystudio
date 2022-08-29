@@ -13,7 +13,7 @@ const ContextSelector = ({ data, currentContentType, setCurrentContentType }) =>
                             onClick={(e) => setCurrentContentType(type)}
                             className={'context-group-button' + (type === currentContentType ? ' context-group-button-active' : ' context-group-button-inactive')}
                         >
-                        {type}|{(data[currentContentType] && Object.keys(data[currentContentType]).length) | (data[type]['examples'] && data[type]['examples'].length) }
+                        {type}|{(data[currentContentType] && Object.keys(data[currentContentType]).length) || (data[type]['examples'] && data[type]['examples'].length) }
                         </button>
                     )
                 }
