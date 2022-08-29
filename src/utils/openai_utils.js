@@ -196,10 +196,12 @@ export async function generate(type, data, baseData) {
       return null;
   }
 
-  for(let i = 0; i < data[type].length;i++) {
-    if (data[type].name === res.name) {
-      return generate(type, data, data)
-      //found a duplicate, so generate a new name
+  if (data[type] && data[type !== undefined]) {
+    for (let i = 0; i < data[type].length; i++) {
+      if (data[type].name === res.name) {
+        return generate(type, data, data);
+        //found a duplicate, so generate a new name
+      }
     }
   }
 

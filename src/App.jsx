@@ -76,7 +76,8 @@ function App() {
         entityType === "dialog"
           ? newEntityData[entityType][currentContentType]
           : newEntityData[entityType];
-      array.push(entity);
+      const c = []
+      array.unshift(entity);
       newEntityData[entityType][currentContentType] = array;
 
       setEntityData(newEntityData);
