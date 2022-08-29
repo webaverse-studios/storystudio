@@ -2,12 +2,12 @@
   max-width: 100%;
   margin: 0 0;
   padding: 0;
-  text-align: center;
+  text-align: left;
 }
 
 .header {
   width: 100%;
-  min-height: 100px;
+  height: 3em;
 }
 
 .headerright {
@@ -141,10 +141,17 @@
   margin: 0.5em;
 }
 
+.view {
+  margin:1em;
+  height: calc(100vw - 3em)
+}
+
 .openai {
   display: inline-block;
   border: 1px solid #000000;
   margin: 0.5em;
+  margin-left: auto;
+  margin-right:auto;
 }
 
 .openai input,
@@ -236,7 +243,6 @@
   width: 85%;
   display: inline-block;
   border: 0;
-  color: #000000;
   background: none;
   padding: 0;
   margin: 0;
@@ -247,7 +253,6 @@
   height: 1em;
   display: inline-block;
   border: 0;
-  color: #000000;
   background: none;
   padding: 0;
   margin: 0;
@@ -290,7 +295,15 @@
 }
 
 .baseInput {
-  color: #000000;
+}
+
+.viewButton {
+  margin: .25em;
+}
+
+.viewButton.activeButton {
+  color: #fff;
+  background-color: #000;
 }
 
 /* create a media query for the mobile view */
@@ -320,11 +333,8 @@
   .sectionHeader button {
     margin:0;
   }
-  .openai {
-    width: calc(100% - 1em);
-  }
   .importExportButtons {
-    position:absolute;
+    /* position:absolute; */
     right:1em;
     top:1em;
   }

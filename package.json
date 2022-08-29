@@ -11,10 +11,12 @@
   "dependencies": {
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
+    "@monaco-editor/react": "^4.4.5",
     "@mui/icons-material": "^5.10.2",
     "@mui/material": "^5.10.2",
     "axios": "^0.27.2",
     "dotenv": "^16.0.1",
+    "dungeoneer": "^2.1.5",
     "events": "^3.3.0",
     "module-from-string": "^3.2.1",
     "openai": "^3.0.0",
@@ -22,6 +24,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "require": "^2.4.20",
+    "terminal-in-react": "^4.3.1",
     "unique-names-generator": "^4.7.1",
     "url": "^0.11.0"
   },
