@@ -1,3 +1,7 @@
+import axios from "axios";
+import dungeoneer from "dungeoneer";
+import { stable_diffusion_url } from "../constants";
+
 export function makeId(length) {
   let result = "";
   const characters =
@@ -67,10 +71,18 @@ export async function download_content(url) {
 }
 
 export const generateDungeon = () => {
-    const d = dungeoneer.build({
-      width: 25,
-      height: 25,
-    });
-    console.log("d is", d);
-    return d;
-  };
+  const d = dungeoneer.build({
+    width: 25,
+    height: 25,
+  });
+  console.log("d is", d);
+  return d;
+};
+
+export const makeStableDiffusionRequest = async (text) => {
+  const resp = await axios.get(stable_diffusion_url, {
+    params: {
+      s: text,
+    },
+  });
+};
