@@ -5,11 +5,11 @@ import { getOpenAIKey, setOpenAIKey } from "./utils/openai_utils";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
-const GettingStarted = ({ data, setData }) => {
+const Setup = ({ data, setData }) => {
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
   return (
-    <div className="view">
-    <h3>Welcome to Webaverse Story Studio!</h3>
+    <div className="view"><br />
+    <h2>Welcome to Webaverse Story Studio!</h2>
     <p>This is tool for creating procedural and AI-generated stories in collaboration with humans such as yourself.</p>
     <h3>Setup</h3>
     <p>This tool uses external machine learning services. You will need an OpenAI API key to get started. These are free at <a href="https://beta.openai.com">their website</a> -- once you have signed up, get your API key and paste it below:</p>
@@ -42,4 +42,4 @@ const GettingStarted = ({ data, setData }) => {
   );
 };
 
-export default GettingStarted;
+export default Setup;

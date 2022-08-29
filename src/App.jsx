@@ -7,16 +7,11 @@ import Header from "./Header";
 import ListBox from "./ListBox";
 import Context from "./ContextSelector";
 import Ingredients from "./Ingredients";
-import GettingStarted from "./GettingStarted";
+import Setup from "./Setup";
+import MapView from "./Map";
 import LoreFiles from "./LoreFiles";
 import LoreBase from "./LoreBase";
 import murmurhash3String from "./murmurhash3string";
-import {
-  uniqueNamesGenerator,
-  adjectives,
-  animals,
-  colors,
-} from "unique-names-generator";
 import { getFile } from "./getFile";
 
 const fileToDataUri = (file) =>
@@ -212,7 +207,8 @@ function App() {
     <div className="App">
       <Header currentView={currentView} setCurrentView={setCurrentView} />
       {
-        currentView === "gettingStarted" ? <GettingStarted /> :
+        currentView === "setup" ? <Setup /> :
+        currentView === "map" ? <MapView /> :
         currentView === "base" ? 
         <LoreBase
         loreHeader={loreHeader}

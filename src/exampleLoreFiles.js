@@ -1,6 +1,6 @@
 export const exampleLoreFiles = [
     `\
-    WEBAVERSE_LORE_FILE
+WEBAVERSE_LORE_FILE
 
 # Setting
 

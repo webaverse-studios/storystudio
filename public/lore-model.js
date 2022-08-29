@@ -60,7 +60,7 @@ ${messages.map(m => {
     // const suffix = `[emote=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
     // return `+${thingHash(m.character, characterIndex)}: ${m.message} ${suffix}`;
     const suffix = `react=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`
-    console.log('m.character', m.character, 'characterIndex', characterIndex, 'm', m);
+    console.log('m.character', m);
     return `+${thingHash(m.character, characterIndex)}: ${m.message}`;
   }).join('\n')}
 +${dstCharacter ? `${thingHash(dstCharacter, characters.indexOf(dstCharacter))}:` : ''}
@@ -411,5 +411,6 @@ function thingHash(o, index) {
 
     return h1 >>> 0;
   }
+  console.log(o);
   return`${murmurhash3(o.name).toString(16)}/${o.name}#${index + 1}`
 };

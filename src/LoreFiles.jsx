@@ -38,25 +38,36 @@ function LoreFiles({dataType, baseData, ingredients, setIngredients, loreFiles, 
       return;
     }
     console.log("generate entity", entity);
-    if(entity[0]) entity = entity[0];
-    if (!entity.id) {
+    if (typeof entity === 'array') {
+      if(entity[0]) entity = entity[0];
+    }
+    // if entity is an object, check if it has an id, if not, make one
+    if (typeof entity === 'object' && !entity.id) {
       entity.id = makeId(5);
     }
     const newEntityData = [ ...loreFiles ];
+    console.log('newEntityData is', newEntityData);
     newEntityData.push(entity);
-
+    
     setLoreFiles(newEntityData);
     setGenerating(false);
   };
-  const deleteEntityCallback = (entity, fromCurrentContentType) => {
-    const newData = { ...loreFiles };
-    if (fromCurrentContentType) {
-      newData = loreFiles.filter((e) => e.id && e.id !== entity.id);
+  const deleteEntityCallback = (entity, fromCurrentContentType, index) => {
+    console.log('index is', index); 
+    let newData = [ ...loreFiles ];
+    if(index){
+    // remove newData[index]
+    newData.splice(index, 1);
     } else {
-      newData = loreFilesfilter(
-        (e) => e.id !== entity.id
-      );
-    }
+
+      if (fromCurrentContentType) {
+        newData = loreFiles.filter((e) => e.id && e.id !== entity.id);
+      } else {
+        newData = loreFilesfilter(
+          (e) => e.id !== entity.id
+          );
+        }
+      }
 
     setLoreFiles(newData);
   };
@@ -126,7 +137,7 @@ function LoreFiles({dataType, baseData, ingredients, setIngredients, loreFiles, 
             addEntityCallback(setGenerating);
           }}
           editEntityCallback={editEntityCallback}
-          deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
+          deleteEntityCallback={(data, index) => deleteEntityCallback(data, true, index)}
           showLabels={true}
         /> 
       </div>

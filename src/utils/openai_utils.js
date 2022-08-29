@@ -1,5 +1,6 @@
 import { Configuration, OpenAIApi } from "openai";
 import { lore } from "../constants";
+import { exampleLoreFiles } from "../exampleLoreFiles";
 
 function shuffleArray(array, limit = 10) {
   const shortenArray = (array) => {
@@ -149,12 +150,12 @@ Scillia's treehouse. It's more of a floating island but they call it a tree hous
 
   const charactersTest = [
     {
-      name: `scillia`,
+      name: `+cf6a7cb0/scillia`,
       bio: `Her nickname is Scilly or SLY. 13/F drop hunter. She is an adventurer, swordfighter and fan of potions. She is exceptionally skilled and can go Super Saiyan.`,
       Inventory: [`sword#2xayV`]
     },
     {
-      name: `drake`,
+      name: `+52ca990d/drake`,
       bio: `His nickname is DRK. 15/M hacker. Loves guns. Likes plotting new hacks. He has the best equipment and is always ready for a fight.`,
       Inventory: [`pistol#oEc2u`, `rifle#u2L7x`]
     },
@@ -189,88 +190,66 @@ Scillia's treehouse. It's more of a floating island but they call it a tree hous
       target: 'none'
     }];
 
-  // [`scillia#ppyXa: Hey Drake, can I ask you something? /character scillia#ppyXa moves to drake#vvGyW drake#vvGyW: Sure, what is it? scillia#ppyXa: Do you ever wonder why we're here? drake#vvGyW: Is that a way to tee up a convo about pumas tomorrow? /character scillia#ppyXa emotes joy scillia#ppyXa: It might not be! drake#vvGyW: Scillia, I'm tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone. /drake moves to computer#Ki3bK /character scillia#ppyXa picks up sword#T53DH /character scillia#ppyXa moves to drake#Ki3bK scillia#ppyXa: Well I wanna fight! drake#vvGyW: Not now, Scillia! /character scillia#ppyXa moves to computer#Ki3bK scillia#ppyXa: Don't make me destroy your computer to get your attention! /character drake#vvGyW emotes angry drake#vvGyW: I've got my pistol and my rifle. You wouldn't try it. scillia#ppyXa: I disagree. /character scillia#ppyXa attacks computer#Ki3bK`]
+  let dstCharacterIndex = Math.floor(Math.random() * charactersTest.length);
 
-  const newMessages = []
-  const transcriptCount = 5;
-  const dstCharacterIndex = Math.floor(Math.random() * charactersTest.length)
-  for (let i = 0; i < transcriptCount; i++) {
-    const lorePrompt = module.makeLorePrompt({
+    const promptData = {
       settings: [testSetting],
       characters: charactersTest, // data["character"],
-      messages: [...testMessages, ...newMessages],
+      messages: [],
       objects: objectsTest, //data["object"],
       dstCharacter: charactersTest[dstCharacterIndex],
       //data["character"][Math.floor(Math.random() * data["character"].length)],
-    });
+    }
+
+    // exampleLoreFiles is an array of strings
+    // pick one at random and use it as the prompt
+    const header = exampleLoreFiles[Math.floor(Math.random() * exampleLoreFiles.length)];
+    const loreFile = await makeLoreFile(header, promptData);
+
+  // // increment dstCharacterIndex by 1, then wrap around if necessary
+  //   dstCharacterIndex = (dstCharacterIndex + 1) % charactersTest.length;
+  //   const lorePrompt = module.makeLorePrompt();
 
 
-    console.log('lorePrompt is');
-    console.log(lorePrompt);
+  //   console.log('lorePrompt is');
+  //   console.log(lorePrompt);
 
-    //console.log('lorePrompt is', lorePrompt);
+  //   //console.log('lorePrompt is', lorePrompt);
 
-    const resp = await openaiRequest(lorePrompt, ["Input:", "Output:"]);
-    console.log('openai resp is', resp);
+    const loreResp = await openaiRequest(loreFile, ["\n\n", "\"\"\""]);
+  //   console.log('openai resp is', resp);
 
-
-    const battleDialoguePrompt = "";
-    // module.makeBattleIntroductionPrompt({
-    //   name: data["character"][i].name,
-    //   bio: data["character"][i].description,
-    // });
-
-    // const resp2 = await openaiRequest(
-    //   battleDialoguePrompt,
-    //   module.makeBattleIntroductionStop()
-    // );
-
-    const loreResp = module.parseLoreResponses(resp);
+  //   const loreResp = module.parseLoreResponses(resp);
 
     console.log('parseLoreResponses is', loreResp);
-    //console.log('loreResp', loreResp)
-    for (let i = 0; i < loreResp.length; i++) {
-      // loreResp[i].rpgDialogue = resp2;
-      transcript.push(loreResp[i]);
-      newMessages.push(loreResp[i]);
-    }
-    console.log('transcript is', transcript);
-    console.log('newMessages is', newMessages);
-
-  }
-
-  const loreFile = makeLoreFile({
-    setting: testSetting,
-    characters: charactersTest,
-    objects: objectsTest,
-    transcript: transcript,
-  });
 
   console.log('final lorefile is')
-  console.log(loreFile);
-  return loreFile;
+  console.log(loreFile+loreResp);
+  return loreFile+loreResp;
 };
 
-function makeLoreFile({ setting, characters, objects, transcript }) {
-  return `\
+async function makeLoreFile(header, { settings, characters, objects, messages, dstCharacter }) {
+console.log('setting, characters, objects, messages')
+
+return `\
+${header}
+"""
 WEBAVERSE_LORE_FILE
 
 # Setting
 
-${setting}
+${settings.join('\n')}
 
 # Characters
 
-${characters}
+${characters.map(c => `${c.name}\n${c.bio}\n${c.Inventory.join('\n')}`).join('\n\n')}
 
 # Objects
 
-${objects}
+${objects.map(o => `${o.name}\n${o.description}\n${o.metadata}`).join('\n\n')}
 
-# Transcript
-
-${transcript}
-  `
+# Transcript${messages.length === 0 ? '' : '\n' + messages.map(m => `${m.character.name}: ${m.message}`).join('\n')}
+${dstCharacter.name}:`
 }
 
 function makeId(length) {
@@ -299,7 +278,6 @@ export async function generate(type, data, baseData) {
     type: type,
     name: "",
     shortname: "",
-    enabled: true,
     description: "",
     inventory: [],
   };

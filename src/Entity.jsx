@@ -137,24 +137,13 @@ const Entity = ({
           </button>
           <button
             onClick={() =>
-              deleteEntityCallback(data) || setShouldDelete(false)
+              deleteEntityCallback(data, index) | setShouldDelete(false)
             }
           >
             <DeleteForever />
           </button>
         </span>
       )}
-      {
-        <button
-          className="entityVisibility"
-          value={data.enabled}
-          onClick={(e) =>
-            updateEntity(data, "enabled", !data.enabled)
-          }
-        >
-          {data.enabled ? <VisibilityIcon /> : <VisibilityOffIcon />}
-        </button>
-      }
       {typeof data === "object" && (
         <React.Fragment>
           {Object.keys(data).map((field, i) => {
@@ -166,7 +155,6 @@ const Entity = ({
             ) {
               return inventoryRender(data["inventory"], i);
             } else if (
-              field === "enabled" ||
               field === "type" ||
               field === "id" ||
               field === "hash" ||
@@ -175,10 +163,10 @@ const Entity = ({
               return null;
             return (
               <div key={i} className={"entityField " + field}>
-                {showLabels && field !== "name" && field !== "message" && (
+                {showLabels && (
                   <label style={{ display: "inline" }}>{field}</label>
                 )}
-                {field === "description" || field === "message" ? (
+                {field === "description" ? (
                   <textarea
                     value={data[field]}
                     onChange={(e) =>

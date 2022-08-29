@@ -11,6 +11,7 @@ import {
   colors,
 } from "unique-names-generator";
 import { getFile } from "./getFile";
+import { ConstructionOutlined } from "@mui/icons-material";
 
 function makeId(length) {
   let result = "";
@@ -44,15 +45,19 @@ function Ingredients({dataType, baseData, ingredients, setIngredients, exportHan
     if (!entity.id) {
       entity.id = makeId(5);
     }
+    console.log('ingredients', ingredients);
+
     const newEntityData = { ...ingredients };
 
     const array =
       entityType === dataType
         ? newEntityData[entityType][currentContentType]
         : newEntityData[entityType];
+
+        console.log('array', array);
     array.push(entity);
     newEntityData[entityType][currentContentType] = array;
-
+    console.log('newEntityData[entityType][currentContentType]', newEntityData[entityType][currentContentType]);
     setIngredients(newEntityData);
     setGenerating(false);
   };
