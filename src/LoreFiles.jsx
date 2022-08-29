@@ -11,83 +11,75 @@ import {
   colors,
 } from "unique-names-generator";
 import { getFile } from "./getFile";
+import { makeId } from "./utils/utils";
 
-function makeId(length) {
-  let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-}
-
-function LoreFiles({dataType, baseData, ingredients, setIngredients, loreFiles, setLoreFiles, exportHandler, importHandler}) {
+function LoreFiles({
+  dataType,
+  baseData,
+  ingredients,
+  setIngredients,
+  loreFiles,
+  setLoreFiles,
+  exportHandler,
+  importHandler,
+}) {
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
 
-  const addEntityCallback = async (
-    setGenerating
-  ) => {
+  const addEntityCallback = async (setGenerating) => {
     setGenerating(true);
     //console.log("calling baseData", baseData);
     // generate new using openai callback
-    let entity = await generate('lore', ingredients, baseData);
-    if(!entity){
-      console.error('could not generate entity');
+    let entity = await generate("lore", ingredients, baseData);
+    if (!entity) {
+      console.error("could not generate entity");
       setGenerating(false);
       return;
     }
     console.log("generate entity", entity);
-    if (typeof entity === 'array') {
-      if(entity[0]) entity = entity[0];
+    if (typeof entity === "array") {
+      if (entity[0]) entity = entity[0];
     }
     // if entity is an object, check if it has an id, if not, make one
-    if (typeof entity === 'object' && !entity.id) {
+    if (typeof entity === "object" && !entity.id) {
       entity.id = makeId(5);
     }
-    const newEntityData = [ ...loreFiles ];
-    console.log('newEntityData is', newEntityData);
+    const newEntityData = [...loreFiles];
+    console.log("newEntityData is", newEntityData);
     newEntityData.push(entity);
-    
+
     setLoreFiles(newEntityData);
     setGenerating(false);
   };
   const deleteEntityCallback = (entity, fromCurrentContentType, index) => {
-    console.log('index is', index); 
-    let newData = [ ...loreFiles ];
-    if(index){
-    // remove newData[index]
-    newData.splice(index, 1);
+    console.log("index is", index);
+    let newData = [...loreFiles];
+    if (index) {
+      // remove newData[index]
+      newData.splice(index, 1);
     } else {
-
       if (fromCurrentContentType) {
         newData = loreFiles.filter((e) => e.id && e.id !== entity.id);
       } else {
-        newData = loreFilesfilter(
-          (e) => e.id !== entity.id
-          );
-        }
+        newData = loreFilesfilter((e) => e.id !== entity.id);
       }
+    }
 
     setLoreFiles(newData);
   };
 
   const editEntityCallback = (entity, index) => {
-    console.log('editing entity', entity, index)
-    let newData = [ ...loreFiles ];
-    console.log('loreFiles is', loreFiles)
-    if(index !== undefined){
+    console.log("editing entity", entity, index);
+    let newData = [...loreFiles];
+    console.log("loreFiles is", loreFiles);
+    if (index !== undefined) {
       newData[index] = entity;
-      console.log('setting loreFiles to', newData)
+      console.log("setting loreFiles to", newData);
     } else {
+      const entityIndex = newData.findIndex((e) => e.id === entity.id);
+      newData[entityIndex] = entity;
+    }
 
-      const entityIndex = newData.findIndex(
-        (e) => e.id === entity.id
-        );
-        newData[entityIndex] = entity;
-      }
-        
-      setLoreFiles(newData);
+    setLoreFiles(newData);
   };
 
   const handleImport = (data) => {
@@ -137,9 +129,11 @@ function LoreFiles({dataType, baseData, ingredients, setIngredients, loreFiles, 
             addEntityCallback(setGenerating);
           }}
           editEntityCallback={editEntityCallback}
-          deleteEntityCallback={(data, index) => deleteEntityCallback(data, true, index)}
+          deleteEntityCallback={(data, index) =>
+            deleteEntityCallback(data, true, index)
+          }
           showLabels={true}
-        /> 
+        />
       </div>
     </div>
   );

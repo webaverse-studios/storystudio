@@ -11,16 +11,7 @@ import {
   colors,
 } from "unique-names-generator";
 import { getFile } from "./getFile";
-
-function makeId(length) {
-  let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-}
+import { makeId } from "./utils/utils";
 
 function Ingredients({
   dataType,
@@ -146,6 +137,21 @@ function Ingredients({
     importHandler(json);
   };
 
+  const moveEntity = (entity, up) => {
+    const index = ingredients[entity.type].findIndex((e) => e.id === entity.id);
+    if (!index || index === -1) {
+      return;
+    }
+
+    const newData = { ...ingredients };
+    const newArray = [...newData[entity.type]];
+    const newIndex = up ? index - 1 : index + 1;
+    const temp = newArray[index];
+    newArray[index] = newArray[newIndex];
+    newArray[newIndex] = temp;
+    newData[entity.type] = newArray;
+  };
+
   return (
     <div className="view">
       <div className={"importExportButtons"}>
@@ -182,6 +188,7 @@ function Ingredients({
           type={dataType}
           data={ingredients[dataType][currentContentType]}
           header={dataType}
+          updateLocation={(up) => moveEntity(up)}
           addEntityCallback={(data, setGenerating) => {
             addEntityCallback(dataType, ingredients, setGenerating);
           }}

@@ -1,20 +1,7 @@
 import { Configuration, OpenAIApi } from "openai";
 import { lore } from "../constants";
 import { exampleLoreFiles } from "../exampleLoreFiles";
-
-function shuffleArray(array, limit = 10) {
-  const shortenArray = (array) => {
-    if (array.length > limit) {
-      return array.slice(0, limit);
-    }
-    return array;
-  };
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return shortenArray(array);
-}
+import { makeId, openaiRequest, shuffleArray } from "./utils";
 
 const createScenePrompt = () => `\
 ${lore.scene.prompt}
@@ -55,39 +42,12 @@ export function getOpenAIKey() {
   return openai.configuration.apiKey;
 }
 
-async function openaiRequest(
-  prompt,
-  stop,
-  model = "davinci",
-  top_p = 1,
-  frequency_penalty = 1.5,
-  presence_penalty = 1.5,
-  temperature = 1,
-  max_tokens = 256,
-  best_off = 5
-) {
-  const completion = await openai.createCompletion({
-    model: model,
-    prompt: prompt,
-    stop: stop,
-    top_p: top_p,
-    frequency_penalty: frequency_penalty,
-    presence_penalty: presence_penalty,
-    temperature: temperature,
-    max_tokens: max_tokens,
-    best_of: best_off,
-  });
-  if (completion.data.choices?.length > 0) {
-    return completion.data.choices[0].text;
-  } else {
-    return "";
-  }
-}
+
 
 async function generateScene() {
   const scenePrompt = createScenePrompt();
 
-  const resp = await openaiRequest(scenePrompt, [".,\n", "Location:"]);
+  const resp = await openaiRequest(openai, scenePrompt, [".,\n", "Location:"]);
   const lines = resp.split("\n");
   return {
     name: lines[0].trim(),
@@ -98,7 +58,7 @@ async function generateScene() {
 async function generateCharacter() {
   const characterPrompt = createCharacterPrompt();
   //console.log('characterPrompt is', characterPrompt);
-  const resp = await openaiRequest(characterPrompt, [".,\n", "Character:"]);
+  const resp = await openaiRequest(openai, characterPrompt, [".,\n", "Character:"]);
   const lines = resp.split("\n");
   const inventory =
     lines.length > 2 ? lines[2].replace("Inventory: ", "").trim() : "";
@@ -114,7 +74,7 @@ async function generateCharacter() {
 
 async function generateObject() {
   const objectPrompt = createObjectPrompt();
-  const resp = await openaiRequest(objectPrompt, [".,\n", "Object:"]);
+  const resp = await openaiRequest(openai, objectPrompt, [".,\n", "Object:"]);
   const lines = resp.split("\n");
   return {
     name: lines[0].trim(),
@@ -216,7 +176,7 @@ Scillia's treehouse. It's more of a floating island but they call it a tree hous
 
   //   //console.log('lorePrompt is', lorePrompt);
 
-  const loreResp = await openaiRequest(loreFile, ["\n\n", '"""']);
+  const loreResp = await openaiRequest(openai, loreFile, ["\n\n", '"""']);
   //   console.log('openai resp is', resp);
 
   //   const loreResp = module.parseLoreResponses(resp);
@@ -260,16 +220,6 @@ ${objects.map((o) => `${o.name}\n${o.description}\n${o.metadata}`).join("\n\n")}
         messages.map((m) => `${m.character.name}: ${m.message}`).join("\n")
   }
 ${dstCharacter.name}:`;
-}
-
-function makeId(length) {
-  let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
 }
 
 export async function generate(type, data, baseData, openErrorDialog) {

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./App.css";
 import Entity from "./Entity";
 
@@ -9,6 +9,7 @@ const ListBox = ({
   addEntityCallback,
   editEntityCallback,
   deleteEntityCallback,
+  moveEntity,
   showLabels = false,
 }) => {
   const [generating, setGenerating] = React.useState(false);
@@ -31,6 +32,7 @@ const ListBox = ({
                 editEntityCallback={editEntityCallback}
                 deleteEntityCallback={deleteEntityCallback}
                 showLabels={showLabels}
+                moveEntity={(up) => moveEntity(up)}
               />
             );
           })}

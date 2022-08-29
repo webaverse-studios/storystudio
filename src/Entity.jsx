@@ -1,9 +1,9 @@
 import React from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import DeleteForever from "@mui/icons-material/DeleteForever";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import PlusOne from "@mui/icons-material/PlusOne";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import {
   uniqueNamesGenerator,
   adjectives,
@@ -18,6 +18,7 @@ const Entity = ({
   data,
   editEntityCallback,
   deleteEntityCallback,
+  moveEntity,
   showLabels = false,
 }) => {
   const [shouldDelete, setShouldDelete] = React.useState(false);
@@ -200,6 +201,12 @@ const Entity = ({
           />
         </React.Fragment>
       )}
+      <button onClick={() => moveEntity(true)}>
+        <ArrowUpwardIcon />
+      </button>
+      <button onClick={() => moveEntity(false)}>
+        <ArrowDownwardIcon />
+      </button>
     </div>
   );
 };

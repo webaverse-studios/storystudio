@@ -13,16 +13,7 @@ import {
   colors,
 } from "unique-names-generator";
 import { getFile } from "./getFile";
-
-function makeId(length) {
-  let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-}
+import { download_content, fileToDataUri, makeId } from "./utils/utils";
 
 if (
   !localStorage.getItem("loreData") ||
@@ -31,41 +22,40 @@ if (
   localStorage.setItem("loreData", JSON.stringify(lore));
 }
 
-async function download_content(url) {
-  const file = await axios.get(url);
-  return file.data;
-}
-function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseData, loreData, setLoreData, exportHandler, importHandler }) {
+function LoreBase({
+  baseData,
+  loreHeader,
+  setLoreHeader,
+  loadBaseData,
+  setBaseData,
+  loreData,
+  setLoreData,
+  exportHandler,
+  importHandler,
+}) {
   const [editorCode, setEditorCode] = useState("");
-  const [currentContentType, setCurrentContentType] = useState(Object.keys(lore)[0]);
+  const [currentContentType, setCurrentContentType] = useState(
+    Object.keys(lore)[0]
+  );
   const [generating, setGenerating] = useState(false);
   const [showEditor, setShowEditor] = useState(true);
 
-  const fileToDataUri = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        resolve(event.target.result);
-      };
-      reader.readAsDataURL(file);
-    });
-
   useEffect(() => {
-    const codeEditorData = localStorage.getItem('codeEditorData');
+    const codeEditorData = localStorage.getItem("codeEditorData");
     if (codeEditorData) {
       setEditorCode(codeEditorData);
-      download_content("./lore_header.js").then(loreHeader => setLoreHeader(loreHeader));
-    }
-    else {
+      download_content("./lore_header.js").then((loreHeader) =>
+        setLoreHeader(loreHeader)
+      );
+    } else {
       loadBaseData(baseData);
     }
   }, []);
 
-
   // editorCode is a string
   // if the user presses ctrl + s, create a new file from the editorCode text, get the URI and call setBaseData
   const handleSave = async () => {
-    const blob = new Blob([loreHeader + '\n' + editorCode], {
+    const blob = new Blob([loreHeader + "\n" + editorCode], {
       type: "application/x-javascript;base64",
     });
     const fileUri = await fileToDataUri(blob);
@@ -77,12 +67,11 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
       url: "new file",
     });
     return fileUri;
-  }
-
+  };
 
   let isSaving = false;
   const updateEditorCode = (value) => {
-    localStorage.setItem('codeEditorData', value);
+    localStorage.setItem("codeEditorData", value);
     setEditorCode(value);
     if (!isSaving) {
       isSaving = true;
@@ -90,7 +79,7 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
         isSaving = false;
       });
     }
-  }
+  };
 
   const saveLoreFile = async () => {
     const file = await handleSave();
@@ -99,14 +88,11 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
     link.href = file;
     link.download = "lore-model.js";
     link.click();
-  }
+  };
 
-  const addEntityCallback = async (
-    entityType,
-    data
-  ) => {
+  const addEntityCallback = async (entityType, data) => {
     setGenerating(true);
-    console.log('baseData is', baseData)
+    console.log("baseData is", baseData);
     let entity = await generate(entityType, data, baseData);
 
     if (!entity.id) {
@@ -178,20 +164,32 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
   };
   return (
     <div className="view">
-        <React.Fragment>
-          <div className={"importExportButtons"}>
-          <button className={"modeButton" + (showEditor ? " active" : '')} onClick={() => setShowEditor(!showEditor)}>
+      <React.Fragment>
+        <div className={"importExportButtons"}>
+          <button
+            className={"modeButton" + (showEditor ? " active" : "")}
+            onClick={() => setShowEditor(!showEditor)}
+          >
             Edit Pipeline JS
           </button>
-            <button className={"importButton"} onClick={() => !showEditor ? importJson() : loadBaseData(baseData, updateEditorCode, false)}>
-              Import
-            </button>
-            <button className={"exportButton"} onClick={() => !showEditor ? exportHandler() : saveLoreFile()}>
-              Export
-            </button>
-          </div>
-        {!showEditor &&
-
+          <button
+            className={"importButton"}
+            onClick={() =>
+              !showEditor
+                ? importJson()
+                : loadBaseData(baseData, updateEditorCode, false)
+            }
+          >
+            Import
+          </button>
+          <button
+            className={"exportButton"}
+            onClick={() => (!showEditor ? exportHandler() : saveLoreFile())}
+          >
+            Export
+          </button>
+        </div>
+        {!showEditor && (
           <div className="sections">
             <Context
               data={loreData}
@@ -203,7 +201,7 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
               data={loreData[currentContentType].examples}
               header={"lorebase"}
               addEntityCallback={(data) => {
-                console.log('addEntityCallback', data);
+                console.log("addEntityCallback", data);
                 addEntityCallback(currentContentType, data);
               }}
               editEntityCallback={(data) => editEntityCallback(data)}
@@ -211,9 +209,9 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
               showLabels={true}
             />
           </div>
-            }
-        </React.Fragment>
-      {showEditor &&
+        )}
+      </React.Fragment>
+      {showEditor && (
         <React.Fragment>
           <div className={"base"}>
             <span className={"baseLabel"}>Base: </span>
@@ -221,7 +219,9 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
               className={"baseInput"}
               type="text"
               value={baseData?.url}
-              onChange={(e) => setBaseData({ ...baseData, url: e.target.value })}
+              onChange={(e) =>
+                setBaseData({ ...baseData, url: e.target.value })
+              }
               onFocus={(e) => setBaseData({ ...baseData, url: e.target.value })}
             />
             <button
@@ -237,12 +237,14 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
             language="javascript"
             theme="light"
             value={editorCode}
-            onChange={(value) => { updateEditorCode(value); }}
+            onChange={(value) => {
+              updateEditorCode(value);
+            }}
           />
         </React.Fragment>
-      }
+      )}
     </div>
   );
-};
+}
 
 export default LoreBase;

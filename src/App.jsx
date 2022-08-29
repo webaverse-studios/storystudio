@@ -12,20 +12,7 @@ import LoreBase from "./LoreBase";
 import murmurhash3String from "./murmurhash3string";
 import { getFile } from "./getFile";
 import ErrorModal from "./ErrorModal";
-
-const fileToDataUri = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      resolve(event.target.result);
-    };
-    reader.readAsDataURL(file);
-  });
-
-async function download_content(url) {
-  const file = await axios.get(url);
-  return file.data;
-}
+import { download_content, fileToDataUri } from "./utils/utils";
 
 if (
   !localStorage.getItem("ingredients") ||
