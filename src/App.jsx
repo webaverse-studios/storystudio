@@ -11,6 +11,7 @@ import {
   animals,
   colors,
 } from "unique-names-generator";
+import ErrorModal from "./ErrorModal";
 
 function makeId(length) {
   let result = "";
@@ -39,6 +40,10 @@ function App() {
     type: "url",
     funcs: {},
   });
+  const [errorDialogData, setErrorDialogData] = useState({
+    on: false,
+    msg: "",
+  });
 
   useEffect(() => {
     localStorage.setItem("entityData", JSON.stringify(entityData));
@@ -51,7 +56,7 @@ function App() {
     tries = 0
   ) => {
     if (tries > 5) {
-      console.error("Could not generate entity");
+      openErrorDialog("Could not generate entity, after many retries!");
       return;
     }
     tries++;
@@ -59,7 +64,7 @@ function App() {
     try {
       //console.log("calling baseData", baseData);
       // generate new using openai callback
-      let entity = await generate(entityType, data, baseData);
+      let entity = await generate(entityType, data, baseData, openErrorDialog);
       if (entity[0]) entity = entity[0];
       console.log("generate entity", entity);
       if (!entity.id) {
@@ -76,13 +81,13 @@ function App() {
         entityType === "dialog"
           ? newEntityData[entityType][currentContentType]
           : newEntityData[entityType];
-      const c = []
       array.unshift(entity);
       newEntityData[entityType][currentContentType] = array;
 
       setEntityData(newEntityData);
     } catch (e) {
-      console.error(e);
+      openErrorDialog("Error generating entity");
+      console.log(e);
       addEntityCallback(entityType, data, setGenerating, tries);
     }
     setGenerating(false);
@@ -138,24 +143,36 @@ function App() {
   };
 
   const handleExport = () => {
-    const json = JSON.stringify(entityData);
-    console.log(json);
+    try {
+      const json = JSON.stringify(entityData);
+      console.log(json);
 
-    const element = document.createElement("a");
-    const file = new Blob([json], { type: "application/json" });
-    element.href = URL.createObjectURL(file);
-    element.download =
-      uniqueNamesGenerator({
-        dictionaries: [adjectives, animals, colors],
-        length: 2,
-      }) + ".json";
-    document.body.appendChild(element);
-    element.click();
-    element.remove();
+      const element = document.createElement("a");
+      const file = new Blob([json], { type: "application/json" });
+      element.href = URL.createObjectURL(file);
+      element.download =
+        uniqueNamesGenerator({
+          dictionaries: [adjectives, animals, colors],
+          length: 2,
+        }) + ".json";
+      document.body.appendChild(element);
+      element.click();
+      element.remove();
+    } catch (e) {
+      console.log(e);
+      openErrorDialog("Error exporting json data");
+    }
   };
 
   const setBase = (data) => {
     setBaseData(data);
+  };
+
+  const openErrorDialog = (msg) => {
+    setErrorDialogData({ on: true, msg: msg });
+  };
+  const closeErrorDialog = () => {
+    setErrorDialogData({ on: false, msg: "" });
   };
 
   return (
@@ -165,6 +182,7 @@ function App() {
         exportHandler={() => handleExport()}
         data={baseData}
         setData={setBase}
+        openErrorDialog={openErrorDialog}
       />
       <div className="sections">
         {entityPrototypes.map((entity, index) => {
@@ -200,6 +218,14 @@ function App() {
           showLabels={true}
         />
       </div>
+      {errorDialogData &&
+        errorDialogData.on &&
+        errorDialogData.msg?.length > 0 && (
+          <ErrorModal
+            close={closeErrorDialog}
+            info={"Error: " + errorDialogData.msg}
+          ></ErrorModal>
+        )}
     </div>
   );
 }

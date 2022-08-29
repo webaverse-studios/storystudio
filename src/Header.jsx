@@ -23,66 +23,82 @@ export async function download_content(url) {
   return file.data;
 }
 
-const Header = ({ data, setData, exportHandler, importHandler }) => {
+const Header = ({
+  data,
+  setData,
+  exportHandler,
+  importHandler,
+  openErrorDialog,
+}) => {
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
 
   const handleLoad = async (data, fromUrl = true) => {
-    if (fromUrl) {
-      const response = await download_content(data.url);
-      let blob = new Blob([response], {
-        type: "application/x-javascript;base64",
-      });
-      // decode blob to a string
-      const reader = new FileReader();
-      reader.readAsText(blob);
-      reader.onload = async function () {
-        let content = reader.result;
-        // find the line in content (a long delimited string) that contains import and murmurhash3
-        // replace that line with lore_header
-        const contentArray = content.split("\n");
-        const importLineIndex = contentArray.findIndex((line) =>
-          line.includes("murmurhash3.js")
-        );
-        if (importLineIndex !== -1) {
-          contentArray[importLineIndex] = lore_header;
-          content = contentArray.join("\n");
-          //console.log("injected content", content);
-          // convert content back to a blob with the x-javascript base64 type
-          blob = new Blob([content], {
-            type: "application/x-javascript;base64",
-          });
-        }
+    try {
+      if (fromUrl) {
+        const response = await download_content(data.url);
+        let blob = new Blob([response], {
+          type: "application/x-javascript;base64",
+        });
+        // decode blob to a string
+        const reader = new FileReader();
+        reader.readAsText(blob);
+        reader.onload = async function () {
+          let content = reader.result;
+          // find the line in content (a long delimited string) that contains import and murmurhash3
+          // replace that line with lore_header
+          const contentArray = content.split("\n");
+          const importLineIndex = contentArray.findIndex((line) =>
+            line.includes("murmurhash3.js")
+          );
+          if (importLineIndex !== -1) {
+            contentArray[importLineIndex] = lore_header;
+            content = contentArray.join("\n");
+            //console.log("injected content", content);
+            // convert content back to a blob with the x-javascript base64 type
+            blob = new Blob([content], {
+              type: "application/x-javascript;base64",
+            });
+          }
 
-        const fileUri = await fileToDataUri(blob);
-        // fileUri is a base64 javascript document
-        // we want to inject some code into the file before we
+          const fileUri = await fileToDataUri(blob);
+          // fileUri is a base64 javascript document
+          // we want to inject some code into the file before we
+          const importedFile = await import(fileUri);
+          setData({
+            base: fileUri,
+            type: "file",
+            funcs: importedFile,
+            url: data.url,
+          });
+        };
+      } else {
+        // open a file picker and get the file from disk
+        const file = await getFile();
+        const fileUri = await fileToDataUri(file);
         const importedFile = await import(fileUri);
         setData({
           base: fileUri,
           type: "file",
           funcs: importedFile,
-          url: data.url,
+          url: file.name,
         });
-      };
-    } else {
-      // open a file picker and get the file from disk
-      const file = await getFile();
-      const fileUri = await fileToDataUri(file);
-      const importedFile = await import(fileUri);
-      setData({
-        base: fileUri,
-        type: "file",
-        funcs: importedFile,
-        url: file.name,
-      });
+      }
+    } catch (e) {
+      console.log(e);
+      openErrorDialog("Error loading base data!");
     }
   };
 
   const importJson = async () => {
+    try {
     const file = await getFile();
     const text = await file.text();
     const json = JSON.parse(text);
     importHandler(json);
+    } catch (e) {
+      console.log(e);
+      openErrorDialog("Error import data from json!");
+    }
   };
 
   const fileToDataUri = (file) =>

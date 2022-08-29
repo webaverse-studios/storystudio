@@ -141,12 +141,13 @@ function makeId(length) {
   return result;
 }
 
-export async function generate(type, data, baseData) {
+export async function generate(type, data, baseData, openErrorDialog) {
   if (
     !baseData ||
     !baseData.funcs ||
     Object.entries(baseData.funcs).length === 0
   ) {
+    openErrorDialog("No base data found");
     return null;
   }
 
@@ -192,13 +193,14 @@ export async function generate(type, data, baseData) {
       resp = await generateLore(data, baseData.funcs);
       return resp;
     default:
-      console.log("unknown type", type);
+      openErrorDialog("Unknown type " + type);
       return null;
   }
 
   if (data[type] && data[type !== undefined]) {
     for (let i = 0; i < data[type].length; i++) {
       if (data[type].name === res.name) {
+        openErrorDialog("Found duplicate " + res.name + " will re-generate");
         return generate(type, data, data);
         //found a duplicate, so generate a new name
       }
