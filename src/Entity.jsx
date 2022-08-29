@@ -13,6 +13,7 @@ import {
 
 import "./App.css";
 
+//field check if image, set source the img, if name change, generate new image
 const Entity = ({
   index,
   data,
@@ -160,8 +161,19 @@ const Entity = ({
               field === "id" ||
               field === "hash" ||
               field === "nonce"
-            )
+            ) {
               return null;
+            } else if (field === "image") {
+              return (
+                <img
+                  className="photo"
+                  key={i}
+                  src={`data:image/jpeg;base64,${data[field]}`}
+                  alt={data["name"]}
+                />
+              );
+            }
+
             return (
               <div key={i} className={"entityField " + field}>
                 {showLabels && (

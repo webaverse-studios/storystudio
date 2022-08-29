@@ -410,3 +410,8 @@
   top: 0;
   left: 0;
 }
+
+.photo {
+  height: 128px;
+  width: 128px;
+}

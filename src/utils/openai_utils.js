@@ -1,7 +1,12 @@
 import { Configuration, OpenAIApi } from "openai";
 import { lore } from "../constants";
 import { exampleLoreFiles } from "../exampleLoreFiles";
-import { makeId, openaiRequest, shuffleArray } from "./utils";
+import {
+  makeId,
+  generateImage,
+  openaiRequest,
+  shuffleArray,
+} from "./utils";
 
 const createScenePrompt = () => `\
 ${lore.scene.prompt}
@@ -42,8 +47,6 @@ export function getOpenAIKey() {
   return openai.configuration.apiKey;
 }
 
-
-
 async function generateScene() {
   const scenePrompt = createScenePrompt();
 
@@ -58,7 +61,10 @@ async function generateScene() {
 async function generateCharacter() {
   const characterPrompt = createCharacterPrompt();
   //console.log('characterPrompt is', characterPrompt);
-  const resp = await openaiRequest(openai, characterPrompt, [".,\n", "Character:"]);
+  const resp = await openaiRequest(openai, characterPrompt, [
+    ".,\n",
+    "Character:",
+  ]);
   const lines = resp.split("\n");
   const inventory =
     lines.length > 2 ? lines[2].replace("Inventory: ", "").trim() : "";
@@ -240,6 +246,7 @@ export async function generate(type, data, baseData, openErrorDialog) {
     shortname: "",
     description: "",
     inventory: [],
+    img: "",
   };
   let resp = undefined;
   console.log("handling type", type);
@@ -289,6 +296,7 @@ export async function generate(type, data, baseData, openErrorDialog) {
   //     //found a duplicate, so generate a new name
   //   }
   // }
+  res.image = await generateImage(resp.name);
 
   if (res.name?.length > 0) {
     res.id = makeId(5);

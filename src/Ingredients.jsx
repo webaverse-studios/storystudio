@@ -33,8 +33,8 @@ function Ingredients({
     try {
       entity = await generate(entityType, data, baseData, openErrorModal);
     } catch (e) {
-      openErrorModal("Error generating entity", e);
       console.log("error", e);
+      openErrorModal("Error generating entity", e);
       setGenerating(false);
       return;
     }

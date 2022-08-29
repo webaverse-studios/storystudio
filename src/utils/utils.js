@@ -1,6 +1,7 @@
 import axios from "axios";
 import dungeoneer from "dungeoneer";
 import { stable_diffusion_url } from "../constants";
+import { Buffer } from "buffer";
 
 export function makeId(length) {
   let result = "";
@@ -79,10 +80,14 @@ export const generateDungeon = () => {
   return d;
 };
 
-export const makeStableDiffusionRequest = async (text) => {
+export const generateImage = async (text) => {
   const resp = await axios.get(stable_diffusion_url, {
     params: {
       s: text,
     },
+    responseType: 'arraybuffer'
   });
+  console.log(resp.data);
+  const base64String = Buffer.from(resp.data, "binary").toString("base64");
+  return base64String;
 };

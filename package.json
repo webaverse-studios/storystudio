@@ -11,10 +11,13 @@
   "dependencies": {
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@monaco-editor/react": "^4.4.5",
     "@mui/icons-material": "^5.10.2",
     "@mui/material": "^5.10.2",
     "axios": "^0.27.2",
+    "buffer": "^6.0.3",
+    "Buffer": "^0.0.0",
     "dotenv": "^16.0.1",
     "dungeoneer": "^2.1.5",
     "events": "^3.3.0",
