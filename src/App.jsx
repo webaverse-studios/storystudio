@@ -11,6 +11,7 @@ import LoreFiles from "./LoreFiles";
 import LoreBase from "./LoreBase";
 import murmurhash3String from "./murmurhash3string";
 import { getFile } from "./getFile";
+import ErrorModal from "./ErrorModal";
 
 const fileToDataUri = (file) =>
   new Promise((resolve, reject) => {
@@ -24,15 +25,6 @@ const fileToDataUri = (file) =>
 async function download_content(url) {
   const file = await axios.get(url);
   return file.data;
-}
-function makeId(length) {
-  let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
 }
 
 if (

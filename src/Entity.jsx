@@ -40,8 +40,8 @@ const Entity = ({
         "#" +
         data;
     }
-    if(!field) {
-        newData = data;
+    if (!field) {
+      newData = data;
     }
     editEntityCallback(newData, index);
   };
@@ -190,14 +190,14 @@ const Entity = ({
       )}
       {typeof data === "string" && (
         <React.Fragment>
-        <textarea
+          <textarea
             type="text"
             value={data}
             onChange={(e) => {
-            e.preventDefault();
-            updateEntity(data, null, e.target.value, index);
+              e.preventDefault();
+              updateEntity(data, null, e.target.value, index);
             }}
-        />
+          />
         </React.Fragment>
       )}
     </div>

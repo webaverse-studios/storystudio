@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import { entityPrototypes, contextTypes } from "./constants";
 import { generate } from "./utils/openai_utils";
@@ -11,7 +11,6 @@ import {
   colors,
 } from "unique-names-generator";
 import { getFile } from "./getFile";
-import { ConstructionOutlined } from "@mui/icons-material";
 
 function makeId(length) {
   let result = "";
@@ -30,7 +29,7 @@ function Ingredients({
   setIngredients,
   exportHandler,
   importHandler,
-  openErrorDialog,
+  openErrorModal,
 }) {
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
 
@@ -39,9 +38,17 @@ function Ingredients({
     console.log("entityType, data, baseData", entityType, data, baseData);
     //console.log("calling baseData", baseData);
     // generate new using openai callback
-    let entity = await generate(entityType, data, baseData);
+    let entity = null;
+    try {
+      entity = await generate(entityType, data, baseData, openErrorModal);
+    } catch (e) {
+      openErrorModal("Error generating entity", e);
+      console.log("error", e);
+      setGenerating(false);
+      return;
+    }
     if (!entity) {
-      openErrorDialog("Could not generate entity, after many retries!");
+      openErrorModal("could not generate entity");
       setGenerating(false);
       return;
     }
@@ -53,14 +60,22 @@ function Ingredients({
 
     const newEntityData = { ...ingredients };
 
+    console.log(
+      "entityType",
+      entityType,
+      "dataType:",
+      dataType,
+      newEntityData[entityType][currentContentType],
+      newEntityData[entityType]
+    );
     const array =
       entityType === dataType
         ? newEntityData[entityType][currentContentType]
         : newEntityData[entityType];
 
     console.log("array", array);
-    array.unshift(entity);
-    newEntityData[entityType][currentContentType] = array;
+    array.push(entity);
+    newEntityData[entityType] = array;
     console.log(
       "newEntityData[entityType][currentContentType]",
       newEntityData[entityType][currentContentType]
@@ -165,7 +180,7 @@ function Ingredients({
         />
         <ListBox
           type={dataType}
-          data={ingredients[dataType]?.[currentContentType]}
+          data={ingredients[dataType][currentContentType]}
           header={dataType}
           addEntityCallback={(data, setGenerating) => {
             addEntityCallback(dataType, ingredients, setGenerating);

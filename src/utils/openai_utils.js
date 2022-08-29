@@ -272,7 +272,7 @@ function makeId(length) {
   return result;
 }
 
-export async function generate(type, data, baseData) {
+export async function generate(type, data, baseData, openErrorDialog) {
   console.log("generating...");
   console.log(type, data, baseData);
   // if (
