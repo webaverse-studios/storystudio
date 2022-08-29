@@ -23,21 +23,25 @@ function makeId(length) {
   return result;
 }
 
-function Ingredients({dataType, baseData, ingredients, setIngredients, exportHandler, importHandler}) {
+function Ingredients({
+  dataType,
+  baseData,
+  ingredients,
+  setIngredients,
+  exportHandler,
+  importHandler,
+  openErrorDialog,
+}) {
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
 
-  const addEntityCallback = async (
-    entityType,
-    data,
-    setGenerating
-  ) => {
+  const addEntityCallback = async (entityType, data, setGenerating) => {
     setGenerating(true);
-    console.log('entityType, data, baseData', entityType, data, baseData);
+    console.log("entityType, data, baseData", entityType, data, baseData);
     //console.log("calling baseData", baseData);
     // generate new using openai callback
     let entity = await generate(entityType, data, baseData);
-    if(!entity){
-      console.error('could not generate entity');
+    if (!entity) {
+      openErrorDialog("Could not generate entity, after many retries!");
       setGenerating(false);
       return;
     }
@@ -45,7 +49,7 @@ function Ingredients({dataType, baseData, ingredients, setIngredients, exportHan
     if (!entity.id) {
       entity.id = makeId(5);
     }
-    console.log('ingredients', ingredients);
+    console.log("ingredients", ingredients);
 
     const newEntityData = { ...ingredients };
 
@@ -54,10 +58,13 @@ function Ingredients({dataType, baseData, ingredients, setIngredients, exportHan
         ? newEntityData[entityType][currentContentType]
         : newEntityData[entityType];
 
-        console.log('array', array);
-    array.push(entity);
+    console.log("array", array);
+    array.unshift(entity);
     newEntityData[entityType][currentContentType] = array;
-    console.log('newEntityData[entityType][currentContentType]', newEntityData[entityType][currentContentType]);
+    console.log(
+      "newEntityData[entityType][currentContentType]",
+      newEntityData[entityType][currentContentType]
+    );
     setIngredients(newEntityData);
     setGenerating(false);
   };
@@ -158,7 +165,7 @@ function Ingredients({dataType, baseData, ingredients, setIngredients, exportHan
         />
         <ListBox
           type={dataType}
-          data={ingredients[dataType][currentContentType]}
+          data={ingredients[dataType]?.[currentContentType]}
           header={dataType}
           addEntityCallback={(data, setGenerating) => {
             addEntityCallback(dataType, ingredients, setGenerating);
@@ -166,7 +173,7 @@ function Ingredients({dataType, baseData, ingredients, setIngredients, exportHan
           editEntityCallback={(data) => editEntityCallback(data)}
           deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
           showLabels={true}
-        /> 
+        />
       </div>
     </div>
   );

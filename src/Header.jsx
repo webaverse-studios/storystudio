@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import { views } from "./constants"
+import { views } from "./constants";
 
 const Header = ({ currentView, setCurrentView }) => {
   return (
@@ -15,14 +15,21 @@ const Header = ({ currentView, setCurrentView }) => {
           return (
             <button
               key={key}
-              className={"viewButton " + (currentView === Object.keys(views)[index] ? "activeButton" : "")}
-              onClick={() => setCurrentView(Object.keys(views)[index])}
+              className={
+                "viewButton " +
+                (currentView === Object.keys(views)[index]
+                  ? "activeButton"
+                  : "")
+              }
+              onClick={() => {
+                console.log("setting index:", Object.keys(views)[index]);
+                setCurrentView(Object.keys(views)[index]);
+              }}
             >
               {views[key]}
             </button>
           );
-        })
-      }
+        })}
       </div>
     </div>
   );

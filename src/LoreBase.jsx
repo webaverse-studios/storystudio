@@ -220,7 +220,7 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
             <input
               className={"baseInput"}
               type="text"
-              value={baseData.url}
+              value={baseData?.url}
               onChange={(e) => setBaseData({ ...baseData, url: e.target.value })}
               onFocus={(e) => setBaseData({ ...baseData, url: e.target.value })}
             />

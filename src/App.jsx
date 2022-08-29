@@ -53,95 +53,6 @@ function App() {
     localStorage.setItem("ingredients", JSON.stringify(ingredients));
   }, [ingredients]);
 
-  const addEntityCallback = async (
-    entityType,
-    data,
-    setGenerating,
-    tries = 0
-  ) => {
-    if (tries > 5) {
-      openErrorDialog("Could not generate entity, after many retries!");
-      return;
-    }
-    tries++;
-    setGenerating(true);
-    try {
-      //console.log("calling baseData", baseData);
-      // generate new using openai callback
-      let entity = await generate(entityType, data, baseData, openErrorDialog);
-      if (entity[0]) entity = entity[0];
-      console.log("generate entity", entity);
-      if (!entity.id) {
-        entity.id = makeId(5);
-      }
-      if (!entity || entity === undefined) {
-        addEntityCallback(entityType, data, setGenerating, tries);
-        return;
-      }
-
-      const newEntityData = { ...ingredients };
-
-      const array =
-        entityType === "dialog"
-          ? newEntityData[entityType][currentContentType]
-          : newEntityData[entityType];
-      array.push(entity);
-      newEntityData[entityType][currentContentType] = array;
-
-      setIngredients(newEntityData);
-    } catch (e) {
-      openErrorDialog("Error generating entity");
-      console.error(e);
-      addEntityCallback(entityType, data, setGenerating, tries);
-    }
-    setGenerating(false);
-  };
-  const deleteEntityCallback = (entity, dialog) => {
-    console.log("entity", entity);
-    const newData = { ...ingredients };
-    console.log("ingredients", ingredients);
-    console.log("currentContentType", currentContentType);
-    console.log(
-      'ingredients["dialog"][entity.type]',
-      ingredients["dialog"][currentContentType]
-    );
-    console.log("ingredients[entity.type]", ingredients[entity.type]);
-
-    if (dialog) {
-      newData["dialog"][currentContentType] = ingredients["dialog"][
-        currentContentType
-      ].filter((e) => e.id && e.id !== entity.id);
-    } else {
-      newData[entity.type] = ingredients[entity.type].filter(
-        (e) => e.id !== entity.id
-      );
-    }
-
-    setIngredients(newData);
-  };
-
-  const editEntityCallback = (entity) => {
-    let newData = { ...ingredients };
-
-    console.log("gotta edit dis entity", entity);
-
-    if (entity.message !== undefined) {
-      newData["dialog"][currentContentType];
-
-      const entityIndex = newData["dialog"][currentContentType].findIndex(
-        (e) => e.id === entity.id
-      );
-      newData["dialog"][currentContentType][entityIndex] = entity;
-    } else {
-      const entityIndex = newData[entity.type].findIndex(
-        (e) => e.id === entity.id
-      );
-      newData[entity.type][entityIndex] = entity;
-    }
-
-    setIngredients(newData);
-  };
-
   const handleImport = (data) => {
     setIngredients(data);
   };
@@ -182,14 +93,11 @@ function App() {
 
   return (
     <div className="App">
-      <Header
-        currentView={currentView}
-        setCurrentView={setCurrentView}
-      />
-      {currentView === "gettingStarted" ? (
+      <Header currentView={currentView} setCurrentView={setCurrentView} />
+      {currentView === "setup" ? (
         <GettingStarted />
       ) : currentView === "base" ? (
-        <LoreBase data={baseData} setData={setBase} />
+        <LoreBase data={baseData} setData={setBase} loadBaseData={loadBaseData}/>
       ) : currentView === "files" ? (
         <LoreFiles />
       ) : currentView === "map" ? (
@@ -202,6 +110,7 @@ function App() {
           setIngredients={setIngredients}
           baseData={baseData}
           setBaseData={setBaseData}
+          openErrorDialog={openErrorDialog}
         />
       )}
       {errorDialogData &&
