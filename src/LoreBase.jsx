@@ -13,13 +13,19 @@ import {
   colors,
 } from "unique-names-generator";
 import { getFile } from "./getFile";
-import { download_content, fileToDataUri, makeId } from "./utils/utils";
+import {
+  compressObject,
+  decompressObject,
+  download_content,
+  fileToDataUri,
+  makeId,
+} from "./utils/utils";
 
 if (
   !localStorage.getItem("loreData") ||
-  localStorage.getItem("loreData") === "[object Object]"
+  decompressObject(localStorage.getItem("loreData")) === "[object Object]"
 ) {
-  localStorage.setItem("loreData", JSON.stringify(lore));
+  localStorage.setItem("loreData", compressObject(lore));
 }
 
 function LoreBase({

@@ -1,8 +1,9 @@
 import axios from "axios";
 import dungeoneer from "dungeoneer";
 import { stable_diffusion_url } from "../constants";
-if(!global) global = globalThis;
+if (!global) global = globalThis;
 import { Buffer } from "buffer";
+import lz from "lz-string";
 
 export function makeId(length) {
   let result = "";
@@ -34,11 +35,11 @@ export async function openaiRequest(
   stop,
   model = "davinci",
   top_p = 1,
-  frequency_penalty = 1.5,
-  presence_penalty = 1.5,
+  frequency_penalty = 1,
+  presence_penalty = 1,
   temperature = 1,
   max_tokens = 256,
-  best_off = 5
+  best_off = 1
 ) {
   const completion = await openai.createCompletion({
     model: model,
@@ -86,9 +87,24 @@ export const generateImage = async (text) => {
     params: {
       s: text,
     },
-    responseType: 'arraybuffer'
+    responseType: "arraybuffer",
   });
   console.log(resp.data);
   const base64String = Buffer.from(resp.data, "binary").toString("base64");
   return base64String;
+};
+
+export const compressObject = (obj) => {
+  const jsonStr = JSON.stringify(obj);
+  const bytes = Buffer.byteLength(jsonStr, "utf-8");
+  const compressed = lz.compress(jsonStr);
+  const bytes2 = Buffer.byteLength(compressed, "utf-8");
+  console.log("bytes:", jsonStr.length, "bytes2:", compressed.length);
+  return compressed;
+};
+
+export const decompressObject = (str) => {
+  const decompressed = lz.decompress(str);
+  const obj = JSON.parse(decompressed);
+  return obj;
 };

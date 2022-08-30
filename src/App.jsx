@@ -12,15 +12,20 @@ import LoreBase from "./LoreBase";
 import murmurhash3String from "./murmurhash3string";
 import { getFile } from "./getFile";
 import ErrorModal from "./ErrorModal";
-import { download_content, fileToDataUri } from "./utils/utils";
+import {
+  compressObject,
+  decompressObject,
+  download_content,
+  fileToDataUri,
+} from "./utils/utils";
 
 if (
   !localStorage.getItem("ingredients") ||
-  localStorage.getItem("ingredients") === "[object Object]"
+  decompressObject(localStorage.getItem("ingredients")) === "[object Object]"
 ) {
-  localStorage.setItem("ingredients", JSON.stringify(defaultIngredients));
+  localStorage.setItem("ingredients", compressObject(defaultIngredients));
 }
-const storedEntityData = JSON.parse(localStorage.getItem("ingredients"));
+const storedEntityData = decompressObject(localStorage.getItem("ingredients"));
 
 function App() {
   const [currentView, setCurrentView] = useState(
@@ -29,18 +34,18 @@ function App() {
   const [ingredients, setIngredients] = useState(storedEntityData);
   const [loreFiles, setLoreFiles] = useState(
     localStorage.getItem("loreFiles")
-      ? JSON.parse(localStorage.getItem("loreFiles"))
+      ? decompressObject(localStorage.getItem("loreFiles"))
       : exampleLoreFiles
   );
   const [loreData, setLoreData] = useState(
     localStorage.getItem("loreData")
-      ? JSON.parse(localStorage.getItem("loreData"))
+      ? decompressObject(localStorage.getItem("loreData"))
       : lore
   );
   const [loreHeader, setLoreHeader] = useState("");
   const [baseData, setBaseData] = useState(
     localStorage.getItem("baseData")
-      ? JSON.parse(localStorage.getItem("baseData"))
+      ? decompressObject(localStorage.getItem("baseData"))
       : {
           base: null,
           url: "./lore-model.js", // "https://webaverse.github.io/lore/lore-model.js",
@@ -55,7 +60,7 @@ function App() {
   const [forceUpdate, setForceUpdate] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem("loreFiles", JSON.stringify(loreFiles));
+    localStorage.setItem("loreFiles", compressObject(loreFiles));
   }, [loreFiles]);
 
   useEffect(() => {
@@ -68,15 +73,15 @@ function App() {
   // }, [baseData])
 
   useEffect(() => {
-    localStorage.setItem("currentView", currentView);
+    localStorage.setItem("currentView", compressObject(currentView));
   }, [currentView]);
 
   useEffect(() => {
-    localStorage.setItem("ingredients", JSON.stringify(ingredients));
+    localStorage.setItem("ingredients", compressObject(ingredients));
   }, [ingredients]);
 
   useEffect(() => {
-    localStorage.setItem("loreData", JSON.stringify(loreData));
+    localStorage.setItem("loreData", compressObject(loreData));
   }, [loreData]);
 
   const handleImport = (type, data) => {

@@ -1,12 +1,7 @@
 import { Configuration, OpenAIApi } from "openai";
 import { lore } from "../constants";
 import { exampleLoreFiles } from "../exampleLoreFiles";
-import {
-  makeId,
-  generateImage,
-  openaiRequest,
-  shuffleArray,
-} from "./utils";
+import { makeId, generateImage, openaiRequest, shuffleArray } from "./utils";
 
 const createScenePrompt = () => `\
 ${lore.scene.prompt}
@@ -50,8 +45,10 @@ export function getOpenAIKey() {
 async function generateScene() {
   const scenePrompt = createScenePrompt();
 
-  const resp = await openaiRequest(openai, scenePrompt, [".,\n", "Location:"]);
-  const lines = resp.split("\n");
+  const resp = await openaiRequest(openai, scenePrompt, [".\n", "Location:"]);
+  const lines = resp.split("\n").filter((el) => {
+    return el !== "";
+  });
   return {
     name: lines[0].trim(),
     description: lines[1].replace("Description: ", "").trim(),
@@ -60,12 +57,13 @@ async function generateScene() {
 
 async function generateCharacter() {
   const characterPrompt = createCharacterPrompt();
-  //console.log('characterPrompt is', characterPrompt);
   const resp = await openaiRequest(openai, characterPrompt, [
     ".,\n",
     "Character:",
   ]);
-  const lines = resp.split("\n");
+  const lines = resp.split("\n").filter((el) => {
+    return el !== "";
+  });
   const inventory =
     lines.length > 2 ? lines[2].replace("Inventory: ", "").trim() : "";
   return {
@@ -80,8 +78,11 @@ async function generateCharacter() {
 
 async function generateObject() {
   const objectPrompt = createObjectPrompt();
+  console.log("object prompt:", objectPrompt);
   const resp = await openaiRequest(openai, objectPrompt, [".,\n", "Object:"]);
-  const lines = resp.split("\n");
+  const lines = resp.split("\n").filter((el) => {
+    return el !== "";
+  });
   return {
     name: lines[0].trim(),
     description: lines[1].replace("Description: ", "").trim(),
@@ -165,11 +166,12 @@ Scillia's treehouse. It's more of a floating island but they call it a tree hous
     objects: objectsTest, //data["object"],
     dstCharacter: charactersTest[dstCharacterIndex],
     //data["character"][Math.floor(Math.random() * data["character"].length)],
-  }
+  };
 
   // exampleLoreFiles is an array of strings
   // pick one at random and use it as the prompt
-  const header = exampleLoreFiles[Math.floor(Math.random() * exampleLoreFiles.length)];
+  const header =
+    exampleLoreFiles[Math.floor(Math.random() * exampleLoreFiles.length)];
   const loreFile = await makeLoreFile(header, promptData);
 
   // // increment dstCharacterIndex by 1, then wrap around if necessary
@@ -186,16 +188,17 @@ Scillia's treehouse. It's more of a floating island but they call it a tree hous
 
   //   const loreResp = module.parseLoreResponses(resp);
 
-  console.log('parseLoreResponses is', loreResp);
+  console.log("parseLoreResponses is", loreResp);
 
-  console.log('final lorefile is')
-  console.log(loreFile+loreResp);
-  const finalLoreFile = loreFile+loreResp;
+  console.log("final lorefile is");
+  console.log(loreFile + loreResp);
+  const finalLoreFile = loreFile + loreResp;
   // finalLoreFile is a collection of text entries split by """
   // get the last entry and return it
-  let finalLore = finalLoreFile.split("\"\"\"")[finalLoreFile.split("\"\"\"").length - 1];
+  let finalLore =
+    finalLoreFile.split('"""')[finalLoreFile.split('"""').length - 1];
   // trim any empty lines from the from and end of the finalLore
-  finalLore = finalLore.replace(/^\s+|\s+$/g, '');
+  finalLore = finalLore.replace(/^\s+|\s+$/g, "");
   return finalLore;
 };
 

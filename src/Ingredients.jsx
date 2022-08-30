@@ -25,7 +25,12 @@ function Ingredients({
 }) {
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
 
-  const addEntityCallback = async (entityType, data, setGenerating) => {
+  const addEntityCallback = async (
+    entityType,
+    data,
+    setGenerating,
+    second = false
+  ) => {
     setGenerating(true);
     console.log("entityType, data, baseData", entityType, data, baseData);
     //console.log("calling baseData", baseData);
@@ -35,8 +40,10 @@ function Ingredients({
       entity = await generate(entityType, data, baseData, openErrorModal);
     } catch (e) {
       console.log("error", e);
-      openErrorModal("Error generating entity", e);
       setGenerating(false);
+      if (!second) {
+        addEntityCallback(entityType, data, setGenerating, true);
+      }
       return;
     }
     if (!entity) {

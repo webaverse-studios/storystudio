@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "CHOKIDAR_USEPOLLING=true vite",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -21,6 +21,7 @@
     "dotenv": "^16.0.1",
     "dungeoneer": "^2.1.5",
     "events": "^3.3.0",
+    "lz-string": "^1.4.4",
     "module-from-string": "^3.2.1",
     "openai": "^3.0.0",
     "path": "^0.12.7",
