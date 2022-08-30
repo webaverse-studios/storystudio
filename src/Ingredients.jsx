@@ -138,18 +138,36 @@ function Ingredients({
   };
 
   const moveEntity = (entity, up) => {
-    const index = ingredients[entity.type].findIndex((e) => e.id === entity.id);
-    if (!index || index === -1) {
+    if (!entity || entity === undefined) {
+      return;
+    }
+
+    const index = ingredients[entity.type].findIndex(
+      (e) => e.name === entity.name
+    );
+    if (index === null || index === undefined || index <= -1) {
       return;
     }
 
     const newData = { ...ingredients };
     const newArray = [...newData[entity.type]];
-    const newIndex = up ? index - 1 : index + 1;
-    const temp = newArray[index];
-    newArray[index] = newArray[newIndex];
-    newArray[newIndex] = temp;
+    if (newArray?.length <= 1) {
+      return;
+    }
+
+    if (index === 0 && up) {
+      newArray.push(newArray.shift());
+    } else if (index === ingredients[entity.type].length - 1 && !up) {
+      newArray.unshift(newArray.pop());
+    } else {
+      const newIndex = up ? index - 1 : index + 1;
+      const temp = newArray[index];
+      newArray[index] = newArray[newIndex];
+      newArray[newIndex] = temp;
+    }
+
     newData[entity.type] = newArray;
+    setIngredients(newData);
   };
 
   return (
@@ -166,6 +184,7 @@ function Ingredients({
         {entityPrototypes.map((entity, index) => {
           return (
             <ListBox
+              testValue={"test value"}
               key={index}
               type={entity.type}
               data={ingredients[entity.type]}
@@ -175,6 +194,7 @@ function Ingredients({
               }
               editEntityCallback={(data) => editEntityCallback(data)}
               deleteEntityCallback={(data) => deleteEntityCallback(data)}
+              moveEntityCallback={(entity, up) => moveEntity(entity, up)}
             />
           );
         })}
@@ -194,6 +214,7 @@ function Ingredients({
           }}
           editEntityCallback={(data) => editEntityCallback(data)}
           deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
+          moveEntityCallback={(entity, up) => moveEntity(entity, up)}
           showLabels={true}
         />
       </div>

@@ -19,7 +19,7 @@ const Entity = ({
   data,
   editEntityCallback,
   deleteEntityCallback,
-  moveEntity,
+  moveEntityCallback,
   showLabels = false,
 }) => {
   const [shouldDelete, setShouldDelete] = React.useState(false);
@@ -148,7 +148,7 @@ const Entity = ({
       )}
       {typeof data === "object" && (
         <React.Fragment>
-          {Object.keys(data).map((field, i) => {
+          {Object.keys(data ?? []).map((field, i) => {
             if (
               field === "inventory" &&
               (data["type"] === "character" ||
@@ -213,10 +213,10 @@ const Entity = ({
           />
         </React.Fragment>
       )}
-      <button onClick={() => moveEntity(true)}>
+      <button onClick={() => moveEntityCallback(data, true)}>
         <ArrowUpwardIcon />
       </button>
-      <button onClick={() => moveEntity(false)}>
+      <button onClick={() => moveEntityCallback(data, false)}>
         <ArrowDownwardIcon />
       </button>
     </div>
