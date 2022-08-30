@@ -64,7 +64,11 @@
   margin: 1em;
   width: calc(100% - 2em);
   overflow-y: scroll;
-  height: 25em;
+  min-height: 25em;
+}
+
+.section.lore {
+  min-height: 90vh;
 }
 
 /* width */
@@ -100,7 +104,7 @@
 
 .sectionWrapper {
   display: inline-block;
-  width: 45%;
+  width: 100%;
   vertical-align: top;
 }
 
@@ -272,6 +276,18 @@
 .entityField textarea:focus {
   outline: none;
   border: 0;
+}
+
+.entity textarea {
+  width: calc(100% - 3em);
+  height: 3em;
+  display: inline-block;
+  border: 0;
+  background: none;
+  padding: 0;
+  margin: 0;
+  min-width: calc(100% - 3em);
+  max-width: calc(100% - 3em);
 }
 
 .entityDelete {
