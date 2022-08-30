@@ -9,8 +9,8 @@ const ListBox = ({
   addEntityCallback,
   editEntityCallback,
   deleteEntityCallback,
-  moveEntity,
   showLabels = false,
+  moveEntityCallback,
 }) => {
   const [generating, setGenerating] = React.useState(false);
   return (
@@ -32,7 +32,7 @@ const ListBox = ({
                 editEntityCallback={editEntityCallback}
                 deleteEntityCallback={deleteEntityCallback}
                 showLabels={showLabels}
-                moveEntity={(up) => moveEntity(up)}
+                moveEntityCallback={(entity, up) => moveEntityCallback(entity, up)}
               />
             );
           })}
