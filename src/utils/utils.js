@@ -1,6 +1,7 @@
 import axios from "axios";
 import dungeoneer from "dungeoneer";
 import { stable_diffusion_url } from "../constants";
+if(!global) global = globalThis;
 import { Buffer } from "buffer";
 
 export function makeId(length) {
