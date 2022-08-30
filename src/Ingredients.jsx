@@ -21,6 +21,7 @@ function Ingredients({
   exportHandler,
   importHandler,
   openErrorModal,
+  forceUpdate,
 }) {
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
 
@@ -170,9 +171,36 @@ function Ingredients({
     setIngredients(newData);
   };
 
+  const updateEditMode = () => {
+    const editMode =
+      new URLSearchParams(window.location.search).get("edit") === "true"
+        ? true
+        : false;
+    const params = new URLSearchParams(window.location.search);
+    params.set("edit", !editMode);
+    window.history.pushState({}, "", `?${params.toString()}`);
+    forceUpdate();
+  };
+
+  const renderEditModeButton = () => {
+    console.log("render edit mode");
+    const editMode =
+      new URLSearchParams(window.location.search).get("edit") === "true"
+        ? true
+        : false;
+
+    console.log("edit mode:", editMode);
+    if (editMode) {
+      return "Exit edit mode";
+    } else {
+      return "Enter edit mode";
+    }
+  };
+
   return (
     <div className="view">
       <div className={"importExportButtons"}>
+        <button onClick={updateEditMode}>{renderEditModeButton()}</button>
         <button className={"importButton"} onClick={() => importJson()}>
           Import
         </button>
