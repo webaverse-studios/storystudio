@@ -52,6 +52,7 @@ function App() {
     on: false,
     msg: "",
   });
+  const [forceUpdate, setForceUpdate] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("loreFiles", JSON.stringify(loreFiles));
@@ -216,6 +217,10 @@ function App() {
     setErrorDialogData({ on: false, msg: "" });
   };
 
+  const _forceUpdate = () => {
+    setForceUpdate(!forceUpdate);
+  };
+
   return (
     <div className="App">
       <Header currentView={currentView} setCurrentView={setCurrentView} />
@@ -257,6 +262,7 @@ function App() {
           baseData={baseData}
           setBaseData={setBaseData}
           openErrorDialog={openErrorDialog}
+          forceUpdate={_forceUpdate}
         />
       )}
       {errorDialogData &&
