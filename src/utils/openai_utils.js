@@ -165,12 +165,11 @@ Scillia's treehouse. It's more of a floating island but they call it a tree hous
     objects: objectsTest, //data["object"],
     dstCharacter: charactersTest[dstCharacterIndex],
     //data["character"][Math.floor(Math.random() * data["character"].length)],
-  };
+  }
 
   // exampleLoreFiles is an array of strings
   // pick one at random and use it as the prompt
-  const header =
-    exampleLoreFiles[Math.floor(Math.random() * exampleLoreFiles.length)];
+  const header = exampleLoreFiles[Math.floor(Math.random() * exampleLoreFiles.length)];
   const loreFile = await makeLoreFile(header, promptData);
 
   // // increment dstCharacterIndex by 1, then wrap around if necessary
@@ -187,11 +186,17 @@ Scillia's treehouse. It's more of a floating island but they call it a tree hous
 
   //   const loreResp = module.parseLoreResponses(resp);
 
-  console.log("parseLoreResponses is", loreResp);
+  console.log('parseLoreResponses is', loreResp);
 
-  console.log("final lorefile is");
-  console.log(loreFile + loreResp);
-  return loreFile + loreResp;
+  console.log('final lorefile is')
+  console.log(loreFile+loreResp);
+  const finalLoreFile = loreFile+loreResp;
+  // finalLoreFile is a collection of text entries split by """
+  // get the last entry and return it
+  let finalLore = finalLoreFile.split("\"\"\"")[finalLoreFile.split("\"\"\"").length - 1];
+  // trim any empty lines from the from and end of the finalLore
+  finalLore = finalLore.replace(/^\s+|\s+$/g, '');
+  return finalLore;
 };
 
 async function makeLoreFile(
