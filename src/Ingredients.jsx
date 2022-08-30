@@ -58,15 +58,10 @@ function Ingredients({
     console.log("ingredients", ingredients);
 
     const newEntityData = { ...ingredients };
+    if (!newEntityData[entityType]) {
+      newEntityData[entityType] = [];
+    }
 
-    console.log(
-      "entityType",
-      entityType,
-      "dataType:",
-      dataType,
-      newEntityData[entityType][currentContentType],
-      newEntityData[entityType]
-    );
     const array =
       entityType === dataType
         ? newEntityData[entityType][currentContentType]
@@ -222,7 +217,7 @@ function Ingredients({
               testValue={"test value"}
               key={index}
               type={entity.type}
-              data={ingredients[entity.type]}
+              data={ingredients ? ingredients[entity.type] : []}
               header={entity.type + "s"}
               addEntityCallback={(data, setGenerating) =>
                 addEntityCallback(entity.type, data, setGenerating)
@@ -234,14 +229,18 @@ function Ingredients({
           );
         })}
         <Context
-          data={ingredients[dataType]}
+          data={ingredients ? ingredients[dataType] : []}
           contextTypes={contextTypes}
           currentContentType={currentContentType}
           setCurrentContentType={setCurrentContentType}
         />
         <ListBox
           type={dataType}
-          data={ingredients[dataType][currentContentType]}
+          data={
+            ingredients && ingredients[dataType]
+              ? ingredients[dataType][currentContentType]
+              : []
+          }
           header={dataType}
           updateLocation={(up) => moveEntity(up)}
           addEntityCallback={(data, setGenerating) => {
