@@ -82,6 +82,46 @@ function LoreFiles({
     setLoreFiles(newData);
   };
 
+  const moveEntity = (entity, up) => {
+    if (!entity || entity === undefined) {
+      return;
+    }
+
+    let index = -1;
+    for (let obj in loreFiles) {
+      if (entity === loreFiles[obj]) {
+        index = obj;
+        break;
+      }
+    }
+    index = parseInt(index);
+
+    if (index === null || index === undefined || index <= -1) {
+      return;
+    }
+
+    const newData = [...loreFiles];
+    if (newData.length <= 1) {
+      return;
+    }
+
+    if (index === 0 && up) {
+      newData.push(newData.shift());
+    } else if (index === loreFiles.length - 1 && !up) {
+      newData.unshift(newData.pop());
+    } else {
+      const newIndex = up ? index - 1 : index + 1;
+      if (newIndex > loreFiles.length - 1 || newIndex < 0) {
+        return;
+      }
+      const temp = newData[index];
+      newData[index] = newData[newIndex];
+      newData[newIndex] = temp;
+    }
+
+    setLoreFiles(newData);
+  };
+
   const handleImport = (data) => {
     setIngredients(data);
   };
@@ -132,6 +172,7 @@ function LoreFiles({
           deleteEntityCallback={(data, index) =>
             deleteEntityCallback(data, true, index)
           }
+          moveEntityCallback={(entity, up) => moveEntity(entity, up)}
           showLabels={true}
         />
       </div>

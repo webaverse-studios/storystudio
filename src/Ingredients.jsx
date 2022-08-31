@@ -164,6 +164,9 @@ function Ingredients({
       newArray.unshift(newArray.pop());
     } else {
       const newIndex = up ? index - 1 : index + 1;
+      if (newIndex > newArray.length - 1 || newIndex < 0) {
+        return;
+      }
       const temp = newArray[index];
       newArray[index] = newArray[newIndex];
       newArray[newIndex] = temp;
