@@ -89,7 +89,6 @@ export const generateImage = async (text) => {
     },
     responseType: "arraybuffer",
   });
-  console.log(resp.data);
   const base64String = Buffer.from(resp.data, "binary").toString("base64");
   return base64String;
 };
@@ -99,7 +98,6 @@ export const compressObject = (obj) => {
   const bytes = Buffer.byteLength(jsonStr, "utf-8");
   const compressed = lz.compress(jsonStr);
   const bytes2 = Buffer.byteLength(compressed, "utf-8");
-  console.log("bytes:", jsonStr.length, "bytes2:", compressed.length);
   return compressed;
 };
 
@@ -117,7 +115,6 @@ export const makeVoiceRequest = async (character, text) => {
     },
     responseType: "blob",
   });
-  console.log(resp);
   return resp.data;
 };
 
