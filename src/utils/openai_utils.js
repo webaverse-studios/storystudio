@@ -1,7 +1,13 @@
 import { Configuration, OpenAIApi } from "openai";
-import { lore } from "../constants";
+import { availableVoices, lore } from "../constants";
 import { exampleLoreFiles } from "../exampleLoreFiles";
-import { makeId, generateImage, openaiRequest, shuffleArray } from "./utils";
+import {
+  makeId,
+  generateImage,
+  openaiRequest,
+  shuffleArray,
+  getRandomObjectFromArray,
+} from "./utils";
 
 const createScenePrompt = () => `\
 ${lore.scene.prompt}
@@ -305,6 +311,10 @@ export async function generate(type, data, baseData, openErrorDialog) {
   //   }
   // }
   res.image = await generateImage(resp.name);
+
+  if (type === "character" || type === "npc" || type === "mob") {
+    res.voice = await getRandomObjectFromArray(availableVoices).voice;
+  }
 
   if (res.name?.length > 0) {
     res.id = makeId(5);

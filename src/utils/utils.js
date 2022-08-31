@@ -1,6 +1,6 @@
 import axios from "axios";
 import dungeoneer from "dungeoneer";
-import { stable_diffusion_url } from "../constants";
+import { stable_diffusion_url, voice_url } from "../constants";
 if (!global) global = globalThis;
 import { Buffer } from "buffer";
 import lz from "lz-string";
@@ -107,4 +107,21 @@ export const decompressObject = (str) => {
   const decompressed = lz.decompress(str);
   const obj = JSON.parse(decompressed);
   return obj;
+};
+
+export const makeVoiceRequest = async (character, text) => {
+  const resp = await axios.get(voice_url, {
+    params: {
+      voice: character,
+      s: text,
+    },
+    responseType: "blob",
+  });
+  console.log(resp);
+  return resp.data;
+};
+
+export const getRandomObjectFromArray = (array) => {
+  const randomIndex = Math.floor(Math.random() * array.length);
+  return array[randomIndex];
 };

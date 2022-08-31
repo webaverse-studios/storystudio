@@ -12,6 +12,8 @@ import {
 } from "unique-names-generator";
 
 import "./App.css";
+import { makeVoiceRequest } from "./utils/utils";
+import { availableVoices } from "./constants";
 
 //field check if image, set source the img, if name change, generate new image
 const Entity = ({
@@ -22,6 +24,7 @@ const Entity = ({
   moveEntityCallback,
   showLabels = false,
 }) => {
+  let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
   const updateEntity = (ingredients, field, data, index) => {
@@ -123,6 +126,54 @@ const Entity = ({
       </div>
     );
   };
+
+  const renderVoice = () => {
+    if (
+      data.type === "character" ||
+      data.type === "npc" ||
+      data.type === "mob"
+    ) {
+      return (
+        <div>
+          <select
+            value={data["voice"]}
+            onChange={(event) => {
+              updateEntity(data, "voice", event.target.value);
+            }}
+          >
+            {availableVoices.length > 0 &&
+              availableVoices.map((voice, idx) => (
+                <option value={voice.voice} key={idx}>
+                  {voice.name}
+                </option>
+              ))}
+          </select>
+          <button
+            onClick={async () => {
+              if (data["voice"]?.length <= 0) {
+                return;
+              }
+
+              const voiceData = await makeVoiceRequest(
+                data["voice"],
+                data["description"]?.length > 0
+                  ? data["description"]
+                  : "Hello, how are you?"
+              );
+              const url = URL.createObjectURL(voiceData);
+              audioPlayer = new Audio(url);
+              audioPlayer.play();
+            }}
+          >
+            Test Voice
+          </button>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
+
   return (
     <div className={"entity"}>
       {!shouldDelete && (
@@ -156,6 +207,8 @@ const Entity = ({
                 data["type"] === "mob")
             ) {
               return inventoryRender(data["inventory"], i);
+            } else if (field === "voice") {
+              return renderVoice();
             } else if (
               field === "type" ||
               field === "id" ||
