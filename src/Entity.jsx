@@ -272,6 +272,21 @@ const Entity = ({
       <button onClick={() => moveEntityCallback(data, false)}>
         <ArrowDownwardIcon />
       </button>
+      <button
+        onClick={() => {
+          const json = JSON.stringify(data);
+          const element = document.createElement("a");
+          const file = new Blob([json], { type: "application/json" });
+          element.href = URL.createObjectURL(file);
+          element.download =
+            data["name"] + "_" + new Date().getTime() + ".json";
+          document.body.appendChild(element);
+          element.click();
+          element.remove();
+        }}
+      >
+        Export
+      </button>
     </div>
   );
 };

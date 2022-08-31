@@ -11,12 +11,14 @@ const ListBox = ({
   deleteEntityCallback,
   showLabels = false,
   moveEntityCallback,
+  handleImport,
 }) => {
   const [generating, setGenerating] = React.useState(false);
   return (
     <div className={"sectionWrapper " + type + "_wrapped"}>
       <div className={"sectionHeader " + type + "_header"}>
         <h1>{header}</h1>
+        <button onClick={handleImport}>Import</button>
         <button onClick={() => addEntityCallback(data, setGenerating)}>
           {!generating ? "Generate" : "Generating..."}
         </button>
@@ -32,7 +34,9 @@ const ListBox = ({
                 editEntityCallback={editEntityCallback}
                 deleteEntityCallback={deleteEntityCallback}
                 showLabels={showLabels}
-                moveEntityCallback={(entity, up) => moveEntityCallback(entity, up)}
+                moveEntityCallback={(entity, up) =>
+                  moveEntityCallback(entity, up)
+                }
               />
             );
           })}

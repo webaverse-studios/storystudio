@@ -200,6 +200,24 @@ function Ingredients({
     }
   };
 
+  const importEntityList = async () => {
+    console.log('import')
+    const file = await getFile();
+    const text = await file.text();
+    const json = JSON.parse(text);
+    const index = ingredients[json.type].findIndex((e) => e.id === json.id);
+    if (index !== -1) {
+      return;
+    }
+
+    const newData = { ...ingredients };
+    if (!newData[json.type]) {
+      newData[json.type] = [];
+    }
+    newData[json.type].unshift(json);
+    setIngredients(newData);
+  };
+
   return (
     <div className="view">
       <div className={"importExportButtons"}>
@@ -226,6 +244,7 @@ function Ingredients({
               editEntityCallback={(data) => editEntityCallback(data)}
               deleteEntityCallback={(data) => deleteEntityCallback(data)}
               moveEntityCallback={(entity, up) => moveEntity(entity, up)}
+              handleImport={importEntityList}
             />
           );
         })}
@@ -251,6 +270,7 @@ function Ingredients({
           deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
           moveEntityCallback={(entity, up) => moveEntity(entity, up)}
           showLabels={true}
+          handleImport={importEntityList}
         />
       </div>
     </div>

@@ -88,7 +88,9 @@ function App() {
     if (type === "ingredients") {
       setIngredients(data);
     } else {
+      console.log("setLoreData:", data);
       setLoreData(data);
+      console.log("lore Data:", loreData);
     }
   };
 

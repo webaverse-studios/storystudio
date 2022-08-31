@@ -45,22 +45,27 @@ function LoreFiles({
     }
     const newEntityData = [...loreFiles];
     console.log("newEntityData is", newEntityData);
-    newEntityData.push(entity);
+    newEntityData.unshift(entity);
 
     setLoreFiles(newEntityData);
     setGenerating(false);
   };
   const deleteEntityCallback = (entity, fromCurrentContentType, index) => {
-    console.log("index is", index);
     let newData = [...loreFiles];
-    if (index) {
+    if (
+      index !== null &&
+      index !== undefined &&
+      index >= 0 &&
+      index < newData.length
+    ) {
       // remove newData[index]
       newData.splice(index, 1);
+      console.log("splice");
     } else {
       if (fromCurrentContentType) {
-        newData = loreFiles.filter((e) => e.id && e.id !== entity.id);
+        newData = loreFiles.filter((e) => e === entity);
       } else {
-        newData = loreFilesfilter((e) => e.id !== entity.id);
+        newData = loreFilesfilter((e) => e !== entity);
       }
     }
 
@@ -150,6 +155,21 @@ function LoreFiles({
     importHandler(json);
   };
 
+  const importEntityList = async () => {
+    console.log("import");
+    const file = await getFile();
+    const text = await file.text();
+    const json = JSON.parse(text);
+    const index = loreFiles.findIndex((e) => e === json);
+    if (index !== -1) {
+      return;
+    }
+
+    const newData = [...loreFiles];
+    newData.unshift(json);
+    setLoreFiles(newData);
+  };
+
   return (
     <div className="view">
       <div className={"importExportButtons"}>
@@ -174,6 +194,7 @@ function LoreFiles({
           }
           moveEntityCallback={(entity, up) => moveEntity(entity, up)}
           showLabels={true}
+          handleImport={importEntityList}
         />
       </div>
     </div>
