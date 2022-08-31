@@ -63,6 +63,7 @@ function App() {
   });
   const [forceUpdate, setForceUpdate] = useState(false);
   const [oepnAIParams, setOpenAIPArams] = useState(defaultOpenAIParams);
+  const [darkMode, setDarkMode] = useState(false);
 
   const updateOpenAIParams = (data) => {
     if (typeof data.top_p === "string") {
@@ -88,7 +89,17 @@ function App() {
     localStorage.setItem("openAIParams", JSON.stringify(data));
   };
 
+  const updateDarkMode = () => {
+    setDarkMode(!darkMode);
+    localStorage.setItem("darkMode", darkMode);
+  };
+
   useEffect(() => {
+    const dm = localStorage.getItem("darkMode");
+    if (dm && dm?.length > 0) {
+      setDarkMode(dm.toLocaleLowerCase().trim() === "true");
+    }
+
     const oap = localStorage.getItem("openAIParams");
     if (oap && oap !== "[object Object]" && oap?.length > 0) {
       setOpenAIPArams(JSON.parse(oap));
@@ -264,7 +275,12 @@ function App() {
 
   return (
     <div className="App">
-      <Header currentView={currentView} setCurrentView={setCurrentView} />
+      <Header
+        currentView={currentView}
+        setCurrentView={setCurrentView}
+        _darkMode={darkMode}
+        _setDarkMode={updateDarkMode}
+      />
       {currentView === "setup" ? (
         <Setup
           _openAIParams={oepnAIParams}
