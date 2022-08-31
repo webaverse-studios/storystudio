@@ -55,6 +55,11 @@ async function generateScene() {
   const lines = resp.split("\n").filter((el) => {
     return el !== "";
   });
+
+  if (!lines || lines?.length !== 2) {
+    return generateScene();
+  }
+
   return {
     name: lines[0].trim(),
     description: lines[1].replace("Description: ", "").trim(),
@@ -70,15 +75,18 @@ async function generateCharacter() {
   const lines = resp.split("\n").filter((el) => {
     return el !== "";
   });
-  const inventory =
-    lines.length > 2 ? lines[2].replace("Inventory: ", "").trim() : "";
+
+  if (!lines || lines?.length !== 2) {
+    return generateCharacter();
+  }
+
   return {
     name: lines[0].trim().replaceAll('"', ""),
     description: lines[1]
       .replace("Description: ", "")
       .trim()
       .replaceAll('"', ""),
-    inventory: inventory,
+    inventory: "",
   };
 }
 
@@ -89,6 +97,11 @@ async function generateObject() {
   const lines = resp.split("\n").filter((el) => {
     return el !== "";
   });
+
+  if (!lines || lines?.length !== 2) {
+    return generateObject();
+  }
+
   return {
     name: lines[0].trim(),
     description: lines[1].replace("Description: ", "").trim(),
