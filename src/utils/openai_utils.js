@@ -56,11 +56,9 @@ export const generateLore = async (data, module, openaiConfig) => {
   // get a setting from the array provided by data.settings
   const setting = data.settings[Math.floor(Math.random() * data.settings.length)];
 
-  console.log('setting is', setting);
-
   // decide on what is happening in this scene
   const encounterTypes = [
-    { type: 'quest', npcs: { min: 1, max: 2 }, mobs: { min: 0, max: 1 }, objects: { min: 0, max: 1 }, party: { min: 1, max: 4 } },
+    { type: 'quest', npcs: 1, mobs: 0, objects: 1, party: 2 },
     // { type: 'battle', npcs: {min: 0, max: 2}, mobs: {min: 1, max: 3}, objects: {min: 0, max: 2}, party: {min: 1, max: 4}},
     // { type: 'banter', npcs: {min: 0, max: 1}, mobs: {min: 0, max: 1}, objects: {min: 0, max: 1}, party: {min: 1, max: 4}},
     // { type: 'friend', npcs: {min: 1, max: 2}, mobs: {min: 0, max: 0}, objects: {min: 0, max: 2}, party: {min: 2, max: 4}},
@@ -72,25 +70,30 @@ export const generateLore = async (data, module, openaiConfig) => {
   const encounterType = encounterTypes[Math.floor(Math.random() * encounterTypes.length)];
   console.log('encounterType is', encounterType);
 
-  const numberOfMobs = Math.floor(Math.random() * (encounterType.mobs.max - encounterType.mobs.min + 1)) + encounterType.mobs.min;
-  const numberOfNpcs = Math.floor(Math.random() * (encounterType.npcs.max - encounterType.npcs.min + 1)) + encounterType.npcs.min;
-  const numberOfObjects = Math.floor(Math.random() * (encounterType.objects.max - encounterType.objects.min + 1)) + encounterType.objects.min;
-  const numberOfParty = Math.floor(Math.random() * (encounterType.party.max - encounterType.party.min + 1)) + encounterType.party.min;
+  // const numberOfMobs = Math.floor(Math.random() * (encounterType.mobs.max - encounterType.mobs.min + 1)) + encounterType.mobs.min;
+  // const numberOfNpcs = Math.floor(Math.random() * (encounterType.npcs.max - encounterType.npcs.min + 1)) + encounterType.npcs.min;
+  // const numberOfObjects = Math.floor(Math.random() * (encounterType.objects.max - encounterType.objects.min + 1)) + encounterType.objects.min;
+  // const numberOfParty = Math.floor(Math.random() * (encounterType.party.max - encounterType.party.min + 1)) + encounterType.party.min;
+
+  const numberOfMobs = 0;
+  const numberOfNpcs = 1;
+  const numberOfObjects = 1;
+  const numberOfParty = 2;
 
   // get numberOfMobs mobs from the array provided by data.mobs
-  const mobs = shuffleArray(data.mobs).slice(0, numberOfMobs);
+  const mobs = data.mobs.slice(0, numberOfMobs);
   console.log('mobs are', mobs);
 
   // get numberOfNpcs npcs from the array provided by data.npcs
-  const npcs = shuffleArray(data.npcs).slice(0, numberOfNpcs);
+  const npcs = data.npcs.slice(0, numberOfNpcs);
   console.log('npcs are', npcs);
 
   // get numberOfObjects objects from the array provided by data.objects
-  const objects = shuffleArray(data.objects).slice(0, numberOfObjects);
+  const objects = data.objects.slice(0, numberOfObjects);
   console.log('objects are', objects);
 
   // get numberOfParty party from the array provided by data.party
-  const party = shuffleArray(data.party).slice(0, numberOfParty);
+  const party = data.party.slice(0, numberOfParty);
   console.log('party is', party);
 
   // combine npcs and party into a single array called characters
@@ -102,39 +105,38 @@ export const generateLore = async (data, module, openaiConfig) => {
   let promptInject = "";
   if (encounterType.type === 'quest') {
     promptInject = `\
-The following is a chat transcript between the party characters and ${thingHash(npcs[0], 0)}, a quest giver who is friendly to the party. The transcript should be about the party receiving a quest from ${thingHash(npcs[0], 0)}.
-
-${thingHash(npcs[0], 0)} has the following inventory:
-${npcs[0].Inventory && npcs[0].Inventory.map((obj) => `+${thingHash(obj, 0)} - ${obj.description}`).join("\n")}
+The following is a chat transcript between the party characters and ${npcs[0].name}, a quest giver who is friendly to the party. The transcript should be about the party receiving a quest from ${npcs[0].name}.
+${npcs[0].name} has the following inventory:
+${npcs[0].Inventory && npcs[0].Inventory.map((obj) => `${obj.name} - ${obj.description}`).join("\n")}
 `
   }
   // TODO: include quest giver's inventory
   let prompt = `\
-# Task 1: Write a transcript of conversations and actions in the following scene.
+${header}
 
-The following are examples of great transcripts:
+"""
 
 # Transcript
 
-52ca990d/axel#1: We're looking for Lara. You know where we can find her?
-ae94c8cc/miranda#1: I can find anything, you just keep feeding me tokens and coffee.
-66363b34/zaphod#1: Anything you need, you just let me know.
-ae94c8cc/miranda#1: Thanks. How do you guys know each other again? 
-66363b34/zaphod#1: Best friends. From waaay back in the day.
+axel: We're looking for Lara. You know where we can find her?
+miranda: I can find anything, you just keep feeding me tokens and coffee.
+zaphod: Anything you need, you just let me know.
+miranda: Thanks. How do you guys know each other again? 
+zaphod: Best friends. From waaay back in the day.
 
 """
 
 # Transcript 
 
-millie#ppyXa: Hey Eric, can I ask you something?
-/action millie#ppyXa moves to eric#vvGyW
-eric#vvGyW: Sure, what is it?
-millie#ppyXa: Do you ever wonder why we're here?
-eric#vvGyW: Is that a way to tee up a convo about the drop tomorrow?
-/action millie#ppyXa emotes joy
-millie#ppyXa: It might not be!
-eric#vvGyW: Millie, I'm tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
-/action eric#vvGyW moves to computer#Ki3bK
+millie: Hey Eric, can I ask you something?
+/action millie moves to eric
+eric: Sure, what is it?
+millie: Do you ever wonder why we're here?
+eric: Is that a way to tee up a convo about the drop tomorrow?
+/action millie emotes joy
+millie: It might not be!
+eric: Millie, I'm tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
+/action eric moves to computer
 
 """
 
@@ -144,11 +146,11 @@ eric#vvGyW: Millie, I'm tending to serious business. The org needs me to break t
 ${setting}
 
 ${party.length > 0 && '# Party Characters\n\n'}\
-${party.map((c, index) => `${thingHash(c, index)} - ${c.bio}`).join("\n") + (party.length > 0 && '\n\n')}\
+${party.map((c) => `Name: ${c.name}\nBio: ${c.bio}`).join("\n\n") + (party.length > 0 && '\n\n')}\
 ${npcs.length > 0 && '# Non-player Characters\n\n'}\
-${npcs.map((c, index) => `${thingHash(c, index)} - ${c.bio}`).join("\n") + (npcs.length > 0 && '\n\n')}\
+${npcs.map((c) => `Name: ${c.name}\nBio: ${c.bio}`).join("\n\n") + (npcs.length > 0 && '\n\n')}\
 ${objects.length > 0 && '# Nearby Objects\n\n'}\
-${objects.map((c, index) => `${thingHash(c, index)} - ${c.description}`).join("\n") + (objects.length > 0 && '\n')}\
+${objects.map((c) => `Name: ${c.name}\nDescription: ${c.description}`).join("\n\n") + (objects.length > 0 && '\n')}\
 
 # Available Actions: ${availableActions.join(", ")}
 
@@ -166,7 +168,7 @@ ${promptInject}\
 
     let dstCharacter = characters[dstCharacterIndex];
 
-    prompt += `${thingHash(dstCharacter, 0)}:`;
+    prompt += `${dstCharacter.name}:`;
 
     console.log('**************** SENDING PROMPT TO OPENAI ****************');
     console.log(prompt)
@@ -191,7 +193,7 @@ ${promptInject}\
     console.log('**************** RECEIVED RESPONSE FROM OPENAI ****************');
     console.log('loreResp is', loreResp);
 
-    let additionalPrompt = [`${thingHash(dstCharacter, 0)}: ` + loreResp[0] + '\n'];
+    let additionalPrompt = [`${dstCharacter.name}: ` + loreResp[0] + '\n'];
 
     // if there are more than one lines in the response, check if they contain /action or start with any of the character's names (character[i].name)
     if (loreResp.length > 1) {
@@ -260,12 +262,12 @@ WEBAVERSE_LORE_FILE
 # Setting
 
 ${setting}\
-${characters.length > 0 && ('\n\n# Characters' + '\n\n')}\
+${characters.length > 0 && ('\n# Characters' + '\n\n')}\
 ${characters
-      .map((c) => `${thingHash(c, 0)}\n${c.bio}\n${c.Inventory.length > 0 && 'Inventory:\n'}${c.Inventory.map((obj) => `+${thingHash(obj, 0)}: ${obj.name} - ${obj.description}`).join("\n")}`)
+      .map((c) => `${c.name}\n${c.bio}\n${c.Inventory.length > 0 && `Inventory:\n`}${c.Inventory.map((obj) => `${obj.name}`).join(", ")}`)
       .join("\n\n")}\
 ${objects.length > 0 ? '\n\n# Objects' + '\n\n' : ''}\
-${objects.map((o, i) => `${thingHash(o, 0)}\n${o.description}`).join("\n\n")}\
+${objects.map((o, i) => `${o.name}\n${o.description}`).join("\n\n")}\
 ${outMessages.length === 0 ? "" : "\n\n# Transcript\n\n" + outMessages.join("\n").replaceAll('\n\n', '\n')}`;
 
   // split loreResp into an array of lines
