@@ -1,4 +1,5 @@
-export { lore } from "../public/lore_header";
+export { lore } from "../public/lore_header.js";
+export { exampleLoreFiles } from "./exampleLoreFiles.js";
 
 export const views = {
   setup: "Setup",
@@ -61,8 +62,6 @@ export const entityPrototypes = [
     id: "234",
   },
 ];
-
-export { exampleLoreFiles } from "./exampleLoreFiles";
 
 export const defaultIngredients = {
   dialog: {
@@ -229,4 +228,4 @@ export const defaultIngredients = {
 };
 
 export const stable_diffusion_url =
-  "http://stable-diffusion.webaverse.com/image";
+  "https://stable-diffusion.webaverse.com/image";

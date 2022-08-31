@@ -83,7 +83,7 @@ Bio: Her nickname is Scilly or SLY. 13/F drop hunter. She is an adventurer, swor
 Inventory: sword#7qBUz
 
 Id: hyacinth#PuNyA
-Name: Drake
+Name: Hyacinth
 Bio: Also known as Hya. 15/F beast tamer. Influencer famous for her pets, and friend of Scillia's. She is really bad in school but the richest one in the group.
 Inventory: bow#rcPiM
 
