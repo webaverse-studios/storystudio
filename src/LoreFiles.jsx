@@ -1,15 +1,6 @@
-import { useEffect, useState } from "react";
 import "./App.css";
-import { entityPrototypes, contextTypes } from "./constants";
 import { generate } from "./utils/openai_utils";
 import ListBox from "./ListBox";
-import Context from "./ContextSelector";
-import {
-  uniqueNamesGenerator,
-  adjectives,
-  animals,
-  colors,
-} from "unique-names-generator";
 import { getFile } from "./getFile";
 import { makeId } from "./utils/utils";
 
@@ -23,8 +14,6 @@ function LoreFiles({
   exportHandler,
   importHandler,
 }) {
-  const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
-
   const addEntityCallback = async (setGenerating) => {
     setGenerating(true);
     //console.log("calling baseData", baseData);
@@ -125,34 +114,6 @@ function LoreFiles({
     }
 
     setLoreFiles(newData);
-  };
-
-  const handleImport = (data) => {
-    setIngredients(data);
-  };
-
-  const handleExport = () => {
-    const json = JSON.stringify(loreFiles);
-    console.log(json);
-
-    const element = document.createElement("a");
-    const file = new Blob([json], { type: "application/json" });
-    element.href = URL.createObjectURL(file);
-    element.download =
-      uniqueNamesGenerator({
-        dictionaries: [adjectives, animals, colors],
-        length: 2,
-      }) + ".json";
-    document.body.appendChild(element);
-    element.click();
-    element.remove();
-  };
-
-  const importJson = async () => {
-    const file = await getFile();
-    const text = await file.text();
-    const json = JSON.parse(text);
-    importHandler(json);
   };
 
   const importEntityList = async () => {
