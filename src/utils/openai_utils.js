@@ -1,4 +1,3 @@
-import { Configuration, OpenAIApi } from "openai";
 import { availableVoices, lore } from "../constants";
 import { exampleLoreFiles } from "../exampleLoreFiles";
 import {
@@ -24,34 +23,21 @@ ${lore.object.prompt}
 ${shuffleArray(lore.object.examples).join(`\n`)}
 Object:`;
 
-let openai = new OpenAIApi(
-  new Configuration({
-    apiKey: localStorage.getItem("openai_key") ?? "",
-  })
-);
-
 export function setOpenAIKey(newKey) {
   localStorage.setItem("openai_key", newKey);
-  if (newKey.includes("-")) {
-    openai = new OpenAIApi(
-      new Configuration({
-        apiKey: newKey,
-      })
-    );
-  }
-  //console.log('openai is', openai);
 }
 
 export function getOpenAIKey() {
-  //console.log('openai is', openai);
-  //console.log('openai.configuration is', openai.configuration);
-  return openai.configuration.apiKey;
+  return localStorage.getItem("openai_key");
 }
 
 async function generateScene() {
   const scenePrompt = createScenePrompt();
 
-  const resp = await openaiRequest(openai, scenePrompt, [".\n", "Location:"]);
+  const resp = await openaiRequest(getOpenAIKey(), scenePrompt, [
+    ".\n",
+    "Location:",
+  ]);
   const lines = resp.split("\n").filter((el) => {
     return el !== "";
   });
@@ -68,7 +54,7 @@ async function generateScene() {
 
 async function generateCharacter() {
   const characterPrompt = createCharacterPrompt();
-  const resp = await openaiRequest(openai, characterPrompt, [
+  const resp = await openaiRequest(getOpenAIKey(), characterPrompt, [
     ".,\n",
     "Character:",
   ]);
@@ -89,7 +75,10 @@ async function generateCharacter() {
 
 async function generateObject() {
   const objectPrompt = createObjectPrompt();
-  const resp = await openaiRequest(openai, objectPrompt, [".,\n", "Object:"]);
+  const resp = await openaiRequest(getOpenAIKey(), objectPrompt, [
+    ".,\n",
+    "Object:",
+  ]);
   const lines = resp.split("\n").filter((el) => {
     return el !== "";
   });
@@ -198,7 +187,10 @@ Scillia's treehouse. It's more of a floating island but they call it a tree hous
 
   //   //console.log('lorePrompt is', lorePrompt);
 
-  const loreResp = await openaiRequest(openai, loreFile, ["\n\n", '"""']);
+  const loreResp = await openaiRequest(getOpenAIKey(), loreFile, [
+    "\n\n",
+    '"""',
+  ]);
   //   console.log('openai resp is', resp);
 
   //   const loreResp = module.parseLoreResponses(resp);

@@ -33,7 +33,33 @@ export function shuffleArray(array, limit = 10) {
   return shortenArray(array);
 }
 
-export async function openaiRequest(openai, prompt, stop) {
+export async function query(openai_api_key, params = {}) {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + String(openai_api_key),
+    },
+    body: JSON.stringify(params),
+  };
+  try {
+    const response = await fetch(
+      "https://api.openai.com/v1/completions",
+      requestOptions
+    );
+    const data = await response.json();
+    return data.choices[0].text;
+  } catch (e) {
+    console.log(e);
+    return "";
+  }
+}
+
+export async function openaiRequest(key, prompt, stop) {
+  if (!key || key?.length <= 0) {
+    return;
+  }
+
   const oap = localStorage.getItem("openAIParams");
   let _data = null;
   if (oap) {
@@ -52,22 +78,17 @@ export async function openaiRequest(openai, prompt, stop) {
     best_off,
   } = _data;
 
-  const completion = await openai.createCompletion({
-    model: model,
-    prompt: prompt,
-    stop: stop,
-    top_p: top_p,
-    frequency_penalty: frequency_penalty,
-    presence_penalty: presence_penalty,
-    temperature: temperature,
-    max_tokens: max_tokens,
+  return query(key, {
+    model,
+    prompt,
+    stop,
+    top_p,
+    frequency_penalty,
+    presence_penalty,
+    temperature,
+    max_tokens,
     best_of: best_off,
   });
-  if (completion.data.choices?.length > 0) {
-    return completion.data.choices[0].text;
-  } else {
-    return "";
-  }
 }
 
 export const fileToDataUri = (file) =>
