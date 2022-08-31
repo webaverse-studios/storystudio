@@ -41,7 +41,7 @@ export const entityPrototypes = [
     name: "My Character",
     shortname: "character#234",
     description: "This is a description of my character",
-    voice: '',
+    voice: "",
     inventory: [],
     id: "234",
   },
@@ -50,7 +50,7 @@ export const entityPrototypes = [
     name: "My NPC",
     shortname: "npc#234",
     description: "This is a description of my NPC",
-    voice: '',
+    voice: "",
     inventory: [],
     id: "234",
   },
@@ -59,7 +59,7 @@ export const entityPrototypes = [
     name: "My Mob",
     shortname: "mob#234",
     description: "This is a description of my mob",
-    voice: '',
+    voice: "",
     inventory: [],
     id: "234",
   },
@@ -266,3 +266,13 @@ export const availableVoices = [
   { name: "Twilight Sparkle", voice: "1QnOliOAmerMUNuo2wXoH-YoainoSjZen" },
   { name: "Zecora", voice: "1gL0hqqB7952Q1S185moQd_DRCFfIa3_g" },
 ];
+
+export const defaultOpenAIParams = {
+  model: "davinci",
+  top_p: 1,
+  frequency_penalty: 1,
+  presence_penalty: 1,
+  temperature: 1,
+  max_tokens: 256,
+  best_off: 1,
+};

@@ -1,6 +1,10 @@
 import axios from "axios";
 import dungeoneer from "dungeoneer";
-import { stable_diffusion_url, voice_url } from "../constants";
+import {
+  defaultOpenAIParams,
+  stable_diffusion_url,
+  voice_url,
+} from "../constants";
 if (!global) global = globalThis;
 import { Buffer } from "buffer";
 import lz from "lz-string";
@@ -29,18 +33,25 @@ export function shuffleArray(array, limit = 10) {
   return shortenArray(array);
 }
 
-export async function openaiRequest(
-  openai,
-  prompt,
-  stop,
-  model = "davinci",
-  top_p = 1,
-  frequency_penalty = 1,
-  presence_penalty = 1,
-  temperature = 1,
-  max_tokens = 256,
-  best_off = 1
-) {
+export async function openaiRequest(openai, prompt, stop) {
+  const oap = localStorage.getItem("openAIParams");
+  let _data = null;
+  if (oap) {
+    _data = JSON.parse(oap);
+  } else {
+    data = defaultOpenAIParams;
+  }
+
+  const {
+    model,
+    top_p,
+    frequency_penalty,
+    presence_penalty,
+    temperature,
+    max_tokens,
+    best_off,
+  } = _data;
+
   const completion = await openai.createCompletion({
     model: model,
     prompt: prompt,

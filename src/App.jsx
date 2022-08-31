@@ -2,7 +2,13 @@ import axios from "axios";
 
 import { useEffect, useState } from "react";
 import "./App.css";
-import { defaultIngredients, exampleLoreFiles, views, lore } from "./constants";
+import {
+  defaultIngredients,
+  exampleLoreFiles,
+  views,
+  lore,
+  defaultOpenAIParams,
+} from "./constants";
 import Header from "./Header";
 import Ingredients from "./Ingredients";
 import Setup from "./Setup";
@@ -58,8 +64,38 @@ function App() {
     msg: "",
   });
   const [forceUpdate, setForceUpdate] = useState(false);
+  const [oepnAIParams, setOpenAIPArams] = useState(defaultOpenAIParams);
+
+  const updateOpenAIParams = (data) => {
+    if (typeof data.top_p === "string") {
+      data.top_p = parseFloat(data.top_p);
+    }
+    if (typeof data.temperature === "string") {
+      data.temperature = parseFloat(data.temperature);
+    }
+    if (typeof data.frequency_penalty === "string") {
+      data.frequency_penalty = parseFloat(data.frequency_penalty);
+    }
+    if (typeof data.presence_penalty === "string") {
+      data.presence_penalty = parseFloat(data.presence_penalty);
+    }
+    if (typeof data.max_tokens === "string") {
+      data.max_tokens = parseInt(data.max_tokens);
+    }
+    if (typeof data.best_of === "string") {
+      data.best_of = parseInt(data.best_of);
+    }
+
+    setOpenAIPArams(data);
+    localStorage.setItem("openAIParams", JSON.stringify(data));
+  };
 
   useEffect(() => {
+    const oap = localStorage.getItem("openAIParams");
+    if (oap && oap !== "[object Object]" && oap?.length > 0) {
+      setOpenAIPArams(JSON.parse(oap));
+    }
+
     localStorage.setItem("loreFiles", compressObject(loreFiles));
   }, [loreFiles]);
 
@@ -232,7 +268,10 @@ function App() {
     <div className="App">
       <Header currentView={currentView} setCurrentView={setCurrentView} />
       {currentView === "setup" ? (
-        <Setup />
+        <Setup
+          _openAIParams={oepnAIParams}
+          _setOpenAIParams={updateOpenAIParams}
+        />
       ) : currentView === "map" ? (
         <MapView />
       ) : currentView === "base" ? (
