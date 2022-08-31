@@ -65,7 +65,7 @@ export async function openaiRequest(key, prompt, stop) {
   if (oap) {
     _data = JSON.parse(oap);
   } else {
-    data = defaultOpenAIParams;
+    _data = defaultOpenAIParams;
   }
 
   const {
@@ -127,9 +127,7 @@ export const generateImage = async (text) => {
 
 export const compressObject = (obj) => {
   const jsonStr = JSON.stringify(obj);
-  const bytes = Buffer.byteLength(jsonStr, "utf-8");
   const compressed = lz.compress(jsonStr);
-  const bytes2 = Buffer.byteLength(compressed, "utf-8");
   return compressed;
 };
 
