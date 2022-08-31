@@ -92,12 +92,14 @@ function App() {
   const updateDarkMode = () => {
     setDarkMode(!darkMode);
     localStorage.setItem("darkMode", darkMode);
+    globalThis.darkMode = darkMode;
   };
 
   useEffect(() => {
     const dm = localStorage.getItem("darkMode");
     if (dm && dm?.length > 0) {
       setDarkMode(dm.toLocaleLowerCase().trim() === "true");
+      globalThis.darkMode = darkMode;
     }
 
     const oap = localStorage.getItem("openAIParams");
