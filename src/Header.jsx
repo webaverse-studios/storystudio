@@ -1,4 +1,4 @@
-import React, {  } from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import { views } from "./constants";
 
@@ -14,7 +14,8 @@ const Header = ({ currentView, setCurrentView }) => {
       <div className="headerright">
         {/* for each key in views (an object) create a button that calls setCurrentView with the view's value, and is active if the currentView is current button */}
         {Object.keys(views).map((key, index) => {
-          if (editMode === "false" && key === "base") return null;
+          if ((editMode === "false" || !editMode) && key === "base")
+            return null;
           return (
             <button
               key={key}

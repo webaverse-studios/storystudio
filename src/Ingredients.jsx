@@ -188,13 +188,11 @@ function Ingredients({
   };
 
   const renderEditModeButton = () => {
-    console.log("render edit mode");
     const editMode =
       new URLSearchParams(window.location.search).get("edit") === "true"
         ? true
         : false;
 
-    console.log("edit mode:", editMode);
     if (editMode) {
       return "Exit edit mode";
     } else {
