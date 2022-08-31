@@ -82,17 +82,13 @@ async function generateCharacter() {
 
   return {
     name: lines[0].trim().replaceAll('"', ""),
-    description: lines[1]
-      .replace("Description: ", "")
-      .trim()
-      .replaceAll('"', ""),
+    description: lines[1].replace("Quote: ", "").trim().replaceAll('"', ""),
     inventory: "",
   };
 }
 
 async function generateObject() {
   const objectPrompt = createObjectPrompt();
-  console.log("object prompt:", objectPrompt);
   const resp = await openaiRequest(openai, objectPrompt, [".,\n", "Object:"]);
   const lines = resp.split("\n").filter((el) => {
     return el !== "";
@@ -104,7 +100,7 @@ async function generateObject() {
 
   return {
     name: lines[0].trim(),
-    description: lines[1].replace("Description: ", "").trim(),
+    description: lines[1].replace("Quote: ", "").trim(),
   };
 }
 
