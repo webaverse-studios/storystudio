@@ -70,7 +70,7 @@ Object:`;
 const run = async () => {
   const myArgs = process.argv.slice(2);
 
-  const key = "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";
+  const key = "";
   const configuration = new Configuration({ apiKey: key });
   const openai = new OpenAIApi(configuration);
   const _data = defaultOpenAIParams;
