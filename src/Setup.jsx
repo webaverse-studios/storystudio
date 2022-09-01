@@ -175,9 +175,9 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
         <input
           className={"baseInput"}
           type={"input"}
-          defaultValue={_openAIParams.best_off}
+          defaultValue={_openAIParams.best_of}
           onChange={(e) => {
-            _openAIParams.best_off = e.target.value;
+            _openAIParams.best_of = e.target.value;
             _setOpenAIParams(_openAIParams);
           }}
           onKeyPress={(event) => {
@@ -186,7 +186,7 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
             }
           }}
           onFocus={(e) => {
-            _openAIParams.best_off = e.target.value;
+            _openAIParams.best_of = e.target.value;
             _setOpenAIParams(_openAIParams);
           }}
         />

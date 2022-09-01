@@ -273,5 +273,5 @@ export const defaultOpenAIParams = {
   presence_penalty: 1,
   temperature: 1,
   max_tokens: 256,
-  best_off: 1,
+  best_of: 1,
 };

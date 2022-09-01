@@ -78,7 +78,7 @@ export async function openaiRequest(key, prompt, stop) {
     presence_penalty,
     temperature,
     max_tokens,
-    best_off,
+    best_of,
   } = _data;
 
   return await query(key, {
@@ -90,7 +90,7 @@ export async function openaiRequest(key, prompt, stop) {
     presence_penalty,
     temperature,
     max_tokens,
-    best_of: best_off,
+    best_of: best_of,
   });
 }
 

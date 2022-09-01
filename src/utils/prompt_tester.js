@@ -9,7 +9,7 @@ const defaultOpenAIParams = {
   presence_penalty: 1,
   temperature: 1,
   max_tokens: 256,
-  best_off: 1,
+  best_of: 1,
 };
 
 export function shuffleArray(array, limit = 10) {
@@ -82,7 +82,7 @@ const run = async () => {
     presence_penalty,
     temperature,
     max_tokens,
-    best_off,
+    best_of,
   } = _data;
 
   let prompt = null;
@@ -123,7 +123,7 @@ const run = async () => {
     presence_penalty,
     temperature,
     max_tokens,
-    best_of: best_off,
+    best_of: best_of,
   });
 
   const fileName = `${type}_` + new Date().getTime() + ".json";

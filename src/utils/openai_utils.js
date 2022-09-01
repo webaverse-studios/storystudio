@@ -400,20 +400,25 @@ export function getOpenAIKey() {
 
 async function generateScene(module) {
   const scenePrompt = createPrompt("scene");
-
+  console.log('getOpenAIKey is', getOpenAIKey());
+  console.log('scenePrompt is', scenePrompt);
+  console.log('module is', module);
   const resp = await openaiRequest(
     getOpenAIKey(),
     scenePrompt,
     module.makeIngredientStop()
   );
   const lines = resp.split("\n");
+  console.log('lines is', lines);
   if (!lines || lines?.length !== 2) {
-    return generateScene();
+    console.log('!lines || lines?.length !== 2', lines);
+    // return generateScene(module);
   }
 
   const desc = lines[1].replace("Description: ", "").trim();
   if (!desc || desc?.length <= 0) {
-    return generateScene();
+    console.log('!desc || desc?.length <= 0', desc);
+    // return generateScene(module);
   }
 
   return {
