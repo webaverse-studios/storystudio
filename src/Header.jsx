@@ -1,8 +1,8 @@
-import React, {  } from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import { views } from "./constants";
 
-const Header = ({ currentView, setCurrentView }) => {
+const Header = ({ currentView, setCurrentView, _darkMode, _setDarkMode }) => {
   const editMode = new URLSearchParams(window.location.search).get("edit");
 
   return (
@@ -12,9 +12,13 @@ const Header = ({ currentView, setCurrentView }) => {
         <h1>Story Studio</h1>
       </div>
       <div className="headerright">
+        <button onClick={_setDarkMode}>
+          {_darkMode ? "Light Mode" : "Dark Mode"}
+        </button>
         {/* for each key in views (an object) create a button that calls setCurrentView with the view's value, and is active if the currentView is current button */}
         {Object.keys(views).map((key, index) => {
-          if (editMode === "false" && key === "base") return null;
+          if ((editMode === "false" || !editMode) && key === "base")
+            return null;
           return (
             <button
               key={key}

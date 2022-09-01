@@ -1,6 +1,10 @@
 import axios from "axios";
 import dungeoneer from "dungeoneer";
-import { stable_diffusion_url } from "../constants.js";
+import {
+  defaultOpenAIParams,
+  stable_diffusion_url,
+  voice_url,
+} from "../constants";
 import { Buffer } from "buffer";
 import lz from "lz-string";
 
@@ -28,34 +32,62 @@ export function shuffleArray(array, limit = 10) {
   return shortenArray(array);
 }
 
-export async function openaiRequest(
-  openai,
-  prompt,
-  stop,
-  model = "davinci",
-  top_p = 1,
-  frequency_penalty = 1,
-  presence_penalty = 1,
-  temperature = 1,
-  max_tokens = 256,
-  best_off = 1
-) {
-  const completion = await openai.createCompletion({
-    model: model,
-    prompt: prompt,
-    stop: stop,
-    top_p: top_p,
-    frequency_penalty: frequency_penalty,
-    presence_penalty: presence_penalty,
-    temperature: temperature,
-    max_tokens: max_tokens,
-    best_of: best_off,
-  });
-  if (completion.data.choices?.length > 0) {
-    return completion.data.choices[0].text;
-  } else {
+export async function query(openai_api_key, params = {}) {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + String(openai_api_key),
+    },
+    body: JSON.stringify(params),
+  };
+  try {
+    const response = await fetch(
+      "https://api.openai.com/v1/completions",
+      requestOptions
+    );
+    const data = await response.json();
+    return data.choices[0].text;
+  } catch (e) {
+    console.log(e);
     return "";
   }
+}
+
+export async function openaiRequest(key, prompt, stop) {
+  if (!key || key?.length <= 0) {
+    return;
+  }
+
+  const oap = localStorage.getItem("openAIParams");
+  let _data = null;
+  if (oap) {
+    _data = JSON.parse(oap);
+  } else {
+    _data = defaultOpenAIParams;
+  }
+
+  const {
+    model,
+    top_p,
+    frequency_penalty,
+    presence_penalty,
+    temperature,
+    max_tokens,
+    best_off,
+  } = _data;
+
+  return query(key, {
+    model,
+    prompt,
+    stop,
+    top_p,
+    frequency_penalty,
+    presence_penalty,
+    temperature,
+    max_tokens,
+    best_of: best_off,
+  });
 }
 
 export const fileToDataUri = (file) =>
@@ -88,17 +120,13 @@ export const generateImage = async (text) => {
     },
     responseType: "arraybuffer",
   });
-  console.log(resp.data);
   const base64String = Buffer.from(resp.data, "binary").toString("base64");
   return base64String;
 };
 
 export const compressObject = (obj) => {
   const jsonStr = JSON.stringify(obj);
-  const bytes = Buffer.byteLength(jsonStr, "utf-8");
   const compressed = lz.compress(jsonStr);
-  const bytes2 = Buffer.byteLength(compressed, "utf-8");
-  console.log("bytes:", jsonStr.length, "bytes2:", compressed.length);
   return compressed;
 };
 
@@ -106,4 +134,20 @@ export const decompressObject = (str) => {
   const decompressed = lz.decompress(str);
   const obj = JSON.parse(decompressed);
   return obj;
+};
+
+export const makeVoiceRequest = async (character, text) => {
+  const resp = await axios.get(voice_url, {
+    params: {
+      voice: character,
+      s: text,
+    },
+    responseType: "blob",
+  });
+  return resp.data;
+};
+
+export const getRandomObjectFromArray = (array) => {
+  const randomIndex = Math.floor(Math.random() * array.length);
+  return array[randomIndex];
 };

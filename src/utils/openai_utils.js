@@ -155,6 +155,7 @@ ${objects.map((c) => `Name: ${c.name}\nDescription: ${c.description}`).join("\n\
 # Available Actions: ${availableActions.join(", ")}
 
 ${promptInject}\
+
 # Transcript
 
 `

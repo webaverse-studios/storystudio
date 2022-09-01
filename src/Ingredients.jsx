@@ -4,12 +4,6 @@ import { entityPrototypes, contextTypes } from "./constants";
 import { generate } from "./utils/openai_utils";
 import ListBox from "./ListBox";
 import Context from "./ContextSelector";
-import {
-  uniqueNamesGenerator,
-  adjectives,
-  animals,
-  colors,
-} from "unique-names-generator";
 import { getFile } from "./getFile";
 import { makeId } from "./utils/utils";
 
@@ -112,27 +106,6 @@ function Ingredients({
     setIngredients(newData);
   };
 
-  const handleImport = (data) => {
-    setIngredients(data);
-  };
-
-  const handleExport = () => {
-    const json = JSON.stringify(ingredients);
-    console.log(json);
-
-    const element = document.createElement("a");
-    const file = new Blob([json], { type: "application/json" });
-    element.href = URL.createObjectURL(file);
-    element.download =
-      uniqueNamesGenerator({
-        dictionaries: [adjectives, animals, colors],
-        length: 2,
-      }) + ".json";
-    document.body.appendChild(element);
-    element.click();
-    element.remove();
-  };
-
   const importJson = async () => {
     const file = await getFile();
     const text = await file.text();
@@ -164,6 +137,9 @@ function Ingredients({
       newArray.unshift(newArray.pop());
     } else {
       const newIndex = up ? index - 1 : index + 1;
+      if (newIndex > newArray.length - 1 || newIndex < 0) {
+        return;
+      }
       const temp = newArray[index];
       newArray[index] = newArray[newIndex];
       newArray[newIndex] = temp;
@@ -185,18 +161,34 @@ function Ingredients({
   };
 
   const renderEditModeButton = () => {
-    console.log("render edit mode");
     const editMode =
       new URLSearchParams(window.location.search).get("edit") === "true"
         ? true
         : false;
 
-    console.log("edit mode:", editMode);
     if (editMode) {
       return "Exit edit mode";
     } else {
       return "Enter edit mode";
     }
+  };
+
+  const importEntityList = async () => {
+    console.log("import");
+    const file = await getFile();
+    const text = await file.text();
+    const json = JSON.parse(text);
+    const index = ingredients[json.type].findIndex((e) => e.id === json.id);
+    if (index !== -1) {
+      return;
+    }
+
+    const newData = { ...ingredients };
+    if (!newData[json.type]) {
+      newData[json.type] = [];
+    }
+    newData[json.type].unshift(json);
+    setIngredients(newData);
   };
 
   return (
@@ -225,6 +217,7 @@ function Ingredients({
               editEntityCallback={(data) => editEntityCallback(data)}
               deleteEntityCallback={(data) => deleteEntityCallback(data)}
               moveEntityCallback={(entity, up) => moveEntity(entity, up)}
+              handleImport={importEntityList}
             />
           );
         })}
@@ -250,6 +243,7 @@ function Ingredients({
           deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
           moveEntityCallback={(entity, up) => moveEntity(entity, up)}
           showLabels={true}
+          handleImport={importEntityList}
         />
       </div>
     </div>

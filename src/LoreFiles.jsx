@@ -1,15 +1,6 @@
-import { useEffect, useState } from "react";
 import "./App.css";
-import { entityPrototypes, contextTypes } from "./constants";
 import { generate } from "./utils/openai_utils";
 import ListBox from "./ListBox";
-import Context from "./ContextSelector";
-import {
-  uniqueNamesGenerator,
-  adjectives,
-  animals,
-  colors,
-} from "unique-names-generator";
 import { getFile } from "./getFile";
 import { makeId } from "./utils/utils";
 
@@ -23,8 +14,6 @@ function LoreFiles({
   exportHandler,
   importHandler,
 }) {
-  const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
-
   const addEntityCallback = async (setGenerating) => {
     setGenerating(true);
     //console.log("calling baseData", baseData);
@@ -45,22 +34,27 @@ function LoreFiles({
     }
     const newEntityData = [...loreFiles];
     console.log("newEntityData is", newEntityData);
-    newEntityData.push(entity);
+    newEntityData.unshift(entity);
 
     setLoreFiles(newEntityData);
     setGenerating(false);
   };
   const deleteEntityCallback = (entity, fromCurrentContentType, index) => {
-    console.log("index is", index);
     let newData = [...loreFiles];
-    if (index) {
+    if (
+      index !== null &&
+      index !== undefined &&
+      index >= 0 &&
+      index < newData.length
+    ) {
       // remove newData[index]
       newData.splice(index, 1);
+      console.log("splice");
     } else {
       if (fromCurrentContentType) {
-        newData = loreFiles.filter((e) => e.id && e.id !== entity.id);
+        newData = loreFiles.filter((e) => e === entity);
       } else {
-        newData = loreFilesfilter((e) => e.id !== entity.id);
+        newData = loreFilesfilter((e) => e !== entity);
       }
     }
 
@@ -82,32 +76,59 @@ function LoreFiles({
     setLoreFiles(newData);
   };
 
-  const handleImport = (data) => {
-    setIngredients(data);
+  const moveEntity = (entity, up) => {
+    if (!entity || entity === undefined) {
+      return;
+    }
+
+    let index = -1;
+    for (let obj in loreFiles) {
+      if (entity === loreFiles[obj]) {
+        index = obj;
+        break;
+      }
+    }
+    index = parseInt(index);
+
+    if (index === null || index === undefined || index <= -1) {
+      return;
+    }
+
+    const newData = [...loreFiles];
+    if (newData.length <= 1) {
+      return;
+    }
+
+    if (index === 0 && up) {
+      newData.push(newData.shift());
+    } else if (index === loreFiles.length - 1 && !up) {
+      newData.unshift(newData.pop());
+    } else {
+      const newIndex = up ? index - 1 : index + 1;
+      if (newIndex > loreFiles.length - 1 || newIndex < 0) {
+        return;
+      }
+      const temp = newData[index];
+      newData[index] = newData[newIndex];
+      newData[newIndex] = temp;
+    }
+
+    setLoreFiles(newData);
   };
 
-  const handleExport = () => {
-    const json = JSON.stringify(loreFiles);
-    console.log(json);
-
-    const element = document.createElement("a");
-    const file = new Blob([json], { type: "application/json" });
-    element.href = URL.createObjectURL(file);
-    element.download =
-      uniqueNamesGenerator({
-        dictionaries: [adjectives, animals, colors],
-        length: 2,
-      }) + ".json";
-    document.body.appendChild(element);
-    element.click();
-    element.remove();
-  };
-
-  const importJson = async () => {
+  const importEntityList = async () => {
+    console.log("import");
     const file = await getFile();
     const text = await file.text();
     const json = JSON.parse(text);
-    importHandler(json);
+    const index = loreFiles.findIndex((e) => e === json);
+    if (index !== -1) {
+      return;
+    }
+
+    const newData = [...loreFiles];
+    newData.unshift(json);
+    setLoreFiles(newData);
   };
 
   return (
@@ -132,7 +153,9 @@ function LoreFiles({
           deleteEntityCallback={(data, index) =>
             deleteEntityCallback(data, true, index)
           }
+          moveEntityCallback={(entity, up) => moveEntity(entity, up)}
           showLabels={true}
+          handleImport={importEntityList}
         />
       </div>
     </div>
