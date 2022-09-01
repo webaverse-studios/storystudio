@@ -45,7 +45,9 @@ async function query(openai, params) {
 async function test_prompt(times, openai, type, params) {
   const results = [];
   for (let i = 0; i < times; i++) {
-    params.prompt = createPrompt(type);
+    params.prompt = createPrompt(
+      type === "npc" || type === "mob" ? "character" : type
+    );
     console.log("Epoch: ", i);
     const result = await query(openai, params);
     results.push({ epoch: i, prompt: params.prompt, result });
@@ -55,7 +57,7 @@ async function test_prompt(times, openai, type, params) {
 
 const createPrompt = (type) => `\
 ${lore[type].prompt}
-${shuffleArray(lore.scene.examples).join("\n")}
+${shuffleArray(lore[type].examples).join("\n")}
 prompt:`;
 
 const run = async () => {
@@ -77,8 +79,6 @@ const run = async () => {
     max_tokens,
     best_of,
   } = _data;
-
-  console.log("type:", type, "epochs:", epochs);
 
   const res = await test_prompt(epochs, openai, type, {
     model,
