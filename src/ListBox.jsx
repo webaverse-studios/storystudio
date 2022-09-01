@@ -14,6 +14,7 @@ const ListBox = ({
   handleImport,
 }) => {
   const [generating, setGenerating] = React.useState(false);
+
   return (
     <div className={"sectionWrapper " + type + "_wrapped"}>
       <div className={"sectionHeader " + type + "_header"}>

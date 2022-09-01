@@ -24,6 +24,7 @@ function LoreFiles({
       ingredients,
       baseData,
       openErrorDialog,
+      [],
       downloadFileHandler
     );
     if (!entity) {
