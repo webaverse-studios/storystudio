@@ -6,12 +6,6 @@ import ListBox from "./ListBox";
 import { generate } from "./utils/openai_utils";
 import Context from "./ContextSelector";
 import "./App.css";
-import {
-  uniqueNamesGenerator,
-  adjectives,
-  animals,
-  colors,
-} from "unique-names-generator";
 import { getFile } from "./getFile";
 import {
   compressObject,

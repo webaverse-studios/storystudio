@@ -1,5 +1,3 @@
-import { Configuration, OpenAIApi } from "openai";
-import { lore } from "../constants.js";
 import { exampleLoreFiles } from "../exampleLoreFiles.js";
 import { makeId, generateImage, openaiRequest, shuffleArray } from "./utils.js";
 
@@ -385,9 +383,9 @@ ${
   // return finalLore;
 };
 
-const createPrompt = (type) => `\
+const createPrompt = (lore, type) => `\
 ${lore[type].prompt}
-${shuffleArray(lore.scene.examples).join("\n")}
+${shuffleArray(lore[type].examples).join("\n")}
 prompt:`;
 
 export function setOpenAIKey(newKey) {
@@ -398,28 +396,19 @@ export function getOpenAIKey() {
   return localStorage.getItem("openai_key");
 }
 
-async function generateScene(module, tries = 0) {
-  if (tries > 5) {
-    return { name: "", description: "" };
-  }
-
-  const scenePrompt = createPrompt("scene");
-  console.log("scenePrompt:", module);
+async function generateScene(lore, module) {
+  const scenePrompt = createPrompt(lore, "scene");
   const resp = await openaiRequest(
     getOpenAIKey(),
     scenePrompt,
     module.makeIngredientStop()
   );
 
-  const lines = resp.split("\n");
-  if (!lines || lines?.length !== 2) {
-    return generateScene(module, tries++);
-  }
+  const lines = resp.split("\n").filter((el) => {
+    return el !== "";
+  });
 
-  const desc = lines[1].replace("Description: ", "").trim();
-  if (!desc || desc?.length <= 0) {
-    return generateScene(module, trues++);
-  }
+  const desc = lines[1]?.replace("response: ", "").trim();
 
   return {
     name: lines[0].trim(),
@@ -427,29 +416,19 @@ async function generateScene(module, tries = 0) {
   };
 }
 
-async function generateCharacter(module, tries = 0) {
-  if (tries > 5) {
-    return { name: "", description: "" };
-  }
-
-  const characterPrompt = createPrompt("character");
-  //console.log('characterPrompt is', characterPrompt);
+async function generateCharacter(lore, module) {
+  const characterPrompt = createPrompt(lore, "character");
   const resp = await openaiRequest(
     getOpenAIKey(),
     characterPrompt,
     module.makeIngredientStop()
   );
 
-  const lines = resp.split("\n");
+  const lines = resp.split("\n").filter((el) => {
+    return el !== "";
+  });
 
-  if (!lines || (lines?.length < 2 && lines?.length > 3)) {
-    return generateCharacter(module, tries++);
-  }
-
-  const desc = lines[1].replace("Quote: ", "").trim().replaceAll('"', "");
-  if (!desc || desc?.length <= 0) {
-    return generateCharacter(module, tries++);
-  }
+  const desc = lines[1]?.replace("response: ", "").trim().replaceAll('"', "");
 
   const inventory = "";
   //lines.length > 2 ? lines[2].replace("Inventory: ", "").trim() : "";
@@ -461,28 +440,19 @@ async function generateCharacter(module, tries = 0) {
   };
 }
 
-async function generateObject(module, tries = 0) {
-  if (tries > 5) {
-    return { name: "", description: "" };
-  }
-
-  console.log(module.makeIngredientStop());
-  const objectPrompt = createPrompt("object");
+async function generateObject(lore, module) {
+  const objectPrompt = createPrompt(lore, "object");
   const resp = await openaiRequest(
     getOpenAIKey(),
     objectPrompt,
     module.makeIngredientStop()
   );
 
-  const lines = resp.split("\n");
-  if (!lines || lines?.length !== 2) {
-    return generateObject(module, tries++);
-  }
+  const lines = resp.split("\n").filter((el) => {
+    return el !== "";
+  });
 
-  const desc = lines[1].replace("Quote: ", "").trim();
-  if (!desc || desc?.length <= 0) {
-    return generateObject(module, tries++);
-  }
+  const desc = lines[1]?.replace("response: ", "").trim();
 
   return {
     name: lines[0].trim(),
@@ -495,6 +465,7 @@ export async function generate(
   data,
   baseData,
   openErrorDialog,
+  lore,
   downloadFileHandler
 ) {
   console.log("generating...");
@@ -517,36 +488,35 @@ export async function generate(
     img: "",
   };
   let resp = undefined;
-  console.log("handling type", type);
   switch (type) {
     case "overview":
       console.error("not implemented");
       break;
     case "setting":
       console.log("baseData:", baseData);
-      resp = await generateScene(baseData.module);
+      resp = await generateScene(lore, baseData.module);
       res.name = resp.name;
       res.description = resp.description;
       break;
     case "character":
-      resp = await generateCharacter(baseData.module);
+      resp = await generateCharacter(lore, baseData.module);
       res.name = resp.name;
       res.description = resp.description;
       res.inventory = resp.inventory;
       break;
     case "object":
-      resp = await generateObject(baseData.module);
+      resp = await generateObject(lore, baseData.module);
       res.name = resp.name;
       res.description = resp.description;
       break;
     case "npc":
-      resp = await generateCharacter(baseData.module);
+      resp = await generateCharacter(lore, baseData.module);
       res.name = resp.name;
       res.description = resp.description;
       res.inventory = resp.inventory;
       break;
     case "mob":
-      resp = await generateCharacter(baseData.module);
+      resp = await generateCharacter(lore, baseData.module);
       res.name = resp.name;
       res.description = resp.description;
       res.inventory = resp.inventory;
