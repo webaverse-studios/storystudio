@@ -1,48 +1,4 @@
 // LORE_HEADER_START
-export let config = {
-  maxExamples: 5,
-};
-
-export let inspirations = [
-  "Final Fantasy",
-  "Sonic",
-  "Calvin and Hobbes",
-  "The Matrix",
-  "Snow Crash",
-  "Pokemon",
-  "VRChat",
-  "Fortnite",
-  "One Piece",
-  "Attack on Titan",
-  "SMG4",
-  "Death Note",
-  "Zelda",
-  "Infinity Train",
-  "Dance Dance Revolution",
-];
-
-export let availableReactions = [
-  "surprise",
-  "victory",
-  "alert",
-  "angry",
-  "embarrassed",
-  "headNod",
-  "headShake",
-  "sad",
-];
-
-export let availableActions = [
-  "attack",
-  "defend",
-  "move to",
-  "follow",
-  "pick up",
-  "drop",
-  "stop",
-  "none",
-];
-
 export let lore = {
   overview: {
     prompt: `# Overview`,
@@ -110,7 +66,14 @@ Description: When the Input clearly indicates that a Character has to stop somet
   reactions: {
     prompt: `\
 Available reactions:
-${availableReactions.join("\n")}
+surprise
+victory
+alert
+angry
+embarrassed
+headNod
+headShake
+sad
    `,
     examples: [
       `\
@@ -577,7 +540,21 @@ Output:
   battle: {
     prompt: `\
 # Character battle introductions
-${inspirations.join("\n")}
+Final Fantasy
+Sonic
+Calvin and Hobbes
+The Matrix
+Snow Crash
+Pokemon
+VRChat
+Fortnite
+One Piece
+Attack on Titan
+SMG4
+Death Note
+Zelda
+Infinity Train
+Dance Dance Revolution
 
 We need exciting and interesting RPG character dialogue. This plays when the character enters the battle. Each character takes a turn.
 # Examples`,
@@ -616,7 +593,14 @@ We need exciting and interesting RPG character dialogue. This plays when the cha
   actions: {
     prompt: `\
 Available reactions:
-${availableReactions.join("\n")}
+surprise
+victory
+alert
+angry
+embarrassed
+headNod
+headShake
+sad
 `,
     examples: [
       `\
@@ -701,7 +685,21 @@ Anime script for a dark children's show.
 
 # Inspirations
 
-${inspirations.join("\n")}
+Final Fantasy
+Sonic
+Calvin and Hobbes
+The Matrix
+Snow Crash
+Pokemon
+VRChat
+Fortnite
+One Piece
+Attack on Titan
+SMG4
+Death Note
+Zelda
+Infinity Train
+Dance Dance Revolution
 
 # Character intro
 
