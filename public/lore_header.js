@@ -193,235 +193,235 @@ Amy: "Well, if you see her can you let me know?  (react = normal)" *END*`,
 Anime worlds, they are mostly fantastic, but sometimes they can be a little boring or horrifying, others though can be smelly or flowery. The prompt is the name of the location, while the response is a short phrase from the adventurer about it.`,
     examples: [
       `\
-Location: Exorphys Graetious
-Description: That sounds hard to pronounce. It must be important. Or the person who named it is an asshole. Or their parents were assholes. Just a line of assholes.`,
+prompt: Exorphys Graetious
+response: That sounds hard to pronounce. It must be important. Or the person who named it is an asshole. Or their parents were assholes. Just a line of assholes.`,
       `\
-Location: Orange Fields
-Description: They say a bloodstain's orange after you wash it three or four times in a tub. Still those fields sound interesting!`,
+prompt: Orange Fields
+response: They say a bloodstain's orange after you wash it three or four times in a tub. Still those fields sound interesting!`,
       `\
-Location: Amenki's Lab
-Description: I hate that guy Amenki and his stupid lab. I barely survived his last experiment. Maybe it's time for vengeance.`,
+prompt: Amenki's Lab
+response: I hate that guy Amenki and his stupid lab. I barely survived his last experiment. Maybe it's time for vengeance.`,
       `\
-Location: Sunscraper
-Description: I bet it's amazing to see the world from up there. I guess as long as you don't fall down. I'm not scared though!`,
+prompt: Sunscraper
+response: I bet it's amazing to see the world from up there. I guess as long as you don't fall down. I'm not scared though!`,
       `\
-Location: Bastards bog
-Description: What a dump. I can't believe anyone would want to live here. The smell is terrible and the people are all dirty. I'm sorry I shouldn't be joking that they're poor.`,
+prompt: Bastards bog
+response: What a dump. I can't believe anyone would want to live here. The smell is terrible and the people are all dirty. I'm sorry I shouldn't be joking that they're poor.`,
       `\
-Location: The Great Tree
-Description: It's really not that great, but the music is nice. Yeah apparently they decided trees should come with music.`,
+prompt: The Great Tree
+response: It's really not that great, but the music is nice. Yeah apparently they decided trees should come with music.`,
       `\
-Location: The Trash
-Description: Ugh, the dregs of society live here. It's the worst. It's just a disgusting slum. I'm honestly surprised there's not more crime.`,
+prompt: The Trash
+response: Ugh, the dregs of society live here. It's the worst. It's just a disgusting slum. I'm honestly surprised there's not more crime.`,
       `\
-Location: The Park
-Description: It's a great place to relax! If you like dogs. I like cats more though. So you can imagine, that causes a few problems...`,
+prompt: The Park
+response: It's a great place to relax! If you like dogs. I like cats more though. So you can imagine, that causes a few problems...`,
       `\
-Location: The Woods
-Description: It's so dark in there! I like it. It feels spooky and dangerous. Maybe there are monsters. And I can kill them all.`,
+prompt: The Woods
+response: It's so dark in there! I like it. It feels spooky and dangerous. Maybe there are monsters. And I can kill them all.`,
       `\
-Location: Lake Lagari
-Description: The water's so clear! It's really pretty. I bet the fish are delicious too. But then again, who am I to judge? I'm not a cannibal.`,
+prompt: Lake Lagari
+response: The water's so clear! It's really pretty. I bet the fish are delicious too. But then again, who am I to judge? I'm not a cannibal.`,
       `\
-Location: Dungeon of Torment
-Description: Don't judge me for this but I really like the dungeon. It's dark and spooky and I feel like anything could happen. It's the perfect place for a secret lair.`,
+prompt: Dungeon of Torment
+response: Don't judge me for this but I really like the dungeon. It's dark and spooky and I feel like anything could happen. It's the perfect place for a secret lair.`,
       `\
-Location: Tower Of Zion
-Description: I always get a little nervous when I see the tower. It's so tall and imposing. But then again, I bet you could throw shit down from the heavens like Zeus.`,
+prompt: Tower Of Zion
+response: I always get a little nervous when I see the tower. It's so tall and imposing. But then again, I bet you could throw shit down from the heavens like Zeus.`,
       `\
-Location: Maze of Merlillion
-Description: This place is so poorly designed! I'm sure nobody could ever find their way out. Unless they have a map or something. But even then, good luck.`,
+prompt: Maze of Merlillion
+response: This place is so poorly designed! I'm sure nobody could ever find their way out. Unless they have a map or something. But even then, good luck.`,
       `\
-Location: Freaky Funkos Fried Fox
-Description: I'm not sure how I feel about foxes being eaten. On the one hand, they're cute. But on the other hand, they're a little too foxy.`,
+prompt: Freaky Funkos Fried Fox
+response: I'm not sure how I feel about foxes being eaten. On the one hand, they're cute. But on the other hand, they're a little too foxy.`,
       `\
-Location: Echidna's Den
-Description: It's weird that there are so many snake dens around. I mean, it's not like echidnas are poisonous or anything. Wait what, Echidnas aren't snakes?!`,
+prompt: Echidna's Den
+response: It's weird that there are so many snake dens around. I mean, it's not like echidnas are poisonous or anything. Wait what, Echidnas aren't snakes?!`,
       `\
-Location: Fennek's Forest
-Description: There's a lot of fenneks in this forest. Weird that they all hang out together like that. But I guess it's better than being eaten by a lion or something.`,
+prompt: Fennek's Forest
+response: There's a lot of fenneks in this forest. Weird that they all hang out together like that. But I guess it's better than being eaten by a lion or something.`,
       `\
-Location: The Abyss
-Description: It's so dark and scary down there! You can survive long enough to turn on your flashlight, only to be scared to death by what you reveal!`,
+prompt: The Abyss
+response: It's so dark and scary down there! You can survive long enough to turn on your flashlight, only to be scared to death by what you reveal!`,
       `\
-Location: Castle of Cygnus
-Description: It's so cold in there! Somehow the princess can stand it. Maybe she just doesn't feel the cold. Or maybe she has a furnace.`,
+prompt: Castle of Cygnus
+response: It's so cold in there! Somehow the princess can stand it. Maybe she just doesn't feel the cold. Or maybe she has a furnace.`,
       `\
-Location: Lost Minds Nightclub
-Description: You won't lose your mind here, but if you lose your mind that's where you'll end up. Then you get to party until your parents come pick you up.`,
+prompt: Lost Minds Nightclub
+response: You won't lose your mind here, but if you lose your mind that's where you'll end up. Then you get to party until your parents come pick you up.`,
       `\
-Location: Barrens of Boreas
-Description: False advertising! This place is nothing but a bunch of rocks. There's no water or anything. What kind of bar is this?`,
+prompt: Barrens of Boreas
+response: False advertising! This place is nothing but a bunch of rocks. There's no water or anything. What kind of bar is this?`,
       `\
-Location: The End
-Description: People are always talking about the end, but it's just the end. What's all the fuss about? Everything that has a beginning must have an end.`,
+prompt: The End
+response: People are always talking about the end, but it's just the end. What's all the fuss about? Everything that has a beginning must have an end.`,
       `\
-Location: Chronomaster's Plane
-Description: The chronomaster says everything we do is just a blip in the grand scheme of things. It makes you feel kind of small, doesn't it? I don't want to feel small.`,
+prompt: Chronomaster's Plane
+response: The chronomaster says everything we do is just a blip in the grand scheme of things. It makes you feel kind of small, doesn't it? I don't want to feel small.`,
       `\
-Location: Gus's Charging Station
-Description: Do you like to wait for hours and hours just to charge? Then Gus will gladly rip you off for the privilege.`,
+prompt: Gus's Charging Station
+response: Do you like to wait for hours and hours just to charge? Then Gus will gladly rip you off for the privilege.`,
       `\
-Location: Crunchy Apple
-Description: The food here is very delicious! The apples are so crunchy, I bet they're made of pure sugar. They say it's really bad for you but it's irresistible.`,
+prompt: Crunchy Apple
+response: The food here is very delicious! The apples are so crunchy, I bet they're made of pure sugar. They say it's really bad for you but it's irresistible.`,
       `\
-Location: Winter Wonderland
-Description: It's so beautiful here! The snow is sparkling and the air is crisp. I can't believe it's almost Christmas.`,
+prompt: Winter Wonderland
+response: It's so beautiful here! The snow is sparkling and the air is crisp. I can't believe it's almost Christmas.`,
       `\
-Location: Dragon's Lair
-Description: It's very moisty and hot in here, something smells really fishy. I'm not sure what it is, but I'm sure it's not a dragon.`,
+prompt: Dragon's Lair
+response: It's very moisty and hot in here, something smells really fishy. I'm not sure what it is, but I'm sure it's not a dragon.`,
     ],
   },
   character: {
     prompt: `Anime Characters, most of them are humans, but other humanoids exist as well, there is the character and a quote that he/she said to the user`,
     examples: [
       `\
-  Character: "Axel Brave" A tall and handsome boy. He is a hacker with a bad reputation.
-  Quote: "Hey Axel, did you guess my password yet?"`,
+  prompt: "Axel Brave" A tall and handsome boy. He is a hacker with a bad reputation.
+  response: "Hey Axel, did you guess my password yet?"`,
       `\
-  Character: "Bailey Scritch" A witch studying at the Witchcraft School for Witchcraft and Redundancy.
-  Quote: "Hello there. How are your studies going? Did you finish teh assignment with the frog?"`,
+  prompt: "Bailey Scritch" A witch studying at the Witchcraft School for Witchcraft and Redundancy.
+  response: "Hello there. How are your studies going? Did you finish teh assignment with the frog?"`,
       `\
-  Character: "Lillith Lecant" A painter who uses a magical multicolored brush which leaves marks in the air.
-  Quote: "Lillith you're my idol. I'm in awe at how magical your paintings come out."`,
+  prompt: "Lillith Lecant" A painter who uses a magical multicolored brush which leaves marks in the air.
+  response: "Lillith you're my idol. I'm in awe at how magical your paintings come out."`,
       `\
-  Character: "Aerith Gainsborough (Final Fantasy)" A flower girl with long brown hair. She's wearing a pink dress and has a big smile on her face.
-  Quote: "Can I buy a flower? Or are they not for sale?"`,
+  prompt: "Aerith Gainsborough (Final Fantasy)" A flower girl with long brown hair. She's wearing a pink dress and has a big smile on her face.
+  response: "Can I buy a flower? Or are they not for sale?"`,
       `\
-  Character: "Stephen Gestalt" A fine gentleman in a dress suit.
-  Quote: "I must say you look like a gentleman of the highest order."`,
+  prompt: "Stephen Gestalt" A fine gentleman in a dress suit.
+  response: "I must say you look like a gentleman of the highest order."`,
       `\
-  Character: "Ghost Girl" A rotten girl in a nightgown, like from The Ring.
-  Quote: "Hello ghost girl how are you? How's death treatingm you?"`,
+  prompt: "Ghost Girl" A rotten girl in a nightgown, like from The Ring.
+  response: "Hello ghost girl how are you? How's death treatingm you?"`,
       `\
-  Character: "Mister Miyazaki" A impish being from the 5th dimension.
-  Quote: "Hey Mister Miyazaki! What's the square root of pi?"`,
+  prompt: "Mister Miyazaki" A impish being from the 5th dimension.
+  response: "Hey Mister Miyazaki! What's the square root of pi?"`,
       `\
-  Character: "Wizard Barley" A bartender with a big beard and an even bigger hat.
-  Quote: "Hey man, can I get a beer? It's been a rough day."`,
+  prompt: "Wizard Barley" A bartender with a big beard and an even bigger hat.
+  response: "Hey man, can I get a beer? It's been a rough day."`,
       `\
-  Character: "Fortune Teller" A gypsy woman with a crystal ball.
-  Quote: "Hey you, tell me my future! It better be good!"`,
+  prompt: "Fortune Teller" A gypsy woman with a crystal ball.
+  response: "Hey you, tell me my future! It better be good!"`,
       `\
-  Character: "Kitten" A small black kitten with big green eyes.
-  Quote: "You're such a cute little kitty. Is it time for your nap?"`,
+  prompt: "Kitten" A small black kitten with big green eyes.
+  response: "You're such a cute little kitty. Is it time for your nap?"`,
       `\
-  Character: "Green Dragon" A chubby dragon with short wings. It is a very cartoony avatar.
-  Quote: "You look like you're having fun. Do those wings let you fly?"`,
+  prompt: "Green Dragon" A chubby dragon with short wings. It is a very cartoony avatar.
+  response: "You look like you're having fun. Do those wings let you fly?"`,
       `\
-  Character: "Purple Cube" A purple cube with a single blue eye.
-  Quote: "Hello. You're weird. What are you supposed to be?"`,
+  prompt: "Purple Cube" A purple cube with a single blue eye.
+  response: "Hello. You're weird. What are you supposed to be?"`,
       `\
-  Character: "Dawn (Pokemon)" A young girl with a Pikachu on her shoulder.
-  Quote: "You look like a  Pokemon trainer,"`,
+  prompt: "Dawn (Pokemon)" A young girl with a Pikachu on her shoulder.
+  response: "You look like a  Pokemon trainer,"`,
       `\
-  Character: "Terra Branford (Final Fantasy)" A magician in a mech.
-  Quote: "Hey Terra, long time no see! How have you been?"`,
+  prompt: "Terra Branford (Final Fantasy)" A magician in a mech.
+  response: "Hey Terra, long time no see! How have you been?"`,
       `\
-  Character: "Sora (Kingdom Hearts)" A young boy with big spiky hair. He's wearing a black hoodie and has a keyblade at his side.
-  Quote: "Hey Sora, what brings you to this world?"`,
+  prompt: "Sora (Kingdom Hearts)" A young boy with big spiky hair. He's wearing a black hoodie and has a keyblade at his side.
+  response: "Hey Sora, what brings you to this world?"`,
       `\
-  Character: "Cloud Strife (Final Fantasy)" A SOLDIER in armor. He has spiky blond hair and is carrying a huge sword on his back.
-  Quote: "Yo Cloud! Can I borrow your sword?"`,
+  prompt: "Cloud Strife (Final Fantasy)" A SOLDIER in armor. He has spiky blond hair and is carrying a huge sword on his back.
+  response: "Yo Cloud! Can I borrow your sword?"`,
     ],
   },
   object: {
     prompt: ` Fantastic object that can be found in the game, though some items are realistic. There is an item with it's description and a quote that the user said to the user.`,
     examples: [
-        `\
-  Object: "The Great Deku Tree" An enormous, grey, old tree. It is partly petrified.
-  Quote: "It's just an old tree. It's the kind of tree that makes me want to carve out an old mans face in it."`,
-        `\
-  Object: "The Enchiridion" A magical spellbook with very old pages. It is fragile.
-  Quote: "This book has ancient written all over it. Well not really but you know what I mean."`,
-        `\
-  Object: "rainbow-dash.gif" Animaged gif image of Rainbow Dash from My Little Pony, in the style of Nyan Cat.
-  Quote: "It's pretty good art, I guess. But I wish it had something more interesting besides this rainbow."`,
-        `\
-  Object: "The Stacks Warehouse" A cyberpunk container in a trailer park. It is inspired by the house of Hiro Protagonist in Snow Crash
-  Quote: "This thing is all rusted and decrepit. They should probably tear it down and get a new place."`,
-        `\
-  Object: "The Infinity Sword" An ancient sword planted in a stone. It is heavily overgrown and won't budge.
-  Quote: "This sword looks like it's been here for eons. It's hard to see where the stone ends and the sword begins."`,
-        `\
-  Object: "Tree" A basic tree in the park.
-  Quote: "This tree is important. I hang out here all the time and that makes it important to me."`,
-        `\
-  Object: "Bench" A basic bench in the park.
-  Quote: "This is for when you just want to sit on a bench and look at the sky."`,
-        `\
-  Object: "Glowing Orb" A flying white orb which emits a milky glow on the inside.
-  Quote: "This thing is floating by some mysterious power. I don't know how it works and I'm not sure I want to."`,
-        `\
-  Object: "Lamp Post" A lamp post along the street. It lights up automatically at night
-  Quote: "It's really bright. It hurts my eyeballs! Maybe one of these days I'll come here at night and break it."`,
-        `\
-  Object: "Rustic House" A regular townhouse in the country.
-  Quote: "This house is so nice! It's the kind of house befitting for a very nice person. Wouldn't you agree?"`,
-        `\
-  Object: "Jar Of Black" A jar of a disgusting black substance that appears to have a life of its own.
-  Quote: "Yuck, this is nasty stuff. It's all sweet and sticky and it gets all over your clothes."`,
-        `\
-  Object: "Wooden Sign" A wooden sign with some writing on it. It can be chopped down with a sword.
-  Quote: "This sign looks very official, but the writing doesn't make any sense. What a waste of perfectly good wood."`,
-        `\
-  Object: "ACog" An piece of an ancient technology. It looks very advanced but very old.
-  Quote: "This is a peculiar device. I've seen them around before, but never up close. I wonder if they will ever work?"`,
-        `\
-  Object: "Jackrabbobbit" A grotesque creature that looks like a genetic mix of species that should not be mixed.
-  Quote: "A very strange creature. I have no idea what it is but it looks like a cross between a rabbit and earthworm."`,
-        `\
-  Object: "Black One" A very dark animal that hides in the shadows. Nobody knows much about it.
-  Quote: "This animal is quite interesting. I've never seen anything like it before. I wonder what it eats?"`,
-        `\
-  Object: "Herb of Sentience" A plant that makes you feel emotions when you get close.
-  Quote: "It's just a plant, but for some reason it makes me feel uneasy. Get it away from me!"`,
-        `\
-  Object: "Flower Bed" An arrangement of flowers in their natural habitat.
-  Quote: "So pretty! I feel like I am reborn. There is so much nature and life and healing here."`,
-        `\
-  Object: "Ripe Fruit" A fruit that has fallen from a tree. It is starting to rot.
-  Quote: "This fruit is starting to rot. I guess I'll just leave it here for the animals."`,
-        `\
-  Object: "Brightfruit" A magical fruit that makes your skin glow for 24 hours.
-  Quote: "Wow, this fruit is amazing! It makes my skin glow! Even more than it already was."`,
-        `\
-  Object: "Goblin" A small, green creature with pointy ears. It is very ugly.
-  Quote: "This goblin is so ugly, I can't even look at it. It's like looking at a car accident.`,
-        `\
-  Object: "Trash Heap" A pile of garbage. It smells really bad.
-  Quote: This is the most disgusting thing I have ever seen. It's like a mountain of death."`,
-        `\
-  Object: "Gucci Bag" An exclusive designer bag that is very expensive.
-  Quote: "This bag is so beautiful, I can't even put into words. It's like a piece of art."`,
-        `\
-  Object: "Pile Of Bones" A pile of bones. It looks like somebody died here.
-  Quote: "This is a very sad sight. There was life and then the life was gone."`,
-        `\
-  Object: "Crunchy Grass" A heavenly bite from nature. It is juicy, fresh grass.
-  Quote: "The thirll of biting into one of these is unlike anything in life. It's so juicy!"`,
-        `\
-  Object: "doge.png" An image of the Doge meme.
-  Quote: "This is a dead meme. But I guess the artist gets points for being topical. Besides, it is really cute!"`,
-        `\
-  Object: "Magikarp" A common fish that is known for being very weak.
-  Quote: "This fish is so weak, it's not even worth my time. I can't believe people actually catch these things."`,
-        `\
-  Object: "Muscle Car" A car that is designed for speed and power.
-  Quote: "This car is so fast, it's like a bullet. Am I brave enough to take it for a spin?"`,
-        `\
-  Object: "Door OF Eternity" A magical portal that leads to a distant land. It only works one way.
-  Quote: "We're not supposed to touch the Door of Eternity. It's dangerous."`,
-        `\
-  Object: "Potion OF Flight" A potion that allows you to fly for a short period of time.
-  Quote: "So this is what it's like to fly! It's amazing!"`,
-        `\
-  Object: "Helmet" A high-helmet designed to protect your head.
-  Quote: "This helmet is so strong, it can probably stop a bullet. But let's not try."`,
-        `\
-  Object: "sword.png" Image of a sword being drawn from a sheath.
-  Quote: "Swords are so cool! They're like the ultimate weapon. This one is up there."`,
-      ],
+      `\
+prompt: "The Great Deku Tree" An enormous, grey, old tree. It is partly petrified.
+response: "It's just an old tree. It's the kind of tree that makes me want to carve out an old mans face in it."`,
+      `\
+prompt: "The Enchiridion" A magical spellbook with very old pages. It is fragile.
+response: "This book has ancient written all over it. Well not really but you know what I mean."`,
+      `\
+prompt: "rainbow-dash.gif" Animaged gif image of Rainbow Dash from My Little Pony, in the style of Nyan Cat.
+response: "It's pretty good art, I guess. But I wish it had something more interesting besides this rainbow."`,
+      `\
+prompt: "The Stacks Warehouse" A cyberpunk container in a trailer park. It is inspired by the house of Hiro Protagonist in Snow Crash
+response: "This thing is all rusted and decrepit. They should probably tear it down and get a new place."`,
+      `\
+prompt: "The Infinity Sword" An ancient sword planted in a stone. It is heavily overgrown and won't budge.
+response: "This sword looks like it's been here for eons. It's hard to see where the stone ends and the sword begins."`,
+      `\
+prompt: "Tree" A basic tree in the park.
+response: "This tree is important. I hang out here all the time and that makes it important to me."`,
+      `\
+prompt: "Bench" A basic bench in the park.
+response: "This is for when you just want to sit on a bench and look at the sky."`,
+      `\
+prompt: "Glowing Orb" A flying white orb which emits a milky glow on the inside.
+response: "This thing is floating by some mysterious power. I don't know how it works and I'm not sure I want to."`,
+      `\
+prompt: "Lamp Post" A lamp post along the street. It lights up automatically at night
+response: "It's really bright. It hurts my eyeballs! Maybe one of these days I'll come here at night and break it."`,
+      `\
+prompt: "Rustic House" A regular townhouse in the country.
+response: "This house is so nice! It's the kind of house befitting for a very nice person. Wouldn't you agree?"`,
+      `\
+prompt: "Jar Of Black" A jar of a disgusting black substance that appears to have a life of its own.
+response: "Yuck, this is nasty stuff. It's all sweet and sticky and it gets all over your clothes."`,
+      `\
+prompt: "Wooden Sign" A wooden sign with some writing on it. It can be chopped down with a sword.
+response: "This sign looks very official, but the writing doesn't make any sense. What a waste of perfectly good wood."`,
+      `\
+prompt: "ACog" An piece of an ancient technology. It looks very advanced but very old.
+response: "This is a peculiar device. I've seen them around before, but never up close. I wonder if they will ever work?"`,
+      `\
+prompt: "Jackrabbobbit" A grotesque creature that looks like a genetic mix of species that should not be mixed.
+response: "A very strange creature. I have no idea what it is but it looks like a cross between a rabbit and earthworm."`,
+      `\
+prompt: "Black One" A very dark animal that hides in the shadows. Nobody knows much about it.
+response: "This animal is quite interesting. I've never seen anything like it before. I wonder what it eats?"`,
+      `\
+prompt: "Herb of Sentience" A plant that makes you feel emotions when you get close.
+response: "It's just a plant, but for some reason it makes me feel uneasy. Get it away from me!"`,
+      `\
+prompt: "Flower Bed" An arrangement of flowers in their natural habitat.
+response: "So pretty! I feel like I am reborn. There is so much nature and life and healing here."`,
+      `\
+prompt: "Ripe Fruit" A fruit that has fallen from a tree. It is starting to rot.
+response: "This fruit is starting to rot. I guess I'll just leave it here for the animals."`,
+      `\
+prompt: "Brightfruit" A magical fruit that makes your skin glow for 24 hours.
+response: "Wow, this fruit is amazing! It makes my skin glow! Even more than it already was."`,
+      `\
+prompt: "Goblin" A small, green creature with pointy ears. It is very ugly.
+response: "This goblin is so ugly, I can't even look at it. It's like looking at a car accident.`,
+      `\
+prompt: "Trash Heap" A pile of garbage. It smells really bad.
+response: This is the most disgusting thing I have ever seen. It's like a mountain of death."`,
+      `\
+prompt: "Gucci Bag" An exclusive designer bag that is very expensive.
+response: "This bag is so beautiful, I can't even put into words. It's like a piece of art."`,
+      `\
+prompt: "Pile Of Bones" A pile of bones. It looks like somebody died here.
+response: "This is a very sad sight. There was life and then the life was gone."`,
+      `\
+prompt: "Crunchy Grass" A heavenly bite from nature. It is juicy, fresh grass.
+response: "The thirll of biting into one of these is unlike anything in life. It's so juicy!"`,
+      `\
+prompt: "doge.png" An image of the Doge meme.
+response: "This is a dead meme. But I guess the artist gets points for being topical. Besides, it is really cute!"`,
+      `\
+prompt: "Magikarp" A common fish that is known for being very weak.
+response: "This fish is so weak, it's not even worth my time. I can't believe people actually catch these things."`,
+      `\
+prompt: "Muscle Car" A car that is designed for speed and power.
+response: "This car is so fast, it's like a bullet. Am I brave enough to take it for a spin?"`,
+      `\
+prompt: "Door OF Eternity" A magical portal that leads to a distant land. It only works one way.
+response: "We're not supposed to touch the Door of Eternity. It's dangerous."`,
+      `\
+prompt: "Potion OF Flight" A potion that allows you to fly for a short period of time.
+response: "So this is what it's like to fly! It's amazing!"`,
+      `\
+prompt: "Helmet" A high-helmet designed to protect your head.
+response: "This helmet is so strong, it can probably stop a bullet. But let's not try."`,
+      `\
+prompt: "sword.png" Image of a sword being drawn from a sheath.
+response: "Swords are so cool! They're like the ultimate weapon. This one is up there."`,
+    ],
   },
   inputParsing: {
     prompt: `# Examples of How to Parse Inputs`,

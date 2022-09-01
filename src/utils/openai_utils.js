@@ -2,7 +2,6 @@ import { Configuration, OpenAIApi } from "openai";
 import { lore } from "../constants.js";
 import { exampleLoreFiles } from "../exampleLoreFiles.js";
 import { makeId, generateImage, openaiRequest, shuffleArray } from "./utils.js";
-import fs from "fs";
 
 export let inspirations = [
   "Final Fantasy",
@@ -386,20 +385,10 @@ ${
   // return finalLore;
 };
 
-const createScenePrompt = () => `\
-${lore.scene.prompt}
+const createPrompt = (type) => `\
+${lore[type].prompt}
 ${shuffleArray(lore.scene.examples).join("\n")}
-Location:`;
-
-const createCharacterPrompt = () => `\
-${lore.character.prompt}
-${shuffleArray(lore.character.examples).join(`\n`)}
-Character:`;
-
-const createObjectPrompt = () => `\
-${lore.object.prompt}
-${shuffleArray(lore.object.examples).join(`\n`)}
-Object:`;
+prompt:`;
 
 export function setOpenAIKey(newKey) {
   localStorage.setItem("openai_key", newKey);
@@ -409,13 +398,14 @@ export function getOpenAIKey() {
   return localStorage.getItem("openai_key");
 }
 
-async function generateScene() {
-  const scenePrompt = createScenePrompt();
+async function generateScene(module) {
+  const scenePrompt = createPrompt("scene");
 
-  const resp = await openaiRequest(getOpenAIKey(), scenePrompt, [
-    ".,\n",
-    "Location:",
-  ]);
+  const resp = await openaiRequest(
+    getOpenAIKey(),
+    scenePrompt,
+    module.makeIngredientStop()
+  );
   const lines = resp.split("\n");
   if (!lines || lines?.length !== 2) {
     return generateScene();
@@ -432,13 +422,10 @@ async function generateScene() {
   };
 }
 
-async function generateCharacter() {
-  const characterPrompt = createCharacterPrompt();
+async function generateCharacter(module) {
+  const characterPrompt = createPrompt("character");
   //console.log('characterPrompt is', characterPrompt);
-  const resp = await openaiRequest(getOpenAIKey(), characterPrompt, [
-    ".,\n",
-    "Character:",
-  ]);
+  const resp = await openaiRequest(getOpenAIKey(), module.makeIngredientStop());
   const lines = resp.split("\n");
 
   if (!lines || (lines?.length < 2 && lines?.length > 3)) {
@@ -460,12 +447,9 @@ async function generateCharacter() {
   };
 }
 
-async function generateObject() {
-  const objectPrompt = createObjectPrompt();
-  const resp = await openaiRequest(getOpenAIKey(), objectPrompt, [
-    ".,\n",
-    "Object:",
-  ]);
+async function generateObject(module) {
+  const objectPrompt = createPrompt("object");
+  const resp = await openaiRequest(getOpenAIKey(), module.makeIngredientStop());
   const lines = resp.split("\n");
   if (!lines || lines?.length !== 2) {
     return generateObject();
