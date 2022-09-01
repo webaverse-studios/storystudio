@@ -54,7 +54,12 @@ function LoreBase({
   // if the user presses ctrl + s, create a new file from the editorCode text, get the URI and call setBaseData
   const handleSave = async () => {
     const blob = new Blob(
-      ["export let lore = " + JSON.stringify(loreData) + "\n" + editorCode],
+      [
+        (editorCode.includes("export let lore = ")
+          ? ""
+          : "export let lore = " + JSON.stringify(loreData) + "\n") +
+          editorCode,
+      ],
       {
         type: "application/x-javascript;base64",
       }

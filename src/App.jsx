@@ -183,8 +183,10 @@ function App() {
             lines.splice(headerEndIndex + 1, lines.length).join("\n");
           // find the line in content (a long delimited string) that contains import and murmurhash3
           // replace that line with loreHeader
+          if (!content.includes("export let lore = ")) {
+            content = loreHeader + "\n" + content;
+          }
           displayContent = content;
-          content = loreHeader + content;
         }
 
         // convert content back to a blob with the x-javascript base64 type
@@ -202,6 +204,7 @@ function App() {
           const json = firstLine.replace("export let lore = ", "");
           const obj = JSON.parse(json);
           setLoreData(obj);
+          console.log("updated lore data");
         }
 
         setBaseData({
@@ -224,6 +227,7 @@ function App() {
       if (content.includes(murmurHashImportString)) {
         content = content.replace(murmurHashImportString, murmurhash3String);
         displayContent = content;
+        console.log("replace content is", content);
       } else {
         const headerStartIndex = lines.findIndex((line) =>
           line.includes("LORE_HEADER_START")
@@ -236,10 +240,14 @@ function App() {
         content =
           beforeHeader +
           lines.splice(headerEndIndex + 1, lines.length).join("\n");
+        // find the line in content (a long delimited string) that contains import and murmurhash3
+        // replace that line with loreHeader
         if (!content.includes("export let lore = ")) {
           content = loreHeader + "\n" + content;
         }
+        displayContent = content;
       }
+
       // convert text to a blob with the x-javascript base64 type
       const blob = new Blob([content], {
         type: "application/x-javascript;base64",
