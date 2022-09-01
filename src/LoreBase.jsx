@@ -38,6 +38,7 @@ function LoreBase({
   setLoreData,
   exportHandler,
   importHandler,
+  lore_header,
 }) {
   const [editorCode, setEditorCode] = useState("");
   const [currentContentType, setCurrentContentType] = useState(
@@ -50,9 +51,7 @@ function LoreBase({
     const codeEditorData = localStorage.getItem("codeEditorData");
     if (codeEditorData) {
       setEditorCode(codeEditorData);
-      download_content("./lore_header.js").then((loreHeader) =>
-        setLoreHeader(loreHeader)
-      );
+      setLoreHeader(lore_header);
     } else {
       loadBaseData(baseData);
     }
@@ -139,27 +138,6 @@ function LoreBase({
     }
 
     setLoreData(newData);
-  };
-
-  const handleImport = (data) => {
-    setLoreData(data);
-  };
-
-  const handleExport = () => {
-    const json = JSON.stringify(loreData);
-    console.log(json);
-
-    const element = document.createElement("a");
-    const file = new Blob([json], { type: "application/json" });
-    element.href = URL.createObjectURL(file);
-    element.download =
-      uniqueNamesGenerator({
-        dictionaries: [adjectives, animals, colors],
-        length: 2,
-      }) + ".json";
-    document.body.appendChild(element);
-    element.click();
-    element.remove();
   };
 
   const importJson = async () => {
