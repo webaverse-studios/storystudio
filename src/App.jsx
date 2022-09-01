@@ -142,9 +142,9 @@ function App() {
   };
 
   const loadBaseData = async (data, callback, fromUrl = true) => {
-    const loreHeader = await download_content("./lore_header.js");
+    const loreHeader = "export let lore = " + JSON.stringify(lore) + "\n";
     // convert to string
-    const loreHeaderString = loreHeader.toString();
+    console.log("loreHeaderString:", loreHeader);
     const murmurHashImportString = `import {murmurhash3} from './murmurhash3.js';`;
 
     let content, displayContent;
@@ -187,7 +187,8 @@ function App() {
           // find the line in content (a long delimited string) that contains import and murmurhash3
           // replace that line with loreHeader
           displayContent = content;
-          content = loreHeaderString + content;
+          content = loreHeader + content;
+          console.log(content);
         }
 
         // convert content back to a blob with the x-javascript base64 type

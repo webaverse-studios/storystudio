@@ -398,27 +398,30 @@ export function getOpenAIKey() {
   return localStorage.getItem("openai_key");
 }
 
-async function generateScene(module) {
+async function generateScene(module, tries = 0) {
+  if (tries > 5) {
+    return { name: "", description: "" };
+  }
+
   const scenePrompt = createPrompt("scene");
-  console.log('getOpenAIKey is', getOpenAIKey());
-  console.log('scenePrompt is', scenePrompt);
-  console.log('module is', module);
-  const resp = await openaiRequest(
-    getOpenAIKey(),
-    scenePrompt,
-    module.makeIngredientStop()
-  );
+  console.log("scenePrompt:", module);
+  const resp =
+    (await openaiRequest(
+      getOpenAIKey(),
+      scenePrompt,
+      module.makeIngredientStop()
+    )) ?? "";
   const lines = resp.split("\n");
   console.log('lines is', lines);
   if (!lines || lines?.length !== 2) {
     console.log('!lines || lines?.length !== 2', lines);
-    // return generateScene(module);
+    return generateScene(module, tries++);
   }
 
   const desc = lines[1].replace("Description: ", "").trim();
   if (!desc || desc?.length <= 0) {
     console.log('!desc || desc?.length <= 0', desc);
-    // return generateScene(module);
+    return generateScene(module, trues++);
   }
 
   return {
@@ -427,19 +430,29 @@ async function generateScene(module) {
   };
 }
 
-async function generateCharacter(module) {
+async function generateCharacter(module, tries = 0) {
+  if (tries > 5) {
+    return { name: "", description: "" };
+  }
+
   const characterPrompt = createPrompt("character");
   //console.log('characterPrompt is', characterPrompt);
-  const resp = await openaiRequest(getOpenAIKey(), module.makeIngredientStop());
+  const resp =
+    (await openaiRequest(
+      getOpenAIKey(),
+      characterPrompt,
+      module.makeIngredientStop()
+    )) ?? "";
+
   const lines = resp.split("\n");
 
   if (!lines || (lines?.length < 2 && lines?.length > 3)) {
-    return generateCharacter();
+    return generateCharacter(module, tries++);
   }
 
   const desc = lines[1].replace("Quote: ", "").trim().replaceAll('"', "");
   if (!desc || desc?.length <= 0) {
-    return generateCharacter();
+    return generateCharacter(module, tries++);
   }
 
   const inventory = "";
@@ -452,17 +465,28 @@ async function generateCharacter(module) {
   };
 }
 
-async function generateObject(module) {
+async function generateObject(module, tries = 0) {
+  if (tries > 5) {
+    return { name: "", description: "" };
+  }
+
+  console.log(module.makeIngredientStop());
   const objectPrompt = createPrompt("object");
-  const resp = await openaiRequest(getOpenAIKey(), module.makeIngredientStop());
+  const resp =
+    (await openaiRequest(
+      getOpenAIKey(),
+      objectPrompt,
+      module.makeIngredientStop()
+    )) ?? "";
+
   const lines = resp.split("\n");
   if (!lines || lines?.length !== 2) {
-    return generateObject();
+    return generateObject(module, tries++);
   }
 
   const desc = lines[1].replace("Quote: ", "").trim();
   if (!desc || desc?.length <= 0) {
-    return generateObject();
+    return generateObject(module, tries++);
   }
 
   return {
@@ -504,6 +528,7 @@ export async function generate(
       console.error("not implemented");
       break;
     case "setting":
+      console.log("baseData:", baseData);
       resp = await generateScene(baseData.module);
       res.name = resp.name;
       res.description = resp.description;
