@@ -156,12 +156,12 @@ ${`${setting.name}\n${setting.description}`}\
 
 ${party.length > 0 && "# Party Characters\n\n"}\
 ${
-  party.map((c) => `Name: ${c.name}\nBio: ${c.bio}`).join("\n\n") +
+  party.map((c) => `Name: ${c.name}\nBio: ${c.description}`).join("\n\n") +
   (party.length > 0 && "\n\n")
 }\
 ${npcs.length > 0 && "# Non-player Characters\n\n"}\
 ${
-  npcs.map((c) => `Name: ${c.name}\nBio: ${c.bio}`).join("\n\n") +
+  npcs.map((c) => `Name: ${c.name}\nBio: ${c.description}`).join("\n\n") +
   (npcs.length > 0 && "\n\n")
 }\
 ${objects.length > 0 && "# Nearby Objects\n\n"}\
@@ -304,7 +304,7 @@ ${characters.length > 0 && "\n# Characters" + "\n\n"}\
 ${characters
   .map(
     (c) =>
-      `${c.name}\n${c.bio}\n${
+      `${c.name}\n${c.description}\n${
         c.Inventory?.length > 0 && `Inventory:\n`
       }${(c.Inventory ? c.Inventory : [])
         .map((obj) => `${obj.name}`)
@@ -540,7 +540,10 @@ export async function generate(
   //     //found a duplicate, so generate a new name
   //   }
   // }
-  res.image = await generateImage(resp.name);
+
+  if (localStorage.getItem("generateImages") === "true") {
+    res.image = await generateImage(resp.name);
+  }
 
   if (res.name?.length > 0) {
     res.id = makeId(5);

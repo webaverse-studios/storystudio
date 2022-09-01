@@ -7,6 +7,19 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const Setup = ({ _openAIParams, _setOpenAIParams }) => {
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
+  const [generateImages, setGenerateImages] = useState(false);
+
+  useEffect(() => {
+    const gi = localStorage.getItem("generateImages");
+    if (gi) {
+      setGenerateImages(gi === "true");
+    }
+  }, []);
+  const updateGenerateImages = (value) => {
+    setGenerateImages(value);
+    localStorage.setItem("generateImages", !generateImages);
+  };
+
   return (
     <div className="view">
       <br />
@@ -188,6 +201,18 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
           onFocus={(e) => {
             _openAIParams.best_of = e.target.value;
             _setOpenAIParams(_openAIParams);
+          }}
+        />
+      </div>
+      <br />
+      <div className={"openai"}>
+        <span className={"baseLabel"}>Generate Images:</span>
+        <input
+          className={"baseInput"}
+          type="checkbox"
+          defaultChecked={generateImages}
+          onChange={(e) => {
+            updateGenerateImages(e.target.checked);
           }}
         />
       </div>
