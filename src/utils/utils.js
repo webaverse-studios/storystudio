@@ -77,7 +77,7 @@ export async function openaiRequest(key, prompt, stop) {
     best_off,
   } = _data;
 
-  return query(key, {
+  return await query(key, {
     model,
     prompt,
     stop,
