@@ -155,7 +155,7 @@ eric: Millie, I'm tending to serious business. The org needs me to break through
   };
 
 # Setting
-${setting}
+${`${setting.name}\n${setting.description}`}\
 
 ${party.length > 0 && "# Party Characters\n\n"}\
 ${
@@ -302,7 +302,7 @@ WEBAVERSE_LORE_FILE
 
 # Setting
 
-${setting}\
+${`${setting.name}\n${setting.description}\n\n`}\
 ${characters.length > 0 && "\n# Characters" + "\n\n"}\
 ${characters
   .map(
@@ -333,7 +333,9 @@ ${
 
   // write prompt to lorefiles/<current date>.md
 
-  downloadFileHandler(loreFileOutput, "lorefile_" + Date.now() + ".md");
+  if (downloadFileHandler) {
+    downloadFileHandler(loreFileOutput, "lorefile_" + Date.now() + ".md");
+  }
   /*fs.writeFile(`lorefiles/${Date.now()}.md`, loreFileOutput, (err) => {
     if (err) throw err;
     console.log("file saved");
