@@ -38,6 +38,7 @@ const ListBox = ({
                 moveEntityCallback={(entity, up) =>
                   moveEntityCallback(entity, up)
                 }
+                type={type}
               />
             );
           })}

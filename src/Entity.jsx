@@ -23,6 +23,7 @@ const Entity = ({
   deleteEntityCallback,
   moveEntityCallback,
   showLabels = false,
+  type,
 }) => {
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
@@ -274,23 +275,16 @@ const Entity = ({
       </button>
       <button
         onClick={() => {
-          const json = JSON.stringify(data);
           const element = document.createElement("a");
-          const file = new Blob([json], { type: "application/json" });
+          const file = new Blob([data], { type: "application/text" });
           element.href = URL.createObjectURL(file);
-          element.download =
-            (!data["name"] || data["name"] === undefined
-              ? "lore"
-              : data["name"]) +
-            "_" +
-            new Date().getTime() +
-            ".json";
+          element.download = "lore" + index + "_" + Date.now() + ".mb";
           document.body.appendChild(element);
           element.click();
           element.remove();
         }}
       >
-        Export
+        {type === "lore" ? "Export MD" : "Export"}
       </button>
     </div>
   );

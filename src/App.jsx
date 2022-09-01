@@ -133,10 +133,12 @@ function App() {
   const handleImport = (type, data) => {
     if (type === "ingredients") {
       setIngredients(data);
-    } else {
+    } else if (type === "lore") {
       console.log("setLoreData:", data);
       setLoreData(data);
       console.log("lore Data:", loreData);
+    } else {
+      setLoreFiles(data);
     }
   };
 
@@ -272,11 +274,13 @@ function App() {
   };
 
   const handleExport = (type) => {
-    console.log("exporting:", type);
     const json = JSON.stringify(
-      type === "ingredients" ? ingredients : loreData
+      type === "ingredients"
+        ? ingredients
+        : type === "lore"
+        ? loreData
+        : loreFiles
     );
-    console.log(json);
 
     const element = document.createElement("a");
     const file = new Blob([json], { type: "application/json" });

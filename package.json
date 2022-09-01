@@ -21,6 +21,7 @@
     "dotenv": "^16.0.1",
     "dungeoneer": "^2.1.5",
     "events": "^3.3.0",
+    "jszip": "^3.10.1",
     "lz-string": "^1.4.4",
     "module-from-string": "^3.2.1",
     "openai": "^3.0.0",

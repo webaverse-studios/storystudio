@@ -3,6 +3,7 @@ import { generate } from "./utils/openai_utils";
 import ListBox from "./ListBox";
 import { getFile } from "./getFile";
 import { makeId } from "./utils/utils";
+import JSZip from "jszip";
 
 function LoreFiles({
   dataType,
@@ -149,6 +150,24 @@ function LoreFiles({
     element.remove();
   };
 
+  const exportMassMD = async () => {
+    const data = [...loreFiles];
+    const zip = new JSZip();
+    for (let i = 0; i < data.length; i++) {
+      zip.file(
+        `lore_${i}.md`,
+        typeof data[i] === "string" ? data[i] : data[i][0]
+      );
+    }
+    const element = document.createElement("a");
+    const file = await zip.generateAsync({ type: "blob" });
+    element.href = URL.createObjectURL(file);
+    element.download = "lores_" + Date.now() + ".zip";
+    document.body.appendChild(element);
+    element.click();
+    element.remove();
+  };
+
   return (
     <div className="view">
       <div className={"importExportButtons"}>
@@ -157,6 +176,9 @@ function LoreFiles({
         </button>
         <button className={"exportButton"} onClick={() => exportHandler()}>
           Export
+        </button>
+        <button className={"exportButton"} onClick={() => exportMassMD()}>
+          Export MD
         </button>
       </div>
       <div className="sections">
