@@ -550,7 +550,7 @@ export async function generate(
       res.id;
   }
 
-  if (res.description.endsWith(",")) {
+  if (res.description && res.description.endsWith(",")) {
     res.description = res.description.slice(0, -1);
   }
 

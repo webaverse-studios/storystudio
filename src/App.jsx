@@ -196,6 +196,14 @@ function App() {
         // fileUri is a base64 javascript document
         // we want to inject some code into the file before we
         const importedFile = await import(fileUri);
+        const firstLine = content.split("\n")?.[0];
+
+        if (firstLine && firstLine.startsWith("export let lore = ")) {
+          const json = firstLine.replace("export let lore = ", "");
+          const obj = JSON.parse(json);
+          setLoreData(obj);
+        }
+
         setBaseData({
           base: fileUri,
           type: "file",
@@ -228,7 +236,9 @@ function App() {
         content =
           beforeHeader +
           lines.splice(headerEndIndex + 1, lines.length).join("\n");
-        content = loreHeader + "\n" + content;
+        if (!content.includes("export let lore = ")) {
+          content = loreHeader + "\n" + content;
+        }
       }
       // convert text to a blob with the x-javascript base64 type
       const blob = new Blob([content], {
@@ -236,6 +246,13 @@ function App() {
       });
       const fileUri = await fileToDataUri(blob);
       const importedFile = await import(fileUri);
+      const firstLine = content.split("\n")?.[0];
+
+      if (firstLine && firstLine.startsWith("export let lore = ")) {
+        const json = firstLine.replace("export let lore = ", "");
+        const obj = JSON.parse(json);
+        setLoreData(obj);
+      }
       setBaseData({
         base: fileUri,
         type: "file",
