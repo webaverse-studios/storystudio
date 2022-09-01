@@ -405,12 +405,11 @@ async function generateScene(module, tries = 0) {
 
   const scenePrompt = createPrompt("scene");
   console.log("scenePrompt:", module);
-  const resp =
-    (await openaiRequest(
-      getOpenAIKey(),
-      scenePrompt,
-      module.makeIngredientStop()
-    )) ?? "";
+  const resp = await openaiRequest(
+    getOpenAIKey(),
+    scenePrompt,
+    module.makeIngredientStop()
+  );
 
   const lines = resp.split("\n");
   if (!lines || lines?.length !== 2) {
@@ -435,12 +434,11 @@ async function generateCharacter(module, tries = 0) {
 
   const characterPrompt = createPrompt("character");
   //console.log('characterPrompt is', characterPrompt);
-  const resp =
-    (await openaiRequest(
-      getOpenAIKey(),
-      characterPrompt,
-      module.makeIngredientStop()
-    )) ?? "";
+  const resp = await openaiRequest(
+    getOpenAIKey(),
+    characterPrompt,
+    module.makeIngredientStop()
+  );
 
   const lines = resp.split("\n");
 
@@ -470,12 +468,11 @@ async function generateObject(module, tries = 0) {
 
   console.log(module.makeIngredientStop());
   const objectPrompt = createPrompt("object");
-  const resp =
-    (await openaiRequest(
-      getOpenAIKey(),
-      objectPrompt,
-      module.makeIngredientStop()
-    )) ?? "";
+  const resp = await openaiRequest(
+    getOpenAIKey(),
+    objectPrompt,
+    module.makeIngredientStop()
+  );
 
   const lines = resp.split("\n");
   if (!lines || lines?.length !== 2) {

@@ -16,6 +16,8 @@ function Ingredients({
   importHandler,
   openErrorModal,
   forceUpdate,
+  lore,
+  setLore,
 }) {
   const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
 
@@ -191,6 +193,74 @@ function Ingredients({
     setIngredients(newData);
   };
 
+  const addLore = async (type, setGenerating) => {
+    setGenerating(true);
+
+    const newLore = { ...lore };
+    const newLoreData = { ...newLore[type] };
+    const newLoreExamples = [...newLoreData.examples];
+    newLoreExamples.unshift("new " + type);
+    newLoreData.examples = newLoreExamples;
+    newLore[type] = newLoreData;
+    setLore(newLore);
+
+    setGenerating(false);
+  };
+  const editLore = (entity, index) => {
+    const newLore = { ...lore };
+    const newLoreData = { ...newLore[currentContentType] };
+    const newLoreExamples = [...newLoreData.examples];
+
+    newLoreExamples[index] = entity;
+
+    newLoreData.examples = newLoreExamples;
+    newLore[currentContentType] = newLoreData;
+    setLore(newLore);
+  };
+  const deleteLore = (data, index) => {
+    const newLore = { ...lore };
+    const newLoreData = { ...newLore[currentContentType] };
+    const newLoreExamples = [...newLoreData.examples];
+
+    newLoreExamples.splice(index, 1);
+
+    newLoreData.examples = newLoreExamples;
+    newLore[currentContentType] = newLoreData;
+    setLore(newLore);
+  };
+  const moveLore = (data, up) => {
+    const newLore = { ...lore };
+    const newLoreData = { ...newLore[currentContentType] };
+    const newLoreExamples = [...newLoreData.examples];
+
+    const index = newLoreExamples.findIndex((e) => e === data);
+    if (index === null || index === undefined || index <= -1) {
+      return;
+    }
+
+    if (newLoreExamples?.length <= 1) {
+      return;
+    }
+
+    if (index === 0 && up) {
+      newLoreExamples.push(newLoreExamples.shift());
+    } else if (index === newLoreExamples.length - 1 && !up) {
+      newLoreExamples.unshift(newLoreExamples.pop());
+    } else {
+      const newIndex = up ? index - 1 : index + 1;
+      if (newIndex > newLoreExamples.length - 1 || newIndex < 0) {
+        return;
+      }
+      const temp = newLoreExamples[index];
+      newLoreExamples[index] = newLoreExamples[newIndex];
+      newLoreExamples[newIndex] = temp;
+    }
+
+    newLoreData.examples = newLoreExamples;
+    newLore[currentContentType] = newLoreData;
+    setLore(newLore);
+  };
+
   return (
     <div className="view">
       <div className={"importExportButtons"}>
@@ -222,26 +292,25 @@ function Ingredients({
           );
         })}
         <Context
-          data={ingredients ? ingredients[dataType] : []}
+          data={lore ? lore : []}
           contextTypes={contextTypes}
           currentContentType={currentContentType}
           setCurrentContentType={setCurrentContentType}
         />
         <ListBox
-          type={dataType}
+          type={currentContentType}
           data={
-            ingredients && ingredients[dataType]
-              ? ingredients[dataType][currentContentType]
+            lore && lore[currentContentType]
+              ? lore[currentContentType].examples
               : []
           }
           header={dataType}
-          updateLocation={(up) => moveEntity(up)}
           addEntityCallback={(data, setGenerating) => {
-            addEntityCallback(dataType, ingredients, setGenerating);
+            addLore(currentContentType, setGenerating);
           }}
-          editEntityCallback={(data) => editEntityCallback(data)}
-          deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
-          moveEntityCallback={(entity, up) => moveEntity(entity, up)}
+          editEntityCallback={(lore, index) => editLore(lore, index)}
+          deleteEntityCallback={(lore, index) => deleteLore(lore, index)}
+          moveEntityCallback={(entity, up) => moveLore(entity, up)}
           showLabels={true}
           handleImport={importEntityList}
         />

@@ -112,7 +112,6 @@ function App() {
 
   useEffect(() => {
     loadBaseData(baseData, false, !baseData.base);
-    console.log("baseData", baseData);
   }, []);
 
   // useEffect(() => {
@@ -142,9 +141,8 @@ function App() {
   };
 
   const loadBaseData = async (data, callback, fromUrl = true) => {
-    const loreHeader = "export let lore = " + JSON.stringify(lore) + "\n";
+    const loreHeader = "export let lore = " + JSON.stringify(loreData) + "\n";
     // convert to string
-    console.log("loreHeaderString:", loreHeader);
     const murmurHashImportString = `import {murmurhash3} from './murmurhash3.js';`;
 
     let content, displayContent;
@@ -166,7 +164,6 @@ function App() {
         // separate the content into an array of lines
         const lines = content.split("\n");
         // get the index of any line that includes the text LORE_HEADER
-        console.log("content is", content);
 
         if (content.includes(murmurHashImportString)) {
           content = content.replace(murmurHashImportString, murmurhash3String);
@@ -188,7 +185,6 @@ function App() {
           // replace that line with loreHeader
           displayContent = content;
           content = loreHeader + content;
-          console.log(content);
         }
 
         // convert content back to a blob with the x-javascript base64 type
@@ -251,6 +247,7 @@ function App() {
   };
 
   const handleExport = (type) => {
+    console.log("exporting:", type);
     const json = JSON.stringify(
       type === "ingredients" ? ingredients : loreData
     );
@@ -327,6 +324,8 @@ function App() {
           setBaseData={setBaseData}
           openErrorDialog={openErrorDialog}
           forceUpdate={_forceUpdate}
+          lore={loreData}
+          setLore={setLoreData}
         />
       )}
       {errorDialogData &&

@@ -38,7 +38,6 @@ function LoreBase({
   setLoreData,
   exportHandler,
   importHandler,
-  lore_header,
 }) {
   const [editorCode, setEditorCode] = useState("");
   const [currentContentType, setCurrentContentType] = useState(
@@ -51,7 +50,7 @@ function LoreBase({
     const codeEditorData = localStorage.getItem("codeEditorData");
     if (codeEditorData) {
       setEditorCode(codeEditorData);
-      setLoreHeader(lore_header);
+      setLoreHeader(loreHeader);
     } else {
       loadBaseData(baseData);
     }
@@ -60,9 +59,12 @@ function LoreBase({
   // editorCode is a string
   // if the user presses ctrl + s, create a new file from the editorCode text, get the URI and call setBaseData
   const handleSave = async () => {
-    const blob = new Blob([loreHeader + "\n" + editorCode], {
-      type: "application/x-javascript;base64",
-    });
+    const blob = new Blob(
+      ["export let lore = " + JSON.stringify(loreData) + "\n" + editorCode],
+      {
+        type: "application/x-javascript;base64",
+      }
+    );
     const fileUri = await fileToDataUri(blob);
     const importedFile = await import(fileUri);
     setBaseData({
@@ -87,6 +89,7 @@ function LoreBase({
   };
 
   const saveLoreFile = async () => {
+    console.log("save_lore_file");
     const file = await handleSave();
     // save the file to disk as lore-model.js
     const link = document.createElement("a");
