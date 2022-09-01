@@ -47,6 +47,10 @@ export async function query(openai_api_key, params = {}) {
       requestOptions
     );
     const data = await response.json();
+    if (!data.choices || data.choices?.length <= 0) {
+      return "";
+    }
+
     return data.choices[0].text;
   } catch (e) {
     console.log(e);
