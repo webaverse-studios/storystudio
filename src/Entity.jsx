@@ -278,7 +278,7 @@ const Entity = ({
           const element = document.createElement("a");
           const file = new Blob([data], { type: "application/text" });
           element.href = URL.createObjectURL(file);
-          element.download = "lore" + index + "_" + Date.now() + ".mb";
+          element.download = "lore" + index + "_" + Date.now() + ".md";
           document.body.appendChild(element);
           element.click();
           element.remove();
