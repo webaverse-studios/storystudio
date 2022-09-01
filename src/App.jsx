@@ -313,6 +313,7 @@ function App() {
           setBaseData={setBaseData}
           loreFiles={loreFiles}
           setLoreFiles={setLoreFiles}
+          openErrorDialog={openErrorDialog}
         />
       ) : (
         <Ingredients

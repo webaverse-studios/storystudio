@@ -279,7 +279,12 @@ const Entity = ({
           const file = new Blob([json], { type: "application/json" });
           element.href = URL.createObjectURL(file);
           element.download =
-            data["name"] + "_" + new Date().getTime() + ".json";
+            (!data["name"] || data["name"] === undefined
+              ? "lore"
+              : data["name"]) +
+            "_" +
+            new Date().getTime() +
+            ".json";
           document.body.appendChild(element);
           element.click();
           element.remove();
