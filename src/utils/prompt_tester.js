@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { Configuration, OpenAIApi } from "openai";
-import { lore } from "../../public/lore_header.js";
+import { lore } from "../constants.js";
 
 const defaultOpenAIParams = {
   model: "davinci",
@@ -42,35 +42,28 @@ async function query(openai, params) {
   }
 }
 
-async function test_prompt(times, openai, params) {
+async function test_prompt(times, openai, type, params) {
   const results = [];
   for (let i = 0; i < times; i++) {
+    params.prompt = createPrompt(type);
     console.log("Epoch: ", i);
     const result = await query(openai, params);
-    results.push(result);
+    results.push({ epoch: i, prompt: params.prompt, result });
   }
   return results;
 }
 
-const createScenePrompt = () => `\
-${lore.scene.prompt}
+const createPrompt = (type) => `\
+${lore[type].prompt}
 ${shuffleArray(lore.scene.examples).join("\n")}
-Location:`;
-
-const createCharacterPrompt = () => `\
-${lore.character.prompt}
-${shuffleArray(lore.character.examples).join(`\n`)}
-Character:`;
-
-const createObjectPrompt = () => `\
-${lore.object.prompt}
-${shuffleArray(lore.object.examples).join(`\n`)}
-Object:`;
+prompt:`;
 
 const run = async () => {
   const myArgs = process.argv.slice(2);
+  const type = myArgs[0];
+  const epochs = parseInt(myArgs[1] ?? "10");
+  const key = myArgs[2];
 
-  const key = "";
   const configuration = new Configuration({ apiKey: key });
   const openai = new OpenAIApi(configuration);
   const _data = defaultOpenAIParams;
@@ -85,39 +78,12 @@ const run = async () => {
     best_of,
   } = _data;
 
-  let prompt = null;
-  let stop = [];
+  console.log("type:", type, "epochs:", epochs);
 
-  const type = myArgs[0];
-  const epochs = parseInt(myArgs[1] ?? "10");
-
-  switch (type) {
-    case "scene":
-      prompt = createScenePrompt();
-      stop = [".\n", "Location:"];
-      break;
-
-    case "character":
-    case "mob":
-    case "npc":
-      prompt = createCharacterPrompt();
-      stop = [".,\n", "Character:"];
-      break;
-    case "object":
-      prompt = createObjectPrompt();
-      stop = [".,\n", "Object:"];
-      break;
-  }
-
-  if (!prompt || prompt?.length <= 0 || stop.length <= 0) {
-    console.log("invalid type!");
-    return;
-  }
-
-  const res = await test_prompt(epochs, openai, {
+  const res = await test_prompt(epochs, openai, type, {
     model,
-    prompt,
-    stop,
+    prompt: "",
+    stop: [".\n", "prompt:"],
     top_p,
     frequency_penalty,
     presence_penalty,
