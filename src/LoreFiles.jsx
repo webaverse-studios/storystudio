@@ -13,12 +13,19 @@ function LoreFiles({
   setLoreFiles,
   exportHandler,
   importHandler,
+  openErrorDialog,
 }) {
   const addEntityCallback = async (setGenerating) => {
     setGenerating(true);
     //console.log("calling baseData", baseData);
     // generate new using openai callback
-    let entity = await generate("lore", ingredients, baseData);
+    let entity = await generate(
+      "lore",
+      ingredients,
+      baseData,
+      openErrorDialog,
+      downloadFileHandler
+    );
     if (!entity) {
       console.error("could not generate entity");
       setGenerating(false);
@@ -129,6 +136,16 @@ function LoreFiles({
     const newData = [...loreFiles];
     newData.unshift(json);
     setLoreFiles(newData);
+  };
+
+  const downloadFileHandler = (data, fileName) => {
+    const element = document.createElement("a");
+    const file = new Blob([data], { type: "application/text" });
+    element.href = URL.createObjectURL(file);
+    element.download = fileName;
+    document.body.appendChild(element);
+    element.click();
+    element.remove();
   };
 
   return (

@@ -44,13 +44,18 @@ export let availableActions = [
   "none",
 ];
 
-export const generateLore = async (data, module, openaiConfig) => {
+export const generateLore = async (
+  data,
+  module,
+  openaiConfig,
+  downloadFileHandler
+) => {
   // const { settings, characters, objects, messages, dstCharacter } = data;
 
   // first decide what the scene is about
   // get a setting from the array provided by data.settings
-  const setting =
-    data.settings[Math.floor(Math.random() * data.settings.length)];
+  console.log(data);
+  const setting = data.setting[Math.floor(Math.random() * data.setting.length)];
 
   // decide on what is happening in this scene
   const encounterTypes = [
@@ -78,19 +83,19 @@ export const generateLore = async (data, module, openaiConfig) => {
   const numberOfParty = 2;
 
   // get numberOfMobs mobs from the array provided by data.mobs
-  const mobs = data.mobs.slice(0, numberOfMobs);
+  const mobs = data.mob ? data.mob.slice(0, numberOfMobs) : [];
   console.log("mobs are", mobs);
 
   // get numberOfNpcs npcs from the array provided by data.npcs
-  const npcs = data.npcs.slice(0, numberOfNpcs);
+  const npcs = data.npc ? data.npc.slice(0, numberOfNpcs) : [];
   console.log("npcs are", npcs);
 
   // get numberOfObjects objects from the array provided by data.objects
-  const objects = data.objects.slice(0, numberOfObjects);
+  const objects = data.object ? data.object.slice(0, numberOfObjects) : [];
   console.log("objects are", objects);
 
   // get numberOfParty party from the array provided by data.party
-  const party = data.party.slice(0, numberOfParty);
+  const party = data.party ? data.party.slice(0, numberOfParty) : [];
   console.log("party is", party);
 
   // combine npcs and party into a single array called characters
@@ -303,8 +308,10 @@ ${characters
   .map(
     (c) =>
       `${c.name}\n${c.bio}\n${
-        c.Inventory.length > 0 && `Inventory:\n`
-      }${c.Inventory.map((obj) => `${obj.name}`).join(", ")}`
+        c.Inventory?.length > 0 && `Inventory:\n`
+      }${(c.Inventory ? c.Inventory : [])
+        .map((obj) => `${obj.name}`)
+        .join(", ")}`
   )
   .join("\n\n")}\
 ${objects.length > 0 ? "\n\n# Objects" + "\n\n" : ""}\
@@ -320,16 +327,17 @@ ${
   console.log(loreFileOutput);
 
   // check if lorefiles folder exists, if not, create it
-  if (!fs.existsSync("lorefiles")) {
+  /*if (!fs.existsSync("lorefiles")) {
     fs.mkdirSync("lorefiles");
-  }
+  }*/
 
   // write prompt to lorefiles/<current date>.md
 
-  fs.writeFile(`lorefiles/${Date.now()}.md`, loreFileOutput, (err) => {
+  downloadFileHandler(loreFileOutput, "lorefile_" + Date.now() + ".md");
+  /*fs.writeFile(`lorefiles/${Date.now()}.md`, loreFileOutput, (err) => {
     if (err) throw err;
     console.log("file saved");
-  });
+  });*/
 
   const legalActions = [""];
 
@@ -441,7 +449,7 @@ async function generateCharacter() {
   }
 
   const inventory = "";
-    //lines.length > 2 ? lines[2].replace("Inventory: ", "").trim() : "";
+  //lines.length > 2 ? lines[2].replace("Inventory: ", "").trim() : "";
 
   return {
     name: lines[0].trim().replaceAll('"', ""),
@@ -472,7 +480,13 @@ async function generateObject() {
   };
 }
 
-export async function generate(type, data, baseData, openErrorDialog) {
+export async function generate(
+  type,
+  data,
+  baseData,
+  openErrorDialog,
+  downloadFileHandler
+) {
   console.log("generating...");
   console.log(type, data, baseData);
   // if (
@@ -527,7 +541,12 @@ export async function generate(type, data, baseData, openErrorDialog) {
       res.inventory = resp.inventory;
       break;
     case "lore":
-      resp = await generateLore(data, baseData.module);
+      resp = await generateLore(
+        data,
+        baseData.module,
+        null,
+        downloadFileHandler
+      );
       return resp;
     default:
       openErrorDialog("Unknown type " + type);
