@@ -47,16 +47,12 @@ function App() {
       : lore
   );
   const [loreHeader, setLoreHeader] = useState("");
-  const [baseData, setBaseData] = useState(
-    localStorage.getItem("baseData")
-      ? decompressObject(localStorage.getItem("baseData"))
-      : {
-          base: null,
-          url: "./lore-model.js", // "https://webaverse.github.io/lore/lore-model.js",
-          type: "url",
-          module: {},
-        }
-  );
+  const [baseData, setBaseData] = useState({
+    base: null,
+    url: "./lore-model.js", // "https://webaverse.github.io/lore/lore-model.js",
+    type: "url",
+    module: {},
+  });
   const [errorDialogData, setErrorDialogData] = useState({
     on: false,
     msg: "",
@@ -96,6 +92,10 @@ function App() {
   };
 
   useEffect(() => {
+    localStorage.setItem("loreFiles", compressObject(loreFiles));
+  }, [loreFiles]);
+
+  useEffect(() => {
     const dm = localStorage.getItem("darkMode");
     if (dm && dm?.length > 0) {
       setDarkMode(dm.toLocaleLowerCase().trim() === "true");
@@ -107,11 +107,12 @@ function App() {
       setOpenAIPArams(JSON.parse(oap));
     }
 
-    localStorage.setItem("loreFiles", compressObject(loreFiles));
-  }, [loreFiles]);
+    const data = localStorage.getItem("baseData")
+      ? JSON.parse(localStorage.getItem("baseData"))
+      : baseData;
 
-  useEffect(() => {
-    loadBaseData(baseData, false, !baseData.base);
+    console.log("loaded default data");
+    loadBaseData(data, false, !baseData.base);
   }, []);
 
   // useEffect(() => {
@@ -192,6 +193,7 @@ function App() {
         }
 
         // convert content back to a blob with the x-javascript base64 type
+        console.log("CONTENT1", content);
         blob = new Blob([content], {
           type: "application/x-javascript;base64",
         });
@@ -209,12 +211,22 @@ function App() {
           console.log("updated lore data");
         }
 
+        console.log("baseData set to2", importedFile);
         setBaseData({
           base: fileUri,
           type: "file",
           module: importedFile,
           url: data.url,
         });
+        localStorage.setItem(
+          "baseData",
+          JSON.stringify({
+            base: fileUri,
+            type: "file",
+            module: "",
+            url: data.url,
+          })
+        );
         end();
       };
     } else {
@@ -257,18 +269,31 @@ function App() {
       const fileUri = await fileToDataUri(blob);
       const importedFile = await import(fileUri);
       const firstLine = content.split("\n")?.[0];
+      console.log("CONTENT2", importedFile);
 
       if (firstLine && firstLine.startsWith("export let lore = ")) {
         const json = firstLine.replace("export let lore = ", "");
         const obj = JSON.parse(json);
         setLoreData(obj);
       }
+      console.log("baseData set to1", importedFile);
       setBaseData({
         base: fileUri,
         type: "file",
         module: importedFile,
         url: file.name,
       });
+      console.log(baseData.module);
+      localStorage.setItem(
+        "baseData",
+        JSON.stringify({
+          base: fileUri,
+          type: "file",
+          module: "",
+          url: file.name,
+        })
+      );
+      console.log("json form:", JSON.stringify(baseData));
       end();
     }
   };

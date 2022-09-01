@@ -33,6 +33,7 @@ function Ingredients({
     // generate new using openai callback
     let entity = null;
     try {
+      console.log(baseData)
       entity = await generate(entityType, data, baseData, openErrorModal, lore);
     } catch (e) {
       console.log("error", e);
