@@ -1014,7 +1014,7 @@ export async function generateCharacter(generateFn) {
   };
 }
 
-export async function generateReactions(generateFn, name) {
+export async function generateReaction(generateFn, name) {
   const reactionsPrompt = `\
   ${lore["reactions"].prompt}
   ${shuffleArray(lore["reactions"].examples).join("\n")}
@@ -1054,70 +1054,85 @@ export async function generateObject(generateFn) {
   };
 }
 
+<<<<<<< HEAD
 export async function generateObjectComment(object, generateFn) {
   const objectCommentPrompt = `\
   ${lore["object"].prompt}
   ${shuffleArray(lore["object"].examples).join("\n")}
   ${object?.length > 0 ? object : "prompt"}:`;
+=======
+const commentPrompt = `Comment
+Zeus:(action: clap)(emote:happy)(message:What are you doing in my garden?!)(name:Artemis)(object:Tree)(target:Thunder)
+Spiderman:(action: swing)(emote:excited)(message:Let's go faster)(name:Flash)(object:Building)(target:Spider web)
+Zein:(action: sing)(emote:anxious)(message:And now together!)(name:People)(object:Microphone)(target:Stadium)
+Sandra:(action: soush)(emote:frigthened)(message:What are you doing in my house, I'M THE OWNER)(name:People)(object:Knife)(target:Rest People)
+Jack:(action: cut)(emote:bored)(message:Another tree to the pile)(name:Jack)(object:Chainsaw)(target:Tree)
+Halley:(action: smack)(emote:angry)(message:How could you do that to me?)(name:John)(object:Hand)(target:John)
+Umber:(action: fall)(emote:confused)(message:What just happened?)(name:Umber)(object:Car)(target:Car)
+Gennessee:(action: study)(emote:neutral)(message:I will finish the whole book today)(name:Tiberius)(object:Book)(target:Tiberius)
+Luna:(action: dazzled)(emote:happy)(message:What a beautiful sky!)(name:Sky)(object:Self)(target:Moon)`;
+
+export async function generateObjectComment(generateFn, object) {
+  const objectCommentPrompt = `\
+  ${commentPrompt}
+  ${object?.length > 0 ? object : "House"}:`;
+>>>>>>> b6b178bb3deb1f0a2b600fb847bec9dde3141c82
 
   const resp = await generateFn(objectCommentPrompt, [
     "\n",
-    object?.length > 0 ? object : "prompt:",
+    object?.length > 0 ? object : "House:",
   ]);
 
-  if (resp?.startsWith(object?.length > 0 ? object : "prompt")) {
-    return resp.replace(object?.length > 0 ? object : "prompt", "").trim();
+  if (resp?.startsWith(object?.length > 0 ? object : "House:")) {
+    return resp.replace(object?.length > 0 ? object : "House:", "").trim();
   } else {
     return resp;
   }
 }
 export async function generateNPCComment(npc, generateFn) {
   const objectCommentPrompt = `\
-  ${lore["objectComment"].prompt}
-  ${shuffleArray(lore["objectComment"].examples).join("\n")}
-  ${npc?.length > 0 ? npc : "prompt"}:`;
+  ${commentPrompt}
+  ${npc?.length > 0 ? npc : "Jake"}:`;
 
   const resp = await generateFn(objectCommentPrompt, [
     "\n",
-    npc?.length > 0 ? npc : "prompt:",
+    npc?.length > 0 ? npc : "Jake:",
   ]);
 
-  if (resp?.startsWith(npc?.length > 0 ? npc : "prompt")) {
-    return resp.replace(npc?.length > 0 ? npc : "prompt", "").trim();
+  if (resp?.startsWith(npc?.length > 0 ? npc : "Jake:")) {
+    return resp.replace(npc?.length > 0 ? npc : "Jake:", "").trim();
   } else {
     return resp;
   }
 }
 export async function generateMobComment(mob, generateFn) {
   const mobCommentPrompt = `\
-  ${lore["mobComment"].prompt}
-  ${shuffleArray(lore["mobComment"].examples).join("\n")}
-  mob:`;
+  ${commentPrompt}
+  ${mob?.length > 0 ? mob : "Jake"}:`;
 
   const resp = await generateFn(mobCommentPrompt, [
     "\n",
-    mob?.length > 0 ? mob : "prompt:",
+    mob?.length > 0 ? mob : "Jake:",
   ]);
 
-  if (resp?.startsWith(mob?.length > 0 ? mob : "prompt")) {
-    return resp.replace(mob?.length > 0 ? mob : "prompt", "").trim();
+  if (resp?.startsWith(mob?.length > 0 ? mob : "Jake:")) {
+    return resp.replace(mob?.length > 0 ? mob : "Jake:", "").trim();
   } else {
     return resp;
   }
 }
 export async function generateLoadingComment(scene, generateFn) {
   const loadingCommentPrompt = `\
-  ${lore["loadingComment"].prompt}
-  ${shuffleArray(lore["loadingComment"].examples).join("\n")}
-  scene:`;
+  ${commentPrompt}
+  ${scene?.length > 0 ? scene : "Lake"}:`;
 
   const resp = await generateFn(loadingCommentPrompt, [
     "\n",
-    scene?.length > 0 ? scene : "prompt:",
+    scene?.length > 0 ? scene : "Lake:",
   ]);
 
-  if (resp?.startsWith(scene?.length > 0 ? scene : "prompt")) {
-    return resp.replace(scene?.length > 0 ? scene : "prompt", "").trim();
+  if (resp?.startsWith(scene?.length > 0 ? scene : "Lake:")) {
+    return resp.replace(scene?.length > 0 ? scene : "Lake:", "").trim();
   } else {
     return resp;
   }
@@ -1177,18 +1192,57 @@ export async function generateCutscene(generateFn) {
     return resp;
   }
 }
-export async function generateQuest(generateFn) {
-  const questPrompt = `\
-  ${lore["quest"].prompt}
-  ${shuffleArray(lore["quest"].examples).join("\n")}
-  prompt:`;
 
-  const resp = await generateFn(questPrompt, makeIngredientStop());
+const questPrompt = `\
+Utopia: Stay for a day inside, while bothering others|Reward: 100xp.
+Dreamland: Try to escape dreamland, without destroying others' dreams|Reward: 200xp.
+Hellwhole: Save your loved ones, surviving the wrath of the demons|Reward: 5000xp
+Dark Forest: Survive the night in the dark forest|Reward: 1000xp.
+Devastated Building: Get outside, without getting hurt|Reward: 500xp.
+Tomb:Escape from the Dead|Reward: 10000xp.
+Space Station: Survive an attack by aliens, while trying to repair the station|Reward: 2000xp.
+Escape The Maze: Escape the maze, while avoiding the traps|Reward: 1500xp.
+The Island: Get off the island, without getting lost|Reward: 4000xp.
+The City: Survive a day in the city, without getting lost|Reward: 3000xp.
+The Mountain: Get to the top of the mountain, without getting lost|Reward: 6000xp.
+The Desert: Survive a day in the desert, without getting lost|Reward: 4000xp.
+The Jungle: Get through the jungle, without getting lost|Reward: 5000xp.
+The Ocean: Survive a day in the ocean, without getting lost|Reward: 3000xp.
+The North Pole: Survive a day at the North Pole, without getting lost|Reward: 7000xp.
+The South Pole: Survive a day at the South Pole, without getting lost|Reward: 8000xp.
+The Moon: Survive a day on the moon, without getting lost|Reward: 9000xp.
+The Sun: Survive a day on the sun, without getting burned|Reward: 10000xp.
+`;
+export async function generateQuest(generateFn, scene) {
+  const _questPrompt = `\
+  ${questPrompt}
+  ${scene?.length > 0 ? scene : "Woodland"}:`;
 
-  if (resp?.startsWith("prompt: ")) {
-    return resp.replace("prompt: ", "").trim();
+  const resp = await generateFn(_questPrompt, [
+    "\n",
+    scene?.length > 0 ? scene : "Woodland",
+  ]);
+
+  if (resp?.startsWith(scene?.length > 0 ? scene : "Woodland:")) {
+    const data = resp
+      .replace(scene?.length > 0 ? scene : "Woodland:", "")
+      .trim();
+    const [quest, reward] = data.split("|");
+    return {
+      location: scene?.length > 0 ? scene : "Woodland",
+      quest: quest?.trim(),
+      reward: reward?.trim(),
+    };
   } else {
-    return resp;
+    const data = resp
+      .replace(scene?.length > 0 ? scene : "Woodland:", "")
+      .trim();
+    const [quest, reward] = data.split("|");
+    return {
+      location: scene?.length > 0 ? scene : "Woodland",
+      quest: quest?.trim(),
+      reward: reward?.trim(),
+    };
   }
 }
 

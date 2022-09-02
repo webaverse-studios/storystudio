@@ -37,8 +37,13 @@ const getRandomEntity = (data, type) => {
 
   const index = Math.floor(Math.random() * data[type].length);
   const name = data[type][index].name;
-  if (type === "scene") {
+  if (type === "setting") {
     return name;
+  } else if (name.startsWith('"')) {
+    const si = name.indexOf('"', 1);
+    const res = name.substring(0, si);
+    const res2 = res.substring(1);
+    return res2;
   }
 
   const split = name?.split(" ");
@@ -104,8 +109,9 @@ export async function generate(type, data, baseData, openErrorDialog) {
         makeGenerateFn(),
         getRandomEntity(data, "object")
       );
+      console.log("RESPPP:", resp);
       if (!resp || resp?.length <= 0) {
-        return generate("reactions", data, baseData, openErrorDialog);
+        return generate("objectComment", data, baseData, openErrorDialog);
       }
       return { description: resp };
     case "npcComment":
@@ -114,7 +120,7 @@ export async function generate(type, data, baseData, openErrorDialog) {
         getRandomEntity(data, "npc")
       );
       if (!resp || resp?.length <= 0) {
-        return generate("reactions", data, baseData, openErrorDialog);
+        return generate("npcComment", data, baseData, openErrorDialog);
       }
       return { description: resp };
     case "mobComment":
@@ -123,7 +129,7 @@ export async function generate(type, data, baseData, openErrorDialog) {
         getRandomEntity(data, "mob")
       );
       if (!resp || resp?.length <= 0) {
-        return generate("reactions", data, baseData, openErrorDialog);
+        return generate("mobComment", data, baseData, openErrorDialog);
       }
       return { description: resp };
     case "loadingComment":
@@ -132,7 +138,7 @@ export async function generate(type, data, baseData, openErrorDialog) {
         getRandomEntity(data, "scene")
       );
       if (!resp || resp?.length <= 0) {
-        return generate("reactions", data, baseData, openErrorDialog);
+        return generate("loadingComment", data, baseData, openErrorDialog);
       }
       return { description: resp };
     case "banter":
@@ -149,18 +155,40 @@ export async function generate(type, data, baseData, openErrorDialog) {
     case "loreExposition":
       resp = await module.generateLoreExposition(makeGenerateFn());
       if (!resp || resp?.length <= 0) {
-        return generate("reactions", data, baseData, openErrorDialog);
+        return generate("loreExposition", data, baseData, openErrorDialog);
       }
       return { description: resp };
     case "rpgDialogue":
-      resp = await module.generateRPGDialogue(makeGenerateFn());
+      const dstChar =
+        data["character"][Math.floor(Math.random() * data["character"].length)];
+      let srcChar =
+        data["character"][Math.floor(Math.random() * data["character"].length)];
+      while (srcChar === dstChar) {
+        srcChar =
+          data["character"][
+            Math.floor(Math.random() * data["character"].length)
+          ];
+      }
+
+      const chatMessages = await module.generateChatMessage(
+        [],
+        srcChar,
+        makeGenerateFn()
+      );
+      console.log(1);
+      resp = await module.generateDialogueOptions(
+        chatMessages,
+        dstChar,
+        makeGenerateFn()
+      );
+      console.log(2);
       if (!resp || resp?.length <= 0) {
-        return generate("reactions", data, baseData, openErrorDialog);
+        return generate("rpgDialogue", data, baseData, openErrorDialog);
       }
       return { description: resp };
     case "reactions":
       console.log(module);
-      resp = await module.generateReactions(
+      resp = await module.generateReaction(
         makeGenerateFn(),
         getRandomEntity(data, "character")
       );
@@ -171,16 +199,17 @@ export async function generate(type, data, baseData, openErrorDialog) {
     case "cutscenes":
       resp = await module.generateCutscenes(makeGenerateFn());
       if (!resp || resp?.length <= 0) {
-        return generate("reactions", data, baseData, openErrorDialog);
+        return generate("cutscenes", data, baseData, openErrorDialog);
       }
       return { description: resp };
 
     case "quests":
-      resp = await module.generateQuests(makeGenerateFn());
-      if (!resp || resp?.length <= 0) {
-        return generate("reactions", data, baseData, openErrorDialog);
-      }
-      return { description: resp };
+      resp = await module.generateQuest(
+        makeGenerateFn(),
+        getRandomEntity(data, "setting")
+      );
+      console.log("QUEST:", resp);
+      return resp;
     default:
       openErrorDialog("Unknown type " + type);
       return null;
@@ -213,7 +242,6 @@ export async function query(openai_api_key, params = {}) {
     body: JSON.stringify(params),
   };
   try {
-    console.log(params.prompt);
     const response = await fetch(
       "https://api.openai.com/v1/completions",
       requestOptions
@@ -269,6 +297,7 @@ export async function openaiRequest(key, prompt, stop) {
 
 export function makeGenerateFn() {
   return async (prompt, stop) => {
+    console.log("STOP:", stop);
     return await openaiRequest(getOpenAIKey(), prompt, stop);
   };
 }

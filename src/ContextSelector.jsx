@@ -6,7 +6,6 @@ const ContextSelector = ({
   currentContentType,
   setCurrentContentType,
 }) => {
-  console.log(data);
   return (
     <div className="sectionWrapper context_wrapped">
       <div className="context-group">
@@ -24,8 +23,7 @@ const ContextSelector = ({
             >
               {type}|
               {(data[type] && data[type].length) ||
-                (data[type]["examples"] &&
-                  data[type]["examples"].length)}
+                (data[type]["examples"] && data[type]["examples"].length)}
             </button>
           );
         })}
