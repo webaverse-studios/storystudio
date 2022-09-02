@@ -538,7 +538,8 @@ const makeOptionsPrompt = ({
   nextCharacter,
 }) => {
   return `\
-${actionsExamples}
+${lore.actions.prompt}
+${lore.actions.examples.join("\n")}
 
 ${messages
   .map((message) => {
@@ -1092,7 +1093,7 @@ export async function generateObjectComment(generateFn, object) {
     return { name: object?.length > 0 ? object : "House:", comment: resp };
   }
 }
-export async function generateNPCComment(generateFn, npc) {
+export async function generateNPCComment(npc, generateFn) {
   const objectCommentPrompt = `\
   ${commentPrompt}
   ${npc?.length > 0 ? npc : "Jake"}:`;
@@ -1111,7 +1112,7 @@ export async function generateNPCComment(generateFn, npc) {
     return { name: npc?.length > 0 ? npc : "Jake", comment: resp };
   }
 }
-export async function generateMobComment(generateFn, mob) {
+export async function generateMobComment(mob, generateFn) {
   const mobCommentPrompt = `\
   ${commentPrompt}
   ${mob?.length > 0 ? mob : "Jake"}:`;
@@ -1130,7 +1131,7 @@ export async function generateMobComment(generateFn, mob) {
     return { name: mob?.length > 0 ? mob : "Jake", comment: resp };
   }
 }
-export async function generateLoadingComment(generateFn, scene) {
+export async function generateLoadingComment(scene, generateFn) {
   const loadingCommentPrompt = `\
   ${commentPrompt}
   ${scene?.length > 0 ? scene : "Lake"}:`;
@@ -1149,7 +1150,7 @@ export async function generateLoadingComment(generateFn, scene) {
     return { name: scene?.length > 0 ? scene : "Lake:", comment: resp };
   }
 }
-export async function generateBanter(generateFn, name) {
+export async function generateBanter(name, generateFn) {
   const banterPrompt = `\
   ${lore["battle"].prompt}
   ${shuffleArray(lore["battle"].examples).join("\n")}
@@ -1324,11 +1325,7 @@ export async function generateSelectTargetComment(
   return response;
 }
 
-export async function generateSelectCharacterComment({
-  name,
-  description,
-  generateFn,
-}) {
+export async function generateSelectCharacterComment({name, description}, generateFn) {
   const prompt = makeSelectCharacterPrompt({
     name,
     description,
@@ -1339,7 +1336,7 @@ export async function generateSelectCharacterComment({
   return response2;
 }
 
-export async function generateChatMessage(messages, nextCharacter, generateFn) {
+export async function generateChatMessage({messages, nextCharacter}, generateFn) {
   const prompt = makeChatPrompt({
     messages,
     nextCharacter,
@@ -1373,4 +1370,19 @@ export async function generateCharacterIntroPrompt({ name, bio }, generateFn) {
   let response = await generateFn(prompt, stop);
   const response2 = parseCharacterIntroResponse(response);
   return response2;
+}
+
+// A reaction to the events happening in the scene
+export async function generateReaction(){
+  return console.log('not implemented')
+}
+
+// Construct an example of exposition, like "An ancient survival handbook, printed on paper. It has insructions for saving the environment with the power of nature...""
+export async function generateExposition(){
+  return console.log('not implemented')
+}
+
+// Generate a quest task outcome
+export async function generateQuestTask(){
+  return console.log('not implemented')
 }

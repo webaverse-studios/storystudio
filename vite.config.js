@@ -15,6 +15,8 @@ builtinsPlugin.name = 'builtins'; // required, see https://github.com/vitejs/vit
 
 const globalsPlugin = globals();
 globalsPlugin.name = 'globals'; // required, see https://github.com/vitejs/vite/issues/728
+const libMode = process.env.LIBRARY;
+
 
 // https://vitejs.dev/config/
 export default defineConfig(async (command) => {
@@ -23,22 +25,6 @@ export default defineConfig(async (command) => {
   });
 
   const returned = {
-    build: {
-      assetsInlineLimit: 65536,
-      lib: {
-        entry: path.resolve('./src/index.js'),
-        name: 'lore-engine',
-        fileName: (format) => `lore-engine.${format}.js`
-      },
-      rollupOptions: {
-        external: ['react', 'three', 'react-dom'],
-        output: {
-          globals: {
-            react: 'React'
-          }
-        }
-      }
-    },
     plugins: [react(),
     ],
     resolve: {
@@ -61,6 +47,25 @@ export default defineConfig(async (command) => {
         ],
       }
   };
+
+  if(libMode) {
+    returned.build = {
+      assetsInlineLimit: 65536,
+      lib: {
+        entry: path.resolve('./src/index.js'),
+        name: 'lore-engine',
+        fileName: (format) => `lore-engine.${format}.js`
+      },
+      rollupOptions: {
+        external: ['react', 'three', 'react-dom'],
+        output: {
+          globals: {
+            react: 'React'
+          }
+        }
+      }
+    }
+  }
 
   return returned;
 });
