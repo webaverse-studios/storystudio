@@ -30,6 +30,24 @@ export const generateVoice = async (character, text) => {
   return resp.data;
 };
 
+const getRandomEntity = (data, type) => {
+  if (!data || !data[type] || data[type].length === 0) {
+    return "";
+  }
+
+  const index = Math.floor(Math.random() * data[type].length);
+  const name = data[type][index].name;
+  if (type === "scene") {
+    return name;
+  }
+
+  const split = name?.split(" ");
+  if (split && split.length > 1) {
+    return split[0];
+  }
+  return "";
+};
+
 export async function generate(type, data, baseData, openErrorDialog) {
   const res = {
     type: type,
@@ -82,33 +100,49 @@ export async function generate(type, data, baseData, openErrorDialog) {
       console.log("resp is", resp);
       return resp;
     case "objectComment":
-      resp = await module.generateObjectComment(makeGenerateFn());
+      resp = await module.generateObjectComment(
+        makeGenerateFn(),
+        getRandomEntity(data, "object")
+      );
       if (!resp || resp?.length <= 0) {
         return generate("reactions", data, baseData, openErrorDialog);
       }
       return { description: resp };
     case "npcComment":
-      resp = await module.generateNPCComment(makeGenerateFn());
+      resp = await module.generateNPCComment(
+        makeGenerateFn(),
+        getRandomEntity(data, "npc")
+      );
       if (!resp || resp?.length <= 0) {
         return generate("reactions", data, baseData, openErrorDialog);
       }
       return { description: resp };
     case "mobComment":
-      resp = await module.generateMobComment(makeGenerateFn());
+      resp = await module.generateMobComment(
+        makeGenerateFn(),
+        getRandomEntity(data, "mob")
+      );
       if (!resp || resp?.length <= 0) {
         return generate("reactions", data, baseData, openErrorDialog);
       }
       return { description: resp };
     case "loadingComment":
-      resp = await module.generateLoadingComment(makeGenerateFn());
+      resp = await module.generateLoadingComment(
+        makeGenerateFn(),
+        getRandomEntity(data, "scene")
+      );
       if (!resp || resp?.length <= 0) {
         return generate("reactions", data, baseData, openErrorDialog);
       }
       return { description: resp };
     case "banter":
-      resp = await module.generateBanter(makeGenerateFn());
+      console.log("generating banter");
+      resp = await module.generateBanter(
+        makeGenerateFn(),
+        getRandomEntity(data, "character")
+      );
       if (!resp || resp?.length <= 0) {
-        return generate("reactions", data, baseData, openErrorDialog);
+        return generate("banter", data, baseData, openErrorDialog);
       }
       return { description: resp };
 
@@ -126,7 +160,10 @@ export async function generate(type, data, baseData, openErrorDialog) {
       return { description: resp };
     case "reactions":
       console.log(module);
-      resp = await module.generateReactions(makeGenerateFn());
+      resp = await module.generateReactions(
+        makeGenerateFn(),
+        getRandomEntity(data, "character")
+      );
       if (!resp || resp?.length <= 0) {
         return generate("reactions", data, baseData, openErrorDialog);
       }
@@ -149,7 +186,7 @@ export async function generate(type, data, baseData, openErrorDialog) {
       return null;
   }
 
-  res.image = await generateImage(resp.name);
+  res.image = ""; //await generateImage(resp.name);
 
   if (res.name?.length > 0) {
     res.id = makeId(5);
@@ -176,6 +213,7 @@ export async function query(openai_api_key, params = {}) {
     body: JSON.stringify(params),
   };
   try {
+    console.log(params.prompt);
     const response = await fetch(
       "https://api.openai.com/v1/completions",
       requestOptions
