@@ -65,7 +65,7 @@ function LoreBase({
       }
     );
     const fileUri = await fileToDataUri(blob);
-    const importedFile = await import(fileUri/* @vite-ignore */);
+    const importedFile = await import(fileUri /* @vite-ignore */);
     setBaseData({
       base: fileUri,
       type: "file",
@@ -100,7 +100,7 @@ function LoreBase({
   const addEntityCallback = async (entityType, data) => {
     setGenerating(true);
     console.log("baseData is", baseData);
-    let entity = await generate(entityType, data, baseData);
+    const entity = { info: "new " + entityType };
 
     if (!entity.id) {
       entity.id = makeId(5);
@@ -108,36 +108,63 @@ function LoreBase({
 
     const newEntityData = { ...loreData };
 
-    newEntityData[currentContentType].push(entity);
+    newEntityData[currentContentType].examples.unshift(entity);
 
     setLoreData(newEntityData);
     setGenerating(false);
   };
-  const deleteEntityCallback = (entity) => {
+  const deleteEntityCallback = (entity, index) => {
     const newData = { ...loreData };
-    newData[entity.type] = loreData[entity.type].filter(
-      (e) => e.id !== entity.id
-    );
+    if (index < 0) {
+      return;
+    }
+
+    newData[currentContentType].examples.splice(index, 1);
 
     setLoreData(newData);
   };
 
-  const editEntityCallback = (entity) => {
+  const moveEntityCallback = (data, up) => {
+    const newLore = { ...loreData };
+    const newLoreData = { ...newLore[currentContentType] };
+    const newLoreExamples = [...newLoreData.examples];
+
+    const index = newLoreExamples.findIndex((e) => e === data);
+    if (index === null || index === undefined || index <= -1) {
+      return;
+    }
+
+    if (newLoreExamples?.length <= 1) {
+      return;
+    }
+
+    if (index === 0 && up) {
+      newLoreExamples.push(newLoreExamples.shift());
+    } else if (index === newLoreExamples.length - 1 && !up) {
+      newLoreExamples.unshift(newLoreExamples.pop());
+    } else {
+      const newIndex = up ? index - 1 : index + 1;
+      if (newIndex > newLoreExamples.length - 1 || newIndex < 0) {
+        return;
+      }
+      const temp = newLoreExamples[index];
+      newLoreExamples[index] = newLoreExamples[newIndex];
+      newLoreExamples[newIndex] = temp;
+    }
+
+    newLoreData.examples = newLoreExamples;
+    newLore[currentContentType] = newLoreData;
+    setLoreData(newLore);
+  };
+
+  const editEntityCallback = (entity, index) => {
     let newData = { ...loreData };
 
-    if (entity.message !== undefined) {
-      newData[currentContentType];
-
-      const entityIndex = newData[currentContentType].findIndex(
-        (e) => e.id === entity.id
-      );
-      newData[currentContentType][entityIndex] = entity;
-    } else {
-      const entityIndex = newData[entity.type].findIndex(
-        (e) => e.id === entity.id
-      );
-      newData[entity.type][entityIndex] = entity;
+    if (index < 0) {
+      return;
     }
+
+    newData[currentContentType].examples[index] = entity;
 
     setLoreData(newData);
   };
@@ -190,8 +217,13 @@ function LoreBase({
                 console.log("addEntityCallback", data);
                 addEntityCallback(currentContentType, data);
               }}
-              editEntityCallback={(data) => editEntityCallback(data)}
-              deleteEntityCallback={(data) => deleteEntityCallback(data)}
+              editEntityCallback={(data, index) =>
+                editEntityCallback(data, index)
+              }
+              deleteEntityCallback={(data, index) =>
+                deleteEntityCallback(data, index)
+              }
+              moveEntityCallback={(data, up) => moveEntityCallback(data, up)}
               showLabels={true}
             />
           </div>
