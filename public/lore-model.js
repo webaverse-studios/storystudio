@@ -1053,9 +1053,9 @@ export async function generateCharacterIntroPrompt({name, bio}, generateFn) {
 }
 
 
-export async function generateObjectComment(){
+/*export async function generateObjectComment(){
   return console.log('not implemented')
-}
+}*/
 
 // A reaction to the events happening in the scene
 export async function generateReaction(){

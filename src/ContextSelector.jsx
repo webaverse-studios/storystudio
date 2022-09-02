@@ -25,7 +25,7 @@ const ContextSelector = ({
               {console.log(type)}
               {type}|
               {(data[type] && data[type].length) ||
-                (isEntitiesdata[type]["examples"] &&
+                (data[type]["examples"] &&
                   data[type]["examples"].length)}
             </button>
           );
