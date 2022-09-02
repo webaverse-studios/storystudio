@@ -3,7 +3,7 @@ import { Buffer } from "buffer";
 import {
   defaultOpenAIParams,
   stable_diffusion_url,
-  voice_url
+  voice_url,
 } from "../constants.js";
 import { getOpenAIKey, makeId } from "./utils.js";
 import { exampleLoreFiles } from "../exampleLoreFiles.js";
@@ -30,12 +30,7 @@ export const generateVoice = async (character, text) => {
   return resp.data;
 };
 
-export async function generate(
-  type,
-  data,
-  baseData,
-  openErrorDialog
-) {
+export async function generate(type, data, baseData, openErrorDialog) {
   const res = {
     type: type,
     name: "",
@@ -77,14 +72,78 @@ export async function generate(
       res.inventory = resp.inventory;
       break;
     case "lore":
-    const newData = {...data};
+      const newData = { ...data };
       // select a start character from the array provided by data.characters
-      const header = exampleLoreFiles[Math.floor(Math.random() * exampleLoreFiles.length)];
+      const header =
+        exampleLoreFiles[Math.floor(Math.random() * exampleLoreFiles.length)];
       newData.header = header;
       newData.setting = data.setting[0];
       resp = await module.generateLoreFile(newData, makeGenerateFn());
-      console.log('resp is', resp);
+      console.log("resp is", resp);
       return resp;
+    case "objectComment":
+      resp = await module.generateObjectComment(makeGenerateFn());
+      if (!resp || resp?.length <= 0) {
+        return generate("reactions", data, baseData, openErrorDialog);
+      }
+      return { description: resp };
+    case "npcComment":
+      resp = await module.generateNPCComment(makeGenerateFn());
+      if (!resp || resp?.length <= 0) {
+        return generate("reactions", data, baseData, openErrorDialog);
+      }
+      return { description: resp };
+    case "mobComment":
+      resp = await module.generateMobComment(makeGenerateFn());
+      if (!resp || resp?.length <= 0) {
+        return generate("reactions", data, baseData, openErrorDialog);
+      }
+      return { description: resp };
+    case "loadingComment":
+      resp = await module.generateLoadingComment(makeGenerateFn());
+      if (!resp || resp?.length <= 0) {
+        return generate("reactions", data, baseData, openErrorDialog);
+      }
+      return { description: resp };
+    case "banter":
+      resp = await module.generateBanter(makeGenerateFn());
+      if (!resp || resp?.length <= 0) {
+        return generate("reactions", data, baseData, openErrorDialog);
+      }
+      return { description: resp };
+
+    case "loreExposition":
+      resp = await module.generateLoreExposition(makeGenerateFn());
+      if (!resp || resp?.length <= 0) {
+        return generate("reactions", data, baseData, openErrorDialog);
+      }
+      return { description: resp };
+    case "rpgDialogue":
+      resp = await module.generateRPGDialogue(makeGenerateFn());
+      if (!resp || resp?.length <= 0) {
+        return generate("reactions", data, baseData, openErrorDialog);
+      }
+      return { description: resp };
+    case "reactions":
+      console.log(module);
+      resp = await module.generateReactions(makeGenerateFn());
+      if (!resp || resp?.length <= 0) {
+        return generate("reactions", data, baseData, openErrorDialog);
+      }
+      return { description: resp };
+    case "cutscenes":
+      resp = await module.generateCutscenes(makeGenerateFn());
+      if (!resp || resp?.length <= 0) {
+        return generate("reactions", data, baseData, openErrorDialog);
+      }
+      return { description: resp };
+
+    case "quests":
+      resp = await module.generateQuests(makeGenerateFn());
+      if (!resp || resp?.length <= 0) {
+        return generate("reactions", data, baseData, openErrorDialog);
+      }
+      return { description: resp };
     default:
       openErrorDialog("Unknown type " + type);
       return null;
@@ -126,10 +185,11 @@ export async function query(openai_api_key, params = {}) {
       return "";
     }
 
+    console.log("choices:", data.choices);
     return data.choices[0].text;
   } catch (e) {
     console.log(e);
-    return "";
+    return "returning from error";
   }
 }
 
@@ -172,5 +232,5 @@ export async function openaiRequest(key, prompt, stop) {
 export function makeGenerateFn() {
   return async (prompt, stop) => {
     return await openaiRequest(getOpenAIKey(), prompt, stop);
-  }
+  };
 }

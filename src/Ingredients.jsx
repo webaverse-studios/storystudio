@@ -25,7 +25,8 @@ function Ingredients({
     entityType,
     data,
     setGenerating,
-    second = false
+    second = false,
+    fromCurrentContentType = false
   ) => {
     setGenerating(true);
     console.log("entityType, data, baseData", entityType, data, baseData);
@@ -33,8 +34,14 @@ function Ingredients({
     // generate new using openai callback
     let entity = null;
     try {
-      console.log(baseData)
-      entity = await generate(entityType, data, baseData, openErrorModal, lore);
+      console.log(baseData);
+      entity = await generate(
+        fromCurrentContentType ? currentContentType : entityType,
+        data,
+        baseData,
+        openErrorModal,
+        lore
+      );
     } catch (e) {
       console.log("error", e);
       setGenerating(false);
@@ -65,8 +72,12 @@ function Ingredients({
         : newEntityData[entityType];
 
     console.log("array", array);
-    array.push(entity);
-    newEntityData[entityType] = array;
+    array.unshift(entity);
+    if (fromCurrentContentType) {
+      newEntityData[entityType][currentContentType] = array;
+    } else {
+      newEntityData[entityType] = array;
+    }
     console.log(
       "newEntityData[entityType][currentContentType]",
       newEntityData[entityType][currentContentType]
@@ -172,10 +183,10 @@ function Ingredients({
 
   const addLore = async (type, setGenerating) => {
     setGenerating(true);
-    console.log('lore is', lore);
+    console.log("lore is", lore);
     const newLore = { ...lore };
     const newLoreData = { ...newLore[type] };
-    console.log('newLoreData are', newLoreData);
+    console.log("newLoreData are", newLoreData);
     const newLoreExamples = [...newLoreData.examples];
     newLoreExamples.unshift("new " + type);
     newLoreData.examples = newLoreExamples;
@@ -183,60 +194,6 @@ function Ingredients({
     setLore(newLore);
 
     setGenerating(false);
-  };
-  const editLore = (entity, index) => {
-    const newLore = { ...lore };
-    const newLoreData = { ...newLore[currentContentType] };
-    const newLoreExamples = [...newLoreData.examples];
-
-    newLoreExamples[index] = entity;
-
-    newLoreData.examples = newLoreExamples;
-    newLore[currentContentType] = newLoreData;
-    setLore(newLore);
-  };
-  const deleteLore = (data, index) => {
-    const newLore = { ...lore };
-    const newLoreData = { ...newLore[currentContentType] };
-    const newLoreExamples = [...newLoreData.examples];
-
-    newLoreExamples.splice(index, 1);
-
-    newLoreData.examples = newLoreExamples;
-    newLore[currentContentType] = newLoreData;
-    setLore(newLore);
-  };
-  const moveLore = (data, up) => {
-    const newLore = { ...lore };
-    const newLoreData = { ...newLore[currentContentType] };
-    const newLoreExamples = [...newLoreData.examples];
-
-    const index = newLoreExamples.findIndex((e) => e === data);
-    if (index === null || index === undefined || index <= -1) {
-      return;
-    }
-
-    if (newLoreExamples?.length <= 1) {
-      return;
-    }
-
-    if (index === 0 && up) {
-      newLoreExamples.push(newLoreExamples.shift());
-    } else if (index === newLoreExamples.length - 1 && !up) {
-      newLoreExamples.unshift(newLoreExamples.pop());
-    } else {
-      const newIndex = up ? index - 1 : index + 1;
-      if (newIndex > newLoreExamples.length - 1 || newIndex < 0) {
-        return;
-      }
-      const temp = newLoreExamples[index];
-      newLoreExamples[index] = newLoreExamples[newIndex];
-      newLoreExamples[newIndex] = temp;
-    }
-
-    newLoreData.examples = newLoreExamples;
-    newLore[currentContentType] = newLoreData;
-    setLore(newLore);
   };
 
   return (
@@ -269,7 +226,7 @@ function Ingredients({
           );
         })}
         <Context
-          data={lore ? lore : []}
+          data={ingredients ? ingredients[dataType] : []}
           contextTypes={contextTypes}
           currentContentType={currentContentType}
           setCurrentContentType={setCurrentContentType}
@@ -277,17 +234,26 @@ function Ingredients({
         <ListBox
           type={currentContentType}
           data={
-            lore && lore[currentContentType]
-              ? lore[currentContentType].examples
+            ingredients &&
+            ingredients[dataType] &&
+            ingredients[dataType][currentContentType]
+              ? ingredients[dataType][currentContentType]
               : []
           }
           header={dataType}
+          updateLocation={(up) => moveEntity(up)}
           addEntityCallback={(data, setGenerating) => {
-            addLore(currentContentType, setGenerating);
+            addEntityCallback(
+              dataType,
+              ingredients,
+              setGenerating,
+              false,
+              true
+            );
           }}
-          editEntityCallback={(lore, index) => editLore(lore, index)}
-          deleteEntityCallback={(lore, index) => deleteLore(lore, index)}
-          moveEntityCallback={(entity, up) => moveLore(entity, up)}
+          editEntityCallback={(data) => editEntityCallback(data)}
+          deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
+          moveEntityCallback={(entity, up) => moveEntity(entity, up)}
           showLabels={true}
           handleImport={importEntityList}
         />

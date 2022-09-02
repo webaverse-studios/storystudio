@@ -373,7 +373,7 @@ function App() {
           setIngredients={setIngredients}
           baseData={baseData}
           setBaseData={setBaseData}
-          openErrorDialog={openErrorDialog}
+          openErrorModal={openErrorDialog}
           forceUpdate={_forceUpdate}
           lore={loreData}
           setLore={setLoreData}
