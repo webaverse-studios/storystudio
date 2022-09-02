@@ -823,7 +823,7 @@ export async function generateLocationComment(name, { settings, dstCharacter = n
   return response;
 }
 
-export async function generateSelectTargetComment(name, description, generateFn) {
+export async function generateSelectTargetComment({name, description}, generateFn) {
   const prompt = makeSelectTargetPrompt({
     name,
     description,
@@ -876,4 +876,46 @@ export async function generateCharacterIntroPrompt(name, bio, generateFn) {
   let response = await generateFn(prompt, stop);
   const response2 = parseCharacterIntroResponse(response);
   return response2;
+}
+
+
+export async function generateObjectComment(){
+  return console.log('not implemented')
+}
+
+// A reaction to the events happening in the scene
+export async function generateReaction(){
+  return console.log('not implemented')
+}
+// Construction example lore file for a conversation or banter scenario
+export async function generateBanter(){
+  return console.log('not implemented')
+}
+
+// Construct an example of exposition, like "An ancient survival handbook, printed on paper. It has insructions for saving the environment with the power of nature...""
+export async function generateExposition(){
+  return console.log('not implemented')
+}
+
+// Construct a lore example for a branching dialog / RPG scenario
+// example: "
+//   Drake: Cool costume, what are you supposed to be?
+//   Ann: It's not a costume, this robe has poison immune. You know, so you don't take damage from this place.
+//   Drake:
+//     [Oh shit. Really?] *
+//     [I'm not worried.]
+//   Ann: Yeah, you should get. Wanna buy? Not like your life depends on it or anything.
+// "
+export async function generateRPGDialogue(){
+  return console.log('not implemented')
+}
+
+// Construct a hero scene, similar to RPG dialog but not interactive
+export async function generateCutscene(){
+  return console.log('not implemented')
+}
+
+// Generate a quest task outcome
+export async function generateQuestTask(){
+  return console.log('not implemented')
 }

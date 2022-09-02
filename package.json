@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "CHOKIDAR_USEPOLLING=true vite",
+    "test": "node test.js",
     "build": "vite build",
     "preview": "vite preview"
   },
