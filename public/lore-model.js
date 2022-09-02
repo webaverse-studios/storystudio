@@ -811,7 +811,7 @@ export async function generateLore({
   return response;
 }
 
-export async function generateLocationComment(name, { settings, dstCharacter = null}, generateFn) {
+export async function generateLocationComment({name, settings, dstCharacter = null}, generateFn) {
   const prompt = makeCommentPrompt({
     settings,
     dstCharacter,
@@ -856,7 +856,7 @@ export async function generateChatMessage(messages, nextCharacter, generateFn) {
   return response2;
 }
 
-export async function generateDialogueOptions(messages, nextCharacter, generateFn) {
+export async function generateDialogueOptions({messages, nextCharacter}, generateFn) {
   const prompt = makeOptionsPrompt({
     messages,
     nextCharacter,
@@ -867,7 +867,7 @@ export async function generateDialogueOptions(messages, nextCharacter, generateF
   return response2;
 }
 
-export async function generateCharacterIntroPrompt(name, bio, generateFn) {
+export async function generateCharacterIntroPrompt({name, bio}, generateFn) {
   const prompt = makeCharacterIntroPrompt({
     name,
     bio,

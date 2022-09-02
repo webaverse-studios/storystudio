@@ -5,6 +5,10 @@ global.localStorage // now has your in memory localStorage
 import { openaiRequest } from "./src/utils/generation.js";
 
 import {
+  generateScene,
+  generateCharacter,
+  generateObject,
+  generateLore,
   generateObjectComment,
   generateReaction,
   generateBanter,
@@ -129,107 +133,112 @@ Scillia's treehouse. It's more of a floating island but they call it a tree hous
   messages: []
 }
 
-let output;
+const run = async () => {
 
-output = await generateScene(makeGenerateFn());
+  let output;
 
-console.log('*********** generateScene:')
-console.log(output);
+  // ****** OBJECT COMMENT ******
+  output = await generateObjectComment(testData.objects[0], makeGenerateFn());
+  console.log('*********** generateObjectComment:')
+  console.log(output)
 
-output = await generateCharacter(makeGenerateFn());
+  // ****** ACTION / EVENT REACTION ******
+  // Construct example lore file for an action reaction scenario
+  // "Lady, I have 13 cats. You shouldn't go around hitting people with 13 cats."
 
-console.log('*********** generateCharacter:')
-console.log(output);
+  output = await generateReaction(testData.messages[0], makeGenerateFn());
 
-output = await generateObject(makeGenerateFn());
+  console.log('*********** reaction:')
+  console.log(output);
 
-console.log('*********** makeGenerateFn:')
-console.log(output);
+  // ****** BANTER ******
+  output = await generateBanter(testData.messages[0], makeGenerateFn());
 
-output = await generateLore(makeGenerateFn());
-
-console.log('*********** generateLore:')
-console.log(output);
-
-// generateLocationComment({name, settings, dstCharacter = null},  generateFn)
-output = await generateLocationComment(
-  {
-    name: testData.settings.settingName,
-    settings: testData.settings,
-    dstCharacter: testData.party[0]
-  },
-  makeGenerateFn());
-
-console.log('*********** generateLocationComment:')
-console.log(output);
-
-// generateSelectTargetComment({name, description}, generateFn)
-output = await generateSelectTargetComment({}, makeGenerateFn());
-
-console.log('*********** generateSelectCharacterComment:')
-console.log(output);
-
-output = await generateSelectCharacterComment({}, makeGenerateFn());
-
-console.log('*********** generateSelectCharacterComment:')
-console.log(output);
-
-// generateChatMessage(messages, nextCharacter, generateFn)
-output = await generateChatMessage({}, makeGenerateFn());
-
-console.log('*********** generateChatMessage:')
-console.log(output);
-
-// generateDialogueOptions({messages, nextCharacter}, generateFn)
-output = await generateDialogueOptions({}, makeGenerateFn());
-
-console.log('*********** generateDialogueOptions:')
-console.log(output);
-
-output = await generateCharacterIntroPrompt({ name: testData.party[0].name, bio: testData.party[0].bio }, makeGenerateFn());
-
-console.log('*********** generateCharacterIntroPrompt:')
-console.log(output);
-
-// ****** OBJECT COMMENT ******
-output = await generateObjectComment(testData.objects[0], makeGenerateFn());
-console.log('*********** generateObjectComment:')
-console.log(output)
-
-
-// ****** ACTION / EVENT REACTION ******
-// Construct example lore file for an action reaction scenario
-// "Lady, I have 13 cats. You shouldn't go around hitting people with 13 cats."
-
-output = await generateReaction(testData.messages[0], makeGenerateFn());
-
-console.log('*********** reaction:')
-console.log(output);
-
-// ****** BANTER ******
-output = await generateBanter(testData.messages[0], makeGenerateFn());
-
-console.log('*********** banter:')
-console.log(output);
-generateBanter,
+  console.log('*********** banter:')
+  console.log(output);
 
   // ****** EXPOSITION ******
   output = await generateExposition(testData.messages[0], makeGenerateFn());
 
-console.log('*********** exposition:')
-console.log(output);
+  console.log('*********** exposition:')
+  console.log(output);
 
-output = await generateRPGDialogue();
+  output = await generateRPGDialogue();
 
-console.log('*********** generateRPGDialogue:')
-console.log(output);
+  console.log('*********** generateRPGDialogue:')
+  console.log(output);
 
-output = await generateCutscene();
+  output = await generateCutscene();
 
-console.log('*********** generateCutscene:')
-console.log(output);
+  console.log('*********** generateCutscene:')
+  console.log(output);
 
-output = await generateQuestTask();
+  output = await generateQuestTask();
 
-console.log('*********** generateQuestTask:')
-console.log(output);
+  console.log('*********** generateQuestTask:')
+  console.log(output);
+
+  output = await generateScene(makeGenerateFn());
+
+  console.log('*********** generateScene:')
+  console.log(output);
+
+  output = await generateCharacter(makeGenerateFn());
+
+  console.log('*********** generateCharacter:')
+  console.log(output);
+
+  output = await generateObject(makeGenerateFn());
+
+  console.log('*********** makeGenerateFn:')
+  console.log(output);
+
+  output = await generateLore(makeGenerateFn());
+
+  console.log('*********** generateLore:')
+  console.log(output);
+
+  // generateLocationComment({name, settings, dstCharacter = null},  generateFn)
+  output = await generateLocationComment(
+    {
+      name: testData.settings.settingName,
+      settings: testData.settings,
+      dstCharacter: testData.party[0]
+    },
+    makeGenerateFn());
+
+  console.log('*********** generateLocationComment:')
+  console.log(output);
+
+  // generateSelectTargetComment({name, description}, generateFn)
+  output = await generateSelectTargetComment({}, makeGenerateFn());
+
+  console.log('*********** generateSelectCharacterComment:')
+  console.log(output);
+
+  output = await generateSelectCharacterComment({}, makeGenerateFn());
+
+  console.log('*********** generateSelectCharacterComment:')
+  console.log(output);
+
+  // generateChatMessage(messages, nextCharacter, generateFn)
+  output = await generateChatMessage({}, makeGenerateFn());
+
+  console.log('*********** generateChatMessage:')
+  console.log(output);
+
+  // generateDialogueOptions({messages, nextCharacter}, generateFn)
+  output = await generateDialogueOptions({}, makeGenerateFn());
+
+  console.log('*********** generateDialogueOptions:')
+  console.log(output);
+
+  output = await generateCharacterIntroPrompt({ name: testData.party[0].name, bio: testData.party[0].bio }, makeGenerateFn());
+
+  console.log('*********** generateCharacterIntroPrompt:')
+  console.log(output);
+
+  console.log("************ DONE! ************");
+};
+
+run();
