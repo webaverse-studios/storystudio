@@ -25,7 +25,7 @@ import {
 
 // get openai key from process.env or args[0]
 function getOpenAIKey() {
-  const key = process.env.OPENAI_KEY || process.argv[0];
+  const key = process?.env?.OPENAI_KEY || process?.argv[0];
   if (!key || key.length <= 0) {
     console.log("No openai key found");
     return "";
@@ -145,16 +145,22 @@ const run = async () => {
     fs.mkdirSync(testOutputs);
   }
 
-  function writeData(inputs, output, name){
+  function writeData(inputs, prompt, output, name) {
     const outputFile = `${testOutputs}/${name}.txt`;
 
     const write = `\
+${inputs ? `\
 ******** INPUT DATA ********
 ${JSON.stringify(inputs, null, 2)}
+` : ''}
+${prompt ? `\
+******** PROMPT ********
+${prompt}
+` : ''}
 
 ******** OUTPUT DATA ********
 ${JSON.stringify((output && output[0]) ?? output, null, 2)}
-    `
+`
 
     fs.writeFileSync(outputFile, write);
     console.log(`Wrote ${outputFile}`);

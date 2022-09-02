@@ -22,7 +22,6 @@ const ContextSelector = ({
                   : " context-group-button-inactive")
               }
             >
-              {console.log(type)}
               {type}|
               {(data[type] && data[type].length) ||
                 (data[type]["examples"] &&

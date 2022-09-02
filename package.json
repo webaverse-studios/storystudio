@@ -6,6 +6,7 @@
     "dev": "CHOKIDAR_USEPOLLING=true vite",
     "test": "node test.js",
     "build": "vite build",
+    "build-lib": "LIBRARY=true vite build",
     "preview": "vite preview"
   },
   "dependencies": {
