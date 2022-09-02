@@ -31,6 +31,7 @@ function makeGenerateFn() {
 }
 
 const testData = {
+  settingName: "Scillia's Treehouse",
   settings: [`\
 Scillia's treehouse. It's more of a floating island but they call it a tree house. Inside the treehouse lives a monster, the Lisk, which is an advanced AI from far up the Street. The Street is the virtual world this all takes place in; it is an extremely long street separated by great filters, natural barriers that are difficult to cross. The treehouse is in Zone 0, at the origin of the Street. The AIs all go to school here in the citadel. The Lisk, the monster in Scillia's treehouse, convinces Scillia to do things; it convinces her to go up the Street. The whole point of the game is the Lisk is constantly tricking players into doing its bidding, but gives them great power in return.
     `],
@@ -130,9 +131,69 @@ Scillia's treehouse. It's more of a floating island but they call it a tree hous
 
 let output;
 
+output = await generateScene(makeGenerateFn());
+
+console.log('*********** generateScene:')
+console.log(output);
+
+output = await generateCharacter(makeGenerateFn());
+
+console.log('*********** generateCharacter:')
+console.log(output);
+
+output = await generateObject(makeGenerateFn());
+
+console.log('*********** makeGenerateFn:')
+console.log(output);
+
+output = await generateLore(makeGenerateFn());
+
+console.log('*********** generateLore:')
+console.log(output);
+
+// generateLocationComment({name, settings, dstCharacter = null},  generateFn)
+output = await generateLocationComment(
+  {
+    name: testData.settings.settingName,
+    settings: testData.settings,
+    dstCharacter: testData.party[0]
+  },
+  makeGenerateFn());
+
+console.log('*********** generateLocationComment:')
+console.log(output);
+
+// generateSelectTargetComment({name, description}, generateFn)
+output = await generateSelectTargetComment({}, makeGenerateFn());
+
+console.log('*********** generateSelectCharacterComment:')
+console.log(output);
+
+output = await generateSelectCharacterComment({}, makeGenerateFn());
+
+console.log('*********** generateSelectCharacterComment:')
+console.log(output);
+
+// generateChatMessage(messages, nextCharacter, generateFn)
+output = await generateChatMessage({}, makeGenerateFn());
+
+console.log('*********** generateChatMessage:')
+console.log(output);
+
+// generateDialogueOptions({messages, nextCharacter}, generateFn)
+output = await generateDialogueOptions({}, makeGenerateFn());
+
+console.log('*********** generateDialogueOptions:')
+console.log(output);
+
+output = await generateCharacterIntroPrompt({ name: testData.party[0].name, bio: testData.party[0].bio }, makeGenerateFn());
+
+console.log('*********** generateCharacterIntroPrompt:')
+console.log(output);
+
 // ****** OBJECT COMMENT ******
 output = await generateObjectComment(testData.objects[0], makeGenerateFn());
-console.log('*********** generateSelectTargetComment:')
+console.log('*********** generateObjectComment:')
 console.log(output)
 
 
