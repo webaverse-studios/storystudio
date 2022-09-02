@@ -25,8 +25,7 @@ function LoreFiles({
       ingredients,
       baseData,
       openErrorDialog,
-      [],
-      downloadFileHandler
+      []
     );
     if (!entity) {
       console.error("could not generate entity");
@@ -123,6 +122,13 @@ function LoreFiles({
     }
 
     setLoreFiles(newData);
+  };
+
+  const importJson = async () => {
+    const file = await getFile();
+    const text = await file.text();
+    const json = JSON.parse(text);
+    importHandler(json);
   };
 
   const importEntityList = async () => {

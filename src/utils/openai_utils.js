@@ -41,12 +41,7 @@ export let availableActions = [
   "none",
 ];
 
-export const generateLore = async (
-  data,
-  module,
-  openaiConfig,
-  downloadFileHandler
-) => {
+export const generateLore = async (data) => {
   // const { settings, characters, objects, messages, dstCharacter } = data;
 
   // first decide what the scene is about
@@ -330,9 +325,6 @@ ${
 
   // write prompt to lorefiles/<current date>.md
 
-  if (downloadFileHandler) {
-    downloadFileHandler(loreFileOutput, "lorefile_" + Date.now() + ".md");
-  }
   /*fs.writeFile(`lorefiles/${Date.now()}.md`, loreFileOutput, (err) => {
     if (err) throw err;
     console.log("file saved");
@@ -460,14 +452,7 @@ async function generateObject(lore, module) {
   };
 }
 
-export async function generate(
-  type,
-  data,
-  baseData,
-  openErrorDialog,
-  lore,
-  downloadFileHandler
-) {
+export async function generate(type, data, baseData, openErrorDialog, lore) {
   console.log("generating...");
   console.log(type, data, baseData);
   // if (
@@ -522,12 +507,7 @@ export async function generate(
       res.inventory = resp.inventory;
       break;
     case "lore":
-      resp = await generateLore(
-        data,
-        baseData.module,
-        null,
-        downloadFileHandler
-      );
+      resp = await generateLore(data, baseData.module, null);
       return resp;
     default:
       openErrorDialog("Unknown type " + type);
