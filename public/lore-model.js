@@ -1053,7 +1053,7 @@ export async function generateObject(generateFn) {
   };
 }
 
-const commentPrompt = `Comments for characters, objects, npcs and mobs
+const commentPrompt = `Comment
 Zeus:(action: clap)(emote:happy)(message:What are you doing in my garden?!)(name:Artemis)(object:Tree)(target:Thunder)
 Spiderman:(action: swing)(emote:excited)(message:Let's go faster)(name:Flash)(object:Building)(target:Spider web)
 Zein:(action: sing)(emote:anxious)(message:And now together!)(name:People)(object:Microphone)(target:Stadium)
@@ -1183,18 +1183,57 @@ export async function generateCutscene(generateFn) {
     return resp;
   }
 }
-export async function generateQuest(generateFn) {
-  const questPrompt = `\
-  ${lore["quest"].prompt}
-  ${shuffleArray(lore["quest"].examples).join("\n")}
-  prompt:`;
 
-  const resp = await generateFn(questPrompt, makeIngredientStop());
+const questPrompt = `\
+Utopia: Stay for a day inside, while bothering others|Reward: 100xp.
+Dreamland: Try to escape dreamland, without destroying others' dreams|Reward: 200xp.
+Hellwhole: Save your loved ones, surviving the wrath of the demons|Reward: 5000xp
+Dark Forest: Survive the night in the dark forest|Reward: 1000xp.
+Devastated Building: Get outside, without getting hurt|Reward: 500xp.
+Tomb:Escape from the Dead|Reward: 10000xp.
+Space Station: Survive an attack by aliens, while trying to repair the station|Reward: 2000xp.
+Escape The Maze: Escape the maze, while avoiding the traps|Reward: 1500xp.
+The Island: Get off the island, without getting lost|Reward: 4000xp.
+The City: Survive a day in the city, without getting lost|Reward: 3000xp.
+The Mountain: Get to the top of the mountain, without getting lost|Reward: 6000xp.
+The Desert: Survive a day in the desert, without getting lost|Reward: 4000xp.
+The Jungle: Get through the jungle, without getting lost|Reward: 5000xp.
+The Ocean: Survive a day in the ocean, without getting lost|Reward: 3000xp.
+The North Pole: Survive a day at the North Pole, without getting lost|Reward: 7000xp.
+The South Pole: Survive a day at the South Pole, without getting lost|Reward: 8000xp.
+The Moon: Survive a day on the moon, without getting lost|Reward: 9000xp.
+The Sun: Survive a day on the sun, without getting burned|Reward: 10000xp.
+`;
+export async function generateQuest(generateFn, scene) {
+  const _questPrompt = `\
+  ${questPrompt}
+  ${scene?.length > 0 ? scene : "Woodland"}:`;
 
-  if (resp?.startsWith("prompt: ")) {
-    return resp.replace("prompt: ", "").trim();
+  const resp = await generateFn(_questPrompt, [
+    "\n",
+    scene?.length > 0 ? scene : "Woodland",
+  ]);
+
+  if (resp?.startsWith(scene?.length > 0 ? scene : "Woodland:")) {
+    const data = resp
+      .replace(scene?.length > 0 ? scene : "Woodland:", "")
+      .trim();
+    const [quest, reward] = data.split("|");
+    return {
+      location: scene?.length > 0 ? scene : "Woodland",
+      quest: quest?.trim(),
+      reward: reward?.trim(),
+    };
   } else {
-    return resp;
+    const data = resp
+      .replace(scene?.length > 0 ? scene : "Woodland:", "")
+      .trim();
+    const [quest, reward] = data.split("|");
+    return {
+      location: scene?.length > 0 ? scene : "Woodland",
+      quest: quest?.trim(),
+      reward: reward?.trim(),
+    };
   }
 }
 
