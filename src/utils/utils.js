@@ -33,6 +33,7 @@ export function shuffleArray(array, limit = 10) {
 }
 
 export async function query(openai_api_key, params = {}) {
+  console.log("key:", openai_api_key);
   const requestOptions = {
     method: "POST",
     headers: {
