@@ -1,31 +1,17 @@
-import axios from "axios";
-
 import { useEffect, useState } from "react";
-import "./App.css";
-import { defaultIngredients, exampleLoreFiles, views, lore } from "./constants";
+import "./styles/App.css";
+import { defaultIngredients, exampleLoreFiles, views, lore } from "./utils/constants";
+import { fileToDataUri, download_content } from './utils/helpers';
 import Header from "./Header";
 import Ingredients from "./Ingredients";
 import Setup from "./Setup";
 import MapView from "./Map";
 import LoreFiles from "./LoreFiles";
 import LoreBase from "./LoreBase";
-import murmurhash3String from "./murmurhash3string";
-import { getFile } from "./getFile";
-import ErrorModal from "./ErrorModal";
+import murmurhash3String from "./utils/murmurhash3string";
+import { getFile } from "./components/getFile";
+import ErrorModal from "./components/ErrorModal";
 
-const fileToDataUri = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      resolve(event.target.result);
-    };
-    reader.readAsDataURL(file);
-  });
-
-async function download_content(url) {
-  const file = await axios.get(url);
-  return file.data;
-}
 
 if (
   !localStorage.getItem("ingredients") ||

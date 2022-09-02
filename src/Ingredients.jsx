@@ -1,8 +1,8 @@
 import { useState } from "react";
-import "./App.css";
-import { entityPrototypes, contextTypes } from "./constants";
+import "./styles/App.css";
+import { entityPrototypes, contextTypes } from "./utils/constants";
 import { generate } from "./utils/openai_utils";
-import ListBox from "./ListBox";
+import ListBox from "./components/ListBox";
 import Context from "./ContextSelector";
 import {
   uniqueNamesGenerator,
@@ -10,7 +10,7 @@ import {
   animals,
   colors,
 } from "unique-names-generator";
-import { getFile } from "./getFile";
+import { getFile } from "./components/getFile";
 
 function makeId(length) {
   let result = "";
@@ -42,13 +42,13 @@ function Ingredients({
     try {
       entity = await generate(entityType, data, baseData, openErrorModal);
     } catch (e) {
-      openErrorModal("Error generating entity", e);
+      // openErrorModal("Error generating entity", e);
       console.log("error", e);
       setGenerating(false);
       return;
     }
     if (!entity) {
-      openErrorModal("could not generate entity");
+      // openErrorModal("could not generate entity");
       setGenerating(false);
       return;
     }

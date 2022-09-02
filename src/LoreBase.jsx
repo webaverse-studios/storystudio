@@ -1,18 +1,18 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import MonacoEditor from "@monaco-editor/react";
-import { lore } from "./constants";
-import ListBox from "./ListBox";
+import { lore } from "./utils/constants";
+import ListBox from "./components/ListBox";
 import { generate } from "./utils/openai_utils";
 import Context from "./ContextSelector";
-import "./App.css";
+import "./styles/App.css";
 import {
   uniqueNamesGenerator,
   adjectives,
   animals,
   colors,
 } from "unique-names-generator";
-import { getFile } from "./getFile";
+import { getFile } from "./components/getFile";
 
 function makeId(length) {
   let result = "";

@@ -1,6 +1,6 @@
 import { Configuration, OpenAIApi } from "openai";
-import { lore } from "../constants";
-import { exampleLoreFiles } from "../exampleLoreFiles";
+import { lore } from "./constants";
+import { exampleLoreFiles } from "./exampleLoreFiles";
 
 function shuffleArray(array, limit = 10) {
   const shortenArray = (array) => {
