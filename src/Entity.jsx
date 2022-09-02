@@ -295,13 +295,25 @@ const Entity = ({
       </button>
       <button
         onClick={() => {
-          const element = document.createElement("a");
-          const file = new Blob([data], { type: "application/text" });
-          element.href = URL.createObjectURL(file);
-          element.download = "lore" + index + "_" + Date.now() + ".md";
-          document.body.appendChild(element);
-          element.click();
-          element.remove();
+          if (type === "lore") {
+            const element = document.createElement("a");
+            const file = new Blob([data], { type: "application/text" });
+            element.href = URL.createObjectURL(file);
+            element.download = "lore" + index + "_" + Date.now() + ".md";
+            document.body.appendChild(element);
+            element.click();
+            element.remove();
+          } else {
+            const json = JSON.stringify(data);
+            const element = document.createElement("a");
+            const file = new Blob([json], { type: "application/json" });
+            element.href = URL.createObjectURL(file);
+            element.download =
+              data["name"] + "_" + new Date().getTime() + ".json";
+            document.body.appendChild(element);
+            element.click();
+            element.remove();
+          }
         }}
       >
         {type === "lore" ? "Export MD" : "Export"}
