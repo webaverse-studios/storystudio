@@ -38,7 +38,7 @@ function LoreBase({
     Object.keys(lore)[0]
   );
   const [generating, setGenerating] = useState(false);
-  const [showEditor, setShowEditor] = useState(true);
+  const [showEditor, setShowEditor] = useState(false);
 
   useEffect(() => {
     const codeEditorData = localStorage.getItem("codeEditorData");

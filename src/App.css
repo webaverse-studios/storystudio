@@ -132,17 +132,18 @@
 .context_wrapped {
   width: 20% !important;
 }
-.lorebase_wrapped, .objectComment_wrapped {
+.lorebase_wrapped, .dialog_wrapped {
   width: 80%;
   min-height: 35em;
 }
 
-.dialog_wrapped {
-  width: 80% !important;
-}
-
 .importExportButtons {
   display: inline-block;
+}
+
+.modeButton {
+  background-color: #000;
+  color: #fff;
 }
 
 .importButton,

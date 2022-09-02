@@ -16,7 +16,7 @@ const ListBox = ({
   const [generating, setGenerating] = React.useState(false);
 
   return (
-    <div className={"sectionWrapper " + type + "_wrapped"}>
+    <div className={"sectionWrapper " + header + "_wrapped"}>
       <div className={"sectionHeader " + type + "_header"}>
         <h1>{header}</h1>
         {type === "lore" ||
