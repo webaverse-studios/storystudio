@@ -19,7 +19,14 @@ const ListBox = ({
     <div className={"sectionWrapper " + type + "_wrapped"}>
       <div className={"sectionHeader " + type + "_header"}>
         <h1>{header}</h1>
-        <button onClick={handleImport}>Import</button>
+        {type === "lore" ||
+        type === "character" ||
+        type === "npc" ||
+        type === "mob" ||
+        type === "setting" ||
+        type === "object" ? (
+          <button onClick={handleImport}>Import </button>
+        ) : null}
         <button onClick={() => addEntityCallback(data, setGenerating)}>
           {!generating ? "Generate" : "Generating..."}
         </button>

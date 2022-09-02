@@ -293,31 +293,39 @@ const Entity = ({
       <button onClick={() => moveEntityCallback(data, false)}>
         <ArrowDownwardIcon />
       </button>
-      <button
-        onClick={() => {
-          if (type === "lore") {
-            const element = document.createElement("a");
-            const file = new Blob([data], { type: "application/text" });
-            element.href = URL.createObjectURL(file);
-            element.download = "lore" + index + "_" + Date.now() + ".md";
-            document.body.appendChild(element);
-            element.click();
-            element.remove();
-          } else {
-            const json = JSON.stringify(data);
-            const element = document.createElement("a");
-            const file = new Blob([json], { type: "application/json" });
-            element.href = URL.createObjectURL(file);
-            element.download =
-              data["name"] + "_" + new Date().getTime() + ".json";
-            document.body.appendChild(element);
-            element.click();
-            element.remove();
-          }
-        }}
-      >
-        {type === "lore" ? "Export MD" : "Export"}
-      </button>
+      {type === "lore" ||
+      type === "character" ||
+      type === "npc" ||
+      type === "mob" ||
+      type === "setting" ||
+      type === "object" ? (
+        <button
+          onClick={() => {
+            console.log(type);
+            if (type === "lore") {
+              const element = document.createElement("a");
+              const file = new Blob([data], { type: "application/text" });
+              element.href = URL.createObjectURL(file);
+              element.download = "lore" + index + "_" + Date.now() + ".md";
+              document.body.appendChild(element);
+              element.click();
+              element.remove();
+            } else {
+              const json = JSON.stringify(data);
+              const element = document.createElement("a");
+              const file = new Blob([json], { type: "application/json" });
+              element.href = URL.createObjectURL(file);
+              element.download =
+                data["name"] + "_" + new Date().getTime() + ".json";
+              document.body.appendChild(element);
+              element.click();
+              element.remove();
+            }
+          }}
+        >
+          {type === "lore" ? "Export MD" : "Export"}
+        </button>
+      ) : null}
     </div>
   );
 };
