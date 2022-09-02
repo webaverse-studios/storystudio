@@ -285,7 +285,8 @@ const makeOptionsPrompt = ({
   nextCharacter,
 }) => {
   return `\
-${actionsExamples}
+${lore.actions.prompt}
+${lore.actions.examples.join("\n")}
 
 ${messages
       .map((message) => {
@@ -767,23 +768,6 @@ export async function generateCharacter(generateFn) {
   };
 }
 
-export async function generateReactions(generateFn) {
-  const reactionsPrompt = `\
-  ${lore['reactions'].prompt}
-  ${shuffleArray(lore['reactions'].examples).join("\n")}
-  Reaction:
-  `
-
-  const resp = await generateFn(reactionsPrompt, ['\n', 'Reaction:'])
-  console.log('RESP', resp)
-
-  if (resp?.startsWith('Reaction: ')) {
-    return resp.replace('Reaction: ', '').trim()
-  } else {
-    return resp;
-  }
-}
-
 export async function generateObject(generateFn) {
   const objectPrompt = `\
   ${lore['object'].prompt}
@@ -804,163 +788,6 @@ export async function generateObject(generateFn) {
     name: lines[0].trim(),
     description: desc,
   };
-}
-
-export async function generateObjectComment(generateFn) {
-  const objectCommentPrompt = `\
-  ${lore['objectComment'].prompt}
-  ${shuffleArray(lore['objectComment'].examples).join("\n")}
-  prompt:`;
-
-  const resp = await generateFn(
-    objectCommentPrompt,
-    makeIngredientStop()
-  );
-
-  if (resp?.startsWith('prompt: ')) {
-    return resp.replace('prompt: ', '').trim()
-  } else {
-    return resp;
-  }
-}
-export async function generateNPCComment(generateFn) {
-  const objectCommentPrompt = `\
-  ${lore['objectComment'].prompt}
-  ${shuffleArray(lore['objectComment'].examples).join("\n")}
-  prompt:`;
-
-  const resp = await generateFn(
-    objectCommentPrompt,
-    makeIngredientStop()
-  );
-
-  if (resp?.startsWith('prompt: ')) {
-    return resp.replace('prompt: ', '').trim()
-  } else {
-    return resp;
-  }
-}
-export async function generateMobComment(generateFn) {
-  const mobCommentPrompt = `\
-  ${lore['mobComment'].prompt}
-  ${shuffleArray(lore['mobComment'].examples).join("\n")}
-  prompt:`;
-
-  const resp = await generateFn(
-    mobCommentPrompt,
-    makeIngredientStop()
-  );
-
-  if (resp?.startsWith('prompt: ')) {
-    return resp.replace('prompt: ', '').trim()
-  }
-  else {
-    return resp;
-  }
-}
-export async function generateLoadingComment(generateFn) {
-  const loadingCommentPrompt = `\
-  ${lore['loadingComment'].prompt}
-  ${shuffleArray(lore['loadingComment'].examples).join("\n")}
-  prompt:`;
-
-  const resp = await generateFn(
-    loadingCommentPrompt,
-    makeIngredientStop()
-  );
-
-  if (resp?.startsWith('prompt: ')) {
-    return resp.replace('prompt: ', '').trim()
-  } else {
-    return resp;
-  }
-}
-export async function generateBanter(generateFn) {
-  const banterPrompt = `\
-  ${lore['banter'].prompt}
-  ${shuffleArray(lore['banter'].examples).join("\n")}
-  prompt:`;
-
-  const resp = await generateFn(
-    banterPrompt,
-    makeIngredientStop()
-  );
-
-  if (resp?.startsWith('prompt: ')) {
-    return resp.replace('prompt: ', '').trim()
-  } else {
-    return resp;
-  }
-}
-export async function generateLoreExposition(generateFn) {
-  const loreExpositionPrompt = `\
-  ${lore['loreExposition'].prompt}
-  ${shuffleArray(lore['loreExposition'].examples).join("\n")}
-  prompt:`;
-
-  const resp = await generateFn(
-    loreExpositionPrompt,
-    makeIngredientStop()
-  );
-
-  if (resp?.startsWith('prompt: ')) {
-    return resp.replace('prompt: ', '').trim()
-  }
-  else {
-    return resp;
-  }
-}
-export async function generateRPGDialogue(generateFn) {
-  const rpgDialoguePrompt = `\
-  ${lore['rpgDialogue'].prompt}
-  ${shuffleArray(lore['rpgDialogue'].examples).join("\n")}
-  prompt:`;
-
-  const resp = await generateFn(
-    rpgDialoguePrompt,
-    makeIngredientStop()
-  );
-
-  if (resp?.startsWith('prompt: ')) {
-    return resp.replace('prompt: ', '').trim()
-  } else {
-    return resp;
-  }
-}
-export async function generateCutscene(generateFn) {
-  const cutscenePrompt = `\
-  ${lore['cutscene'].prompt}
-  ${shuffleArray(lore['cutscene'].examples).join("\n")}
-  prompt:`;
-
-  const resp = await generateFn(
-    cutscenePrompt,
-    makeIngredientStop()
-  );
-
-  if (resp?.startsWith('prompt: ')) {
-    return resp.replace('prompt: ', '').trim()
-  } else {
-    return resp;
-  }
-}
-export async function generateQuest(generateFn) {
-  const questPrompt = `\
-  ${lore['quest'].prompt}
-  ${shuffleArray(lore['quest'].examples).join("\n")}
-  prompt:`;
-
-  const resp = await generateFn(
-    questPrompt,
-    makeIngredientStop()
-  );
-
-  if (resp?.startsWith('prompt: ')) {
-    return resp.replace('prompt: ', '').trim()
-  }
-  else {
-    return resp;
-  }
 }
 
 // ****************** RUNTIME API **********************
@@ -1008,7 +835,7 @@ export async function generateSelectTargetComment({name, description}, generateF
   return response;
 }
 
-export async function generateSelectCharacterComment({name, description, generateFn}) {
+export async function generateSelectCharacterComment({name, description}, generateFn) {
   const prompt = makeSelectCharacterPrompt({
     name,
     description,
@@ -1019,7 +846,7 @@ export async function generateSelectCharacterComment({name, description, generat
   return response2;
 }
 
-export async function generateChatMessage(messages, nextCharacter, generateFn) {
+export async function generateChatMessage({messages, nextCharacter}, generateFn) {
   const prompt = makeChatPrompt({
     messages,
     nextCharacter,
@@ -1053,9 +880,9 @@ export async function generateCharacterIntroPrompt({name, bio}, generateFn) {
 }
 
 
-/*export async function generateObjectComment(){
+export async function generateObjectComment(){
   return console.log('not implemented')
-}*/
+}
 
 // A reaction to the events happening in the scene
 export async function generateReaction(){
