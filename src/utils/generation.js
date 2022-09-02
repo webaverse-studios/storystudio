@@ -109,38 +109,25 @@ export async function generate(type, data, baseData, openErrorDialog) {
         makeGenerateFn(),
         getRandomEntity(data, "object")
       );
-      console.log("RESPPP:", resp);
-      if (!resp || resp?.length <= 0) {
-        return generate("objectComment", data, baseData, openErrorDialog);
-      }
-      return { description: resp };
+      return resp;
     case "npcComment":
       resp = await module.generateNPCComment(
         makeGenerateFn(),
         getRandomEntity(data, "npc")
       );
-      if (!resp || resp?.length <= 0) {
-        return generate("npcComment", data, baseData, openErrorDialog);
-      }
-      return { description: resp };
+      return resp;
     case "mobComment":
       resp = await module.generateMobComment(
         makeGenerateFn(),
         getRandomEntity(data, "mob")
       );
-      if (!resp || resp?.length <= 0) {
-        return generate("mobComment", data, baseData, openErrorDialog);
-      }
-      return { description: resp };
+      return resp;
     case "loadingComment":
       resp = await module.generateLoadingComment(
         makeGenerateFn(),
-        getRandomEntity(data, "scene")
+        getRandomEntity(data, "setting")
       );
-      if (!resp || resp?.length <= 0) {
-        return generate("loadingComment", data, baseData, openErrorDialog);
-      }
-      return { description: resp };
+      return resp;
     case "banter":
       console.log("generating banter");
       resp = await module.generateBanter(
@@ -159,29 +146,10 @@ export async function generate(type, data, baseData, openErrorDialog) {
       }
       return { description: resp };
     case "rpgDialogue":
-      const dstChar =
-        data["character"][Math.floor(Math.random() * data["character"].length)];
-      let srcChar =
-        data["character"][Math.floor(Math.random() * data["character"].length)];
-      while (srcChar === dstChar) {
-        srcChar =
-          data["character"][
-            Math.floor(Math.random() * data["character"].length)
-          ];
-      }
-
-      const chatMessages = await module.generateChatMessage(
-        [],
-        srcChar,
-        makeGenerateFn()
+      resp = await module.generateRPGDialogue(
+        makeGenerateFn(),
+        getRandomEntity(data, "character")
       );
-      console.log(1);
-      resp = await module.generateDialogueOptions(
-        chatMessages,
-        dstChar,
-        makeGenerateFn()
-      );
-      console.log(2);
       if (!resp || resp?.length <= 0) {
         return generate("rpgDialogue", data, baseData, openErrorDialog);
       }
@@ -233,6 +201,7 @@ export async function generate(type, data, baseData, openErrorDialog) {
 }
 
 export async function query(openai_api_key, params = {}) {
+  console.log("PROMPT:", params.prompt);
   const requestOptions = {
     method: "POST",
     headers: {

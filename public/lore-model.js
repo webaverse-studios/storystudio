@@ -1026,11 +1026,14 @@ export async function generateReaction(generateFn, name) {
   ]);
   console.log("RESP", resp);
 
+  let _resp = "";
   if (resp?.startsWith(name?.length > 0 ? name : "prompt:")) {
-    return resp.replace(name?.length > 0 ? name : "prompt:", "").trim();
+    _resp = resp.replace(name?.length > 0 ? name : "prompt:", "").trim();
   } else {
-    return resp;
+    _resp = resp;
   }
+
+  return _resp?.replace(/\s+/g, "");
 }
 
 export async function generateObject(generateFn) {
@@ -1053,16 +1056,22 @@ export async function generateObject(generateFn) {
   };
 }
 
-const commentPrompt = `Comment
-Zeus:(action: clap)(emote:happy)(message:What are you doing in my garden?!)(name:Artemis)(object:Tree)(target:Thunder)
-Spiderman:(action: swing)(emote:excited)(message:Let's go faster)(name:Flash)(object:Building)(target:Spider web)
-Zein:(action: sing)(emote:anxious)(message:And now together!)(name:People)(object:Microphone)(target:Stadium)
-Sandra:(action: soush)(emote:frigthened)(message:What are you doing in my house, I'M THE OWNER)(name:People)(object:Knife)(target:Rest People)
-Jack:(action: cut)(emote:bored)(message:Another tree to the pile)(name:Jack)(object:Chainsaw)(target:Tree)
-Halley:(action: smack)(emote:angry)(message:How could you do that to me?)(name:John)(object:Hand)(target:John)
-Umber:(action: fall)(emote:confused)(message:What just happened?)(name:Umber)(object:Car)(target:Car)
-Gennessee:(action: study)(emote:neutral)(message:I will finish the whole book today)(name:Tiberius)(object:Book)(target:Tiberius)
-Luna:(action: dazzled)(emote:happy)(message:What a beautiful sky!)(name:Sky)(object:Self)(target:Moon)`;
+const commentPrompt = `Comment about a scene, object, or character:
+Mountain: That's the biggest mountain i've ever seen!
+Flowers: What a beautiful smell
+Jake: Jake seemed very confused in today's lesson
+Diamong Sword: First time seeing just a shiny sword
+Pearl: Expensive, but worth it
+Kira: Kira has been really helpful for this scene
+Blue Dragon: Seems very dangerous
+Earth: I wonder if we can find a way to get to the other side
+Headphones: Cheap as hell, but really good
+Skyscrapper: Tallest building i've ever seen
+Utopia: Best place i've been
+Forest: Reall scary at night
+Tomb: Weird noise location
+Kim: Really interesting guy
+`;
 
 export async function generateObjectComment(generateFn, object) {
   const objectCommentPrompt = `\
@@ -1075,9 +1084,12 @@ export async function generateObjectComment(generateFn, object) {
   ]);
 
   if (resp?.startsWith(object?.length > 0 ? object : "House:")) {
-    return resp.replace(object?.length > 0 ? object : "House:", "").trim();
+    return {
+      name: object?.length > 0 ? object : "House:",
+      comment: resp.replace(object?.length > 0 ? object : "House:", "").trim(),
+    };
   } else {
-    return resp;
+    return { name: object?.length > 0 ? object : "House:", comment: resp };
   }
 }
 export async function generateNPCComment(generateFn, npc) {
@@ -1091,9 +1103,12 @@ export async function generateNPCComment(generateFn, npc) {
   ]);
 
   if (resp?.startsWith(npc?.length > 0 ? npc : "Jake:")) {
-    return resp.replace(npc?.length > 0 ? npc : "Jake:", "").trim();
+    return {
+      name: npc?.length > 0 ? npc : "Jake",
+      comment: resp.replace(npc?.length > 0 ? npc : "Jake:", "").trim(),
+    };
   } else {
-    return resp;
+    return { name: npc?.length > 0 ? npc : "Jake", comment: resp };
   }
 }
 export async function generateMobComment(generateFn, mob) {
@@ -1107,9 +1122,12 @@ export async function generateMobComment(generateFn, mob) {
   ]);
 
   if (resp?.startsWith(mob?.length > 0 ? mob : "Jake:")) {
-    return resp.replace(mob?.length > 0 ? mob : "Jake:", "").trim();
+    return {
+      name: mob?.length > 0 ? mob : "Jake",
+      comment: resp.replace(mob?.length > 0 ? mob : "Jake:", "").trim(),
+    };
   } else {
-    return resp;
+    return { name: mob?.length > 0 ? mob : "Jake", comment: resp };
   }
 }
 export async function generateLoadingComment(generateFn, scene) {
@@ -1123,9 +1141,12 @@ export async function generateLoadingComment(generateFn, scene) {
   ]);
 
   if (resp?.startsWith(scene?.length > 0 ? scene : "Lake:")) {
-    return resp.replace(scene?.length > 0 ? scene : "Lake:", "").trim();
+    return {
+      name: scene?.length > 0 ? scene : "Lake:",
+      comment: resp.replace(scene?.length > 0 ? scene : "Lake:", "").trim(),
+    };
   } else {
-    return resp;
+    return { name: scene?.length > 0 ? scene : "Lake:", comment: resp };
   }
 }
 export async function generateBanter(generateFn, name) {
@@ -1155,16 +1176,28 @@ export async function generateLoreExposition(generateFn) {
     return resp;
   }
 }
-export async function generateRPGDialogue(generateFn) {
+export async function generateRPGDialogue(generateFn, character) {
   const rpgDialoguePrompt = `\
-  ${lore["rpgDialogue"].prompt}
-  ${shuffleArray(lore["rpgDialogue"].examples).join("\n")}
-  prompt:`;
+  ${lore["inputParsing"].prompt}
+  ${shuffleArray(lore["inputParsing"].examples).join("\n")}
+  Input:\n+a8e44f13${character?.length > 0 ? character : "Zeal"}:`;
 
-  const resp = await generateFn(rpgDialoguePrompt, makeIngredientStop());
+  const resp = await generateFn(rpgDialoguePrompt, [
+    "\n",
+    `Input:\n+a8e44f13${character?.length > 0 ? character : "Zeal"}:`,
+  ]);
 
-  if (resp?.startsWith("prompt: ")) {
-    return resp.replace("prompt: ", "").trim();
+  if (
+    resp?.startsWith(
+      `Input:\n+a8e44f13${character?.length > 0 ? character : "Zeal"}:`
+    )
+  ) {
+    return resp
+      .replace(
+        `Input:\n+a8e44f13${character?.length > 0 ? character : "Zeal"}:`,
+        ""
+      )
+      .trim();
   } else {
     return resp;
   }
