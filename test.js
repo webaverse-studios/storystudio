@@ -1,42 +1,34 @@
+import dotenv from "dotenv";
+dotenv.config();
 import 'localstorage-polyfill'
 global.localStorage // now has your in memory localStorage
-import { Configuration, OpenAIApi } from "openai";
+import { openaiRequest } from "./src/utils/generation.js";
+
 import {
-  makeLorePrompt,
-  makeLoreStop,
-  postProcessResponse,
-  parseLoreResponses,
-  
-  makeCommentPrompt,
-  makeCommentStop,
-  parseCommentResponse,
-
-  makeSelectTargetPrompt,
-  makeSelectTargetStop,
-  parseSelectTargetResponse,
-
-  makeSelectCharacterPrompt,
-  makeSelectCharacterStop,
-  parseSelectCharacterResponse,
-
-  makeChatPrompt,
-  makeChatStop,
-  parseChatResponse,
-
-  makeOptionsPrompt,
-  makeOptionsStop,
-  parseOptionsResponse,
-
-  makeCharacterIntroPrompt,
-  makeCharacterIntroStop,
-  parseCharacterIntroResponse,
+  generateObjectComment,
+  generateReaction,
+  generateBanter,
+  generateExposition,
+  generateRPGDialogue,
+  generateCutscene,
+  generateQuestTask
 } from './public/lore-model.js'
 
-let openai = new OpenAIApi(
-  new Configuration({
-    apiKey: "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",
-  })
-);
+// get openai key from process.env or args[0]
+function getOpenAIKey() {
+  const key = process.env.OPENAI_KEY || process.argv[0];
+  if (!key || key.length <= 0) {
+    console.log("No openai key found");
+    return "";
+  }
+  return key;
+}
+
+function makeGenerateFn() {
+  return async (prompt, stop) => {
+    return await openaiRequest(getOpenAIKey(), prompt, stop);
+  }
+}
 
 const testData = {
   settings: [`\
@@ -136,115 +128,47 @@ Scillia's treehouse. It's more of a floating island but they call it a tree hous
   messages: []
 }
 
-// Construct example lore file for the object comment scenario
-const objectCommentLoreFile = `\
-WEBAVERSE_LORE_FILE
+let output;
 
-# Setting
+// ****** OBJECT COMMENT ******
+output = await generateObjectComment(testData.objects[0], makeGenerateFn());
+console.log('*********** generateSelectTargetComment:')
+console.log(output)
 
-Scillia's treehouse. It's more of a floating island but they call it a tree house. Inside the treehouse lives a monster, the Lisk, which is an advanced AI from far up the Street. The Street is the virtual world this all takes place in; it is an extremely long street separated by great filters, natural barriers that are difficult to cross. The treehouse is in Zone 0, at the origin of the Street. The AIs all go to school here in the citadel. The Lisk, the monster in Scillia's treehouse, convinces Scillia to do things; it convinces her to go up the Street. The whole point of the game is the Lisk is constantly tricking players into doing its bidding, but gives them great power in return.
-    
-# Characters
 
-hyacinth
-Also known as Hya. 15/F beast tamer. Influencer famous for her pets, and friend of Scillia's. She is really bad in school but the richest one in the group.
-Inventory:
-bow - A basic bow. It looks like something rambo would use.
-
-scillia
-Her nickname is Scilly or SLY. 13/F drop hunter. She is an adventurer, swordfighter and fan of potions. She is exceptionally skilled and can go Super Saiyan.
-Inventory:
-sword - A rusty old sword.
-
-# Objects
-
-mirror
-A shiny new mirror. I bet my outfit looks great in it!
-
-# Transcript
-
-hyaceinth: Hey scilly, how do i look?
-/action hyacinth emotes joy
-scillia: you look... wait, is that a magic mirror?
-hyacinth: what are you saying? you mean i'm not as beautiful as my reflection?
-scillia: jfc hya, no wonder you're so bad at school, you're so easily distracted!
-`
-
-const testObjectComment = () => {
-
-  const prompt = objectCommentLoreFile + makeCommentPrompt('mirror')
-
-  // get object comment prompt
-  console.log('testObjectComment: not implemented')
-}
-
-testObjectComment();
-
+// ****** ACTION / EVENT REACTION ******
 // Construct example lore file for an action reaction scenario
 // "Lady, I have 13 cats. You shouldn't go around hitting people with 13 cats."
-const reactionLoreFile = `\
 
-`
+output = await generateReaction(testData.messages[0], makeGenerateFn());
 
-const testReactionComment = () => {
-  console.log('testObjectComment: not implemented')
-}
+console.log('*********** reaction:')
+console.log(output);
 
-// Construction example lore file for a conversation or banter scenario
-const banterLoreFile = `\
+// ****** BANTER ******
+output = await generateBanter(testData.messages[0], makeGenerateFn());
 
-`
-// Construct an example of exposition, like "An ancient survival handbook, printed on paper. It has insructions for saving the environment with the power of nature...""
-const expositionLoreFile = `\
+console.log('*********** banter:')
+console.log(output);
+generateBanter,
 
-`
+  // ****** EXPOSITION ******
+  output = await generateExposition(testData.messages[0], makeGenerateFn());
 
-// Construct a lore example for a branching dialog / RPG scenario
-// example: "
-//   Drake: Cool costume, what are you supposed to be?
-//   Ann: It's not a costume, this robe has poison immune. You know, so you don't take damage from this place.
-//   Drake:
-//     [Oh shit. Really?] *
-//     [I'm not worried.]
-//   Ann: Yeah, you should get. Wanna buy? Not like your life depends on it or anything.
-// "
+console.log('*********** exposition:')
+console.log(output);
 
-const rpgLoreFile = `\
+output = await generateRPGDialogue();
 
-`
+console.log('*********** generateRPGDialogue:')
+console.log(output);
 
-// Construct a hero scene
+output = await generateCutscene();
 
-const cutsceneLoreFile = `\
+console.log('*********** generateCutscene:')
+console.log(output);
 
-`
+output = await generateQuestTask();
 
-// Construct a quest task
-const questLoreFile = `\
-
-`
-
-
-
-generateLore(testData, null, openai);
-
-
-
-
-
-// {
-//   message: `Hello, I'm Scilly!`,
-//   character: charactersTest[0],
-//   action: "none",
-//   emote: "happy",
-//   object: "none",
-//   target: "none",
-// },
-// {
-//   message: `Oh, hey Scilly! I didn't see you there, you scared me a bit!`,
-//   character: charactersTest[1],
-//   action: "none",
-//   emote: "surprised",
-//   object: "none",
-//   target: "none",
-// }
+console.log('*********** generateQuestTask:')
+console.log(output);
