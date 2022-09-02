@@ -12,7 +12,7 @@ import {
 } from "unique-names-generator";
 
 import "./App.css";
-import { makeVoiceRequest } from "./utils/utils";
+import { generateImage, makeVoiceRequest } from "./utils/utils";
 import { availableVoices } from "./constants";
 
 //field check if image, set source the img, if name change, generate new image
@@ -219,12 +219,32 @@ const Entity = ({
               return null;
             } else if (field === "image") {
               return (
-                <img
-                  className="photo"
-                  key={i}
-                  src={`data:image/jpeg;base64,${data[field]}`}
-                  alt={data["name"]}
-                />
+                <div key={i}>
+                  <button
+                    onClick={async () => {
+                      updateEntity(
+                        data,
+                        field,
+                        await generateImage(
+                          data["name"] + " " + data["description"]
+                        ),
+                        index
+                      );
+                    }}
+                  >
+                    {data[field]?.length > 0
+                      ? "Regenerate Image"
+                      : "Generate Image"}
+                  </button>
+                  {data[field]?.length > 0 ? (
+                    <img
+                      className="photo"
+                      key={i}
+                      src={`data:image/jpeg;base64,${data[field]}`}
+                      alt={data["name"]}
+                    />
+                  ) : null}
+                </div>
               );
             }
 

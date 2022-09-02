@@ -542,7 +542,7 @@ export async function generate(
   // }
 
   if (localStorage.getItem("generateImages") === "true") {
-    res.image = await generateImage(resp.name);
+    res.image = "";
   }
 
   if (res.name?.length > 0) {
