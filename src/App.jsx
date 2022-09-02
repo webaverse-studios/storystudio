@@ -10,7 +10,6 @@ import {
 import Header from "./Header";
 import Ingredients from "./Ingredients";
 import Setup from "./Setup";
-import MapView from "./Map";
 import LoreFiles from "./LoreFiles";
 import LoreBase from "./LoreBase";
 import murmurhash3String from "./murmurhash3string";
@@ -120,7 +119,7 @@ function App() {
   // }, [baseData])
 
   useEffect(() => {
-    localStorage.setItem("currentView", compressObject(currentView));
+    localStorage.setItem("currentView", currentView);
   }, [currentView]);
 
   useEffect(() => {
@@ -180,7 +179,7 @@ function App() {
             line.includes("LORE_HEADER_END")
           );
           // remove the array values including and between headerStartIndex and headerEndIndex
-          const beforeHeader = lines.slice(-1, headerStartIndex + 1);
+          const beforeHeader = lines.slice(-1, headerStartIndex);
           content =
             beforeHeader +
             lines.splice(headerEndIndex + 1, lines.length).join("\n");
@@ -340,8 +339,6 @@ function App() {
           _openAIParams={oepnAIParams}
           _setOpenAIParams={updateOpenAIParams}
         />
-      ) : currentView === "map" ? (
-        <MapView />
       ) : currentView === "base" ? (
         <LoreBase
           loreHeader={loreHeader}

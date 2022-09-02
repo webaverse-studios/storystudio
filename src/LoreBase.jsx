@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import MonacoEditor from "@monaco-editor/react";
 import { lore } from "./constants";
 import ListBox from "./ListBox";
-import { generate } from "./utils/openai_utils";
+import { generate } from "./utils/generation";
 import Context from "./ContextSelector";
 import "./App.css";
 import { getFile } from "./getFile";
@@ -65,7 +65,7 @@ function LoreBase({
       }
     );
     const fileUri = await fileToDataUri(blob);
-    const importedFile = await import(fileUri);
+    const importedFile = await import(fileUri/* @vite-ignore */);
     setBaseData({
       base: fileUri,
       type: "file",

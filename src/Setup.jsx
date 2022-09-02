@@ -1,7 +1,6 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import { getOpenAIKey, setOpenAIKey } from "./utils/openai_utils";
+import { getOpenAIKey, setOpenAIKey } from "./utils/utils";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 

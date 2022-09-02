@@ -290,6 +290,10 @@
   max-width: calc(100% - 3em);
 }
 
+.lore .entity textarea {
+  height: 35em;
+}
+
 .entityDelete {
   float: right;
   display: inline;

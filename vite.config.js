@@ -1,3 +1,4 @@
+import path from "path"
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import dotenv from "dotenv";
@@ -22,6 +23,22 @@ export default defineConfig(async (command) => {
   });
 
   const returned = {
+    build: {
+      assetsInlineLimit: 65536,
+      lib: {
+        entry: path.resolve('./src/index.js'),
+        name: 'lore-engine',
+        fileName: (format) => `lore-engine.${format}.js`
+      },
+      rollupOptions: {
+        external: ['react', 'three', 'react-dom'],
+        output: {
+          globals: {
+            react: 'React'
+          }
+        }
+      }
+    },
     plugins: [react(),
     ],
     resolve: {

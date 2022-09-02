@@ -4,8 +4,7 @@ export const views = {
   setup: "Setup",
   base: "Base",
   ingredients: "Ingredients",
-  files: "Output",
-  map: "Map",
+  files: "Output"
 };
 
 export const contextTypes = [

@@ -1,5 +1,5 @@
 import "./App.css";
-import { generate } from "./utils/openai_utils";
+import { generate } from "./utils/generation";
 import ListBox from "./ListBox";
 import { getFile } from "./getFile";
 import { makeId } from "./utils/utils";
@@ -33,7 +33,7 @@ function LoreFiles({
       return;
     }
     console.log("generate entity", entity);
-    if (typeof entity === "array") {
+    if (typeof entity === Array) {
       if (entity[0]) entity = entity[0];
     }
     // if entity is an object, check if it has an id, if not, make one

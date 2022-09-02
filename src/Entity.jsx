@@ -12,7 +12,7 @@ import {
 } from "unique-names-generator";
 
 import "./App.css";
-import { generateImage, makeVoiceRequest } from "./utils/utils";
+import { generateImage, generateVoice } from "./utils/generation";
 import { availableVoices } from "./constants";
 
 //field check if image, set source the img, if name change, generate new image
@@ -155,7 +155,7 @@ const Entity = ({
                 return;
               }
 
-              const voiceData = await makeVoiceRequest(
+              const voiceData = await generateVoice(
                 data["voice"],
                 data["description"]?.length > 0
                   ? data["description"]

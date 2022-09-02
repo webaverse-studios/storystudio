@@ -12,9 +12,9 @@ const Header = ({ currentView, setCurrentView, _darkMode, _setDarkMode }) => {
         <h1>Story Studio</h1>
       </div>
       <div className="headerright">
-        <button onClick={_setDarkMode}>
+        {/*<button onClick={_setDarkMode}>
           {_darkMode ? "Light Mode" : "Dark Mode"}
-        </button>
+        </button>*/}
         {/* for each key in views (an object) create a button that calls setCurrentView with the view's value, and is active if the currentView is current button */}
         {Object.keys(views).map((key, index) => {
           if ((editMode === "false" || !editMode) && key === "base")

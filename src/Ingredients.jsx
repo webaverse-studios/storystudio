@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import { entityPrototypes, contextTypes } from "./constants";
-import { generate } from "./utils/openai_utils";
+import { generate } from "./utils/generation";
 import ListBox from "./ListBox";
 import Context from "./ContextSelector";
 import { getFile } from "./getFile";
@@ -172,9 +172,10 @@ function Ingredients({
 
   const addLore = async (type, setGenerating) => {
     setGenerating(true);
-
+    console.log('lore is', lore);
     const newLore = { ...lore };
     const newLoreData = { ...newLore[type] };
+    console.log('newLoreData are', newLoreData);
     const newLoreExamples = [...newLoreData.examples];
     newLoreExamples.unshift("new " + type);
     newLoreData.examples = newLoreExamples;
