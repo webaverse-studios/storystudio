@@ -1013,7 +1013,7 @@ export async function generateCharacter(generateFn) {
   };
 }
 
-export async function generateReactions(generateFn, name) {
+export async function generateReaction(generateFn, name) {
   const reactionsPrompt = `\
   ${lore["reactions"].prompt}
   ${shuffleArray(lore["reactions"].examples).join("\n")}
@@ -1053,70 +1053,77 @@ export async function generateObject(generateFn) {
   };
 }
 
+const commentPrompt = `Comments for characters, objects, npcs and mobs
+Zeus:(action: clap)(emote:happy)(message:What are you doing in my garden?!)(name:Artemis)(object:Tree)(target:Thunder)
+Spiderman:(action: swing)(emote:excited)(message:Let's go faster)(name:Flash)(object:Building)(target:Spider web)
+Zein:(action: sing)(emote:anxious)(message:And now together!)(name:People)(object:Microphone)(target:Stadium)
+Sandra:(action: soush)(emote:frigthened)(message:What are you doing in my house, I'M THE OWNER)(name:People)(object:Knife)(target:Rest People)
+Jack:(action: cut)(emote:bored)(message:Another tree to the pile)(name:Jack)(object:Chainsaw)(target:Tree)
+Halley:(action: smack)(emote:angry)(message:How could you do that to me?)(name:John)(object:Hand)(target:John)
+Umber:(action: fall)(emote:confused)(message:What just happened?)(name:Umber)(object:Car)(target:Car)
+Gennessee:(action: study)(emote:neutral)(message:I will finish the whole book today)(name:Tiberius)(object:Book)(target:Tiberius)
+Luna:(action: dazzled)(emote:happy)(message:What a beautiful sky!)(name:Sky)(object:Self)(target:Moon)`;
+
 export async function generateObjectComment(generateFn, object) {
   const objectCommentPrompt = `\
-  ${lore["objectComment"].prompt}
-  ${shuffleArray(lore["objectComment"].examples).join("\n")}
-  ${object?.length > 0 ? object : "prompt"}:`;
+  ${commentPrompt}
+  ${object?.length > 0 ? object : "House"}:`;
 
   const resp = await generateFn(objectCommentPrompt, [
     "\n",
-    object?.length > 0 ? object : "prompt:",
+    object?.length > 0 ? object : "House:",
   ]);
 
-  if (resp?.startsWith(object?.length > 0 ? object : "prompt")) {
-    return resp.replace(object?.length > 0 ? object : "prompt", "").trim();
+  if (resp?.startsWith(object?.length > 0 ? object : "House:")) {
+    return resp.replace(object?.length > 0 ? object : "House:", "").trim();
   } else {
     return resp;
   }
 }
 export async function generateNPCComment(generateFn, npc) {
   const objectCommentPrompt = `\
-  ${lore["objectComment"].prompt}
-  ${shuffleArray(lore["objectComment"].examples).join("\n")}
-  ${npc?.length > 0 ? npc : "prompt"}:`;
+  ${commentPrompt}
+  ${npc?.length > 0 ? npc : "Jake"}:`;
 
   const resp = await generateFn(objectCommentPrompt, [
     "\n",
-    npc?.length > 0 ? npc : "prompt:",
+    npc?.length > 0 ? npc : "Jake:",
   ]);
 
-  if (resp?.startsWith(npc?.length > 0 ? npc : "prompt")) {
-    return resp.replace(npc?.length > 0 ? npc : "prompt", "").trim();
+  if (resp?.startsWith(npc?.length > 0 ? npc : "Jake:")) {
+    return resp.replace(npc?.length > 0 ? npc : "Jake:", "").trim();
   } else {
     return resp;
   }
 }
 export async function generateMobComment(generateFn, mob) {
   const mobCommentPrompt = `\
-  ${lore["mobComment"].prompt}
-  ${shuffleArray(lore["mobComment"].examples).join("\n")}
-  mob:`;
+  ${commentPrompt}
+  ${mob?.length > 0 ? mob : "Jake"}:`;
 
   const resp = await generateFn(mobCommentPrompt, [
     "\n",
-    mob?.length > 0 ? mob : "prompt:",
+    mob?.length > 0 ? mob : "Jake:",
   ]);
 
-  if (resp?.startsWith(mob?.length > 0 ? mob : "prompt")) {
-    return resp.replace(mob?.length > 0 ? mob : "prompt", "").trim();
+  if (resp?.startsWith(mob?.length > 0 ? mob : "Jake:")) {
+    return resp.replace(mob?.length > 0 ? mob : "Jake:", "").trim();
   } else {
     return resp;
   }
 }
 export async function generateLoadingComment(generateFn, scene) {
   const loadingCommentPrompt = `\
-  ${lore["loadingComment"].prompt}
-  ${shuffleArray(lore["loadingComment"].examples).join("\n")}
-  scene:`;
+  ${commentPrompt}
+  ${scene?.length > 0 ? scene : "Lake"}:`;
 
   const resp = await generateFn(loadingCommentPrompt, [
     "\n",
-    scene?.length > 0 ? scene : "prompt:",
+    scene?.length > 0 ? scene : "Lake:",
   ]);
 
-  if (resp?.startsWith(scene?.length > 0 ? scene : "prompt")) {
-    return resp.replace(scene?.length > 0 ? scene : "prompt", "").trim();
+  if (resp?.startsWith(scene?.length > 0 ? scene : "Lake:")) {
+    return resp.replace(scene?.length > 0 ? scene : "Lake:", "").trim();
   } else {
     return resp;
   }
