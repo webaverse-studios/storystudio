@@ -71,6 +71,10 @@
   min-height: 90vh;
 }
 
+.lore_wrapped {
+  width:100% !important;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 20px;
