@@ -1,12 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import MonacoEditor from "@monaco-editor/react";
-import { lore } from "./constants";
-import ListBox from "./ListBox";
+import { lore } from "./utils/constants";
+import ListBox from "./components/ListBox";
 import { generate } from "./utils/generation";
-import Context from "./ContextSelector";
-import "./App.css";
-import { getFile } from "./getFile";
+import Context from "./components/ContextSelector";
+import "./styles/App.css";
+import { getFile } from "./components/getFile";
 import {
   compressObject,
   decompressObject,

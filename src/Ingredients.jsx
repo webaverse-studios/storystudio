@@ -1,10 +1,10 @@
 import { useState } from "react";
-import "./App.css";
-import { entityPrototypes, contextTypes } from "./constants";
+import "./styles/App.css";
+import { entityPrototypes, contextTypes } from "./utils/constants";
 import { generate, makeEmpty } from "./utils/generation";
-import ListBox from "./ListBox";
-import Context from "./ContextSelector";
-import { getFile } from "./getFile";
+import ListBox from "./components/ListBox";
+import Context from "./components/ContextSelector";
+import { getFile } from "./components/getFile";
 import { makeId } from "./utils/utils";
 
 function Ingredients({
@@ -60,7 +60,6 @@ function Ingredients({
     fromCurrentContentType = false
   ) => {
     setGenerating(true);
-    console.log("entityType, data, baseData", entityType, data, baseData);
     //console.log("calling baseData", baseData);
     // generate new using openai callback
     let entity = null;
@@ -74,6 +73,7 @@ function Ingredients({
         lore
       );
     } catch (e) {
+      // openErrorModal("Error generating entity", e);
       console.log("error", e);
       setGenerating(false);
       if (!second) {
@@ -82,15 +82,13 @@ function Ingredients({
       return;
     }
     if (!entity) {
-      openErrorModal("could not generate entity");
+      // openErrorModal("could not generate entity");
       setGenerating(false);
       return;
     }
-    console.log("generate entity", entity);
     if (!entity.id) {
       entity.id = makeId(5);
     }
-    console.log("ingredients", ingredients);
 
     const newEntityData = { ...ingredients };
     if (!newEntityData[entityType]) {
@@ -102,17 +100,12 @@ function Ingredients({
         ? newEntityData[entityType][currentContentType]
         : newEntityData[entityType];
 
-    console.log("array", array);
     array.unshift(entity);
     if (fromCurrentContentType) {
       newEntityData[entityType][currentContentType] = array;
     } else {
       newEntityData[entityType] = array;
     }
-    console.log(
-      "newEntityData[entityType][currentContentType]",
-      newEntityData[entityType][currentContentType]
-    );
     setIngredients(newEntityData);
     setGenerating(false);
   };

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import "./App.css";
-import { views } from "./constants";
+import "../styles/App.css";
+import { views } from "../utils/constants";
 
 const Header = ({ currentView, setCurrentView, _darkMode, _setDarkMode }) => {
   const editMode = new URLSearchParams(window.location.search).get("edit");

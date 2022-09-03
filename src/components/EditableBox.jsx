@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import './App.css';
+import '../styles/App.css';
 
 export const EditableBox = ({text, setText, saveInterval = 20}) => {
     const [count, setCount] = React.useState(0);
