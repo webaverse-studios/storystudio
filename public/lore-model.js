@@ -1074,7 +1074,7 @@ Tomb: Weird noise location
 Kim: Really interesting guy
 `;
 
-export async function generateObjectComment(generateFn, object) {
+export async function generateObjectComment(object, generateFn) {
   const objectCommentPrompt = `\
   ${commentPrompt}
   ${object?.length > 0 ? object : "House"}:`;
@@ -1370,11 +1370,6 @@ export async function generateCharacterIntroPrompt({ name, bio }, generateFn) {
   let response = await generateFn(prompt, stop);
   const response2 = parseCharacterIntroResponse(response);
   return response2;
-}
-
-// A reaction to the events happening in the scene
-export async function generateReaction(){
-  return console.log('not implemented')
 }
 
 // Construct an example of exposition, like "An ancient survival handbook, printed on paper. It has insructions for saving the environment with the power of nature...""

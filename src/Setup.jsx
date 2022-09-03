@@ -205,7 +205,7 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
       </div>
       <br />
       <div className={"openai"}>
-        <span className={"baseLabel"}>Generate Images:</span>
+        {/*<span className={"baseLabel"}>Generate Images:</span>
         <input
           className={"baseInput"}
           type="checkbox"
@@ -213,7 +213,8 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
           onChange={(e) => {
             updateGenerateImages(e.target.checked);
           }}
-        />
+        />*/
+        }
       </div>
       <h3>Ingredients</h3>
       <p>

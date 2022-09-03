@@ -16,7 +16,7 @@ function LoreFiles({
   importHandler,
   openErrorDialog,
 }) {
-  const addEntityCallback = async (setGenerating) => {
+  const generateEntityCallback = async (setGenerating) => {
     setGenerating(true);
     //console.log("calling baseData", baseData);
     // generate new using openai callback
@@ -176,24 +176,13 @@ function LoreFiles({
 
   return (
     <div className="view">
-      <div className={"importExportButtons"}>
-        <button className={"importButton"} onClick={() => importJson()}>
-          Import
-        </button>
-        <button className={"exportButton"} onClick={() => exportHandler()}>
-          Export
-        </button>
-        <button className={"exportButton"} onClick={() => exportMassMD()}>
-          Export MD
-        </button>
-      </div>
       <div className="sections">
         <ListBox
           type={dataType}
           data={loreFiles}
           header={dataType}
-          addEntityCallback={(data, setGenerating) => {
-            addEntityCallback(setGenerating);
+          generateEntityCallback={(data, setGenerating) => {
+            generateEntityCallback(setGenerating);
           }}
           editEntityCallback={editEntityCallback}
           deleteEntityCallback={(data, index) =>
@@ -203,6 +192,17 @@ function LoreFiles({
           showLabels={true}
           handleImport={importEntityList}
         />
+      </div>
+      <div className={"importExportButtons"}>
+        <button className={"importButton"} onClick={() => importJson()}>
+          Import All
+        </button>
+        <button className={"exportButton"} onClick={() => exportHandler()}>
+          Export All
+        </button>
+        <button className={"exportButton"} onClick={() => exportMassMD()}>
+          Export MDs as ZIP
+        </button>
       </div>
     </div>
   );

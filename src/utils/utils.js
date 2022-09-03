@@ -42,13 +42,13 @@ export async function download_content(url) {
 
 export const compressObject = (obj) => {
   const jsonStr = JSON.stringify(obj);
-  const compressed = lz.compress(jsonStr);
-  return compressed;
+  // const compressed = lz.compress(jsonStr);
+  return jsonStr;
 };
 
 export const decompressObject = (str) => {
-  const decompressed = lz.decompress(str);
-  const obj = JSON.parse(decompressed);
+  // const decompressed = lz.decompress(str);
+  const obj = JSON.parse(str);
   return obj;
 };
 

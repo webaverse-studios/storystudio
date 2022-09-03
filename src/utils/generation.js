@@ -53,6 +53,149 @@ const getRandomEntity = (data, type) => {
   return "";
 };
 
+export async function makeEmpty(type, openErrorDialog) {
+  switch (type) {
+    case "setting":
+      return {
+        type: type,
+        name: "New Setting",
+        description: "This is a description of a new setting"
+      }
+    case "character":
+      return {
+        type: type,
+        name: "New Character",
+        description: "This is a description of a new character",
+        inventory: []
+      }
+    case "object":
+      return {
+        type: type,
+        name: "New Object",
+        description: "This is a description of a new object",
+        inventory: []
+      }
+    case "npc":
+      return {
+        type: type,
+        name: "New NPC",
+        description: "This is a description of a new NPC",
+        inventory: []
+      }
+    case "mob":
+      return {
+        type: type,
+        name: "New mob",
+        description: "This is a description of a new mob",
+        inventory: []
+      }
+    case "lore":
+      return
+`# Setting
+
+# Characters
+
+# Objects
+
+# Transcript
+
+`;
+    // case "objectComment":
+    //   resp = await module.generateObjectComment(
+    //     getRandomEntity(data, "object"),
+    //     makeGenerateFn(),
+    //   );
+    //   return resp;
+    // case "npcComment":
+    //   resp = await module.generateNPCComment(
+    //     getRandomEntity(data, "npc"),
+    //     makeGenerateFn(),
+    //   );
+    //   return resp;
+    // case "mobComment":
+    //   resp = await module.generateMobComment(
+    //     getRandomEntity(data, "mob"),
+    //     makeGenerateFn(),
+    //   );
+    //   return resp;
+    // case "loadingComment":
+    //   resp = await module.generateLoadingComment(
+    //     getRandomEntity(data, "setting"),
+    //     makeGenerateFn(),
+    //   );
+    //   return resp;
+    // case "banter":
+    //   console.log("generating banter");
+    //   resp = await module.generateBanter(
+    //     getRandomEntity(data, "character"),
+    //     makeGenerateFn(),
+    //   );
+    //   if (!resp || resp?.length <= 0) {
+    //     return generate("banter", data, baseData, openErrorDialog);
+    //   }
+    //   return { description: resp };
+
+    // case "loreExposition":
+    //   resp = await module.generateLoreExposition(makeGenerateFn());
+    //   if (!resp || resp?.length <= 0) {
+    //     return generate("loreExposition", data, baseData, openErrorDialog);
+    //   }
+    //   return { description: resp };
+    // case "rpgDialogue":
+    //   resp = await module.generateRPGDialogue(
+    //     getRandomEntity(data, "character"),
+    //     makeGenerateFn(),
+    //   );
+    //   if (!resp || resp?.length <= 0) {
+    //     return generate("rpgDialogue", data, baseData, openErrorDialog);
+    //   }
+    //   return { description: resp };
+    // case "reactions":
+    //   console.log(module);
+    //   resp = await module.generateReaction(
+    //     getRandomEntity(data, "character"),
+    //     makeGenerateFn(),
+    //   );
+    //   if (!resp || resp?.length <= 0) {
+    //     return generate("reactions", data, baseData, openErrorDialog);
+    //   }
+    //   return { description: resp };
+    // case "cutscenes":
+    //   resp = await module.generateCutscenes(makeGenerateFn());
+    //   if (!resp || resp?.length <= 0) {
+    //     return generate("cutscenes", data, baseData, openErrorDialog);
+    //   }
+    //   return { description: resp };
+
+    // case "quests":
+    //   resp = await module.generateQuest(
+    //     getRandomEntity(data, "setting"),
+    //     makeGenerateFn(),
+    //   );
+    //   console.log("QUEST:", resp);
+    //   return resp;
+    default:
+      openErrorDialog("Unknown type " + type);
+      return null;
+  }
+
+  res.image = ""; //await generateImage(resp.name);
+
+  if (res.name?.length > 0) {
+    res.id = makeId(5);
+    res.shortname =
+      res.name.replace(" ", "").trim().toLowerCase().substring(0, 7) +
+      "#" +
+      res.id;
+  }
+
+  if (res.description?.endsWith(",")) {
+    res.description = res.description.slice(0, -1);
+  }
+
+  return res;
+}
+
 export async function generate(type, data, baseData, openErrorDialog) {
   const res = {
     type: type,
@@ -106,33 +249,33 @@ export async function generate(type, data, baseData, openErrorDialog) {
       return resp;
     case "objectComment":
       resp = await module.generateObjectComment(
+        getRandomEntity(data, "object"),
         makeGenerateFn(),
-        getRandomEntity(data, "object")
       );
       return resp;
     case "npcComment":
       resp = await module.generateNPCComment(
+        getRandomEntity(data, "npc"),
         makeGenerateFn(),
-        getRandomEntity(data, "npc")
       );
       return resp;
     case "mobComment":
       resp = await module.generateMobComment(
+        getRandomEntity(data, "mob"),
         makeGenerateFn(),
-        getRandomEntity(data, "mob")
       );
       return resp;
     case "loadingComment":
       resp = await module.generateLoadingComment(
+        getRandomEntity(data, "setting"),
         makeGenerateFn(),
-        getRandomEntity(data, "setting")
       );
       return resp;
     case "banter":
       console.log("generating banter");
       resp = await module.generateBanter(
+        getRandomEntity(data, "character"),
         makeGenerateFn(),
-        getRandomEntity(data, "character")
       );
       if (!resp || resp?.length <= 0) {
         return generate("banter", data, baseData, openErrorDialog);
@@ -147,8 +290,8 @@ export async function generate(type, data, baseData, openErrorDialog) {
       return { description: resp };
     case "rpgDialogue":
       resp = await module.generateRPGDialogue(
+        getRandomEntity(data, "character"),
         makeGenerateFn(),
-        getRandomEntity(data, "character")
       );
       if (!resp || resp?.length <= 0) {
         return generate("rpgDialogue", data, baseData, openErrorDialog);
@@ -157,8 +300,8 @@ export async function generate(type, data, baseData, openErrorDialog) {
     case "reactions":
       console.log(module);
       resp = await module.generateReaction(
+        getRandomEntity(data, "character"),
         makeGenerateFn(),
-        getRandomEntity(data, "character")
       );
       if (!resp || resp?.length <= 0) {
         return generate("reactions", data, baseData, openErrorDialog);
@@ -173,8 +316,8 @@ export async function generate(type, data, baseData, openErrorDialog) {
 
     case "quests":
       resp = await module.generateQuest(
+        getRandomEntity(data, "setting"),
         makeGenerateFn(),
-        getRandomEntity(data, "setting")
       );
       console.log("QUEST:", resp);
       return resp;

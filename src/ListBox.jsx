@@ -7,6 +7,7 @@ const ListBox = ({
   data,
   type = "",
   addEntityCallback,
+  generateEntityCallback,
   editEntityCallback,
   deleteEntityCallback,
   showLabels = false,
@@ -27,9 +28,12 @@ const ListBox = ({
         type === "object" ? (
           <button onClick={handleImport}>Import </button>
         ) : null}
-        <button onClick={() => addEntityCallback(data, setGenerating)}>
+        <button onClick={() => generateEntityCallback(data, setGenerating)}>
           {!generating ? "Generate" : "Generating..."}
         </button>
+      <button onClick={() => addEntityCallback(type)}>
+        Add
+      </button>
       </div>
       <div className={"section " + type}>
         {data &&
