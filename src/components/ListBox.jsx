@@ -1,6 +1,6 @@
 import React from "react";
-import "./App.css";
-import Entity from "./Entity";
+import "../styles/App.css";
+import Entity from "../Entity";
 
 const ListBox = ({
   header,

@@ -1371,18 +1371,3 @@ export async function generateCharacterIntroPrompt({ name, bio }, generateFn) {
   const response2 = parseCharacterIntroResponse(response);
   return response2;
 }
-
-// A reaction to the events happening in the scene
-export async function generateReaction(){
-  return console.log('not implemented')
-}
-
-// Construct an example of exposition, like "An ancient survival handbook, printed on paper. It has insructions for saving the environment with the power of nature...""
-export async function generateExposition(){
-  return console.log('not implemented')
-}
-
-// Generate a quest task outcome
-export async function generateQuestTask(){
-  return console.log('not implemented')
-}

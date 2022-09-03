@@ -1,7 +1,7 @@
-import "./App.css";
+import "./styles/App.css";
 import { generate } from "./utils/generation";
-import ListBox from "./ListBox";
-import { getFile } from "./getFile";
+import ListBox from "./components/ListBox";
+import { getFile } from "./components/getFile";
 import { makeId } from "./utils/utils";
 import JSZip from "jszip";
 

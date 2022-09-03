@@ -1,10 +1,10 @@
 import { useState } from "react";
-import "./App.css";
-import { entityPrototypes, contextTypes } from "./constants";
+import "./styles/App.css";
+import { entityPrototypes, contextTypes } from "./utils/constants";
 import { generate } from "./utils/generation";
-import ListBox from "./ListBox";
-import Context from "./ContextSelector";
-import { getFile } from "./getFile";
+import ListBox from "./components/ListBox";
+import Context from "./components/ContextSelector";
+import { getFile } from "./components/getFile";
 import { makeId } from "./utils/utils";
 
 function Ingredients({
@@ -43,6 +43,7 @@ function Ingredients({
         lore
       );
     } catch (e) {
+      // openErrorModal("Error generating entity", e);
       console.log("error", e);
       setGenerating(false);
       if (!second) {
@@ -51,7 +52,7 @@ function Ingredients({
       return;
     }
     if (!entity) {
-      openErrorModal("could not generate entity");
+      // openErrorModal("could not generate entity");
       setGenerating(false);
       return;
     }

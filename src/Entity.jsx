@@ -11,9 +11,9 @@ import {
   colors,
 } from "unique-names-generator";
 
-import "./App.css";
+import "./styles/App.css";
 import { generateImage, generateVoice } from "./utils/generation";
-import { availableVoices } from "./constants";
+import { availableVoices } from "./utils/constants";
 
 //field check if image, set source the img, if name change, generate new image
 const Entity = ({
