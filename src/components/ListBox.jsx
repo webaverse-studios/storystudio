@@ -10,7 +10,6 @@ const ListBox = ({
   generateEntityCallback,
   editEntityCallback,
   deleteEntityCallback,
-  showLabels = false,
   moveEntityCallback,
   handleImport
 }) => {
@@ -45,7 +44,6 @@ const ListBox = ({
                 data={data[key]}
                 editEntityCallback={editEntityCallback}
                 deleteEntityCallback={deleteEntityCallback}
-                showLabels={showLabels}
                 moveEntityCallback={(entity, up) =>
                   moveEntityCallback(entity, up)
                 }

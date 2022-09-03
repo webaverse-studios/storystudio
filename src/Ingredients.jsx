@@ -272,7 +272,6 @@ function Ingredients({
           editEntityCallback={(data) => editEntityCallback(data)}
           deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
           moveEntityCallback={(entity, up) => moveEntity(entity, up)}
-          showLabels={true}
           handleImport={importEntityList}
         />
       </div>

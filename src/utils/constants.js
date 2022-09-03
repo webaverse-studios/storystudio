@@ -52,7 +52,7 @@ export const entityPrototypes = [
 ];
 
 export const defaultIngredients = {
-      dialog: {
+      dialogue: {
             objectComment: [
                   {
                         action: "none",

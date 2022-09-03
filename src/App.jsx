@@ -361,7 +361,7 @@ function App() {
         />
       ) : (
         <Ingredients
-          dataType={"dialog"}
+          dataType={"dialogue"}
           importHandler={(data) => handleImport("ingredients", data)}
           exportHandler={() => handleExport("ingredients")}
           ingredients={ingredients}

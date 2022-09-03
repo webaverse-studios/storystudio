@@ -22,7 +22,6 @@ const Entity = ({
   editEntityCallback,
   deleteEntityCallback,
   moveEntityCallback,
-  showLabels = false,
   type,
 }) => {
   let audioPlayer = null;
@@ -261,9 +260,7 @@ const Entity = ({
 
             return (
               <div key={i} className={"entityField " + field}>
-                {showLabels && (
-                  <label style={{ display: "inline" }}>{field}</label>
-                )}
+                <label style={{ display: "inline" }}>{field}</label>
                 {field === "description" ? (
                   <textarea
                     value={data[field]}

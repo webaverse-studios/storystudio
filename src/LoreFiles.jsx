@@ -208,7 +208,6 @@ function LoreFiles({
             deleteEntityCallback(data, true, index)
           }
           moveEntityCallback={(entity, up) => moveEntity(entity, up)}
-          showLabels={true}
           handleImport={importEntityList}
           addEmpty={addEmpty}
         />

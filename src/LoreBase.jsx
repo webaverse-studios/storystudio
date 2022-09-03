@@ -200,7 +200,6 @@ function LoreBase({
                 deleteEntityCallback(data, index)
               }
               moveEntityCallback={(data, up) => moveEntityCallback(data, up)}
-              showLabels={true}
             />
           </div>
         )}
