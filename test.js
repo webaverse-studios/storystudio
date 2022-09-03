@@ -15,7 +15,7 @@ import {
   generateExposition,
   generateRPGDialogue,
   generateCutscene,
-  generateQuestTask,
+  generateActionTask,
   generateLocationComment,
   generateSelectCharacterComment,
   generateChatMessage,
@@ -237,14 +237,14 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
 
   promises.push(generateCutsceneTest);
 
-  async function generateQuestTaskTest() {
-    const output = await generateQuestTask();
+  async function generateActionTaskTest() {
+    const output = await generateActionTask();
 
-    console.log('*********** generateQuestTask:')
+    console.log('*********** generateActionTask:')
     console.log(output);
   }
 
-  promises.push(generateQuestTaskTest);
+  promises.push(generateActionTaskTest);
 
   async function generateSceneTest() {
     const output = await generateScene(makeGenerateFn());

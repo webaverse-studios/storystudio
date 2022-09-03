@@ -168,7 +168,7 @@ export async function makeEmpty(type, openErrorDialog) {
     //   return { description: resp };
 
     // case "quests":
-    //   resp = await module.generateQuest(
+    //   resp = await module.generateAction(
     //     getRandomEntity(data, "setting"),
     //     makeGenerateFn(),
     //   );
@@ -314,12 +314,12 @@ export async function generate(type, data, baseData, openErrorDialog) {
       }
       return { description: resp };
 
-    case "quests":
-      resp = await module.generateQuest(
+    case "actions":
+      resp = await module.generateAction(
         getRandomEntity(data, "setting"),
         makeGenerateFn(),
       );
-      console.log("QUEST:", resp);
+      console.log("ACTION:", resp);
       return resp;
     default:
       openErrorDialog("Unknown type " + type);

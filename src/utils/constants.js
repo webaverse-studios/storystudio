@@ -7,7 +7,7 @@ export const views = {
       files: "Output"
 };
 
-export const contextTypes = [
+export const dialogueTypes = [
       "objectComment",
       "npcComment",
       "mobComment",
@@ -17,153 +17,180 @@ export const contextTypes = [
       "rpgDialogue",
       "reactions",
       "cutscenes",
-      "quests",
+      "actions",
 ];
 
-export const entityPrototypes = [
-      {
-            type: "setting",
-            name: "The Safehouse",
-            description: "The Safehouse is a good place to lay low for a while. It exists in a voidspace that nobody can enter without the proper permissions.",
-      },
-      {
-            type: "object",
-            name: "Silver Sword",
-            description: "This a sword made out of pure silver. It is very sharp and can cut through anything.",
-      },
-      {
-            type: "character",
-            name: "Korben Dallas",
-            description: "I am a meat popsicle.",
-            inventory: [],
-      },
-      {
-            type: "npc",
-            name: "Sarah Kerrigan",
-            description: "Queen of Blades. Leader of the Swarm and executor of the Overmind.",
-            inventory: [],
-      },
-      {
-            type: "mob",
-            name: "Goblin",
-            description: "Standard goblin. Very ugly. Easily vanquished by most adventures.",
-            inventory: [],
-      },
-];
+export const entityTypes = [
+      "setting",
+      "character",
+      "npc",
+      "mob",
+      "object"
+]
+
+export const defaultDialogue = {
+      objectComment: [
+            {
+                  input: {
+                        target: "Silver Sword"
+                  },
+                  output: {
+                        comment: "That's a pretty cool sword. It looks exactly one I lost a long time ago."
+                  }
+                  
+            }
+      ],
+      npcComment: [
+            {
+                  input: {
+                        target: "Sarah Kerrigan"
+                  },
+                  output: {
+                        comment: "She scares the crap out of me. But she's usually pretty nice."
+                  }
+            }
+      ],
+      mobComment: [
+            {
+                  input: {
+                        target: "Goblin"
+                  },
+                  output: {
+                        comment: "I could probably take on four or five goblins at once."
+                  }
+            }
+      ],
+      loadingComment: [
+            {
+                  input: {
+                        target: "The Safehouse"
+                  },
+                  output: {
+                        comment: "The Safehouse is a good place to lay low for a while."
+                  }
+            }
+      ],
+      banter: [
+            {
+                  input: {
+                        setting: "The Safehouse",
+                        characters: ["Korben Dallas", "Leeloo Dallas"],
+                        npcs: ["Sarah Kerrigan"],
+                        objects: ["Silver Sword"]
+                  },
+                  output: {
+                        transcript: [
+                              {
+                                    speaker: "Korben Dallas",
+                                    message: "I'm going to go get some food."
+                              },
+                              {
+                                    speaker: "Leeloo Dallas",
+                                    message: "I'll come with you."
+                              },
+                              {
+                                    speaker: "Korben Dallas",
+                                    message: "No, you stay here. I'll be back in a few minutes."
+                              },
+                              {
+                                    speaker: "Sarah Kerrigan",
+                                    message: "Can I come?"
+                              },
+                              {
+                                    speaker: "Korben Dallas",
+                                    message: "No, you should stay with Leeloo."
+                              }
+                        ]
+                  }
+            }
+      ],
+      loreExposition: [
+            {
+                  input: {
+                        target: "Silver Sword"
+                  },
+                  output: {
+                        comment: "The Silver Sword is a legendary sword that was forged by the dwarves of the mountain range. It is said that the sword was forged from the tears of the gods themselves."
+                  }
+            }
+      ],
+      rpgDialogue: [
+            {
+                  input: {
+                        setting: "The Safehouse",
+                        characters: ["Korben Dallas", "Leeloo Dallas"],
+                        npcs: ["Sarah Kerrigan"],
+                        objects: ["Silver Sword"]
+                  },
+                  output: {
+                        transcript: [
+                              {
+                                    speaker: "Korben Dallas",
+                                    message: "What do you want to eat? [Pizza] [Burgers] [Salad]"
+                              },
+                              {
+                                    speaker: "Leeloo Dallas",
+                                    message: "Pizza."
+                              },
+                              {
+                                    speaker: "Korben Dallas",
+                                    message: "You got it. One pizza, coming right up."
+                              }
+                        ]
+                  }
+            }
+      ],
+      cutscenes: [
+            {
+                  input: {
+                        setting: "The Safehouse",
+                        characters: ["Korben Dallas", "Leeloo Dallas"],
+                        npcs: ["Sarah Kerrigan"],
+                        objects: ["Silver Sword"]
+                  },
+                  output: {
+                        transcript: [
+                              {
+                                    character: "Korben Dallas",
+                                    message: "I've had enough, Sarah. It's time to do business."
+                              },
+                              {
+                                    character: "Sarah Kerrigan",
+                                    message: "Yes, it is time. What business exactly?"
+                              },
+                              {
+                                    character: "Korben Dallas",
+                                    message: "You know what I'm talking about."
+                              },
+                              {
+                                    character: "Sarah Kerrigan",
+                                    message: "I have no idea, honestly."
+                              },
+                              {
+                                    character: "Korben Dallas",
+                                    message: "You abandoned our party to die. And everyone did. Even me. I wasted almost a week grinding to get back to my level."
+                              },
+                              {
+                                    character: "Sarah Kerrigan",
+                                    message: "Oh, well, that's how it is. Now if you're here to challenge me, I'll gladly help you waste a few more weeks!"
+                              }
+                        ]
+                  }
+            }
+      ],
+      actions: [
+            // TODO
+            {
+            }
+      ],
+      reactions: [
+            // TODO
+            {
+            }
+      ]
+}
 
 export const defaultIngredients = {
-      dialogue: {
-            objectComment: [
-                  {
-                        action: "none",
-                        emote: "normal",
-                        message:
-                              "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
-                        name: "Volt (Pokemon)",
-                        object: "electricball#1",
-                        target: "voltstadium-3.0#4",
-                  },
-            ],
-            npcComment: [
-                  {
-                        action: "none",
-                        emote: "normal",
-                        message:
-                              "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
-                        name: "Volt (Pokemon)",
-                        object: "electricball#1",
-                        target: "voltstadium-3.0#4",
-                  },
-            ],
-            mobComment: [
-                  {
-                        action: "none",
-                        emote: "normal",
-                        message:
-                              "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
-                        name: "Volt (Pokemon)",
-                        object: "electricball#1",
-                        target: "voltstadium-3.0#4",
-                  },
-            ],
-            loadingComment: [
-                  {
-                        action: "none",
-                        emote: "normal",
-                        message:
-                              "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
-                        name: "Volt (Pokemon)",
-                        object: "electricball#1",
-                        target: "voltstadium-3.0#4",
-                  },
-            ],
-            banter: [
-                  {
-                        action: "none",
-                        emote: "normal",
-                        message:
-                              "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
-                        name: "Volt (Pokemon)",
-                        object: "electricball#1",
-                        target: "voltstadium-3.0#4",
-                  },
-            ],
-            loreExposition: [
-                  {
-                        action: "none",
-                        emote: "normal",
-                        message:
-                              "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
-                        name: "Volt (Pokemon)",
-                        object: "electricball#1",
-                        target: "voltstadium-3.0#4",
-                  },
-            ],
-            rpgDialogue: [
-                  {
-                        action: "none",
-                        emote: "normal",
-                        message:
-                              "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
-                        name: "Volt (Pokemon)",
-                        object: "electricball#1",
-                        target: "voltstadium-3.0#4",
-                  },
-            ],
-            reactions: [
-                  {
-                        action: "none",
-                        emote: "normal",
-                        message:
-                              "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
-                        name: "Volt (Pokemon)",
-                        object: "electricball#1",
-                        target: "voltstadium-3.0#4",
-                  },
-            ],
-            cutscenes: [
-                  {
-                        action: "none",
-                        emote: "normal",
-                        message:
-                              "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
-                        name: "Volt (Pokemon)",
-                        object: "electricball#1",
-                        target: "voltstadium-3.0#4",
-                  },
-            ],
-            quests: [
-                  {
-                        action: "none",
-                        emote: "normal",
-                        message:
-                              "I cannot use this electric attack as some of the targets are water type. So, I will try to fight with only my hands.",
-                        name: "Volt (Pokemon)",
-                        object: "electricball#1",
-                        target: "voltstadium-3.0#4",
-                  },
-            ],
-      },
       setting: [
             {
                   type: "setting",
@@ -185,6 +212,12 @@ export const defaultIngredients = {
                   description: "I am a meat popsicle.",
                   inventory: [],
             },
+            {
+                  type: "character",
+                  name: "Leeloo Dallas",
+                  description: "Leeloo Multipass!",
+                  inventory: [],
+            }
       ],
       mob: [
             {
@@ -208,7 +241,7 @@ const isHttps = typeof window !== "undefined" && window.location.href.includes('
 
 export const stable_diffusion_url = `${isHttps ? 'https' : 'https'}://stable-diffusion.webaverse.com/image`;
 
-export const voice_url = "http://voice.webaverse.com/tts";
+export const voice_url = `${isHttps ? 'https' : 'https'}://voice.webaverse.com/tts`;
 
 export const availableVoices = [
       // TODO: Get these from github?

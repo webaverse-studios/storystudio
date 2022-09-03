@@ -1,28 +1,26 @@
-import { useEffect, useState } from "react";
-import "./styles/App.css";
-import { ApplicationContextProvider } from "./ContextProvider";
-import {
-  defaultIngredients,
-  exampleLoreFiles,
-  views,
-  lore,
-  defaultOpenAIParams,
-} from "./utils/constants";
-import Ingredients from "./Ingredients";
-import Setup from "./Setup";
-import LoreFiles from "./LoreFiles";
-import LoreBase from "./LoreBase";
-import murmurhash3String from "./utils/murmurhash3string";
-import { getFile } from "./components/getFile";
+import React, { useEffect, useState } from "react";
+import DialogueListBox from "./components/DialogueListBox";
+import DialogueSelector from "./components/DialogueSelector";
 import ErrorModal from "./components/ErrorModal";
+import { getFile } from "./components/getFile";
+import { ApplicationContextProvider } from "./ContextProvider";
+import Ingredients from "./Ingredients";
+import LoreBase from "./LoreBase";
+import LoreFiles from "./LoreFiles";
+import Setup from "./Setup";
+import "./styles/App.css";
+import {
+  defaultIngredients, defaultOpenAIParams, dialogueTypes, defaultDialogue, exampleLoreFiles, lore, views
+} from "./utils/constants";
+import murmurhash3String from "./utils/murmurhash3string";
 
+import Header from "./components/Header";
 import {
   compressObject,
   decompressObject,
   download_content,
-  fileToDataUri,
+  fileToDataUri
 } from "./utils/utils";
-import Header from "./components/Header";
 
 if (
   !localStorage.getItem("ingredients") ||
@@ -30,13 +28,25 @@ if (
 ) {
   localStorage.setItem("ingredients", compressObject(defaultIngredients));
 }
+
+if (
+  !localStorage.getItem("dialogue") ||
+  decompressObject(localStorage.getItem("dialogue")) === "[object Object]"
+) {
+  localStorage.setItem("dialogue", compressObject(defaultDialogue));
+}
+
 const storedEntityData = decompressObject(localStorage.getItem("ingredients"));
+const storedDialogueData = decompressObject(localStorage.getItem("dialogue"));
 
 function App() {
   const [currentView, setCurrentView] = useState(
     localStorage.getItem("currentView") || Object.keys(views)[0]
   );
   const [ingredients, setIngredients] = useState(storedEntityData);
+  const [dialogue, setDialogue] = useState(storedDialogueData);
+  const [currentContentType, setCurrentContentType] = useState(dialogueTypes[0]);
+
   const [loreFiles, setLoreFiles] = useState(
     localStorage.getItem("loreFiles")
       ? decompressObject(localStorage.getItem("loreFiles"))
@@ -363,8 +373,9 @@ function App() {
             openErrorDialog={openErrorDialog}
           />
         ) : (
+          <React.Fragment>
           <Ingredients
-            dataType={"dialog"}
+            dataType={"ingredients"}
             importHandler={(data) => handleImport("ingredients", data)}
             exportHandler={() => handleExport("ingredients")}
             ingredients={ingredients}
@@ -376,10 +387,36 @@ function App() {
             lore={loreData}
             setLore={setLoreData}
           />
+          <DialogueSelector
+          data={dialogue}
+          dialogueTypes={dialogueTypes}
+          currentContentType={currentContentType}
+          setCurrentContentType={setCurrentContentType}
+        />
+        <DialogueListBox
+          ingredients={ingredients}
+          type={currentContentType}
+          data={dialogue}
+          updateLocation={(up) => moveEntity(up)}
+          generateDialogueCallback={(data, setGenerating) => {
+            generateDialogueCallback(
+              dataType,
+              ingredients,
+              setGenerating,
+              false,
+              true
+            );
+          }}
+          editDialogueCallback={(data) => editDialogueCallback(data)}
+          deleteDialogueCallback={(data) => deleteDialogueCallback(data, true)}
+          moveDialogueCallback={(entity, up) => moveDialogue(entity, up)}
+        />
+        </React.Fragment>
         )}
         {errorDialogData &&
           errorDialogData.on &&
-          errorDialogData.msg?.length > 0 && (
+          errorDialogData.msg && 
+          errorDialogData.msg.length > 0 && (
             <ErrorModal
               close={closeErrorDialog}
               info={"Error: " + errorDialogData.msg}

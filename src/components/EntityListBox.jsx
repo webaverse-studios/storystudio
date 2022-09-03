@@ -1,8 +1,8 @@
 import React from "react";
 import "../styles/App.css";
-import Entity from "../Entity";
+import Entity from "./Entity";
 
-const ListBox = ({
+const EntityListBox = ({
   header,
   data,
   type = "",
@@ -19,6 +19,7 @@ const ListBox = ({
     <div className={"sectionWrapper " + header + "_wrapped"}>
       <div className={"sectionHeader " + type + "_header"}>
         <h1>{header}</h1>
+        <div style={{ display: "inline-block", float: "right" }}>
         {type === "lore" ||
         type === "character" ||
         type === "npc" ||
@@ -33,6 +34,7 @@ const ListBox = ({
       <button onClick={() => addEntityCallback(type)}>
         Add
       </button>
+      </div>
       </div>
       <div className={"section " + type}>
         {data &&
@@ -56,4 +58,4 @@ const ListBox = ({
   );
 };
 
-export default ListBox;
+export default EntityListBox;

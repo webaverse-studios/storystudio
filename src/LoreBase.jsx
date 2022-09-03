@@ -2,9 +2,9 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import MonacoEditor from "@monaco-editor/react";
 import { lore } from "./utils/constants";
-import ListBox from "./components/ListBox";
+import EntityListBox from "./components/EntityListBox";
 import { generate } from "./utils/generation";
-import Context from "./components/ContextSelector";
+import DialogueSelector from "./components/DialogueSelector";
 import "./styles/App.css";
 import { getFile } from "./components/getFile";
 import {
@@ -180,12 +180,12 @@ function LoreBase({
       <React.Fragment>
         {!showEditor && (
           <div className="sections">
-            <Context
+            <DialogueSelector
               data={loreData}
               currentContentType={currentContentType}
               setCurrentContentType={setCurrentContentType}
             />
-            <ListBox
+            <EntityListBox
               type={"lorebase"}
               data={loreData[currentContentType].examples}
               header={"lorebase"}

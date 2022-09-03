@@ -1,17 +1,17 @@
 import { useState } from "react";
 import "./styles/App.css";
-import { entityPrototypes, contextTypes } from "./utils/constants";
+import { entityTypes, dialogueTypes } from "./utils/constants";
 import { generate, makeEmpty } from "./utils/generation";
-import ListBox from "./components/ListBox";
-import Context from "./components/ContextSelector";
+import EntityListBox from "./components/EntityListBox";
 import { getFile } from "./components/getFile";
 import { makeId } from "./utils/utils";
 
 function Ingredients({
-  dataType,
   baseData,
   ingredients,
   setIngredients,
+  dialogue,
+  setDialogue,
   exportHandler,
   importHandler,
   openErrorModal,
@@ -19,15 +19,11 @@ function Ingredients({
   lore,
   setLore,
 }) {
-  const [currentContentType, setCurrentContentType] = useState(contextTypes[0]);
-
   const addEntityCallback = async (
-    entityType,
-    fromCurrentContentType = false
+    entityType
   ) => {
-    console.log('data is', fromCurrentContentType ? currentContentType : entityType)
       const entity = await makeEmpty(
-        fromCurrentContentType ? currentContentType : entityType,
+        entityType,
         openErrorModal
       );
    
@@ -38,27 +34,16 @@ function Ingredients({
       newEntityData[entityType] = [];
     }
 
-    const array =
-      entityType === dataType
-        ? newEntityData[entityType][currentContentType]
-        : newEntityData[entityType];
-
-    console.log("array", array);
-    array.unshift(entity);
-    if (fromCurrentContentType) {
-      newEntityData[entityType][currentContentType] = array;
-    } else {
-      newEntityData[entityType] = array;
-    }
+    newEntityData[entityType].unshift(entity);
+        
     setIngredients(newEntityData);
   };
   const generateEntityCallback = async (
     entityType,
     data,
     setGenerating,
-    second = false,
-    fromCurrentContentType = false
-  ) => {
+    second = false
+    ) => {
     setGenerating(true);
     //console.log("calling baseData", baseData);
     // generate new using openai callback
@@ -66,7 +51,7 @@ function Ingredients({
     try {
       console.log(baseData);
       entity = await generate(
-        fromCurrentContentType ? currentContentType : entityType,
+        entityType,
         data,
         baseData,
         openErrorModal,
@@ -95,52 +80,28 @@ function Ingredients({
       newEntityData[entityType] = [];
     }
 
-    const array =
-      entityType === dataType
-        ? newEntityData[entityType][currentContentType]
-        : newEntityData[entityType];
+    newEntityData[entityType].unshift(entity);
 
-    array.unshift(entity);
-    if (fromCurrentContentType) {
-      newEntityData[entityType][currentContentType] = array;
-    } else {
-      newEntityData[entityType] = array;
-    }
     setIngredients(newEntityData);
     setGenerating(false);
   };
-  const deleteEntityCallback = (entity, fromCurrentContentType) => {
+  const deleteEntityCallback = (entity) => {
     const newData = { ...ingredients };
-    if (fromCurrentContentType) {
-      newData[dataType][currentContentType] = ingredients[dataType][
-        currentContentType
-      ].filter((e) => e.id && e.id !== entity.id);
-    } else {
-      newData[entity.type] = ingredients[entity.type].filter(
-        (e) => e.id !== entity.id
-      );
-    }
+    newData[entity.type] = ingredients[entity.type].filter(
+      (e) => e.id !== entity.id
+    );
 
     setIngredients(newData);
   };
 
-  const editEntityCallback = (entity, useCurrentContentType = false) => {
-    console.log('entity is', entity)
-
+  const editEntityCallback = (entity) => {
     let newData = { ...ingredients };
-    console.log('newData is ', newData[entity.type])
-    console.log('useCurrentContentType', useCurrentContentType)
-    const array = newData[entity.type] ? newData[entity.type] : newData[dataType][currentContentType];
 
-    console.log('array is', array)
-
-    const entityIndex = array.findIndex(
+    const entityIndex = newData[entity.type].findIndex(
       (e) => e.id === entity.id
     );
 
-    console.log('entityIndex', entityIndex)
-
-    array[entityIndex] = entity;
+    newData[entity.type][entityIndex] = entity;
 
     setIngredients(newData);
   };
@@ -224,17 +185,16 @@ function Ingredients({
   return (
     <div className="view">
       <div className="sections">
-        {entityPrototypes.map((entity, index) => {
+        {entityTypes.map((type, index) => {
           return (
-            <ListBox
-              testValue={"test value"}
+            <EntityListBox
               key={index}
-              type={entity.type}
-              data={ingredients ? ingredients[entity.type] : []}
-              header={entity.type + "s"}
+              type={type}
+              data={ingredients ? ingredients[type] : []}
+              header={type + "s"}
               addEntityCallback={(type) => addEntityCallback(type)}
               generateEntityCallback={(data, setGenerating) =>
-                generateEntityCallback(entity.type, data, setGenerating)
+                generateEntityCallback(type, data, setGenerating)
               }
               editEntityCallback={(data) => editEntityCallback(data)}
               deleteEntityCallback={(data) => deleteEntityCallback(data)}
@@ -243,37 +203,6 @@ function Ingredients({
             />
           );
         })}
-        <Context
-          data={ingredients ? ingredients[dataType] : []}
-          contextTypes={contextTypes}
-          currentContentType={currentContentType}
-          setCurrentContentType={setCurrentContentType}
-        />
-        <ListBox
-          type={currentContentType}
-          data={
-            ingredients &&
-            ingredients[dataType] &&
-            ingredients[dataType][currentContentType]
-              ? ingredients[dataType][currentContentType]
-              : []
-          }
-          header={dataType}
-          updateLocation={(up) => moveEntity(up)}
-          generateEntityCallback={(data, setGenerating) => {
-            generateEntityCallback(
-              dataType,
-              ingredients,
-              setGenerating,
-              false,
-              true
-            );
-          }}
-          editEntityCallback={(data) => editEntityCallback(data)}
-          deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
-          moveEntityCallback={(entity, up) => moveEntity(entity, up)}
-          handleImport={importEntityList}
-        />
       </div>
       <div className={"importExportButtons"}>
       <button className={"importButton"} onClick={() => importJson()}>

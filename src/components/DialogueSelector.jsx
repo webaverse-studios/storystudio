@@ -1,15 +1,17 @@
 import React from "react";
 import "../styles/App.css";
 
-const ContextSelector = ({
+const DialogueSelector = ({
   data,
+  dialogueTypes,
   currentContentType,
   setCurrentContentType,
 }) => {
+  console.log('data', data);
   return (
     <div className="sectionWrapper context_wrapped">
       <div className="context-group">
-        {Object.keys(data ?? []).map((type, index) => {
+        {Object.keys(data || []).map((type, index) => {
           return (
             <button
               key={index}
@@ -32,4 +34,4 @@ const ContextSelector = ({
   );
 };
 
-export default ContextSelector;
+export default DialogueSelector;

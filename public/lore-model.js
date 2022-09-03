@@ -1014,7 +1014,7 @@ export async function generateCharacter(generateFn) {
   };
 }
 
-export async function generateReaction(generateFn, name) {
+export async function generateReaction(name, generateFn) {
   const reactionsPrompt = `\
   ${lore["reactions"].prompt}
   ${shuffleArray(lore["reactions"].examples).join("\n")}
@@ -1177,7 +1177,7 @@ export async function generateLoreExposition(generateFn) {
     return resp;
   }
 }
-export async function generateRPGDialogue(generateFn, character) {
+export async function generateRPGDialogue(character, generateFn) {
   const rpgDialoguePrompt = `\
   ${lore["inputParsing"].prompt}
   ${shuffleArray(lore["inputParsing"].examples).join("\n")}
@@ -1238,7 +1238,7 @@ The South Pole: Survive a day at the South Pole, without getting lost|Reward: 80
 The Moon: Survive a day on the moon, without getting lost|Reward: 9000xp.
 The Sun: Survive a day on the sun, without getting burned|Reward: 10000xp.
 `;
-export async function generateQuest(generateFn, scene) {
+export async function generateAction(scene, generateFn) {
   const _questPrompt = `\
   ${questPrompt}
   ${scene?.length > 0 ? scene : "Woodland"}:`;
@@ -1378,6 +1378,6 @@ export async function generateExposition(){
 }
 
 // Generate a quest task outcome
-export async function generateQuestTask(){
+export async function generateActionTask(){
   return console.log('not implemented')
 }

@@ -1,6 +1,6 @@
 import "./styles/App.css";
 import { generate } from "./utils/generation";
-import ListBox from "./components/ListBox";
+import EntityListBox from "./components/EntityListBox";
 import { getFile } from "./components/getFile";
 import { makeId } from "./utils/utils";
 import JSZip from "jszip";
@@ -196,7 +196,7 @@ function LoreFiles({
   return (
     <div className="view">
       <div className="sections">
-        <ListBox
+        <EntityListBox
           type={dataType}
           data={loreFiles}
           header={dataType}
