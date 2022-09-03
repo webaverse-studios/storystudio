@@ -5,9 +5,8 @@ import {
   exampleLoreFiles,
   views,
   lore,
+  defaultOpenAIParams,
 } from "./utils/constants";
-import { fileToDataUri, download_content } from "./utils/helpers";
-import Header from "./Header";
 import Ingredients from "./Ingredients";
 import Setup from "./Setup";
 import LoreFiles from "./LoreFiles";
@@ -22,6 +21,7 @@ import {
   download_content,
   fileToDataUri,
 } from "./utils/utils";
+import Header from "./partials/Header";
 
 if (
   !localStorage.getItem("ingredients") ||
