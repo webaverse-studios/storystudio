@@ -21,7 +21,7 @@ import {
   download_content,
   fileToDataUri,
 } from "./utils/utils";
-import Header from "./partials/Header";
+import Header from "./components/Header";
 
 if (
   !localStorage.getItem("ingredients") ||
