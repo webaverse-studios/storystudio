@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
-import "./App.css";
+import "./styles/App.css";
 import {
   defaultIngredients,
   exampleLoreFiles,
   views,
   lore,
   defaultOpenAIParams,
-} from "./constants";
-import Header from "./Header";
+} from "./utils/constants";
+import Header from "./partials/Header";
 import Ingredients from "./Ingredients";
 import Setup from "./Setup";
 import LoreFiles from "./LoreFiles";
 import LoreBase from "./LoreBase";
-import murmurhash3String from "./murmurhash3string";
-import { getFile } from "./getFile";
-import ErrorModal from "./ErrorModal";
+import murmurhash3String from "./utils/murmurhash3string";
+import { getFile } from "./components/getFile";
+import ErrorModal from "./components/ErrorModal";
+
+
 import {
   compressObject,
   decompressObject,
