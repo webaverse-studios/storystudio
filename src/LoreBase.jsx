@@ -3,73 +3,69 @@ import React, { useEffect, useState } from "react";
 import MonacoEditor from "@monaco-editor/react";
 import { lore } from "./utils/constants";
 import ListBox from "./components/ListBox";
-import { generate } from "./utils/openai_utils";
-import Context from "./ContextSelector";
+import { generate } from "./utils/generation";
+import Context from "./components/ContextSelector";
 import "./styles/App.css";
-import {
-  uniqueNamesGenerator,
-  adjectives,
-  animals,
-  colors,
-} from "unique-names-generator";
 import { getFile } from "./components/getFile";
-
-function makeId(length) {
-  let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-}
+import {
+  compressObject,
+  decompressObject,
+  download_content,
+  fileToDataUri,
+  makeId,
+} from "./utils/utils";
 
 if (
   !localStorage.getItem("loreData") ||
-  localStorage.getItem("loreData") === "[object Object]"
+  decompressObject(localStorage.getItem("loreData")) === "[object Object]"
 ) {
-  localStorage.setItem("loreData", JSON.stringify(lore));
+  localStorage.setItem("loreData", compressObject(lore));
 }
 
-async function download_content(url) {
-  const file = await axios.get(url);
-  return file.data;
-}
-function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseData, loreData, setLoreData, exportHandler, importHandler }) {
+function LoreBase({
+  baseData,
+  loreHeader,
+  setLoreHeader,
+  loadBaseData,
+  setBaseData,
+  loreData,
+  setLoreData,
+  exportHandler,
+  importHandler,
+}) {
   const [editorCode, setEditorCode] = useState("");
-  const [currentContentType, setCurrentContentType] = useState(Object.keys(lore)[0]);
+  const [currentContentType, setCurrentContentType] = useState(
+    Object.keys(lore)[0]
+  );
   const [generating, setGenerating] = useState(false);
-  const [showEditor, setShowEditor] = useState(true);
-
-  const fileToDataUri = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        resolve(event.target.result);
-      };
-      reader.readAsDataURL(file);
-    });
+  const [showEditor, setShowEditor] = useState(false);
 
   useEffect(() => {
-    const codeEditorData = localStorage.getItem('codeEditorData');
+    const codeEditorData = localStorage.getItem("codeEditorData");
     if (codeEditorData) {
       setEditorCode(codeEditorData);
-      download_content("./lore_header.js").then(loreHeader => setLoreHeader(loreHeader));
-    }
-    else {
+      setLoreHeader(loreHeader);
+    } else {
       loadBaseData(baseData);
     }
   }, []);
 
-
   // editorCode is a string
   // if the user presses ctrl + s, create a new file from the editorCode text, get the URI and call setBaseData
   const handleSave = async () => {
-    const blob = new Blob([loreHeader + '\n' + editorCode], {
-      type: "application/x-javascript;base64",
-    });
+    const blob = new Blob(
+      [
+        (editorCode.includes("export let lore = ")
+          ? ""
+          : "export let lore = " + JSON.stringify(loreData) + "\n") +
+          editorCode,
+      ],
+      {
+        type: "application/x-javascript;base64",
+      }
+    );
     const fileUri = await fileToDataUri(blob);
-    const importedFile = await import(fileUri);
+    const importedFile = await import(fileUri /* @vite-ignore */);
     setBaseData({
       base: fileUri,
       type: "file",
@@ -77,12 +73,11 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
       url: "new file",
     });
     return fileUri;
-  }
-
+  };
 
   let isSaving = false;
   const updateEditorCode = (value) => {
-    localStorage.setItem('codeEditorData', value);
+    localStorage.setItem("codeEditorData", value);
     setEditorCode(value);
     if (!isSaving) {
       isSaving = true;
@@ -90,24 +85,22 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
         isSaving = false;
       });
     }
-  }
+  };
 
   const saveLoreFile = async () => {
+    console.log("save_lore_file");
     const file = await handleSave();
     // save the file to disk as lore-model.js
     const link = document.createElement("a");
     link.href = file;
     link.download = "lore-model.js";
     link.click();
-  }
+  };
 
-  const addEntityCallback = async (
-    entityType,
-    data
-  ) => {
+  const addEntityCallback = async (entityType, data) => {
     setGenerating(true);
-    console.log('baseData is', baseData)
-    let entity = await generate(entityType, data, baseData);
+    console.log("baseData is", baseData);
+    const entity = { info: "new " + entityType };
 
     if (!entity.id) {
       entity.id = makeId(5);
@@ -115,59 +108,65 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
 
     const newEntityData = { ...loreData };
 
-    newEntityData[currentContentType].push(entity);
+    newEntityData[currentContentType].examples.unshift(entity);
 
     setLoreData(newEntityData);
     setGenerating(false);
   };
-  const deleteEntityCallback = (entity) => {
+  const deleteEntityCallback = (entity, index) => {
     const newData = { ...loreData };
-    newData[entity.type] = loreData[entity.type].filter(
-      (e) => e.id !== entity.id
-    );
-
-    setLoreData(newData);
-  };
-
-  const editEntityCallback = (entity) => {
-    let newData = { ...loreData };
-
-    if (entity.message !== undefined) {
-      newData[currentContentType];
-
-      const entityIndex = newData[currentContentType].findIndex(
-        (e) => e.id === entity.id
-      );
-      newData[currentContentType][entityIndex] = entity;
-    } else {
-      const entityIndex = newData[entity.type].findIndex(
-        (e) => e.id === entity.id
-      );
-      newData[entity.type][entityIndex] = entity;
+    if (index < 0) {
+      return;
     }
 
+    newData[currentContentType].examples.splice(index, 1);
+
     setLoreData(newData);
   };
 
-  const handleImport = (data) => {
-    setLoreData(data);
+  const moveEntityCallback = (data, up) => {
+    const newLore = { ...loreData };
+    const newLoreData = { ...newLore[currentContentType] };
+    const newLoreExamples = [...newLoreData.examples];
+
+    const index = newLoreExamples.findIndex((e) => e === data);
+    if (index === null || index === undefined || index <= -1) {
+      return;
+    }
+
+    if (newLoreExamples?.length <= 1) {
+      return;
+    }
+
+    if (index === 0 && up) {
+      newLoreExamples.push(newLoreExamples.shift());
+    } else if (index === newLoreExamples.length - 1 && !up) {
+      newLoreExamples.unshift(newLoreExamples.pop());
+    } else {
+      const newIndex = up ? index - 1 : index + 1;
+      if (newIndex > newLoreExamples.length - 1 || newIndex < 0) {
+        return;
+      }
+      const temp = newLoreExamples[index];
+      newLoreExamples[index] = newLoreExamples[newIndex];
+      newLoreExamples[newIndex] = temp;
+    }
+
+    newLoreData.examples = newLoreExamples;
+    newLore[currentContentType] = newLoreData;
+    setLoreData(newLore);
   };
 
-  const handleExport = () => {
-    const json = JSON.stringify(loreData);
-    console.log(json);
+  const editEntityCallback = (entity, index) => {
+    let newData = { ...loreData };
 
-    const element = document.createElement("a");
-    const file = new Blob([json], { type: "application/json" });
-    element.href = URL.createObjectURL(file);
-    element.download =
-      uniqueNamesGenerator({
-        dictionaries: [adjectives, animals, colors],
-        length: 2,
-      }) + ".json";
-    document.body.appendChild(element);
-    element.click();
-    element.remove();
+    if (index < 0) {
+      return;
+    }
+
+    newData[currentContentType].examples[index] = entity;
+
+    setLoreData(newData);
   };
 
   const importJson = async () => {
@@ -178,20 +177,32 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
   };
   return (
     <div className="view">
-        <React.Fragment>
-          <div className={"importExportButtons"}>
-          <button className={"modeButton" + (showEditor ? " active" : '')} onClick={() => setShowEditor(!showEditor)}>
+      <React.Fragment>
+        <div className={"importExportButtons"}>
+          <button
+            className={"modeButton" + (showEditor ? " active" : "")}
+            onClick={() => setShowEditor(!showEditor)}
+          >
             Edit Pipeline JS
           </button>
-            <button className={"importButton"} onClick={() => !showEditor ? importJson() : loadBaseData(baseData, updateEditorCode, false)}>
-              Import
-            </button>
-            <button className={"exportButton"} onClick={() => !showEditor ? exportHandler() : saveLoreFile()}>
-              Export
-            </button>
-          </div>
-        {!showEditor &&
-
+          <button
+            className={"importButton"}
+            onClick={() =>
+              !showEditor
+                ? importJson()
+                : loadBaseData(baseData, updateEditorCode, false)
+            }
+          >
+            Import
+          </button>
+          <button
+            className={"exportButton"}
+            onClick={() => (!showEditor ? exportHandler() : saveLoreFile())}
+          >
+            Export
+          </button>
+        </div>
+        {!showEditor && (
           <div className="sections">
             <Context
               data={loreData}
@@ -203,17 +214,22 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
               data={loreData[currentContentType].examples}
               header={"lorebase"}
               addEntityCallback={(data) => {
-                console.log('addEntityCallback', data);
+                console.log("addEntityCallback", data);
                 addEntityCallback(currentContentType, data);
               }}
-              editEntityCallback={(data) => editEntityCallback(data)}
-              deleteEntityCallback={(data) => deleteEntityCallback(data)}
+              editEntityCallback={(data, index) =>
+                editEntityCallback(data, index)
+              }
+              deleteEntityCallback={(data, index) =>
+                deleteEntityCallback(data, index)
+              }
+              moveEntityCallback={(data, up) => moveEntityCallback(data, up)}
               showLabels={true}
             />
           </div>
-            }
-        </React.Fragment>
-      {showEditor &&
+        )}
+      </React.Fragment>
+      {showEditor && (
         <React.Fragment>
           <div className={"base"}>
             <span className={"baseLabel"}>Base: </span>
@@ -221,7 +237,9 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
               className={"baseInput"}
               type="text"
               value={baseData?.url}
-              onChange={(e) => setBaseData({ ...baseData, url: e.target.value })}
+              onChange={(e) =>
+                setBaseData({ ...baseData, url: e.target.value })
+              }
               onFocus={(e) => setBaseData({ ...baseData, url: e.target.value })}
             />
             <button
@@ -237,12 +255,14 @@ function LoreBase({ baseData, loreHeader, setLoreHeader, loadBaseData, setBaseDa
             language="javascript"
             theme="light"
             value={editorCode}
-            onChange={(value) => { updateEditorCode(value); }}
+            onChange={(value) => {
+              updateEditorCode(value);
+            }}
           />
         </React.Fragment>
-      }
+      )}
     </div>
   );
-};
+}
 
 export default LoreBase;

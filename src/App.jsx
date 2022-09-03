@@ -1,25 +1,35 @@
 import { useEffect, useState } from "react";
 import "./styles/App.css";
-import { defaultIngredients, exampleLoreFiles, views, lore } from "./utils/constants";
-import { fileToDataUri, download_content } from './utils/helpers';
+import {
+  defaultIngredients,
+  exampleLoreFiles,
+  views,
+  lore,
+} from "./utils/constants";
+import { fileToDataUri, download_content } from "./utils/helpers";
 import Header from "./Header";
 import Ingredients from "./Ingredients";
 import Setup from "./Setup";
-import MapView from "./Map";
 import LoreFiles from "./LoreFiles";
 import LoreBase from "./LoreBase";
 import murmurhash3String from "./utils/murmurhash3string";
 import { getFile } from "./components/getFile";
 import ErrorModal from "./components/ErrorModal";
 
+import {
+  compressObject,
+  decompressObject,
+  download_content,
+  fileToDataUri,
+} from "./utils/utils";
 
 if (
   !localStorage.getItem("ingredients") ||
-  localStorage.getItem("ingredients") === "[object Object]"
+  decompressObject(localStorage.getItem("ingredients")) === "[object Object]"
 ) {
-  localStorage.setItem("ingredients", JSON.stringify(defaultIngredients));
+  localStorage.setItem("ingredients", compressObject(defaultIngredients));
 }
-const storedEntityData = JSON.parse(localStorage.getItem("ingredients"));
+const storedEntityData = decompressObject(localStorage.getItem("ingredients"));
 
 function App() {
   const [currentView, setCurrentView] = useState(
@@ -28,37 +38,81 @@ function App() {
   const [ingredients, setIngredients] = useState(storedEntityData);
   const [loreFiles, setLoreFiles] = useState(
     localStorage.getItem("loreFiles")
-      ? JSON.parse(localStorage.getItem("loreFiles"))
+      ? decompressObject(localStorage.getItem("loreFiles"))
       : exampleLoreFiles
   );
   const [loreData, setLoreData] = useState(
     localStorage.getItem("loreData")
-      ? JSON.parse(localStorage.getItem("loreData"))
+      ? decompressObject(localStorage.getItem("loreData"))
       : lore
   );
   const [loreHeader, setLoreHeader] = useState("");
-  const [baseData, setBaseData] = useState(
-    localStorage.getItem("baseData")
-      ? JSON.parse(localStorage.getItem("baseData"))
-      : {
-          base: null,
-          url: "./lore-model.js", // "https://webaverse.github.io/lore/lore-model.js",
-          type: "url",
-          module: {},
-        }
-  );
+  const [baseData, setBaseData] = useState({
+    base: null,
+    url: "./lore-model.js", // "https://webaverse.github.io/lore/lore-model.js",
+    type: "url",
+    module: {},
+  });
   const [errorDialogData, setErrorDialogData] = useState({
     on: false,
     msg: "",
   });
+  const [forceUpdate, setForceUpdate] = useState(false);
+  const [oepnAIParams, setOpenAIPArams] = useState(defaultOpenAIParams);
+  const [darkMode, setDarkMode] = useState(false);
+
+  const updateOpenAIParams = (data) => {
+    if (typeof data.top_p === "string") {
+      data.top_p = parseFloat(data.top_p);
+    }
+    if (typeof data.temperature === "string") {
+      data.temperature = parseFloat(data.temperature);
+    }
+    if (typeof data.frequency_penalty === "string") {
+      data.frequency_penalty = parseFloat(data.frequency_penalty);
+    }
+    if (typeof data.presence_penalty === "string") {
+      data.presence_penalty = parseFloat(data.presence_penalty);
+    }
+    if (typeof data.max_tokens === "string") {
+      data.max_tokens = parseInt(data.max_tokens);
+    }
+    if (typeof data.best_of === "string") {
+      data.best_of = parseInt(data.best_of);
+    }
+
+    setOpenAIPArams(data);
+    localStorage.setItem("openAIParams", JSON.stringify(data));
+  };
+
+  const updateDarkMode = () => {
+    setDarkMode(!darkMode);
+    localStorage.setItem("darkMode", darkMode);
+    globalThis.darkMode = darkMode;
+  };
 
   useEffect(() => {
-    localStorage.setItem("loreFiles", JSON.stringify(loreFiles));
+    localStorage.setItem("loreFiles", compressObject(loreFiles));
   }, [loreFiles]);
 
   useEffect(() => {
-    loadBaseData(baseData, false, !baseData.base);
-    console.log("baseData", baseData);
+    const dm = localStorage.getItem("darkMode");
+    if (dm && dm?.length > 0) {
+      setDarkMode(dm.toLocaleLowerCase().trim() === "true");
+      globalThis.darkMode = darkMode;
+    }
+
+    const oap = localStorage.getItem("openAIParams");
+    if (oap && oap !== "[object Object]" && oap?.length > 0) {
+      setOpenAIPArams(JSON.parse(oap));
+    }
+
+    const data = localStorage.getItem("baseData")
+      ? JSON.parse(localStorage.getItem("baseData"))
+      : baseData;
+
+    console.log("loaded default data");
+    loadBaseData(data, false, !baseData.base);
   }, []);
 
   // useEffect(() => {
@@ -70,25 +124,28 @@ function App() {
   }, [currentView]);
 
   useEffect(() => {
-    localStorage.setItem("ingredients", JSON.stringify(ingredients));
+    localStorage.setItem("ingredients", compressObject(ingredients));
   }, [ingredients]);
 
   useEffect(() => {
-    localStorage.setItem("loreData", JSON.stringify(loreData));
+    localStorage.setItem("loreData", compressObject(loreData));
   }, [loreData]);
 
   const handleImport = (type, data) => {
     if (type === "ingredients") {
       setIngredients(data);
-    } else {
+    } else if (type === "lore") {
+      console.log("setLoreData:", data);
       setLoreData(data);
+      console.log("lore Data:", loreData);
+    } else {
+      setLoreFiles(data);
     }
   };
 
   const loadBaseData = async (data, callback, fromUrl = true) => {
-    const loreHeader = await download_content("./lore_header.js");
+    const loreHeader = "export let lore = " + JSON.stringify(loreData) + "\n";
     // convert to string
-    const loreHeaderString = loreHeader.toString();
     const murmurHashImportString = `import {murmurhash3} from './murmurhash3.js';`;
 
     let content, displayContent;
@@ -110,7 +167,6 @@ function App() {
         // separate the content into an array of lines
         const lines = content.split("\n");
         // get the index of any line that includes the text LORE_HEADER
-        console.log("content is", content);
 
         if (content.includes(murmurHashImportString)) {
           content = content.replace(murmurHashImportString, murmurhash3String);
@@ -124,17 +180,20 @@ function App() {
             line.includes("LORE_HEADER_END")
           );
           // remove the array values including and between headerStartIndex and headerEndIndex
-          const beforeHeader = lines.slice(-1, headerStartIndex + 1);
+          const beforeHeader = lines.slice(-1, headerStartIndex);
           content =
             beforeHeader +
             lines.splice(headerEndIndex + 1, lines.length).join("\n");
           // find the line in content (a long delimited string) that contains import and murmurhash3
           // replace that line with loreHeader
+          if (!content.includes("export let lore = ")) {
+            content = loreHeader + "\n" + content;
+          }
           displayContent = content;
-          content = loreHeaderString + content;
         }
 
         // convert content back to a blob with the x-javascript base64 type
+        console.log("CONTENT1", content);
         blob = new Blob([content], {
           type: "application/x-javascript;base64",
         });
@@ -143,12 +202,31 @@ function App() {
         // fileUri is a base64 javascript document
         // we want to inject some code into the file before we
         const importedFile = await import(fileUri);
+        const firstLine = content.split("\n")?.[0];
+
+        if (firstLine && firstLine.startsWith("export let lore = ")) {
+          const json = firstLine.replace("export let lore = ", "");
+          const obj = JSON.parse(json);
+          setLoreData(obj);
+          console.log("updated lore data");
+        }
+
+        console.log("baseData set to2", importedFile);
         setBaseData({
           base: fileUri,
           type: "file",
           module: importedFile,
           url: data.url,
         });
+        localStorage.setItem(
+          "baseData",
+          JSON.stringify({
+            base: fileUri,
+            type: "file",
+            module: "",
+            url: data.url,
+          })
+        );
         end();
       };
     } else {
@@ -163,6 +241,7 @@ function App() {
       if (content.includes(murmurHashImportString)) {
         content = content.replace(murmurHashImportString, murmurhash3String);
         displayContent = content;
+        console.log("replace content is", content);
       } else {
         const headerStartIndex = lines.findIndex((line) =>
           line.includes("LORE_HEADER_START")
@@ -175,29 +254,58 @@ function App() {
         content =
           beforeHeader +
           lines.splice(headerEndIndex + 1, lines.length).join("\n");
-        content = loreHeader + "\n" + content;
+        // find the line in content (a long delimited string) that contains import and murmurhash3
+        // replace that line with loreHeader
+        if (!content.includes("export let lore = ")) {
+          content = loreHeader + "\n" + content;
+        }
+        displayContent = content;
       }
+
       // convert text to a blob with the x-javascript base64 type
       const blob = new Blob([content], {
         type: "application/x-javascript;base64",
       });
       const fileUri = await fileToDataUri(blob);
       const importedFile = await import(fileUri);
+      const firstLine = content.split("\n")?.[0];
+      console.log("CONTENT2", importedFile);
+
+      if (firstLine && firstLine.startsWith("export let lore = ")) {
+        const json = firstLine.replace("export let lore = ", "");
+        const obj = JSON.parse(json);
+        setLoreData(obj);
+      }
+      console.log("baseData set to1", importedFile);
       setBaseData({
         base: fileUri,
         type: "file",
         module: importedFile,
         url: file.name,
       });
+      console.log(baseData.module);
+      localStorage.setItem(
+        "baseData",
+        JSON.stringify({
+          base: fileUri,
+          type: "file",
+          module: "",
+          url: file.name,
+        })
+      );
+      console.log("json form:", JSON.stringify(baseData));
       end();
     }
   };
 
   const handleExport = (type) => {
     const json = JSON.stringify(
-      type === "ingredients" ? ingredients : loreData
+      type === "ingredients"
+        ? ingredients
+        : type === "lore"
+        ? loreData
+        : loreFiles
     );
-    console.log(json);
 
     const element = document.createElement("a");
     const file = new Blob([json], { type: "application/json" });
@@ -215,13 +323,23 @@ function App() {
     setErrorDialogData({ on: false, msg: "" });
   };
 
+  const _forceUpdate = () => {
+    setForceUpdate(!forceUpdate);
+  };
+
   return (
     <div className="App">
-      <Header currentView={currentView} setCurrentView={setCurrentView} />
+      <Header
+        currentView={currentView}
+        setCurrentView={setCurrentView}
+        _darkMode={darkMode}
+        _setDarkMode={updateDarkMode}
+      />
       {currentView === "setup" ? (
-        <Setup />
-      ) : currentView === "map" ? (
-        <MapView />
+        <Setup
+          _openAIParams={oepnAIParams}
+          _setOpenAIParams={updateOpenAIParams}
+        />
       ) : currentView === "base" ? (
         <LoreBase
           loreHeader={loreHeader}
@@ -245,6 +363,7 @@ function App() {
           setBaseData={setBaseData}
           loreFiles={loreFiles}
           setLoreFiles={setLoreFiles}
+          openErrorModal={openErrorDialog}
         />
       ) : (
         <Ingredients
@@ -255,7 +374,10 @@ function App() {
           setIngredients={setIngredients}
           baseData={baseData}
           setBaseData={setBaseData}
-          openErrorDialog={openErrorDialog}
+          openErrorModal={openErrorDialog}
+          forceUpdate={_forceUpdate}
+          lore={loreData}
+          setLore={setLoreData}
         />
       )}
       {errorDialogData &&

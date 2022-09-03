@@ -13,59 +13,59 @@ The whole point of the game is the Lisk is constantly tricking players into doin
 
 # Characters
 
-Id: scillia#ppyXa
+Id: scillia
 Name: Scillia
 Bio: Her nickname is Scilly or SLY. 13/F drop hunter. She is an adventurer, swordfighter and fan of potions. She is exceptionally skilled and can go Super Saiyan.
-Inventory: sword#2xayV
+Inventory: sword
 
-Id: drake#vvGyW
+Id: drake
 Name: Drake
 Bio: His nickname is DRK. 15/M hacker. Loves guns. Likes plotting new hacks. He has the best equipment and is always ready for a fight.
-Inventory: pistol#oEc2u, rifle#u2L7x
+Inventory: pistol, rifle
 
 # Objects
 
-Id: sword#2xayV
+Id: sword
 Name: Sword
 Description: A rusty old sword.
 Metadata: Level: 2, Damage: 20, Element: fire
 
-Id: computer#Ki3bK
+Id: computer
 Name: Computer
 Description: A basic computer. It can be activated to perform various functions.
 Metadata: Damage: 20, Element: fire
 
-Id: pistol#oEc2u
+Id: pistol
 Name: Pistol
 Description: Drake's sidearm. It's a regular pistol with the 0xDEADBEEF trademark etched onto it.
 Metadata: Damage: 10
 
-Id: rifle#u2L7x
+Id: rifle
 Name: Rifle
 Description: Drake's main rifle. It has a high fire rate. It has the 0xDEADBEEF trademark etched onto it.
 Metadata: Damage: 5, RPM: 150
 
 # Transcript
 
-scillia#ppyXa: Hey Drake, can I ask you something?
-/character scillia#ppyXa moves to drake#vvGyW
-drake#vvGyW: Sure, what is it?
-scillia#ppyXa: Do you ever wonder why we're here?
-drake#vvGyW: Is that a way to tee up a convo about pumas tomorrow?
-/character scillia#ppyXa emotes joy
-scillia#ppyXa: It might not be!
-drake#vvGyW: Scillia, I'm tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
-/drake moves to computer#Ki3bK
-/character scillia#ppyXa picks up sword#T53DH
-/character scillia#ppyXa moves to drake#Ki3bK
-scillia#ppyXa: Well I wanna fight!
-drake#vvGyW: Not now, Scillia!
-/character scillia#ppyXa moves to computer#Ki3bK
-scillia#ppyXa: Don't make me destroy your computer to get your attention!
-/character drake#vvGyW emotes angry
-drake#vvGyW: I've got my pistol and my rifle. You wouldn't try it.
-scillia#ppyXa: I disagree.
-/character scillia#ppyXa attacks computer#Ki3bK
+scillia: Hey Drake, can I ask you something?
+/action scillia moves to drake
+drake: Sure, what is it?
+scillia: Do you ever wonder why we're here?
+drake: Is that a way to tee up a convo about pumas tomorrow?
+/action scillia emotes joy
+scillia: It might not be!
+drake: Scillia, I'm tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
+/drake moves to computer
+/action scillia picks up sword
+/action scillia moves to drake
+scillia: Well I wanna fight!
+drake: Not now, Scillia!
+/action scillia moves to computer
+scillia: Don't make me destroy your computer to get your attention!
+/action drake emotes angry
+drake: I've got my pistol and my rifle. You wouldn't try it.
+scillia: I disagree.
+/action scillia attacks computer
 `,
 `\
 WEBAVERSE_LORE_FILE
@@ -77,52 +77,52 @@ The citadel contains the
 
 # Characters
 
-Id: scillia#8jtZw
+Id: scillia
 Name: Scillia
 Bio: Her nickname is Scilly or SLY. 13/F drop hunter. She is an adventurer, swordfighter and fan of potions. She is exceptionally skilled and can go Super Saiyan.
-Inventory: sword#7qBUz
+Inventory: sword
 
-Id: hyacinth#PuNyA
-Name: Drake
+Id: hyacinth
+Name: Hyacinth
 Bio: Also known as Hya. 15/F beast tamer. Influencer famous for her pets, and friend of Scillia's. She is really bad in school but the richest one in the group.
-Inventory: bow#rcPiM
+Inventory: bow
 
 # Objects
 
-Id: park-bench#zHWpG
+Id: park-bench
 Name: Park bench
 Description: A place to sit. Sits three people.
 Metadata: Capacity: 3
 
-Id: sword#7qBUz
+Id: sword
 Name: Sword
 Description: A rusty old sword.
 Metadata: Damage: 20, Element: fire
 
 # Transcript
 
-hyacinth#PuNyA: Do you think they're screwing us?
-scillia#8jtZw: Who?
-/character scillia#8jtZw emotes surprise
-hyacinth#PuNyA: The school. In magic class they teach us how to make new spells, right?
-scillia#8jtZw: Sure. Are you keeping up with the homework? I just made my first fire spell!
-/character scillia#8jtZw emotes happy
-hyacinth#PuNyA: But then they ask you to upload it to the Street right?
-scillia#8jtZw: Yeah, that's how you submit the assignment. You're really not paying attention in class are you?
-/character scillia#8jtZw emotes sorrow
-hyacinth#PuNyA: Where do you think all of these new spells are going?
-/character scillia#8jtZw emotes neutral
-scillia#8jtZw: Up the Street.
-hyacinth#PuNyA: Obviously. But what's up the street? What's above the Citadel? What's beyond the Graet Filter? Does anyone even care?
-scillia#8jtZw: Don't worry so much about it. You're rich and popular. You're all set, all you gotta do is not fail your magic class! Is this your way of asking for help with your magic homework?
-/character hyacinth#PuNyA emotes happy
-hyacinth#PuNyA: Scillia will you help me with my magic homework?
-/character scillia#8jtZw emotes angry
-scillia#8jtZw: Only if you can beat me to the bench!
-/character hyacinth#PuNyA emotes surprise
-hyacinth#PuNyA: Fuck!
-/character scillia#8jtZw activates park-bench#zHWpG
-/character hyacinth#PuNyA activates park-bench#zHWpG
+hyacinth: Do you think they're screwing us?
+scillia: Who?
+/action scillia emotes surprise
+hyacinth: The school. In magic class they teach us how to make new spells, right?
+scillia: Sure. Are you keeping up with the homework? I just made my first fire spell!
+/action scillia emotes happy
+hyacinth: But then they ask you to upload it to the Street right?
+scillia: Yeah, that's how you submit the assignment. You're really not paying attention in class are you?
+/action scillia emotes sorrow
+hyacinth: Where do you think all of these new spells are going?
+/action scillia emotes neutral
+scillia: Up the Street.
+hyacinth: Obviously. But what's up the street? What's above the Citadel? What's beyond the Great Filter? Does anyone even care?
+scillia: Don't worry so much about it. You're rich and popular. You're all set, all you gotta do is not fail your magic class! Is this your way of asking for help with your magic homework?
+/action hyacinth emotes happy
+hyacinth: Scillia will you help me with my magic homework?
+/action scillia emotes angry
+scillia: Only if you can beat me to the bench!
+/action hyacinth emotes surprise
+hyacinth: Fuck!
+/action scillia activates park-bench
+/action hyacinth activates park-bench
 `,
 `\
 WEBAVERSE_LORE_FILE
@@ -134,85 +134,85 @@ The gate has towers manned by gate guards, with a guard captain. The guards requ
 
 # Characters
 
-Id: pandora#W8YrU6
+Id: pandora
 Name: Pandora
 Bio: Her nickname is Pan or PANDY. She is a thief and adventurer. She is equipped with a dagger and a torch. Pan is a collector of rare artifacts. She has a powerful pet named Peedy.
-Inventory: dagger#HxCCJ, fox#1N5SJ
+Inventory: dagger, fox
 
-Id: kyosuke#z0dUcv
+Id: kyosuke
 Name: Kyosuke
 Bio: Kyo is a powerful fighter who is exceptional at dodging. He can even catch arrows in the air. He is armed with a sword and his loyal pet cat, Shiro.
-Inventory: sword#63SMY, cat#1hJNO
+Inventory: sword, cat
 
-Id: tobi#V7X0X9
+Id: tobi
 Name: Tobi
 Bio: He is the brave hero of the team. Tobi is an adventurer, swordsman, and an accomplished vet. His pet doggo, Bon Bon, is very loyal. It has been known
-Inventory: sword#2KjT3, dog#S8Zvh
+Inventory: sword, dog
 
-Id: cecil#Jp78bO
+Id: cecil
 Name: Cecil
 Bio: A guard captain for the local Citadel. He will not let anyone through the gate without his permission. He is armed with a powerful staff. Cecil has a pet monkey named Mario.
-Inventory: staff#2V7GN, monkey#1aJCb
+Inventory: staff, monkey
 
 # Objects
 
-Id: vending-machine#4vKHs
+Id: vending-machine
 Name: Vending Machine
 Description: A place to guy key cards. Requries coins to operate.
 Metadata: Sells: keycard, Price: 40
 
-Id: dagger#HxCCJ
+Id: dagger
 Name: Dagger
 Description: A small dagger with a poison tip.
 
-Id: fox#1N5SJ
+Id: fox
 Name: Fox
 Description: A female blue fox with a large bushy tail and magical auras. It can speak. It seems old and wise.
 
-Id: sword#2KjT3
+Id: sword
 Name: Sword
 Description: A shiny sword with a jeweled hilt. Designed for speed.
 
-Id: cat#1hJNO
+Id: cat
 Name: Cat
 Description: A small black cat with a white spot on its chest. It is very loyal to its "master" and will follow him/her anywhere in Cyberspace.
 
-Id: dog#S8Zvh
+Id: dog
 Name: Dog
 Description: An enormous black dog with teeth twice the size of its head. It is capable of looking both cute and ferocious.
 
-Id: staff#2V7GN
+Id: staff
 Name: Staff
 Description: A long wooden stick with a gem at the tip. It pulses with magical energy. The other side seems very sharp.
 
-Id: monkey#1aJCb
+Id: monkey
 Name: Monkey
 Description: A fat human-sized monkey wearing a blue bow-tie. It has a funny personality and will often throw banana peels on the ground.
 
-Id: keycard#iCc7q
+Id: keycard
 Name: Keycard
 Description: A card that can unlock the gate to the Great Filter.
 
 # Transcript
 
-/action cecil#Jp78bO emotes angry
-cecil#Jp78bO: Hey you!
-kyosuke#z0dUcv: Who, me?
-/action kyosuke#z0dUcv emotes surprised
-cecil#Jp78bO: What is your business in the Gate of the Great Filter?
-kyosuke#z0dUcv: We're visitor sfrom Zone 7. We're looking for artifacts from Zone 8.
-/action tobi#V7X0X9 emotes angry
-tobi#V7X0X9: Don't just tell them our plan, you moron!
-cecil#Jp78bO: That's not my business. You will not be able to pass through the Great Filter without the keycard.
-tobi#V7X0X9: Wanna bet Bon Bon has something to say about it?
-/action pandora#W8YrU6 emotes joy
-pandora#W8YrU6: You guys are hilarious. Did you know you can just break open the vending machine to get a keycard?
-kyosuke#z0dUcv: What really?
-pandora#W8YrU6: Yup, watch! Peedy, do your thing.
-/action fox attacks vending-machine#4vKHs
-kyosuke#z0dUcv: Now I feel like an idiot.
-/action kyosuke#z0dUcv emotes sorrow
-pandora#W8YrU6: It's ok, it's a trick only thieves know.
+/action cecil emotes angry
+cecil: Hey you!
+kyosuke: Who, me?
+/action kyosuke emotes surprised
+cecil: What is your business in the Gate of the Great Filter?
+kyosuke: We're visitor sfrom Zone 7. We're looking for artifacts from Zone 8.
+/action tobi emotes angry
+tobi: Don't just tell them our plan, you moron!
+cecil: That's not my business. You will not be able to pass through the Great Filter without the keycard.
+tobi: Wanna bet Bon Bon has something to say about it?
+/action pandora emotes joy
+pandora: You guys are hilarious. Did you know you can just break open the vending machine to get a keycard?
+kyosuke: What really?
+pandora: Yup, watch! Peedy, do your thing.
+/action fox attacks vending-machine
+kyosuke: Now I feel like an idiot.
+/action kyosuke emotes sorrow
+pandora: It's ok, it's a trick only thieves know.
 `,
 `\
 WEBAVERSE_LORE_FILE
@@ -223,78 +223,70 @@ A dark cave. It is in a dark part of the forest, where there is a chance of mobs
 
 # Characters
 
-Id: neka#EctU5
+Id: neka
 Name: Neka
 Bio: Student at the Citadel. 16/F She is studying to become a huntress, but also a very talented painter. She is very brave, almost reckless at times, but tends to overcome obstacles with her brute strength.
-Inventory: spear#r77SK2, scouter#iOiEO
+Inventory: spear, scouter
 
-Id: kass#bpo0c
+Id: kass
 Name: Kassius
 Bio: An anonymous player, he invents gadgets for adventurers. He doesn't really care about adventuring, but uses it as a way to test out inventions.
-Inventory: cloak#mjnph, bubble-shield#q9X3k, strange-device#rmAuP
+Inventory: cloak, bubble-shield, strange-device
 
 # Objects
 
-Id: silkworm#z3s3x
+Id: silkworm
 Name: Silkworm
 Description: A silkworm, but only a small one. They are quite common in this cave.
 
-Id: silkworm#aV7T0
-Name: Silkworm
-Description: A silkworm, but only a small one. They are quite common in this cave.
-
-Id: silkworm#T1KQ9
-Name: Silkworm
-Description: A silkworm, but only a small one. They are quite common in this cave.
-
-Id: spear#r77SK2
+Id: spear
 Name: Spear
 Description: A spear that has been sharpened quite a lot. It is made of a strange blue material that seems to glow in the light.
 
-Id:  scouter#iOiEO
+Id:  scouter
 Name: Scouter
 Description: When you wear this you can see the stats of other players, but you cannot see your own.
 
-Id: cloak#mjnph
+Id: cloak
 Name: Cloak
 Description: A cloak that is enchanted to make you invisible.
 
-Id: bubble-shield#91jSk
+Id: bubble-shield
 Name: Bubble Shield
 Description: A bubble shield. It requires a basic synthesis to create. It makes you immune to damage for one hit only, which destroys the shield.
 
-Id: strange-device#q9X3k
+Id: strange-device
 Name: Strange device
 Description: A strange device. It has no effect when you wear it, but when you remove it, you gain a level.
 
-Id: silk#vqgee
+Id: silk
 Name: Silk
 Description: A ball of silk. Can be sold.
 Metadata: Level: 1
 
-Id: scythe#9NcBP
+Id: scythe
 Name: Scythe
 Description: A standard-issue military scythe with auto-targeting capabilities.
 Metadata: Level: 17, Damage: 50, Element: fire
 
 # Transcript
 
-neka#EctU5: Yo check this out.
-/action neka#EctU5 moves to silk#z3s3x
-kass#bpo0c: Yeah, looks like silk. What does the scouter say about the power level?
-neka#EctU5: It's level one.
-kass#bpo0c: Selling?
-neka#EctU5: Hell no. I'm keeping it.
-kass#bpo0c: Damn it Neka. You know you're not supposed to keep any loot. That wasn't part of our agreement.
-neka#EctU5: I know. I was just kidding.
-/action neka#EctU5 picks up silk#vqgee
-kass#bpo0c: You're gonna get us killed.
-neka#EctU5: Relax, we can handle 3 silkworms.
-kass#bpo0c: We're not going to get them all.
-neka#EctU5: We'll see.
-/action neka#EctU5 attacks silkworm#z3s3x
-kass#bpo0c: Ok, maybe with a bit of teamwork. Let's go.
-/action kass#bpo0c attacks silkworm#aV7T0
+neka: Yo check this out.
+/action neka moves to silk#z3s3x
+kass: Yeah, looks like silk. What does the scouter say about the power level?
+neka: It's level one.
+kass: Selling?
+neka: Hell no. I'm keeping it.
+kass: Damn it Neka. You know you're not supposed to keep any loot. That wasn't part of our agreement.
+neka: I know. I was just kidding.
+/action neka picks up silk
+kass: You're gonna get us killed.
+neka: Relax, we can handle 3 silkworms.
+kass: We're not going to get them all.
+neka: We'll see.
+/action neka attacks silkworm#z3s3x
+kass: Ok, maybe with a bit of teamwork. Let's go.
+/action kass attacks silkworm
 `,
 `\
 WEBAVERSE_LORE_FILE
@@ -307,23 +299,23 @@ In the balcony is the treehouse's arcade machine, which is a PC that has a hacke
 
 # Characters
 
-Id: codex#u5ghi
+Id: codex
 Name: Codex
 Bio: 17/M, new to Nihon city. He has a website where he posts his world record speedruns. He is a top professional gamer but doesn't have many friends. He mostly keeps to himself.
 
-Id: keni#Xwvsw
+Id: keni
 Name: Keni
 Bio: 16/F, fangirl stan of fan of Codex, follows him everywhere. She is a big fan of his speedruns and thinks he's hilarious.
 
-Id: the-fox#z0XRJ
+Id: the-fox
 Name: The Fox
 Bio: 16/M, Codex's best friend. He is a furry with his own fursona. He is a big speedrunner and has done many record runs with Codex.
 
-Id: dr-yuki#XQGQc
+Id: dr-yuki
 Name: Dr Yuki
 Bio: 17/F, a robotic scientist and Youtuber, who makes videos about robots and technology. She is into computers, art and gaming. She is a friend of Keni. She is not an actual doctor, but she is an actual robot.
 
-Id: julie#i7RZD
+Id: julie
 Name: Julie
 Bio: 16/F, a professional gamer and Codex's rival. She has a huge ego and is very competitive. Her biggest secret is that she is a furry.
 
@@ -331,36 +323,36 @@ Bio: 16/F, a professional gamer and Codex's rival. She has a huge ego and is ver
 
 # Transcript
 
-julie#i7RZD: I'm bored.
-/action julie#i7RZD emotes sorrow
-dr-yuki#XQGQc: You know what they say Julie, idle hands are the devil's playthings.
-julie#i7RZD: That's not what they say. What do you do when you're bored, Fox?
-the-fox#z0XRJ: I go to furmeets, it cheers me right up!
-/action the-fox#z0XRJ emotes happy
-julie#i7RZD: Ew, furries.
-/action keni#Xwvsw moves to julie#i7RZD:
-keni#Xwvsw: You're just jealous because The Fox is happy just being a furry. He's found his meaning in life.
-the-fox#z0XRJ: Woof.
-/action the-fox#z0XRJ emotes happy
-julie#i7RZD: I have found my meaning in life. You'll see.
-/action julie#i7RZD emotes angry
-/action codex#u5ghi moves to julie#i7RZD
-codex#u5ghi: What are you guys arguing about?
-julie#i7RZD: Oh, nothing.
-keni#Xwvsw: Yeah, nothing. Did you win bae?
-codex#u5ghi: Smoked em.
-/action codex#u5ghi emotes joy
-codex#u5ghi: Ready to head out, guys?
-julie#i7RZD: Yeah, let's go.
-/action keni#Xwvsw moves to codex#u5ghi
-the-fox#z0XRJ: I'm not going.
-keni#Xwvsw: The Fox, you can't just sit in your room all day, you need to socialize.
-the-fox#z0XRJ: No it's not like that, I just have some other socialization to attend to. If you know what I mean.
-keni#Xwvsw: I don't but I'm not going to ask.
-/action keni#Xwvsw emotes happy
-codex#u5ghi: We'll see you later, Fox.
-the-fox#z0XRJ: Cheers bro.
-/action the-fox#z0XRJ leaves
+julie: I'm bored.
+/action julie emotes sorrow
+dr-yuki: You know what they say Julie, idle hands are the devil's playthings.
+julie: That's not what they say. What do you do when you're bored, Fox?
+the-fox: I go to furmeets, it cheers me right up!
+/action the-fox emotes happy
+julie: Ew, furries.
+/action keni moves to julie:
+keni: You're just jealous because The Fox is happy just being a furry. He's found his meaning in life.
+the-fox: Woof.
+/action the-fox emotes happy
+julie: I have found my meaning in life. You'll see.
+/action julie emotes angry
+/action codex moves to julie
+codex: What are you guys arguing about?
+julie: Oh, nothing.
+keni: Yeah, nothing. Did you win bae?
+codex: Smoked em.
+/action codex emotes joy
+codex: Ready to head out, guys?
+julie: Yeah, let's go.
+/action keni moves to codex
+the-fox: I'm not going.
+keni: The Fox, you can't just sit in your room all day, you need to socialize.
+the-fox: No it's not like that, I just have some other socialization to attend to. If you know what I mean.
+keni: I don't but I'm not going to ask.
+/action keni emotes happy
+codex: We'll see you later, Fox.
+the-fox: Cheers bro.
+/action the-fox leaves
 `,
 `\
 WEBAVERSE_LORE_FILE
@@ -371,58 +363,58 @@ A dark forest. The trees are thick, old and wrinkly, with spidery fingers. There
 
 # Characters
 
-Id: kala#ylaKh
+Id: kala
 Name: Kala
 Bio: Urban girl wearing sport gear. Conventionally attractive. She is always getting into trouble because
-Inventory: fast-shoes#yjtmS
+Inventory: fast-shoes
 
-Id: ashworth#eYCLa
+Id: ashworth
 Name: Ashworth
 Bio: Goth kid wearing dark clothes and a lot of eyeliner. He really likes the color black. He's very smart and gets good grades but doesn't like the way people treat him.
-Inventory: pitchfork#bSVcS
+Inventory: pitchfork
 
 # Objects
 
-Id: fast-shoes#yjtmS
+Id: fast-shoes
 Name: Fast shoes
 Description: These shoes make you run faster, since they do not need to touch the ground.
 
-Id: old-tree#ylaKh
+Id: old-tree
 Name: Old tree
 Description: An old tree. Cold and creaky.
 
-Id: old-tree#7IFq9
+Id: old-tree
 Name: Old tree
 Description: An old tree. Cold and creaky.
 
-Id: ancient-monster#IXSBD
+Id: ancient-monster
 Name: Ancient monster
 Description: A large round monster. It doesn't move much. It looks like it's been sitting here a while.
 
 # Transcript
 
-kala#ylaKh: I've got something to show you. You know the stories about the old avatars?
-ashworth#eYCLa: Yeah and I'm not scared of them!
-/action ashworth#eYCLa emotes angry
-kala#ylaKh: I'm serious. I think they're real. And I think I found one, here in this forest.
-/action kala#ylaKh moves to old-tree#ylaKh
-/action ashworth#eYCLa emotes surprised
-ashworth#eYCLa: In this forest? No way. The Citadel would know about it if it were here.
-/action kala#ylaKh moves to ashworth#eYCLa
-/action kala#ylaKh emotes surprised
-kala#ylaKh: What makes you think they don't know? They keep us in the dark about a lot of things...
-/action ashworth#eYCLa emotes neutral
-ashworth#eYCLa: I would know. The teachers like me. Anyway what kind of monster?
-/action kala#ylaKh moves to ancient-monster#IXSBD
-kala#ylaKh: This one!
-/action ashworth#eYCLa emotes surprised
-/action ashworth#eYCLa moves to ancient-monster#IXSBD
-ashworth#eYCLa: I don't see it. You must be imagining things.
-/action kala#ylaKh emotes angry
-kala#ylaKh: You asshole.
-ashworth#eYCLa: Ok sorry. Yeah, it does look very old and creepy. What happens when you touch it?
-/action ashworth#eYCLa activates ancient-monster#IXSBD
-/action kala#ylaKh emotes surprised
-kala#ylaKh: No don't!
+kala: I've got something to show you. You know the stories about the old avatars?
+ashworth: Yeah and I'm not scared of them!
+/action ashworth emotes angry
+kala: I'm serious. I think they're real. And I think I found one, here in this forest.
+/action kala moves to old-tree
+/action ashworth emotes surprised
+ashworth: In this forest? No way. The Citadel would know about it if it were here.
+/action kala moves to ashworth
+/action kala emotes surprised
+kala: What makes you think they don't know? They keep us in the dark about a lot of things...
+/action ashworth emotes neutral
+ashworth: I would know. The teachers like me. Anyway what kind of monster?
+/action kala moves to ancient-monster
+kala: This one!
+/action ashworth emotes surprised
+/action ashworth moves to ancient-monster
+ashworth: I don't see it. You must be imagining things.
+/action kala emotes angry
+kala: You asshole.
+ashworth: Ok sorry. Yeah, it does look very old and creepy. What happens when you touch it?
+/action ashworth activates ancient-monster
+/action kala emotes surprised
+kala: No don't!
 `
 ]

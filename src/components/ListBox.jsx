@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "../styles/App.css";
 import Entity from "../Entity";
 
@@ -10,12 +10,23 @@ const ListBox = ({
   editEntityCallback,
   deleteEntityCallback,
   showLabels = false,
+  moveEntityCallback,
+  handleImport,
 }) => {
   const [generating, setGenerating] = React.useState(false);
+
   return (
-    <div className={"sectionWrapper " + type + "_wrapped"}>
+    <div className={"sectionWrapper " + header + "_wrapped"}>
       <div className={"sectionHeader " + type + "_header"}>
         <h1>{header}</h1>
+        {type === "lore" ||
+        type === "character" ||
+        type === "npc" ||
+        type === "mob" ||
+        type === "setting" ||
+        type === "object" ? (
+          <button onClick={handleImport}>Import </button>
+        ) : null}
         <button onClick={() => addEntityCallback(data, setGenerating)}>
           {!generating ? "Generate" : "Generating..."}
         </button>
@@ -31,6 +42,10 @@ const ListBox = ({
                 editEntityCallback={editEntityCallback}
                 deleteEntityCallback={deleteEntityCallback}
                 showLabels={showLabels}
+                moveEntityCallback={(entity, up) =>
+                  moveEntityCallback(entity, up)
+                }
+                type={type}
               />
             );
           })}

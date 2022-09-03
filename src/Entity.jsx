@@ -1,9 +1,9 @@
 import React from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import DeleteForever from "@mui/icons-material/DeleteForever";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import PlusOne from "@mui/icons-material/PlusOne";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import {
   uniqueNamesGenerator,
   adjectives,
@@ -11,15 +11,21 @@ import {
   colors,
 } from "unique-names-generator";
 
-import "./App.css";
+import "./styles/App.css";
+import { generateImage, generateVoice } from "./utils/generation";
+import { availableVoices } from "./utils/constants";
 
+//field check if image, set source the img, if name change, generate new image
 const Entity = ({
   index,
   data,
   editEntityCallback,
   deleteEntityCallback,
+  moveEntityCallback,
   showLabels = false,
+  type,
 }) => {
+  let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
   const updateEntity = (ingredients, field, data, index) => {
@@ -121,6 +127,54 @@ const Entity = ({
       </div>
     );
   };
+
+  const renderVoice = () => {
+    if (
+      data.type === "character" ||
+      data.type === "npc" ||
+      data.type === "mob"
+    ) {
+      return (
+        <div>
+          <select
+            value={data["voice"]}
+            onChange={(event) => {
+              updateEntity(data, "voice", event.target.value);
+            }}
+          >
+            {availableVoices.length > 0 &&
+              availableVoices.map((voice, idx) => (
+                <option value={voice.voice} key={idx}>
+                  {voice.name}
+                </option>
+              ))}
+          </select>
+          <button
+            onClick={async () => {
+              if (data["voice"]?.length <= 0) {
+                return;
+              }
+
+              const voiceData = await generateVoice(
+                data["voice"],
+                data["description"]?.length > 0
+                  ? data["description"]
+                  : "Hello, how are you?"
+              );
+              const url = URL.createObjectURL(voiceData);
+              audioPlayer = new Audio(url);
+              audioPlayer.play();
+            }}
+          >
+            Test Voice
+          </button>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
+
   return (
     <div className={"entity"}>
       {!shouldDelete && (
@@ -146,7 +200,7 @@ const Entity = ({
       )}
       {typeof data === "object" && (
         <React.Fragment>
-          {Object.keys(data).map((field, i) => {
+          {Object.keys(data ?? []).map((field, i) => {
             if (
               field === "inventory" &&
               (data["type"] === "character" ||
@@ -154,13 +208,46 @@ const Entity = ({
                 data["type"] === "mob")
             ) {
               return inventoryRender(data["inventory"], i);
+            } else if (field === "voice") {
+              return renderVoice();
             } else if (
               field === "type" ||
               field === "id" ||
               field === "hash" ||
               field === "nonce"
-            )
+            ) {
               return null;
+            } else if (field === "image") {
+              return (
+                <div key={i}>
+                  <button
+                    onClick={async () => {
+                      updateEntity(
+                        data,
+                        field,
+                        await generateImage(
+                          data["name"] + " " + data["description"]
+                        ),
+                        index
+                      );
+                    }}
+                  >
+                    {data[field]?.length > 0
+                      ? "Regenerate Image"
+                      : "Generate Image"}
+                  </button>
+                  {data[field]?.length > 0 ? (
+                    <img
+                      className="photo"
+                      key={i}
+                      src={`data:image/jpeg;base64,${data[field]}`}
+                      alt={data["name"]}
+                    />
+                  ) : null}
+                </div>
+              );
+            }
+
             return (
               <div key={i} className={"entityField " + field}>
                 {showLabels && (
@@ -200,6 +287,45 @@ const Entity = ({
           />
         </React.Fragment>
       )}
+      <button onClick={() => moveEntityCallback(data, true)}>
+        <ArrowUpwardIcon />
+      </button>
+      <button onClick={() => moveEntityCallback(data, false)}>
+        <ArrowDownwardIcon />
+      </button>
+      {type === "lore" ||
+      type === "character" ||
+      type === "npc" ||
+      type === "mob" ||
+      type === "setting" ||
+      type === "object" ? (
+        <button
+          onClick={() => {
+            console.log(type);
+            if (type === "lore") {
+              const element = document.createElement("a");
+              const file = new Blob([data], { type: "application/text" });
+              element.href = URL.createObjectURL(file);
+              element.download = "lore" + index + "_" + Date.now() + ".md";
+              document.body.appendChild(element);
+              element.click();
+              element.remove();
+            } else {
+              const json = JSON.stringify(data);
+              const element = document.createElement("a");
+              const file = new Blob([json], { type: "application/json" });
+              element.href = URL.createObjectURL(file);
+              element.download =
+                data["name"] + "_" + new Date().getTime() + ".json";
+              document.body.appendChild(element);
+              element.click();
+              element.remove();
+            }
+          }}
+        >
+          {type === "lore" ? "Export MD" : "Export"}
+        </button>
+      ) : null}
     </div>
   );
 };
