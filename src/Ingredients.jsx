@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./styles/App.css";
 import { entityPrototypes, contextTypes } from "./utils/constants";
-import { generate } from "./utils/generation";
+import { generate, makeEmpty } from "./utils/generation";
 import ListBox from "./components/ListBox";
 import Context from "./components/ContextSelector";
 import { getFile } from "./components/getFile";
@@ -23,43 +23,15 @@ function Ingredients({
 
   const addEntityCallback = async (
     entityType,
-    data,
-    setGenerating,
-    second = false,
     fromCurrentContentType = false
   ) => {
-    setGenerating(true);
-    console.log("entityType, data, baseData", entityType, data, baseData);
-    //console.log("calling baseData", baseData);
-    // generate new using openai callback
-    let entity = null;
-    try {
-      console.log(baseData);
-      entity = await generate(
+    console.log('data is', fromCurrentContentType ? currentContentType : entityType)
+      const entity = await makeEmpty(
         fromCurrentContentType ? currentContentType : entityType,
-        data,
-        baseData,
-        openErrorModal,
-        lore
+        openErrorModal
       );
-    } catch (e) {
-      console.log("error", e);
-      setGenerating(false);
-      if (!second) {
-        addEntityCallback(entityType, data, setGenerating, true);
-      }
-      return;
-    }
-    if (!entity) {
-      openErrorModal("could not generate entity");
-      setGenerating(false);
-      return;
-    }
-    console.log("generate entity", entity);
-    if (!entity.id) {
-      entity.id = makeId(5);
-    }
-    console.log("ingredients", ingredients);
+   
+    entity.id = makeId(5);
 
     const newEntityData = { ...ingredients };
     if (!newEntityData[entityType]) {
@@ -78,10 +50,62 @@ function Ingredients({
     } else {
       newEntityData[entityType] = array;
     }
-    console.log(
-      "newEntityData[entityType][currentContentType]",
-      newEntityData[entityType][currentContentType]
-    );
+    setIngredients(newEntityData);
+  };
+  const generateEntityCallback = async (
+    entityType,
+    data,
+    setGenerating,
+    second = false,
+    fromCurrentContentType = false
+  ) => {
+    setGenerating(true);
+    //console.log("calling baseData", baseData);
+    // generate new using openai callback
+    let entity = null;
+    try {
+      console.log(baseData);
+      entity = await generate(
+        fromCurrentContentType ? currentContentType : entityType,
+        data,
+        baseData,
+        openErrorModal,
+        lore
+      );
+    } catch (e) {
+      // openErrorModal("Error generating entity", e);
+      console.log("error", e);
+      setGenerating(false);
+      if (!second) {
+        generateEntityCallback(entityType, data, setGenerating, true);
+      }
+      return;
+    }
+    if (!entity) {
+      // openErrorModal("could not generate entity");
+      setGenerating(false);
+      return;
+    }
+    if (!entity.id) {
+      entity.id = makeId(5);
+    }
+
+    const newEntityData = { ...ingredients };
+    if (!newEntityData[entityType]) {
+      newEntityData[entityType] = [];
+    }
+
+    const array =
+      entityType === dataType
+        ? newEntityData[entityType][currentContentType]
+        : newEntityData[entityType];
+
+    array.unshift(entity);
+    if (fromCurrentContentType) {
+      newEntityData[entityType][currentContentType] = array;
+    } else {
+      newEntityData[entityType] = array;
+    }
     setIngredients(newEntityData);
     setGenerating(false);
   };
@@ -100,22 +124,23 @@ function Ingredients({
     setIngredients(newData);
   };
 
-  const editEntityCallback = (entity) => {
+  const editEntityCallback = (entity, useCurrentContentType = false) => {
+    console.log('entity is', entity)
+
     let newData = { ...ingredients };
+    console.log('newData is ', newData[entity.type])
+    console.log('useCurrentContentType', useCurrentContentType)
+    const array = newData[entity.type] ? newData[entity.type] : newData[dataType][currentContentType];
 
-    if (entity.message !== undefined) {
-      newData[dataType][currentContentType];
+    console.log('array is', array)
 
-      const entityIndex = newData[dataType][currentContentType].findIndex(
-        (e) => e.id === entity.id
-      );
-      newData[dataType][currentContentType][entityIndex] = entity;
-    } else {
-      const entityIndex = newData[entity.type].findIndex(
-        (e) => e.id === entity.id
-      );
-      newData[entity.type][entityIndex] = entity;
-    }
+    const entityIndex = array.findIndex(
+      (e) => e.id === entity.id
+    );
+
+    console.log('entityIndex', entityIndex)
+
+    array[entityIndex] = entity;
 
     setIngredients(newData);
   };
@@ -198,14 +223,6 @@ function Ingredients({
 
   return (
     <div className="view">
-      <div className={"importExportButtons"}>
-        <button className={"importButton"} onClick={() => importJson()}>
-          Import
-        </button>
-        <button className={"exportButton"} onClick={() => exportHandler()}>
-          Export
-        </button>
-      </div>
       <div className="sections">
         {entityPrototypes.map((entity, index) => {
           return (
@@ -215,8 +232,9 @@ function Ingredients({
               type={entity.type}
               data={ingredients ? ingredients[entity.type] : []}
               header={entity.type + "s"}
-              addEntityCallback={(data, setGenerating) =>
-                addEntityCallback(entity.type, data, setGenerating)
+              addEntityCallback={(type) => addEntityCallback(type)}
+              generateEntityCallback={(data, setGenerating) =>
+                generateEntityCallback(entity.type, data, setGenerating)
               }
               editEntityCallback={(data) => editEntityCallback(data)}
               deleteEntityCallback={(data) => deleteEntityCallback(data)}
@@ -242,8 +260,8 @@ function Ingredients({
           }
           header={dataType}
           updateLocation={(up) => moveEntity(up)}
-          addEntityCallback={(data, setGenerating) => {
-            addEntityCallback(
+          generateEntityCallback={(data, setGenerating) => {
+            generateEntityCallback(
               dataType,
               ingredients,
               setGenerating,
@@ -254,10 +272,17 @@ function Ingredients({
           editEntityCallback={(data) => editEntityCallback(data)}
           deleteEntityCallback={(data) => deleteEntityCallback(data, true)}
           moveEntityCallback={(entity, up) => moveEntity(entity, up)}
-          showLabels={true}
           handleImport={importEntityList}
         />
       </div>
+      <div className={"importExportButtons"}>
+      <button className={"importButton"} onClick={() => importJson()}>
+        Import All
+      </button>
+      <button className={"exportButton"} onClick={() => exportHandler()}>
+        Export All
+      </button>
+    </div>
     </div>
   );
 }

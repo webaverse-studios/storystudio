@@ -58,7 +58,7 @@ function LoreBase({
         (editorCode.includes("export let lore = ")
           ? ""
           : "export let lore = " + JSON.stringify(loreData) + "\n") +
-          editorCode,
+        editorCode,
       ],
       {
         type: "application/x-javascript;base64",
@@ -97,7 +97,7 @@ function LoreBase({
     link.click();
   };
 
-  const addEntityCallback = async (entityType, data) => {
+  const generateEntityCallback = async (entityType, data) => {
     setGenerating(true);
     console.log("baseData is", baseData);
     const entity = { info: "new " + entityType };
@@ -178,30 +178,6 @@ function LoreBase({
   return (
     <div className="view">
       <React.Fragment>
-        <div className={"importExportButtons"}>
-          <button
-            className={"modeButton" + (showEditor ? " active" : "")}
-            onClick={() => setShowEditor(!showEditor)}
-          >
-            Edit Pipeline JS
-          </button>
-          <button
-            className={"importButton"}
-            onClick={() =>
-              !showEditor
-                ? importJson()
-                : loadBaseData(baseData, updateEditorCode, false)
-            }
-          >
-            Import
-          </button>
-          <button
-            className={"exportButton"}
-            onClick={() => (!showEditor ? exportHandler() : saveLoreFile())}
-          >
-            Export
-          </button>
-        </div>
         {!showEditor && (
           <div className="sections">
             <Context
@@ -213,9 +189,9 @@ function LoreBase({
               type={"lorebase"}
               data={loreData[currentContentType].examples}
               header={"lorebase"}
-              addEntityCallback={(data) => {
-                console.log("addEntityCallback", data);
-                addEntityCallback(currentContentType, data);
+              generateEntityCallback={(data) => {
+                console.log("generateEntityCallback", data);
+                generateEntityCallback(currentContentType, data);
               }}
               editEntityCallback={(data, index) =>
                 editEntityCallback(data, index)
@@ -224,7 +200,6 @@ function LoreBase({
                 deleteEntityCallback(data, index)
               }
               moveEntityCallback={(data, up) => moveEntityCallback(data, up)}
-              showLabels={true}
             />
           </div>
         )}
@@ -236,7 +211,7 @@ function LoreBase({
             <input
               className={"baseInput"}
               type="text"
-              value={baseData?.url}
+              value={baseData && baseData.url}
               onChange={(e) =>
                 setBaseData({ ...baseData, url: e.target.value })
               }
@@ -261,6 +236,30 @@ function LoreBase({
           />
         </React.Fragment>
       )}
+      <div className={"importExportButtons"}>
+        <button
+          className={"modeButton" + (showEditor ? " active" : "")}
+          onClick={() => setShowEditor(!showEditor)}
+        >
+          Edit Pipeline JS
+        </button>
+        <button
+          className={"importButton"}
+          onClick={() =>
+            !showEditor
+              ? importJson()
+              : loadBaseData(baseData, updateEditorCode, false)
+          }
+        >
+          Import All
+        </button>
+        <button
+          className={"exportButton"}
+          onClick={() => (!showEditor ? exportHandler() : saveLoreFile())}
+        >
+          Export All
+        </button>
+      </div>
     </div>
   );
 }

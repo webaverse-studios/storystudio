@@ -71,6 +71,10 @@
   min-height: 90vh;
 }
 
+.lore_wrapped {
+  width:100% !important;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 20px;
@@ -105,27 +109,27 @@
 
 .sectionWrapper {
   display: inline-block;
-  width: 100%;
+  width: calc(50%);
   vertical-align: top;
 }
 
-.setting_wrapped {
+.settings_wrapped {
   width: 66.66% !important;
 }
 
-.character_wrapped {
+.characters_wrapped {
   width: 33.333% !important;
 }
 
-.object_wrapped {
+.objects_wrapped {
   width: 33.33% !important;
 }
 
-.npc_wrapped {
+.npcs_wrapped {
   width: 33.33% !important;
 }
 
-.mob_wrapped {
+.mobs_wrapped {
   width: 33.33% !important;
 }
 
@@ -139,6 +143,7 @@
 
 .importExportButtons {
   display: inline-block;
+  width:100%;
 }
 
 .modeButton {
@@ -346,9 +351,10 @@
   }
   .sectionWrapper {
     margin-top: 1em;
+    width: 100%;
   }
   .sectionHeader h1 {
-    font-size:2em;
+    font-size:1em;
     border: 0;
     margin: 0;
     padding: 0;

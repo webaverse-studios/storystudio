@@ -16,7 +16,7 @@ function LoreFiles({
   importHandler,
   openErrorDialog,
 }) {
-  const addEntityCallback = async (setGenerating) => {
+  const generateEntityCallback = async (setGenerating) => {
     setGenerating(true);
     //console.log("calling baseData", baseData);
     // generate new using openai callback
@@ -174,35 +174,54 @@ function LoreFiles({
     element.remove();
   };
 
+  const addEmpty = () => {
+    //console.log("calling baseData", baseData);
+    // generate new using openai callback
+    let entity = ["test"];
+    console.log("generate entity", entity);
+    if (typeof entity === Array) {
+      if (entity[0]) entity = entity[0];
+    }
+    // if entity is an object, check if it has an id, if not, make one
+    if (typeof entity === "object" && !entity.id) {
+      entity.id = makeId(5);
+    }
+    const newEntityData = [...loreFiles];
+    console.log("newEntityData is", newEntityData);
+    newEntityData.unshift(entity);
+
+    setLoreFiles(newEntityData);
+  };
+
   return (
     <div className="view">
-      <div className={"importExportButtons"}>
-        <button className={"importButton"} onClick={() => importJson()}>
-          Import
-        </button>
-        <button className={"exportButton"} onClick={() => exportHandler()}>
-          Export
-        </button>
-        <button className={"exportButton"} onClick={() => exportMassMD()}>
-          Export MD
-        </button>
-      </div>
       <div className="sections">
         <ListBox
           type={dataType}
           data={loreFiles}
           header={dataType}
-          addEntityCallback={(data, setGenerating) => {
-            addEntityCallback(setGenerating);
+          generateEntityCallback={(data, setGenerating) => {
+            generateEntityCallback(setGenerating);
           }}
           editEntityCallback={editEntityCallback}
           deleteEntityCallback={(data, index) =>
             deleteEntityCallback(data, true, index)
           }
           moveEntityCallback={(entity, up) => moveEntity(entity, up)}
-          showLabels={true}
           handleImport={importEntityList}
+          addEmpty={addEmpty}
         />
+      </div>
+      <div className={"importExportButtons"}>
+        <button className={"importButton"} onClick={() => importJson()}>
+          Import All
+        </button>
+        <button className={"exportButton"} onClick={() => exportHandler()}>
+          Export All
+        </button>
+        <button className={"exportButton"} onClick={() => exportMassMD()}>
+          Export MDs as ZIP
+        </button>
       </div>
     </div>
   );
