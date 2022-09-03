@@ -193,7 +193,6 @@ function App() {
         }
 
         // convert content back to a blob with the x-javascript base64 type
-        console.log("CONTENT1", content);
         blob = new Blob([content], {
           type: "application/x-javascript;base64",
         });
@@ -211,7 +210,6 @@ function App() {
           console.log("updated lore data");
         }
 
-        console.log("baseData set to2", importedFile);
         setBaseData({
           base: fileUri,
           type: "file",
@@ -269,21 +267,18 @@ function App() {
       const fileUri = await fileToDataUri(blob);
       const importedFile = await import(fileUri);
       const firstLine = content.split("\n")?.[0];
-      console.log("CONTENT2", importedFile);
 
       if (firstLine && firstLine.startsWith("export let lore = ")) {
         const json = firstLine.replace("export let lore = ", "");
         const obj = JSON.parse(json);
         setLoreData(obj);
       }
-      console.log("baseData set to1", importedFile);
       setBaseData({
         base: fileUri,
         type: "file",
         module: importedFile,
         url: file.name,
       });
-      console.log(baseData.module);
       localStorage.setItem(
         "baseData",
         JSON.stringify({
@@ -293,7 +288,6 @@ function App() {
           url: file.name,
         })
       );
-      console.log("json form:", JSON.stringify(baseData));
       end();
     }
   };

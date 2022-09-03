@@ -174,6 +174,25 @@ function LoreFiles({
     element.remove();
   };
 
+  const addEmpty = () => {
+    //console.log("calling baseData", baseData);
+    // generate new using openai callback
+    let entity = ["test"];
+    console.log("generate entity", entity);
+    if (typeof entity === Array) {
+      if (entity[0]) entity = entity[0];
+    }
+    // if entity is an object, check if it has an id, if not, make one
+    if (typeof entity === "object" && !entity.id) {
+      entity.id = makeId(5);
+    }
+    const newEntityData = [...loreFiles];
+    console.log("newEntityData is", newEntityData);
+    newEntityData.unshift(entity);
+
+    setLoreFiles(newEntityData);
+  };
+
   return (
     <div className="view">
       <div className={"importExportButtons"}>
@@ -202,6 +221,7 @@ function LoreFiles({
           moveEntityCallback={(entity, up) => moveEntity(entity, up)}
           showLabels={true}
           handleImport={importEntityList}
+          addEmpty={addEmpty}
         />
       </div>
     </div>

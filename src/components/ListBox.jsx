@@ -12,6 +12,7 @@ const ListBox = ({
   showLabels = false,
   moveEntityCallback,
   handleImport,
+  addEmpty,
 }) => {
   const [generating, setGenerating] = React.useState(false);
 
@@ -30,6 +31,15 @@ const ListBox = ({
         <button onClick={() => addEntityCallback(data, setGenerating)}>
           {!generating ? "Generate" : "Generating..."}
         </button>
+        {type !== "lorebase" ? (
+          <button
+            onClick={() => {
+              addEmpty(type);
+            }}
+          >
+            Add
+          </button>
+        ) : null}
       </div>
       <div className={"section " + type}>
         {data &&

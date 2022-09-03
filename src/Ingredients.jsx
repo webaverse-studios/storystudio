@@ -29,7 +29,6 @@ function Ingredients({
     fromCurrentContentType = false
   ) => {
     setGenerating(true);
-    console.log("entityType, data, baseData", entityType, data, baseData);
     //console.log("calling baseData", baseData);
     // generate new using openai callback
     let entity = null;
@@ -56,11 +55,9 @@ function Ingredients({
       setGenerating(false);
       return;
     }
-    console.log("generate entity", entity);
     if (!entity.id) {
       entity.id = makeId(5);
     }
-    console.log("ingredients", ingredients);
 
     const newEntityData = { ...ingredients };
     if (!newEntityData[entityType]) {
@@ -72,17 +69,12 @@ function Ingredients({
         ? newEntityData[entityType][currentContentType]
         : newEntityData[entityType];
 
-    console.log("array", array);
     array.unshift(entity);
     if (fromCurrentContentType) {
       newEntityData[entityType][currentContentType] = array;
     } else {
       newEntityData[entityType] = array;
     }
-    console.log(
-      "newEntityData[entityType][currentContentType]",
-      newEntityData[entityType][currentContentType]
-    );
     setIngredients(newEntityData);
     setGenerating(false);
   };
@@ -197,6 +189,59 @@ function Ingredients({
     setGenerating(false);
   };
 
+  const addEmpty = (entityType) => {
+    let entity = null;
+    const fromCurrentContentType = entityType === currentContentType;
+    console.log(baseData);
+    const id = makeId(5);
+    entity = fromCurrentContentType
+      ? currentContentType === "objectComment" ||
+        currentContentType === "npcComment" ||
+        currentContentType === "mobComment" ||
+        currentContentType === "loadingComment"
+        ? {
+            name: "test",
+            comment: "test",
+          }
+        : currentContentType === "banter" ||
+          currentContentType === "loreExposition" ||
+          currentContentType === "rpgDialogue" ||
+          currentContentType === "reactions" ||
+          currentContentType === "cutscenes"
+        ? { description: "test" }
+        : { location: "test", quest: "test", reward: "test" }
+      : {
+          name: "test",
+          description: "test",
+          type: entityType,
+          shortname: "test#" + id,
+          id: id,
+          inventory: [],
+          img: "",
+        };
+
+    if (!entity.id) {
+      entity.id = makeId(5);
+    }
+
+    const newEntityData = { ...ingredients };
+    if (!newEntityData[entityType]) {
+      newEntityData[entityType] = [];
+    }
+
+    const array = fromCurrentContentType
+      ? newEntityData["dialog"][currentContentType]
+      : newEntityData[entityType];
+
+    array.unshift(entity);
+    if (fromCurrentContentType) {
+      newEntityData["dialog"][currentContentType] = array;
+    } else {
+      newEntityData[entityType] = array;
+    }
+    setIngredients(newEntityData);
+  };
+
   return (
     <div className="view">
       <div className={"importExportButtons"}>
@@ -223,6 +268,7 @@ function Ingredients({
               deleteEntityCallback={(data) => deleteEntityCallback(data)}
               moveEntityCallback={(entity, up) => moveEntity(entity, up)}
               handleImport={importEntityList}
+              addEmpty={addEmpty}
             />
           );
         })}
@@ -257,6 +303,7 @@ function Ingredients({
           moveEntityCallback={(entity, up) => moveEntity(entity, up)}
           showLabels={true}
           handleImport={importEntityList}
+          addEmpty={addEmpty}
         />
       </div>
     </div>
