@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./styles/App.css";
+import { ApplicationContextProvider } from "./ContextProvider";
 import {
   defaultIngredients,
   exampleLoreFiles,
@@ -15,6 +16,7 @@ import LoreBase from "./LoreBase";
 import murmurhash3String from "./utils/murmurhash3string";
 import { getFile } from "./components/getFile";
 import ErrorModal from "./components/ErrorModal";
+
 
 
 import {
@@ -202,6 +204,7 @@ function App() {
         const fileUri = await fileToDataUri(blob);
         // fileUri is a base64 javascript document
         // we want to inject some code into the file before we
+        console.log('File URI is ', fileUri);
         const importedFile = await import(fileUri);
         const firstLine = content.split("\n")?.[0];
 
@@ -329,67 +332,69 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <Header
-        currentView={currentView}
-        setCurrentView={setCurrentView}
-        _darkMode={darkMode}
-        _setDarkMode={updateDarkMode}
-      />
-      {currentView === "setup" ? (
-        <Setup
-          _openAIParams={oepnAIParams}
-          _setOpenAIParams={updateOpenAIParams}
+    <ApplicationContextProvider>
+      <div className="App">
+        <Header
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+          _darkMode={darkMode}
+          _setDarkMode={updateDarkMode}
         />
-      ) : currentView === "base" ? (
-        <LoreBase
-          loreHeader={loreHeader}
-          setLoreHeader={setLoreHeader}
-          loadBaseData={loadBaseData}
-          loreData={loreData}
-          setLoreData={setLoreData}
-          baseData={baseData}
-          setBaseData={setBaseData}
-          importHandler={(data) => handleImport("lore", data)}
-          exportHandler={() => handleExport("lore")}
-        />
-      ) : currentView === "files" ? (
-        <LoreFiles
-          dataType={"lore"}
-          importHandler={(data) => handleImport("output", data)}
-          exportHandler={() => handleExport("output")}
-          ingredients={ingredients}
-          setIngredients={setIngredients}
-          baseData={baseData}
-          setBaseData={setBaseData}
-          loreFiles={loreFiles}
-          setLoreFiles={setLoreFiles}
-          openErrorDialog={openErrorDialog}
-        />
-      ) : (
-        <Ingredients
-          dataType={"dialog"}
-          importHandler={(data) => handleImport("ingredients", data)}
-          exportHandler={() => handleExport("ingredients")}
-          ingredients={ingredients}
-          setIngredients={setIngredients}
-          baseData={baseData}
-          setBaseData={setBaseData}
-          openErrorModal={openErrorDialog}
-          forceUpdate={_forceUpdate}
-          lore={loreData}
-          setLore={setLoreData}
-        />
-      )}
-      {errorDialogData &&
-        errorDialogData.on &&
-        errorDialogData.msg?.length > 0 && (
-          <ErrorModal
-            close={closeErrorDialog}
-            info={"Error: " + errorDialogData.msg}
-          ></ErrorModal>
+        {currentView === "setup" ? (
+          <Setup
+            _openAIParams={oepnAIParams}
+            _setOpenAIParams={updateOpenAIParams}
+          />
+        ) : currentView === "base" ? (
+          <LoreBase
+            loreHeader={loreHeader}
+            setLoreHeader={setLoreHeader}
+            loadBaseData={loadBaseData}
+            loreData={loreData}
+            setLoreData={setLoreData}
+            baseData={baseData}
+            setBaseData={setBaseData}
+            importHandler={(data) => handleImport("lore", data)}
+            exportHandler={() => handleExport("lore")}
+          />
+        ) : currentView === "files" ? (
+          <LoreFiles
+            dataType={"lore"}
+            importHandler={(data) => handleImport("output", data)}
+            exportHandler={() => handleExport("output")}
+            ingredients={ingredients}
+            setIngredients={setIngredients}
+            baseData={baseData}
+            setBaseData={setBaseData}
+            loreFiles={loreFiles}
+            setLoreFiles={setLoreFiles}
+            openErrorDialog={openErrorDialog}
+          />
+        ) : (
+          <Ingredients
+            dataType={"dialog"}
+            importHandler={(data) => handleImport("ingredients", data)}
+            exportHandler={() => handleExport("ingredients")}
+            ingredients={ingredients}
+            setIngredients={setIngredients}
+            baseData={baseData}
+            setBaseData={setBaseData}
+            openErrorModal={openErrorDialog}
+            forceUpdate={_forceUpdate}
+            lore={loreData}
+            setLore={setLoreData}
+          />
         )}
-    </div>
+        {errorDialogData &&
+          errorDialogData.on &&
+          errorDialogData.msg?.length > 0 && (
+            <ErrorModal
+              close={closeErrorDialog}
+              info={"Error: " + errorDialogData.msg}
+            ></ErrorModal>
+          )}
+      </div>
+    </ApplicationContextProvider>
   );
 }
 
