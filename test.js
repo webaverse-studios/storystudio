@@ -287,13 +287,13 @@ ${output}
   // ********** GENERATE NEW OBJECT **********
 
   async function generateObjectTest() {
+    const { name, description, comment, prompt } = await generateObject(makeGenerateFn());
+    const formattedOutput =`Object: "${name}" ${description}\nQuote: "${comment}"`;
 
-    const output = await generateObject(makeGenerateFn());
+    console.log('*********** generateScene:')
+    console.log(formattedOutput);
 
-    console.log('*********** makeGenerateFn:')
-    console.log(output);
-
-    writeData('', output, 'object');
+    writeData('', prompt, formattedOutput, 'object');
   }
 
   if (test.toLowerCase().includes('all') || (test.toLowerCase().includes('object') && !test.toLowerCase().includes('objectcomment'))) {

@@ -1015,16 +1015,38 @@ const name = character[0].replace('"', '').trim().trimStart();
 const description = character[1].trim().trimStart();
 
   const inventory = "";
-  //lines.length > 2 ? lines[2].replace("Inventory: ", "").trim() : "";
-
-  console.log("**************** LINES ****************");
-  console.log(lines);
 
   return {
     name: name,
     bio: description,
     comment: comment,
     inventory,
+    prompt
+  };
+}
+
+export async function generateObject(generateFn) {
+  const prompt = `\
+${lore["object"].prompt}
+${shuffleArray(lore["object"].examples).join("\n")}
+Object: "`;
+
+  const resp = await generateFn(prompt, ['\nObject:', '\n\n']);
+
+  const lines = resp.split("\n").filter((el) => {
+    return el !== "";
+  });
+
+
+  const obj = lines[0].split('"')
+  const comment = lines[1] && lines[1].replace("Quote: ", "").replace('"', '').trim().trimStart();
+  const name = obj[0].replace('"', '').trim().trimStart();
+  const description = obj[1].trim().trimStart();
+
+  return {
+    name,
+    description,
+    comment,
     prompt
   };
 }
@@ -1048,26 +1070,6 @@ ${name}:`;
     _resp = resp;
   }
   return { reaction: _resp?.replace(/\s+/g, ""), prompt: reactionsPrompt}
-}
-
-export async function generateObject(generateFn) {
-  const objectPrompt = `\
-  ${lore["object"].prompt}
-  ${shuffleArray(lore["object"].examples).join("\n")}
-  prompt:`;
-
-  const resp = await generateFn(objectPrompt, makeIngredientStop());
-
-  const lines = resp.split("\n").filter((el) => {
-    return el !== "";
-  });
-
-  const desc = lines[1]?.replace("response: ", "").trim();
-
-  return {
-    name: lines[0].trim(),
-    description: desc,
-  };
 }
 
 export async function generateObjectComment({name, description}, generateFn) {
