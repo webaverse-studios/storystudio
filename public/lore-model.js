@@ -450,10 +450,8 @@ const makeSelectCharacterPrompt = ({ name, description }) => {
   return `\
 ${lore.character.prompt}
 ${shuffleArray(lore.character.examples).join(`\n`)}
-
-prompt: ${_cleanName(name + " (Character)")}${
-    description ? ` ${description}` : ""
-  }\nresponse: "`;
+Character: "${_cleanName(name)}" ${description}
+Quote: "`
 };
 const makeSelectCharacterStop = () => `"`;
 const parseSelectCharacterResponse = (response) => {
@@ -971,46 +969,63 @@ ${
 }
 
 export async function generateScene(generateFn) {
-  const scenePrompt = `\
-  ${lore["scene"].prompt}
-  ${shuffleArray(lore["scene"].examples).join("\n")}
-  prompt:`;
 
-  const resp = await generateFn(scenePrompt, makeIngredientStop());
+  // `Location: "The Trash" The dump where trash from all over the metaverse is kept. The Trash is dangerous and crime ridden, but home to many who are desperate.\nQuote: "Ugh, the dregs of society live here. It's the worst. It's just a disgusting slum. I'm honestly surprised there's not more crime."`,
+  const prompt = `\
+${lore["scene"].prompt}
+${shuffleArray(lore["scene"].examples).join("\n")}
+Location: "`;
+
+  const resp = await generateFn(prompt, ['\nLocation:']);
 
   const lines = resp.split("\n").filter((el) => {
     return el !== "";
   });
 
-  const desc = lines[1]?.replace("response: ", "").trim();
+  const location = lines[0].split('"')
+  const comment = lines[1].replace("Quote: ", "").replace('"', '').trim().trimStart();
+  const name = location[0].replace('"', '').trim().trimStart();
+  const description = location[1].trim().trimStart();
 
   return {
-    name: lines[0].trim(),
-    description: desc,
+    name,
+    description,
+    comment,
+    prompt
   };
 }
 
 export async function generateCharacter(generateFn) {
-  const characterPrompt = `\
-  ${lore["character"].prompt}
-  ${shuffleArray(lore["character"].examples).join("\n")}
-  prompt:`;
+  const prompt = `\
+${lore["character"].prompt}
+${shuffleArray(lore["character"].examples).join("\n")}
+Character: "`;
 
-  const resp = await generateFn(characterPrompt, makeIngredientStop());
+const resp = await generateFn(prompt, ['\nCharacter:']);
 
-  const lines = resp.split("\n").filter((el) => {
-    return el !== "";
-  });
+console.log('resp')
 
-  const desc = lines[1]?.replace("response: ", "").trim().replaceAll('"', "");
+const lines = resp.split("\n").filter((el) => {
+  return el !== "";
+});
+
+const character = lines[0].split('"')
+const comment = lines[1] && lines[1].replace("Quote: ", "").replace('"', '').trim().trimStart();
+const name = character[0].replace('"', '').trim().trimStart();
+const description = character[1].trim().trimStart();
 
   const inventory = "";
   //lines.length > 2 ? lines[2].replace("Inventory: ", "").trim() : "";
 
+  console.log("**************** LINES ****************");
+  console.log(lines);
+
   return {
-    name: lines[0].trim().replaceAll('"', ""),
-    description: desc,
-    inventory: inventory,
+    name: name,
+    bio: description,
+    comment: comment,
+    inventory,
+    prompt
   };
 }
 
@@ -1084,7 +1099,7 @@ export async function generateLoadingComment(scene, generateFn) {
   if (resp?.startsWith(scene?.length > 0 ? scene : "Lake:")) {
     return {
       name: scene?.length > 0 ? scene : "Lake:",
-      comment: resp.replace(scene?.length > 0 ? scene : "Lake:", "").trim(),
+      comment: resp.replace(scene, "").trim(),
     };
   } else {
     return { name: scene?.length > 0 ? scene : "Lake:", comment: resp };
@@ -1282,7 +1297,7 @@ export async function generateSelectTargetComment(
   return response;
 }
 
-export async function generateSelectCharacterComment({name, description}, generateFn) {
+export async function generateSelectCharacter({name, description}, generateFn) {
   const prompt = makeSelectCharacterPrompt({
     name,
     description,
@@ -1290,7 +1305,11 @@ export async function generateSelectCharacterComment({name, description}, genera
   const stop = makeSelectCharacterStop();
   let response = await generateFn(prompt, stop);
   const response2 = parseSelectCharacterResponse(response);
-  return response2;
+  // return response2;
+  return {
+    comment: response2.value,
+    prompt
+  }
 }
 
 export async function generateChatMessage({messages, nextCharacter}, generateFn) {
