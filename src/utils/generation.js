@@ -148,16 +148,16 @@ export async function makeDialogue(type, openErrorModal) {
     case "loadingComment":
       return {
         input: {
-          target: "New Scene",
+          target: "New Setting",
         },
         output: {
-          comment: "This is a comment about the scene that is loading",
+          comment: "This is a comment about the setting that is loading",
         }
       }
     case "banter":
       return {
         input: {
-          setting: "New Scene",
+          setting: "New Setting",
           characters: ["New Character"],
           npcs: ["New NPC"],
           objects: ["New Object"]
@@ -184,7 +184,7 @@ export async function makeDialogue(type, openErrorModal) {
     case "rpgDialogue":
       return {
         input: {
-          setting: "New Scene",
+          setting: "New Setting",
           characters: ["New Character"],
           npcs: ["New NPC"],
           objects: ["New Object"]
@@ -205,7 +205,7 @@ export async function makeDialogue(type, openErrorModal) {
     case "cutscenes":
       return {
         input: {
-          setting: "New Scene",
+          setting: "New Setting",
           characters: ["New Character"],
           npcs: ["New NPC"],
           objects: ["New Object"]
@@ -226,7 +226,7 @@ export async function makeDialogue(type, openErrorModal) {
     case "actions":
       return {
         input: {
-          setting: "New Scene",
+          setting: "New Setting",
           characters: ["New Character"],
           npcs: ["New NPC"],
           objects: ["New Object"],
@@ -244,7 +244,7 @@ export async function makeDialogue(type, openErrorModal) {
     case "reactions":
       return {
         input: {
-          setting: "New Scene",
+          setting: "New Setting",
           characters: ["New Character"],
           npcs: ["New NPC"],
           objects: ["New Object"],
@@ -296,7 +296,7 @@ export async function generate(type, data, baseData, openErrorModal) {
   switch (type) {
     case "setting":
       console.log("baseData:", baseData);
-      resp = await module.generateScene(makeGenerateFn());
+      resp = await module.generateSetting(makeGenerateFn());
       res.name = resp.name;
       res.description = resp.description;
       break;

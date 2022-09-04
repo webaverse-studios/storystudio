@@ -603,7 +603,7 @@ export const defaultDialogue = {
   actions: [
     {
       input: {
-        setting: "New Scene",
+        setting: "New Setting",
         characters: ["New Character"],
         npcs: ["New NPC"],
         objects: ["New Object"],
@@ -623,7 +623,7 @@ export const defaultDialogue = {
   reactions: [
     {
       input: {
-        setting: "New Scene",
+        setting: "New Setting",
         characters: ["New Character"],
         npcs: ["New NPC"],
         objects: ["New Object"],
@@ -914,7 +914,7 @@ Jake: "No, I haven't seen your cat. (react = headShake)"
 Amy: "Well, if you see her can you let me know?  (react = normal)" *END*`,
     ],
   },
-  scene: {
+  setting: {
     prompt: `\ 
 Anime worlds, they are mostly fantastic, but sometimes they can be a little boring or horrifying, others though can be smelly or flowery. The prompt is the name of the location, while the response is a short phrase from the adventurer about it.`,
     examples: [
@@ -1329,7 +1329,7 @@ We need exciting and interesting RPG character dialogue. This plays when the cha
       `Bert: "Five generations of warriors breathe in me. Do you even know that many kinds?!"`,
       `Yune: "Can I get a heal up in here? Anybody?"`,
       `Hue: "Toss me that speed potion. Or five."`,
-      `Aurora: "I will make a scene of your demise. You will be known as the one who failed."`,
+      `Aurora: "I will make a setting of your demise. You will be known as the one who failed."`,
       `June: "This thing will ever leave us alone! We have to kill it."`,
       `Zen: "The power of the mind is an awe to behold. Prepare to be amazed."`,
       `Dingus: "Just getting ready with my spells. We should make short work of this."`,

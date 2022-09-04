@@ -5,14 +5,14 @@ global.localStorage // now has your in memory localStorage
 import { openaiRequest } from "./src/utils/generation.js";
 import fs from "fs";
 import {
-  generateScene,
+  generateSetting,
   generateCharacter,
   generateObject,
   generateLore,
   generateObjectComment,
   generateReaction,
   generateBanter,
-  generateExposition,
+  generateLoreExposition,
   generateRPGDialogue,
   generateCutscene,
   generateActionTask,
@@ -233,19 +233,42 @@ ${output}
   // ********** LORE EXPOSITION **********
   // test: failed
 
-  async function generateExpositionTest() {
-    console.log('Starting exposition test');
-    // ****** EXPOSITION ******
-    const output = await generateExposition(testData.messages[0], makeGenerateFn());
+  async function generateExpositionObjectTest() {
+    let { name, description, comment, prompt } = await generateLoreExposition(
+      {
+        name: testData.objects[0].name,
+        setting: `${testData.settings[0].name}\n${testData.settings[0].description}`,
+        type: 'object'
+      }, makeGenerateFn());
+    
+    writeData({ name }, prompt, description + (comment ? ('\nQuote: '+comment) : ''), 'exposition_object');
+  }
 
-    console.log('*********** exposition:')
-    console.log(output);
+  async function generateExpositionCharacterTest() {
+    let { name, description, comment, prompt } = await generateLoreExposition(
+      {
+        name: testData.party[0].name,
+        setting: `${testData.settings[0].name}\n${testData.settings[0].description}`,
+        type: 'character'
+      }, makeGenerateFn());
+    
+    writeData({ name }, prompt, description + (comment ? ('\nQuote: '+comment) : ''), 'exposition_character');
+  }
 
-    writeData(testData.messages[0], output, 'exposition');
+  async function generateExpositionSettingTest() {
+    let { name, description, comment, prompt } = await generateLoreExposition(
+      {
+        name: testData.settings[0].name,
+        type: 'setting'
+      }, makeGenerateFn());
+    
+    writeData({ name }, prompt, description + (comment ? ('\nQuote: '+comment) : ''), 'exposition_setting');
   }
 
   if (test.toLowerCase().includes('all') || test.toLowerCase().includes('exposition')) {
-    promises.push(generateExpositionTest);
+    promises.push(generateExpositionObjectTest);
+    promises.push(generateExpositionCharacterTest);
+    promises.push(generateExpositionSettingTest);
   }
 
 
@@ -255,18 +278,18 @@ ${output}
 
   // ********** GENERATE NEW SCENE **********
 
-  async function generateSceneTest() {
-    const { name, description, comment, prompt } = await generateScene(makeGenerateFn());
+  async function generateSettingTest() {
+    const { name, description, comment, prompt } = await generateSetting(makeGenerateFn());
     const formattedOutput =`Location: "${name}" ${description}\nQuote: "${comment}"`;
 
-    console.log('*********** generateScene:')
+    console.log('*********** generateSetting:')
     console.log(formattedOutput);
 
-    writeData('', prompt, formattedOutput, 'scene');
+    writeData('', prompt, formattedOutput, 'setting');
   }
 
-  if (test.toLowerCase().includes('all') || (test.toLowerCase().includes('scene') && !test.toLowerCase().includes('cutscene'))) {
-    promises.push(generateSceneTest);
+  if (test.toLowerCase().includes('all') || (test.toLowerCase().includes('setting') && !test.toLowerCase().includes('cutscene'))) {
+    promises.push(generateSettingTest);
   }
 
     // ********** GENERATE NEW CHARACTER **********
@@ -290,7 +313,7 @@ ${output}
     const { name, description, comment, prompt } = await generateObject(makeGenerateFn());
     const formattedOutput =`Object: "${name}" ${description}\nQuote: "${comment}"`;
 
-    console.log('*********** generateScene:')
+    console.log('*********** generateSetting:')
     console.log(formattedOutput);
 
     writeData('', prompt, formattedOutput, 'object');

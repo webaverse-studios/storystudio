@@ -48,7 +48,7 @@ export let lore = {
       'Jake: "What are you doing?  (react = surprised)"\nAmy: "I\'m looking for my cat. Have you seen her?  (react = normal)"\nOptions for Jake:[No, I haven\'t seen your cat. (react =  headShake)], [Yes, I saw your cat go into the treehouse. (react = headNod)] \nJake: "No, I haven\'t seen your cat. (react = headShake)"\nAmy: "Well, if you see her can you let me know?  (react = normal)" *END*',
     ],
   },
-  scene: {
+  setting: {
     prompt:
       "Anime worlds, they are mostly fantastic, but sometimes they can be a little boring or horrifying, others though can be smelly or flowery. The prompt is the name of the location, while the response is a short phrase from the adventurer about it.",
     examples: [
@@ -62,7 +62,7 @@ export let lore = {
       `Location: "Sunscraper" The tallest building ever conceived of.\nQuote: "I bet it's amazing to see the world from up there. I guess as long as you don't fall down. I'm not scared though!"`,
       `Location: "Exorphys Graetious" Little is known about this inscrutable place.\nQuote: "That sounds hard to pronounce. It must be important. Or the person who named it is an asshole. Or their parents were assholes. Just a line of assholes."`,
       `Location: "Lake Lagari" A beautiful, serene lake, open to the public year round.\nQuote: "The water's so clear! It's really pretty. I bet the fish are delicious too. But then again, who am I to judge? I'm not a cannibal."`,
-      `Location: "The Park" A very typical public park.\n Quote: It's a great place to relax! If you like dogs. I like cats more though. So you can imagine, that causes a few problems..."`,
+      `Location: "The Park" A very typical public park.\nQuote: It's a great place to relax! If you like dogs. I like cats more though. So you can imagine, that causes a few problems..."`,
       `Location: "Castle of Cygnus" An ancient castle where a beautiful princess lives.\nQuote: "It's so cold in there! Somehow the princess can stand it. Maybe she just doesn't feel the cold. Or maybe she has a furnace."`,
       `Location: "The Abyss" A deep hole that few have returned from.\nQuote: "It's so dark and scary down there! You can survive long enough to turn on your flashlight, only to be scared to death by what you reveal!"`,
       `Location: "The Great Tree" A very old tree, beloved by the locals. At night it produces beautiful music.\nQuote: "It's really not that great, but the music is nice. Yeah apparently they decided trees should come with music."`,
@@ -106,8 +106,8 @@ export let lore = {
     prompt:
       "Fantastic object that can be found in the game, though some items are realistic. There is an item with it's description and a quote that the user said to the user.",
     examples: [
-      'Object: "The Great Deku Tree" An enormous, grey, old tree. It is partly petrified.\n Quote: "It\'s just an old tree. It\'s the kind of tree that makes me want to carve out an old mans face in it."',
-      'Object: "The Enchiridion" A magical spellbook with very old pages. It is fragile.\n Quote: "This book has ancient written all over it. Well not really but you know what I mean."',
+      'Object: "The Great Deku Tree" An enormous, grey, old tree. It is partly petrified.\nQuote: "It\'s just an old tree. It\'s the kind of tree that makes me want to carve out an old mans face in it."',
+      'Object: "The Enchiridion" A magical spellbook with very old pages. It is fragile.\nQuote: "This book has ancient written all over it. Well not really but you know what I mean."',
       'Object: "rainbow-dash.gif" Animaged gif image of Rainbow Dash from My Little Pony, in the style of Nyan Cat.\nQuote: "It\'s pretty good art, I guess. But I wish it had something more interesting besides this rainbow."',
       'Object: "The Stacks Warehouse" A cyberpunk container in a trailer park. It is inspired by the house of Hiro Protagonist in Snow Crash\nQuote: "This thing is all rusted and decrepit. They should probably tear it down and get a new place."',
       'Object: "The Infinity Sword" An ancient sword planted in a stone. It is heavily overgrown and won\'t budge.\nQuote: "This sword looks like it\'s been here for eons. It\'s hard to see where the stone ends and the sword begins."',
@@ -176,7 +176,7 @@ export let lore = {
       'Bert: "Five generations of warriors breathe in me. Do you even know that many kinds?!"',
       'Yune: "Can I get a heal up in here? Anybody?"',
       'Hue: "Toss me that speed potion. Or five."',
-      'Aurora: "I will make a scene of your demise. You will be known as the one who failed."',
+      'Aurora: "I will make a setting of your demise. You will be known as the one who failed."',
       'June: "This thing will ever leave us alone! We have to kill it."',
       'Zen: "The power of the mind is an awe to behold. Prepare to be amazed."',
       'Dingus: "Just getting ready with my spells. We should make short work of this."',
@@ -422,8 +422,8 @@ const makeCommentPrompt = ({
   // sex,
 }) => {
   return `\
-${lore.scene.prompt}
-${shuffleArray(lore.scene.examples).join(`\n`)}
+${lore.setting.prompt}
+${shuffleArray(lore.setting.examples).join(`\n`)}
 prompt: ${name}
 response:`;
 };
@@ -702,7 +702,7 @@ export async function generateLoreFile(
   { header, setting, character, npc, mob, object },
   generateFn
 ) {
-  // decide on what is happening in this scene
+  // decide on what is happening in this setting
   const encounterTypes = [
     { type: "quest", npcs: 1, mobs: 0, objects: 1, party: 2 },
     // { type: 'battle', npcs: {min: 0, max: 2}, mobs: {min: 1, max: 3}, objects: {min: 0, max: 2}, party: {min: 1, max: 4}},
@@ -968,12 +968,12 @@ ${
   return loreFileOutput;
 }
 
-export async function generateScene(generateFn) {
+export async function generateSetting(generateFn) {
 
   // `Location: "The Trash" The dump where trash from all over the metaverse is kept. The Trash is dangerous and crime ridden, but home to many who are desperate.\nQuote: "Ugh, the dregs of society live here. It's the worst. It's just a disgusting slum. I'm honestly surprised there's not more crime."`,
   const prompt = `\
-${lore["scene"].prompt}
-${shuffleArray(lore["scene"].examples).join("\n")}
+${lore["setting"].prompt}
+${shuffleArray(lore["setting"].examples).join("\n")}
 Location: "`;
 
   const resp = await generateFn(prompt, ['\nLocation:']);
@@ -1088,23 +1088,23 @@ Quote: "`;
     prompt: objectCommentPrompt
   };
 }
-export async function generateLoadingComment(scene, generateFn) {
+export async function generateLoadingComment(setting, generateFn) {
   const loadingCommentPrompt = `\
   ${commentPrompt}
-  ${scene?.length > 0 ? scene : "Lake"}:`;
+  ${setting?.length > 0 ? setting : "Lake"}:`;
 
   const resp = await generateFn(loadingCommentPrompt, [
     "\n",
-    scene?.length > 0 ? scene : "Lake:",
+    setting?.length > 0 ? setting : "Lake:",
   ]);
 
-  if (resp?.startsWith(scene?.length > 0 ? scene : "Lake:")) {
+  if (resp?.startsWith(setting?.length > 0 ? setting : "Lake:")) {
     return {
-      name: scene?.length > 0 ? scene : "Lake:",
-      comment: resp.replace(scene, "").trim(),
+      name: setting?.length > 0 ? setting : "Lake:",
+      comment: resp.replace(setting, "").trim(),
     };
   } else {
-    return { name: scene?.length > 0 ? scene : "Lake:", comment: resp };
+    return { name: setting?.length > 0 ? setting : "Lake:", comment: resp };
   }
 }
 
@@ -1121,20 +1121,37 @@ export async function generateBanter(name, generateFn) {
 
   return resp;
 }
-export async function generateLoreExposition(generateFn) {
-  const loreExpositionPrompt = `\
-  ${lore["loreExposition"].prompt}
-  ${shuffleArray(lore["loreExposition"].examples).join("\n")}
-  prompt:`;
 
-  const resp = await generateFn(loreExpositionPrompt, makeIngredientStop());
-
-  if (resp?.startsWith("prompt: ")) {
-    return resp.replace("prompt: ", "").trim();
-  } else {
-    return resp;
-  }
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+export async function generateLoreExposition({name, setting = null, type = 'Object'}, generateFn) {
+  const prompt = `\
+${type !== 'setting' && (setting && (setting + '\n')) || ''}\
+${lore[type.toLowerCase()].prompt}
+${shuffleArray(lore[type.toLowerCase()].examples).join("\n")}
+${capitalizeFirstLetter(type)}: "${name}"`;
+
+  const resp = await generateFn(prompt, [`\n${type.toUpperCase()}:`, '\n\n']);
+
+  const lines = resp.split("\n").filter((el) => {
+    return el !== "";
+  });
+
+  const description = lines[0].trimStart().trim();
+  const comment = lines[1] && lines[1].replaceAll("Quote: ", "").replaceAll('"', '').trim().trimStart();
+
+  return {
+    name,
+    description,
+    comment,
+    prompt
+  };
+
+  
+}
+
 export async function generateRPGDialogue(character, generateFn) {
   const rpgDialoguePrompt = `\
   ${lore["inputParsing"].prompt}
@@ -1196,33 +1213,33 @@ The South Pole: Survive a day at the South Pole, without getting lost|Reward: 80
 The Moon: Survive a day on the moon, without getting lost|Reward: 9000xp.
 The Sun: Survive a day on the sun, without getting burned|Reward: 10000xp.
 `;
-export async function generateAction(scene, generateFn) {
+export async function generateAction(setting, generateFn) {
   const _questPrompt = `\
   ${questPrompt}
-  ${scene?.length > 0 ? scene : "Woodland"}:`;
+  ${setting?.length > 0 ? setting : "Woodland"}:`;
 
   const resp = await generateFn(_questPrompt, [
     "\n",
-    scene?.length > 0 ? scene : "Woodland",
+    setting?.length > 0 ? setting : "Woodland",
   ]);
 
-  if (resp?.startsWith(scene?.length > 0 ? scene : "Woodland:")) {
+  if (resp?.startsWith(setting?.length > 0 ? setting : "Woodland:")) {
     const data = resp
-      .replace(scene?.length > 0 ? scene : "Woodland:", "")
+      .replace(setting?.length > 0 ? setting : "Woodland:", "")
       .trim();
     const [quest, reward] = data.split("|");
     return {
-      location: scene?.length > 0 ? scene : "Woodland",
+      location: setting?.length > 0 ? setting : "Woodland",
       quest: quest?.trim(),
       reward: reward?.trim(),
     };
   } else {
     const data = resp
-      .replace(scene?.length > 0 ? scene : "Woodland:", "")
+      .replace(setting?.length > 0 ? setting : "Woodland:", "")
       .trim();
     const [quest, reward] = data.split("|");
     return {
-      location: scene?.length > 0 ? scene : "Woodland",
+      location: setting?.length > 0 ? setting : "Woodland",
       quest: quest?.trim(),
       reward: reward?.trim(),
     };
@@ -1259,8 +1276,8 @@ export async function generateLocationComment(
   generateFn
 ) {
   const sceneCommentPrompt = `\
-${lore.scene.prompt}
-${shuffleArray(lore.scene.examples, 8).join("\n")}
+${lore.setting.prompt}
+${shuffleArray(lore.setting.examples, 8).join("\n")}
 Location: "${name}" ${description}
 Quote: "`;
   
