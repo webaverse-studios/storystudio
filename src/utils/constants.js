@@ -1,7 +1,12 @@
 export const views = {
       setup: "Setup",
       base: "Base",
-      builder: "Builder"
+      settings: "Settings",
+      characters: "Characters",
+      npcs: "NPCs",
+      objects: "Objects",
+      dialogue: "Dialogue",
+      loreFiles: "Lorefiles"
 };
 
 export const exampleLoreFiles = [
@@ -73,7 +78,7 @@ export const exampleLoreFiles = [
   scillia: I disagree.
   /action scillia attacks computer
   `,
-  `\
+      `\
   WEBAVERSE_LORE_FILE
   
   # Setting
@@ -130,7 +135,7 @@ export const exampleLoreFiles = [
   /action scillia activates park-bench
   /action hyacinth activates park-bench
   `,
-  `\
+      `\
   WEBAVERSE_LORE_FILE
   
   # Setting
@@ -220,7 +225,7 @@ export const exampleLoreFiles = [
   /action kyosuke emotes sorrow
   pandora: It's ok, it's a trick only thieves know.
   `,
-  `\
+      `\
   WEBAVERSE_LORE_FILE
   
   # Setting
@@ -294,7 +299,7 @@ export const exampleLoreFiles = [
   kass: Ok, maybe with a bit of teamwork. Let's go.
   /action kass attacks silkworm
   `,
-  `\
+      `\
   WEBAVERSE_LORE_FILE
   
   # Setting
@@ -360,7 +365,7 @@ export const exampleLoreFiles = [
   the-fox: Cheers bro.
   /action the-fox leaves
   `,
-  `\
+      `\
   WEBAVERSE_LORE_FILE
   
   # Setting
@@ -423,7 +428,7 @@ export const exampleLoreFiles = [
   /action kala emotes surprised
   kala: No don't!
   `
-  ]
+]
 
 export const dialogueTypes = [
       "objectComment",
@@ -455,7 +460,7 @@ export const defaultDialogue = {
                   output: {
                         comment: "That's a pretty cool sword. It looks exactly one I lost a long time ago."
                   }
-                  
+
             }
       ],
       npcComment: [
@@ -597,13 +602,41 @@ export const defaultDialogue = {
             }
       ],
       actions: [
-            // TODO
             {
+                  input: {
+                        setting: "New Scene",
+                        characters: ["New Character"],
+                        npcs: ["New NPC"],
+                        objects: ["New Object"],
+                        messages: [{
+                              speaker: "New NPC",
+                              action: "You should pick up the object"
+                        }]
+                  },
+                  output: {
+                        speaker: "New Character",
+                        action: "picks up New Object"
+                  }
             }
       ],
       reactions: [
-            // TODO
             {
+                  input: {
+                        setting: "New Scene",
+                        characters: ["New Character"],
+                        npcs: ["New NPC"],
+                        objects: ["New Object"],
+                        messages: [{
+                              speaker: "New NPC",
+                              action: "I am your father"
+                        }]
+                  },
+                  output: {
+                        transcript: {
+                              speaker: "New Character",
+                              reaction: "surprise"
+                        }
+                  }
             }
       ]
 }

@@ -43,7 +43,7 @@
 
 .context-group-button {
   margin-bottom: 0.4em;
-  width: 100%;
+  display: inline-block;
 }
 
 .context-group-button-active {
@@ -65,14 +65,6 @@
   width: calc(100% - 2em);
   overflow-y: scroll;
   min-height: 25em;
-}
-
-.section.lore {
-  min-height: 90vh;
-}
-
-.lorefiles_wrapped {
-  width:100% !important;
 }
 
 /* width */
@@ -109,35 +101,11 @@
 
 .sectionWrapper {
   display: inline-block;
-  width: calc(50%);
   vertical-align: top;
 }
 
-.settings_wrapped {
-  width: 66.66% !important;
-}
-
-.characters_wrapped {
-  width: 33.333% !important;
-}
-
-.objects_wrapped {
-  width: 33.33% !important;
-}
-
-.npcs_wrapped {
-  width: 33.33% !important;
-}
-
-.mobs_wrapped {
-  width: 33.33% !important;
-}
-
-.context_wrapped {
-  width: 20% !important;
-}
-.lorebase_wrapped, .dialogue_wrapped {
-  width: 80%;
+.sectionWrapper {
+  width: 100%;
 }
 
 .importExportButtons {
@@ -317,10 +285,6 @@
   display: inline-block;
   margin-right: 0.5em;
   overflow: hidden;
-}
-
-.dialogue_wrapped {
-  width: 80%;
 }
 
 .baseInput {

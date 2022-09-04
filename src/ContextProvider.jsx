@@ -11,7 +11,7 @@ import {
   download_content,
   fileToDataUri
 } from "./utils/utils";
-import { generate, makeEmpty } from "./utils/generation";
+import { generate, makeEmpty, makeDialogue } from "./utils/generation";
 
 
 function setOpenAIKey(newKey) {
@@ -23,8 +23,8 @@ function getOpenAIKey() {
 }
 
 function initializeState() {
-  if (!localStorage.getItem("ingredients")) {
-    localStorage.setItem("ingredients", compressObject(defaultIngredients));
+  if (!localStorage.getItem("entities")) {
+    localStorage.setItem("entities", compressObject(defaultIngredients));
   }
 
   if (!localStorage.getItem("dialogue")) {
@@ -40,8 +40,8 @@ function initializeState() {
 
 export function ApplicationContextProvider(props) {
   initializeState();
-  const [ingredients, setIngredients] = useState(
-    decompressObject(localStorage.getItem("ingredients")) || defaultIngredients
+  const [entities, setIngredients] = useState(
+    decompressObject(localStorage.getItem("entities")) || defaultIngredients
   );
 
   const [dialogue, setDialogue] = useState(
@@ -122,15 +122,15 @@ export function ApplicationContextProvider(props) {
 
 
   useEffect(() => {
-    localStorage.setItem("ingredients", compressObject(ingredients));
-  }, [ingredients]);
+    localStorage.setItem("entities", compressObject(entities));
+  }, [entities]);
 
   useEffect(() => {
     localStorage.setItem("loreData", compressObject(loreData));
   }, [loreData]);
 
   const handleImport = (type, data) => {
-    if (type === "ingredients") {
+    if (type === "entities") {
       setIngredients(data);
     } else if (type === "lore") {
       console.log("setLoreData:", data);
@@ -293,8 +293,8 @@ export function ApplicationContextProvider(props) {
 
   const handleExport = (type) => {
     const json = JSON.stringify(
-      type === "ingredients"
-        ? ingredients
+      type === "entities"
+        ? entities
         : type === "lore"
           ? loreData
           : loreFiles
@@ -319,7 +319,7 @@ export function ApplicationContextProvider(props) {
 
     entity.id = makeId(5);
 
-    const newEntityData = { ...ingredients };
+    const newEntityData = { ...entities };
     if (!newEntityData[entityType]) {
       newEntityData[entityType] = [];
     }
@@ -366,7 +366,7 @@ export function ApplicationContextProvider(props) {
       entity.id = makeId(5);
     }
 
-    const newEntityData = { ...ingredients };
+    const newEntityData = { ...entities };
     if (!newEntityData[entityType]) {
       newEntityData[entityType] = [];
     }
@@ -378,8 +378,8 @@ export function ApplicationContextProvider(props) {
   };
 
   const deleteEntityCallback = (entity) => {
-    const newData = { ...ingredients };
-    newData[entity.type] = ingredients[entity.type].filter(
+    const newData = { ...entities };
+    newData[entity.type] = entities[entity.type].filter(
       (e) => e.id !== entity.id
     );
 
@@ -387,7 +387,7 @@ export function ApplicationContextProvider(props) {
   };
 
   const editEntityCallback = (entity) => {
-    let newData = { ...ingredients };
+    let newData = { ...entities };
 
     const entityIndex = newData[entity.type].findIndex(
       (e) => e.id === entity.id
@@ -399,23 +399,21 @@ export function ApplicationContextProvider(props) {
   };
 
   const addDialogueCallback = async (
-    entityType
+    type
   ) => {
-    const entity = await makeEmpty(
-      entityType,
+    const d = await makeDialogue(
+      type,
       openErrorModal
     );
 
-    entity.id = makeId(5);
-
-    const newEntityData = { ...ingredients };
-    if (!newEntityData[entityType]) {
-      newEntityData[entityType] = [];
+    const newDialogueData = { ...dialogue };
+    if (!newDialogueData[type]) {
+      newDialogueData[type] = [];
     }
 
-    newEntityData[entityType].unshift(entity);
+    newDialogueData[type].unshift(d);
 
-    setDialogue(newEntityData);
+    setDialogue(newDialogueData);
   };
 
   const generateDialogueCallback = async (
@@ -455,7 +453,7 @@ export function ApplicationContextProvider(props) {
       entity.id = makeId(5);
     }
 
-    const newEntityData = { ...ingredients };
+    const newEntityData = { ...entities };
     if (!newEntityData[entityType]) {
       newEntityData[entityType] = [];
     }
@@ -466,23 +464,24 @@ export function ApplicationContextProvider(props) {
     setGenerating(false);
   };
 
-  const deleteDialogueCallback = (entity) => {
-    const newData = { ...ingredients };
-    newData[entity.type] = ingredients[entity.type].filter(
+  const deleteDialogueCallback = (d) => {
+    const newDialogueData = { ...dialogue };
+    console.log('dialogue[d.type]', dialogue[d.type]);
+    newDialogueData[d.type] = dialogue[d.type].filter(
       (e) => e.id !== entity.id
     );
 
-    setDialogue(newData);
+    setDialogue(newDialogueData);
   };
 
-  const editDialogueCallback = (entity) => {
-    let newData = { ...ingredients };
+  const editDialogueCallback = (d) => {
+    let newData = { ...dialogue };
 
-    const entityIndex = newData[entity.type].findIndex(
-      (e) => e.id === entity.id
+    const index = newData[d.type].findIndex(
+      (e) => e.id === d.id
     );
 
-    newData[entity.type][entityIndex] = entity;
+    newData[d.type][index] = d;
 
     setDialogue(newData);
   };
@@ -499,14 +498,14 @@ export function ApplicationContextProvider(props) {
       return;
     }
 
-    const index = ingredients[entity.type].findIndex(
+    const index = entities[entity.type].findIndex(
       (e) => e.name === entity.name
     );
     if (index === null || index === undefined || index <= -1) {
       return;
     }
 
-    const newData = { ...ingredients };
+    const newData = { ...entities };
     const newArray = [...newData[entity.type]];
     if (newArray?.length <= 1) {
       return;
@@ -514,7 +513,7 @@ export function ApplicationContextProvider(props) {
 
     if (index === 0 && up) {
       newArray.push(newArray.shift());
-    } else if (index === ingredients[entity.type].length - 1 && !up) {
+    } else if (index === entities[entity.type].length - 1 && !up) {
       newArray.unshift(newArray.pop());
     } else {
       const newIndex = up ? index - 1 : index + 1;
@@ -535,12 +534,12 @@ export function ApplicationContextProvider(props) {
     const file = await getFile();
     const text = await file.text();
     const json = JSON.parse(text);
-    const index = ingredients[json.type].findIndex((e) => e.id === json.id);
+    const index = entities[json.type].findIndex((e) => e.id === json.id);
     if (index !== -1) {
       return;
     }
 
-    const newData = { ...ingredients };
+    const newData = { ...entities };
     if (!newData[json.type]) {
       newData[json.type] = [];
     }
@@ -580,7 +579,7 @@ export function ApplicationContextProvider(props) {
     setDialogue,
     currentDialogueType,
     setCurrentDialogueType,
-    ingredients,
+    entities,
     setIngredients,
     openErrorModal,
     closeErrorDialog,

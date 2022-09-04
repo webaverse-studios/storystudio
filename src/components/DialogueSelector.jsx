@@ -27,8 +27,7 @@ const DialogueSelector = () => {
               }
             >
               {type}|
-              {(dialogue[type] && dialogue[type].length) ||
-                (dialogue[type]["examples"] && dialogue[type]["examples"].length)}
+              {dialogue[type] && dialogue[type].length}
             </button>
           );
         })}

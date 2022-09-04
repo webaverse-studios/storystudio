@@ -7,6 +7,7 @@ import {
   exampleLoreFiles
 } from "./constants.js";
 import { makeId } from "./utils.js";
+import * as defaultModule from "../../public/lore-model.js";
 
 export const generateImage = async (text) => {
   const resp = await axios.get(stable_diffusion_url, {
@@ -89,9 +90,18 @@ export async function makeEmpty(type, openErrorModal) {
         description: "This is a description of a new mob",
         inventory: []
       }
+    case "objectComment":
+      return {
+        input: {
+          target: "New Object",
+        },
+        output: {
+          comment: "This is a comment about a new object",
+        }
+      }
     case "lore":
       return
-`# Setting
+      `# Setting
 
 # Characters
 
@@ -100,80 +110,156 @@ export async function makeEmpty(type, openErrorModal) {
 # Transcript
 
 `;
-    // case "objectComment":
-    //   resp = await module.generateObjectComment(
-    //     getRandomEntity(data, "object"),
-    //     makeGenerateFn(),
-    //   );
-    //   return resp;
-    // case "npcComment":
-    //   resp = await module.generateNPCComment(
-    //     getRandomEntity(data, "npc"),
-    //     makeGenerateFn(),
-    //   );
-    //   return resp;
-    // case "mobComment":
-    //   resp = await module.generateMobComment(
-    //     getRandomEntity(data, "mob"),
-    //     makeGenerateFn(),
-    //   );
-    //   return resp;
-    // case "loadingComment":
-    //   resp = await module.generateLoadingComment(
-    //     getRandomEntity(data, "setting"),
-    //     makeGenerateFn(),
-    //   );
-    //   return resp;
-    // case "banter":
-    //   console.log("generating banter");
-    //   resp = await module.generateBanter(
-    //     getRandomEntity(data, "character"),
-    //     makeGenerateFn(),
-    //   );
-    //   if (!resp || resp?.length <= 0) {
-    //     return generate("banter", data, baseData, openErrorModal);
-    //   }
-    //   return { description: resp };
+    default:
+      openErrorModal("Unknown type " + type);
+      return null;
+  }
+}
 
-    // case "loreExposition":
-    //   resp = await module.generateLoreExposition(makeGenerateFn());
-    //   if (!resp || resp?.length <= 0) {
-    //     return generate("loreExposition", data, baseData, openErrorModal);
-    //   }
-    //   return { description: resp };
-    // case "rpgDialogue":
-    //   resp = await module.generateRPGDialogue(
-    //     getRandomEntity(data, "character"),
-    //     makeGenerateFn(),
-    //   );
-    //   if (!resp || resp?.length <= 0) {
-    //     return generate("rpgDialogue", data, baseData, openErrorModal);
-    //   }
-    //   return { description: resp };
-    // case "reactions":
-    //   console.log(module);
-    //   resp = await module.generateReaction(
-    //     getRandomEntity(data, "character"),
-    //     makeGenerateFn(),
-    //   );
-    //   if (!resp || resp?.length <= 0) {
-    //     return generate("reactions", data, baseData, openErrorModal);
-    //   }
-    //   return { description: resp };
-    // case "cutscenes":
-    //   resp = await module.generateCutscenes(makeGenerateFn());
-    //   if (!resp || resp?.length <= 0) {
-    //     return generate("cutscenes", data, baseData, openErrorModal);
-    //   }
-    //   return { description: resp };
+export async function makeDialogue(type, openErrorModal) {
+  switch (type) {
+    case "objectComment":
+      return {
+        input: {
+          target: "New Object",
+        },
+        output: {
+          comment: "This is a comment about a new object",
+        }
+      }
+    case "npcComment":
+      return {
+        input: {
+          target: "New NPC",
+        },
+        output: {
+          comment: "This is a comment about an NPC",
+        }
+      }
+    case "mobComment":
+      return {
+        input: {
+          target: "New Mob",
+        },
+        output: {
+          comment: "This is a comment about a Mob",
+        }
+      }
+    case "loadingComment":
+      return {
+        input: {
+          target: "New Scene",
+        },
+        output: {
+          comment: "This is a comment about the scene that is loading",
+        }
+      }
+    case "banter":
+      return {
+        input: {
+          setting: "New Scene",
+          characters: ["New Character"],
+          npcs: ["New NPC"],
+          objects: ["New Object"]
+        },
+        output: {
+          transcript: [
+            {
+              speaker: "New Character",
+              message: "This is a message."
+            }
+          ]
+        }
+      }
 
-    // case "quests":
-    //   resp = await module.generateAction(
-    //     getRandomEntity(data, "setting"),
-    //     makeGenerateFn(),
-    //   );
-    //   console.log("QUEST:", resp);
-    //   return resp;
+    case "loreExposition":
+      return {
+        input: {
+          target: "New Object"
+        },
+        output: {
+          comment: "This is some historical information about the object."
+        }
+      }
+    case "rpgDialogue":
+      return {
+        input: {
+          setting: "New Scene",
+          characters: ["New Character"],
+          npcs: ["New NPC"],
+          objects: ["New Object"]
+        },
+        output: {
+          transcript: [
+            {
+              speaker: "New NPC",
+              message: "Which door do you choose? [The Red Door] [The Blue Door]"
+            },
+            {
+              speaker: "New Character",
+              message: "[The Blue Door]*"
+            }
+          ]
+        }
+      }
+    case "cutscenes":
+      return {
+        input: {
+          setting: "New Scene",
+          characters: ["New Character"],
+          npcs: ["New NPC"],
+          objects: ["New Object"]
+        },
+        output: {
+          transcript: [
+            {
+              speaker: "New NPC",
+              message: "Let's do something in this cutscene."
+            },
+            {
+              speaker: "New Character",
+              message: "Yes, let's.*"
+            }
+          ]
+        }
+      }
+    case "actions":
+      return {
+        input: {
+          setting: "New Scene",
+          characters: ["New Character"],
+          npcs: ["New NPC"],
+          objects: ["New Object"],
+          messages: [{
+            speaker: "New NPC",
+            action: "You should pick up the object"
+          }]
+        },
+        output: {
+          speaker: "New Character",
+          action: "picks up New Object"
+        }
+      }
+
+    case "reactions":
+      return {
+        input: {
+          setting: "New Scene",
+          characters: ["New Character"],
+          npcs: ["New NPC"],
+          objects: ["New Object"],
+          messages: [{
+            speaker: "New NPC",
+            action: "I am your father"
+          }]
+        },
+        output: {
+          transcript: {
+            speaker: "New Character",
+            reaction: "surprise"
+          }
+        }
+      }
     default:
       openErrorModal("Unknown type " + type);
       return null;
@@ -206,7 +292,7 @@ export async function generate(type, data, baseData, openErrorModal) {
     img: "",
   };
   let resp = undefined;
-  const module = baseData.module;
+  const module = baseData.module || defaultModule;
   switch (type) {
     case "setting":
       console.log("baseData:", baseData);

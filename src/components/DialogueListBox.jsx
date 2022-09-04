@@ -14,7 +14,7 @@ const DialogueListBox = ({
   const {
     addDialogueCallback,
     generateDialogueCallback,
-    ingredients,
+    entities,
     dialogue,
     currentDialogueType
    } = useContext(ApplicationContext);
@@ -27,7 +27,7 @@ const DialogueListBox = ({
         <button onClick={() => generateDialogueCallback(dialogue, setGenerating)}>
           {!generating ? "Generate" : "Generating..."}
         </button>
-      <button onClick={() => addDialogueCallback(type)}>
+      <button onClick={() => addDialogueCallback(currentDialogueType)}>
         Add
       </button>
       </div>
@@ -36,7 +36,7 @@ const DialogueListBox = ({
         {Object.keys(dialogue[currentDialogueType]).map((key, index) => {
             return (
               <Dialogue
-                ingredients={ingredients}
+                entities={entities}
                 key={index}
                 index={index}
                 data={dialogue[currentDialogueType][key]}

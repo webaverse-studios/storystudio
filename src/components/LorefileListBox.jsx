@@ -32,9 +32,7 @@ const EntityListBox = ({
         type === "object" ? (
           <button onClick={handleImport}>Import </button>
         ) : null}
-        <button onClick={() => /* It's calling the generateEntityCallback function from the context and
-        passing in the data[type] object. */
-        generateEntityCallback(type, entities, setGenerating)}>
+        <button onClick={() => generateEntityCallback(data[type], setGenerating)}>
           {!generating ? "Generate" : "Generating..."}
         </button>
       <button onClick={() => addEntityCallback(type)}>

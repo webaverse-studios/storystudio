@@ -27,11 +27,11 @@ const Entity = ({
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
-  const updateEntity = (ingredients, field, data, index) => {
+  const updateEntity = (entities, field, data, index) => {
     if (field === "shortname") {
       return;
     }
-    let newData = { ...ingredients };
+    let newData = { ...entities };
     newData[field] = data;
     if (field === "name") {
       console.log("name updated:", newData);

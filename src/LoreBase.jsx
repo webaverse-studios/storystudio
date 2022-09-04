@@ -27,7 +27,7 @@ function LoreBase() {
     setLoreData,
     exportHandler,
     importHandler,
-    ingredients
+    entities
   } = useContext(ApplicationContext);
   const [editorCode, setEditorCode] = useState("");
   const [currentContentType, setCurrentContentType] = useState(

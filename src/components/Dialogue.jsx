@@ -7,7 +7,7 @@ import {ApplicationContext} from '../Context';
 
 function DisplayJSONAsEditableForm({ data, type, label = "", allData = null }) {
   const {
-    ingredients
+    entities
    } = useContext(ApplicationContext);
   allData = allData || data;
   // 1. Iterate through data, and based on it's type, render the appropriate component or recursively drill down
@@ -27,7 +27,7 @@ function DisplayJSONAsEditableForm({ data, type, label = "", allData = null }) {
       output = data.map((item, index) => {
         return (
           <div style={{marginLeft:"2em"}} key={index}>
-            <DisplayJSONAsEditableForm type={type} data={item} allData={allData} />
+            <DisplayJSONAsEditableForm key={index} type={type} data={item} allData={allData} />
           </div>
         );
       });
@@ -35,7 +35,7 @@ function DisplayJSONAsEditableForm({ data, type, label = "", allData = null }) {
       output = Object.keys(data).map((key, index) => {
         return (
           <div style={{marginLeft:"2em"}} key={index}>
-            <DisplayJSONAsEditableForm type={type} label={key} data={data[key]} allData={allData} />
+            <DisplayJSONAsEditableForm key={index} type={type} label={key} data={data[key]} allData={allData} />
           </div>
         );
       });
@@ -70,7 +70,7 @@ function DisplayJSONAsEditableForm({ data, type, label = "", allData = null }) {
       return (
         <div>
           <label>{label}</label>
-          {/* render a select dropdown with all of the ingredients for the current type */}
+          {/* render a select dropdown with all of the entities for the current type */}
           <select
             value={data}
             onChange={(e) => {
@@ -79,8 +79,8 @@ function DisplayJSONAsEditableForm({ data, type, label = "", allData = null }) {
           >
             {/*
               (type === 'loreExposition' ? 
-              [...ingredients['character'], ...ingredients['object'], ...ingredients['setting'], ...ingredients['npc']] :
-              ingredients[type.replace('loading', 'setting').replace('Comment', '')]).map((item, index) => {
+              [...entities['character'], ...entities['object'], ...entities['setting'], ...entities['npc']] :
+              entities[type.replace('loading', 'setting').replace('Comment', '')]).map((item, index) => {
               return (
                 <option key={index} value={item}>
                   {item.name}
@@ -130,9 +130,9 @@ function DisplayJSONAsEditableForm({ data, type, label = "", allData = null }) {
   }
 
   else if (label === "setting"){
-    console.log('ingredients', ingredients);
+    console.log('entities', entities);
     // render a dropdown select 
-    console.log('ingredients', ingredients)
+    console.log('entities', entities)
     output = (
       <select
         value={data}
@@ -140,7 +140,7 @@ function DisplayJSONAsEditableForm({ data, type, label = "", allData = null }) {
           data = e.target.value;
         }
       }>
-        {ingredients[label].map((item, index) => {
+        {entities[label].map((item, index) => {
           return (
             <option key={index} value={item.name}>
               {item.name}
@@ -206,16 +206,16 @@ const Dialogue = ({
     editDialogueCallback,
     deleteDialogueCallback,
     moveDialogueCallback,
-    ingredients,
+    entities,
     dialogue,
     currentDialogueType
    } = useContext(ApplicationContext);
 
-  const updateDialogue = (ingredients, field, data, index) => {
+  const updateDialogue = (entities, field, data, index) => {
     if (field === "shortname") {
       return;
     }
-    let newData = { ...ingredients };
+    let newData = { ...entities };
     newData[field] = data;
     // needed?
     if (!field) {
@@ -249,7 +249,7 @@ const Dialogue = ({
       )}
       {typeof data === "object" && (
         <React.Fragment>
-          {DisplayJSONAsEditableForm({ data, type, ingredients })}
+          {DisplayJSONAsEditableForm({ data, type, entities })}
         </React.Fragment>
       )}
       {/*<button onClick={() => moveDialogueCallback(data, true)}>
