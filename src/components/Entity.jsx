@@ -101,7 +101,7 @@ const Entity = ({
                   updateInventoryItem(_inv[index], e.target.value)
                 }
               >
-                {getInventoryItems() && getInventoryItems() > 0
+                {getInventoryItems() && getInventoryItems().length > 0
                   ? getInventoryItems().map((item, index) => {
                       return (
                         <option key={index} value={item}>
