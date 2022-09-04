@@ -56,11 +56,3 @@ export const getRandomObjectFromArray = (array) => {
   const randomIndex = Math.floor(Math.random() * array.length);
   return array[randomIndex];
 };
-
-export function setOpenAIKey(newKey) {
-  localStorage.setItem("openai_key", newKey);
-}
-
-export function getOpenAIKey() {
-  return localStorage.getItem("openai_key");
-}

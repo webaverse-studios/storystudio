@@ -1,17 +1,21 @@
 import "../styles/App.css";
+import React, { useContext } from "react";
+import { ApplicationContext } from "../Context";
 
 function ErrorModal(props) {
-  return (
+  const { errorDialogData, closeErrorDialog} = useContext(ApplicationContext);
+
+  return errorDialogData && errorDialogData.on && errorDialogData.msg ? (
     <div>
       <div className="modal">
-        {props.info}
+      {"Error: " + errorDialogData.msg}
         <br />
         <br />
-        <button onClick={props.close}>OK</button>
+        <button onClick={closeErrorDialog}>OK</button>
       </div>
       <div className="backdrop" onClick={props.close} />;
     </div>
-  );
+  ) : null;
 }
 
 export default ErrorModal;

@@ -1,3 +1,5 @@
+import React, { useContext } from "react";
+import { ApplicationContext } from "./Context";
 import "./styles/App.css";
 import { generate } from "./utils/generation";
 import EntityListBox from "./components/EntityListBox";
@@ -5,17 +7,19 @@ import { getFile } from "./components/getFile";
 import { makeId } from "./utils/utils";
 import JSZip from "jszip";
 
-function LoreFiles({
-  dataType,
-  baseData,
-  ingredients,
-  setIngredients,
-  loreFiles,
-  setLoreFiles,
-  exportHandler,
-  importHandler,
-  openErrorDialog,
-}) {
+function LoreFiles() {
+  const {
+    dataType,
+    baseData,
+    ingredients,
+    setIngredients,
+    loreFiles,
+    setLoreFiles,
+    exportHandler,
+    importHandler,
+    openErrorModal,
+  } = useContext(ApplicationContext);
+
   const generateEntityCallback = async (setGenerating) => {
     setGenerating(true);
     //console.log("calling baseData", baseData);
@@ -24,7 +28,7 @@ function LoreFiles({
       "lore",
       ingredients,
       baseData,
-      openErrorDialog,
+      openErrorModal,
       []
     );
     if (!entity) {
@@ -199,7 +203,7 @@ function LoreFiles({
         <EntityListBox
           type={dataType}
           data={loreFiles}
-          header={dataType}
+          header={'lore files'}
           generateEntityCallback={(data, setGenerating) => {
             generateEntityCallback(setGenerating);
           }}

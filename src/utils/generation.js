@@ -5,7 +5,7 @@ import {
   stable_diffusion_url,
   voice_url,
 } from "./constants.js";
-import { getOpenAIKey, makeId } from "./utils.js";
+import { makeId } from "./utils.js";
 import { exampleLoreFiles } from "./exampleLoreFiles.js";
 
 export const generateImage = async (text) => {
@@ -53,7 +53,7 @@ const getRandomEntity = (data, type) => {
   return "";
 };
 
-export async function makeEmpty(type, openErrorDialog) {
+export async function makeEmpty(type, openErrorModal) {
   switch (type) {
     case "setting":
       return {
@@ -131,14 +131,14 @@ export async function makeEmpty(type, openErrorDialog) {
     //     makeGenerateFn(),
     //   );
     //   if (!resp || resp?.length <= 0) {
-    //     return generate("banter", data, baseData, openErrorDialog);
+    //     return generate("banter", data, baseData, openErrorModal);
     //   }
     //   return { description: resp };
 
     // case "loreExposition":
     //   resp = await module.generateLoreExposition(makeGenerateFn());
     //   if (!resp || resp?.length <= 0) {
-    //     return generate("loreExposition", data, baseData, openErrorDialog);
+    //     return generate("loreExposition", data, baseData, openErrorModal);
     //   }
     //   return { description: resp };
     // case "rpgDialogue":
@@ -147,7 +147,7 @@ export async function makeEmpty(type, openErrorDialog) {
     //     makeGenerateFn(),
     //   );
     //   if (!resp || resp?.length <= 0) {
-    //     return generate("rpgDialogue", data, baseData, openErrorDialog);
+    //     return generate("rpgDialogue", data, baseData, openErrorModal);
     //   }
     //   return { description: resp };
     // case "reactions":
@@ -157,13 +157,13 @@ export async function makeEmpty(type, openErrorDialog) {
     //     makeGenerateFn(),
     //   );
     //   if (!resp || resp?.length <= 0) {
-    //     return generate("reactions", data, baseData, openErrorDialog);
+    //     return generate("reactions", data, baseData, openErrorModal);
     //   }
     //   return { description: resp };
     // case "cutscenes":
     //   resp = await module.generateCutscenes(makeGenerateFn());
     //   if (!resp || resp?.length <= 0) {
-    //     return generate("cutscenes", data, baseData, openErrorDialog);
+    //     return generate("cutscenes", data, baseData, openErrorModal);
     //   }
     //   return { description: resp };
 
@@ -175,7 +175,7 @@ export async function makeEmpty(type, openErrorDialog) {
     //   console.log("QUEST:", resp);
     //   return resp;
     default:
-      openErrorDialog("Unknown type " + type);
+      openErrorModal("Unknown type " + type);
       return null;
   }
 
@@ -196,7 +196,7 @@ export async function makeEmpty(type, openErrorDialog) {
   return res;
 }
 
-export async function generate(type, data, baseData, openErrorDialog) {
+export async function generate(type, data, baseData, openErrorModal) {
   const res = {
     type: type,
     name: "",
@@ -278,14 +278,14 @@ export async function generate(type, data, baseData, openErrorDialog) {
         makeGenerateFn(),
       );
       if (!resp || resp?.length <= 0) {
-        return generate("banter", data, baseData, openErrorDialog);
+        return generate("banter", data, baseData, openErrorModal);
       }
       return { description: resp };
 
     case "loreExposition":
       resp = await module.generateLoreExposition(makeGenerateFn());
       if (!resp || resp?.length <= 0) {
-        return generate("loreExposition", data, baseData, openErrorDialog);
+        return generate("loreExposition", data, baseData, openErrorModal);
       }
       return { description: resp };
     case "rpgDialogue":
@@ -294,7 +294,7 @@ export async function generate(type, data, baseData, openErrorDialog) {
         makeGenerateFn(),
       );
       if (!resp || resp?.length <= 0) {
-        return generate("rpgDialogue", data, baseData, openErrorDialog);
+        return generate("rpgDialogue", data, baseData, openErrorModal);
       }
       return { description: resp };
     case "reactions":
@@ -304,13 +304,13 @@ export async function generate(type, data, baseData, openErrorDialog) {
         makeGenerateFn(),
       );
       if (!resp || resp?.length <= 0) {
-        return generate("reactions", data, baseData, openErrorDialog);
+        return generate("reactions", data, baseData, openErrorModal);
       }
       return { description: resp };
     case "cutscenes":
       resp = await module.generateCutscenes(makeGenerateFn());
       if (!resp || resp?.length <= 0) {
-        return generate("cutscenes", data, baseData, openErrorDialog);
+        return generate("cutscenes", data, baseData, openErrorModal);
       }
       return { description: resp };
 
@@ -322,7 +322,7 @@ export async function generate(type, data, baseData, openErrorDialog) {
       console.log("ACTION:", resp);
       return resp;
     default:
-      openErrorDialog("Unknown type " + type);
+      openErrorModal("Unknown type " + type);
       return null;
   }
 
@@ -410,6 +410,6 @@ export async function openaiRequest(key, prompt, stop) {
 export function makeGenerateFn() {
   return async (prompt, stop) => {
     console.log("STOP:", stop);
-    return await openaiRequest(getOpenAIKey(), prompt, stop);
+    return await openaiRequest(localStorage.getItem("openai_key"), prompt, stop);
   };
 }

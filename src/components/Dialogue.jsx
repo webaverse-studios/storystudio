@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import DeleteForever from "@mui/icons-material/DeleteForever";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import {ApplicationContext} from '../Context';
 
-function DisplayJSONAsEditableForm({ data, type, label = "", allData = null, ingredients }) {
+function DisplayJSONAsEditableForm({ data, type, label = "", allData = null }) {
+  const {
+    ingredients
+   } = useContext(ApplicationContext);
   allData = allData || data;
   // 1. Iterate through data, and based on it's type, render the appropriate component or recursively drill down
   // 2. If the data is an array, render a list of the data. Check the data type of the first element, and render the appropriate component
@@ -23,7 +27,7 @@ function DisplayJSONAsEditableForm({ data, type, label = "", allData = null, ing
       output = data.map((item, index) => {
         return (
           <div style={{marginLeft:"2em"}} key={index}>
-            <DisplayJSONAsEditableForm type={type} data={item} allData={allData} ingredients={ingredients} />
+            <DisplayJSONAsEditableForm type={type} data={item} allData={allData} />
           </div>
         );
       });
@@ -31,7 +35,7 @@ function DisplayJSONAsEditableForm({ data, type, label = "", allData = null, ing
       output = Object.keys(data).map((key, index) => {
         return (
           <div style={{marginLeft:"2em"}} key={index}>
-            <DisplayJSONAsEditableForm type={type} label={key} data={data[key]} allData={allData} ingredients={ingredients} />
+            <DisplayJSONAsEditableForm type={type} label={key} data={data[key]} allData={allData} />
           </div>
         );
       });
@@ -73,7 +77,7 @@ function DisplayJSONAsEditableForm({ data, type, label = "", allData = null, ing
               data = e.target.value;
             }}
           >
-            {
+            {/*
               (type === 'loreExposition' ? 
               [...ingredients['character'], ...ingredients['object'], ...ingredients['setting'], ...ingredients['npc']] :
               ingredients[type.replace('loading', 'setting').replace('Comment', '')]).map((item, index) => {
@@ -83,7 +87,7 @@ function DisplayJSONAsEditableForm({ data, type, label = "", allData = null, ing
                 </option>
               );
             }
-            )}
+          ) */}
           </select>
 
         </div>
@@ -190,15 +194,21 @@ function DisplayJSONAsEditableForm({ data, type, label = "", allData = null, ing
 //field check if image, set source the img, if name change, generate new image
 const Dialogue = ({
   index,
-  ingredients,
   data,
-  editDialogueCallback,
-  deleteDialogueCallback,
-  moveDialogueCallback,
   type,
 }) => {
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
+
+  const { addDialogueCallback,
+    generateDialogueCallback,
+    editDialogueCallback,
+    deleteDialogueCallback,
+    moveDialogueCallback,
+    ingredients,
+    dialogue,
+    currentDialogueType
+   } = useContext(ApplicationContext);
 
   const updateDialogue = (ingredients, field, data, index) => {
     if (field === "shortname") {

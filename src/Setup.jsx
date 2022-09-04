@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./styles/App.css";
-import { getOpenAIKey, setOpenAIKey } from "./utils/utils";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { ApplicationContext } from "./Context";
 
-const Setup = ({ _openAIParams, _setOpenAIParams }) => {
+const Setup = () => {
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
   const [generateImages, setGenerateImages] = useState(false);
+
+  const { setOpenAIKey, getOpenAIKey, openAIParams, setOpenAIParams } = useContext(ApplicationContext);
 
   useEffect(() => {
     const gi = localStorage.getItem("generateImages");
@@ -21,9 +22,6 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
   };
 
   return (
-    <ApplicationContext.Consumer>
-
-    {context => (
         <div className="view">
         <br />
         <h2>Welcome to Webaverse Story Studio!</h2>
@@ -45,9 +43,7 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
             type={apiKeyVisible ? "input" : "password"}
             defaultValue={getOpenAIKey()}
             onChange={(e) => {
-                console.log("change", e.target.value) ||
                 setOpenAIKey(e.target.value)
-                context.setOpenAiKey(e.target.value)
               }
             }
             onFocus={(e) => setOpenAIKey(e.target.value)}
@@ -66,14 +62,14 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
           <input
             className={"baseInput"}
             type={"input"}
-            defaultValue={_openAIParams.model}
+            defaultValue={openAIParams.model}
             onChange={(e) => {
-              _openAIParams.model = e.target.value;
-              _setOpenAIParams(_openAIParams);
+              openAIParams.model = e.target.value;
+              setOpenAIParams(openAIParams);
             }}
             onFocus={(e) => {
-              _openAIParams.model = e.target.value;
-              _setOpenAIParams(_openAIParams);
+              openAIParams.model = e.target.value;
+              setOpenAIParams(openAIParams);
             }}
           />
         </div>
@@ -83,10 +79,10 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
           <input
             className={"baseInput"}
             type={"input"}
-            defaultValue={_openAIParams.top_p}
+            defaultValue={openAIParams.top_p}
             onChange={(e) => {
-              _openAIParams.top_p = e.target.value;
-              _setOpenAIParams(_openAIParams);
+              openAIParams.top_p = e.target.value;
+              setOpenAIParams(openAIParams);
             }}
             onKeyPress={(event) => {
               if (!/[0-9-.]/.test(event.key)) {
@@ -94,8 +90,8 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
               }
             }}
             onFocus={(e) => {
-              _openAIParams.top_p = e.target.value;
-              _setOpenAIParams(_openAIParams);
+              openAIParams.top_p = e.target.value;
+              setOpenAIParams(openAIParams);
             }}
           />
         </div>
@@ -105,10 +101,10 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
           <input
             className={"baseInput"}
             type={"input"}
-            defaultValue={_openAIParams.frequency_penalty}
+            defaultValue={openAIParams.frequency_penalty}
             onChange={(e) => {
-              _openAIParams.frequency_penalty = e.target.value;
-              _setOpenAIParams(_openAIParams);
+              openAIParams.frequency_penalty = e.target.value;
+              setOpenAIParams(openAIParams);
             }}
             onKeyPress={(event) => {
               if (!/[0-9-.]/.test(event.key)) {
@@ -116,8 +112,8 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
               }
             }}
             onFocus={(e) => {
-              _openAIParams.frequency_penalty = e.target.value;
-              _setOpenAIParams(_openAIParams);
+              openAIParams.frequency_penalty = e.target.value;
+              setOpenAIParams(openAIParams);
             }}
           />
         </div>
@@ -127,10 +123,10 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
           <input
             className={"baseInput"}
             type={"input"}
-            defaultValue={_openAIParams.presence_penalty}
+            defaultValue={openAIParams.presence_penalty}
             onChange={(e) => {
-              _openAIParams.presence_penalty = e.target.value;
-              _setOpenAIParams(_openAIParams);
+              openAIParams.presence_penalty = e.target.value;
+              setOpenAIParams(openAIParams);
             }}
             onKeyPress={(event) => {
               if (!/[0-9-.]/.test(event.key)) {
@@ -138,8 +134,8 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
               }
             }}
             onFocus={(e) => {
-              _openAIParams.presence_penalty = e.target.value;
-              _setOpenAIParams(_openAIParams);
+              openAIParams.presence_penalty = e.target.value;
+              setOpenAIParams(openAIParams);
             }}
           />
         </div>
@@ -149,10 +145,10 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
           <input
             className={"baseInput"}
             type={"input"}
-            defaultValue={_openAIParams.temperature}
+            defaultValue={openAIParams.temperature}
             onChange={(e) => {
-              _openAIParams.temperature = e.target.value;
-              _setOpenAIParams(_openAIParams);
+              openAIParams.temperature = e.target.value;
+              setOpenAIParams(openAIParams);
             }}
             onKeyPress={(event) => {
               if (!/[0-9-.]/.test(event.key)) {
@@ -160,8 +156,8 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
               }
             }}
             onFocus={(e) => {
-              _openAIParams.temperature = e.target.value;
-              _setOpenAIParams(_openAIParams);
+              openAIParams.temperature = e.target.value;
+              setOpenAIParams(openAIParams);
             }}
           />
         </div>
@@ -171,10 +167,10 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
           <input
             className={"baseInput"}
             type={"input"}
-            defaultValue={_openAIParams.max_tokens}
+            defaultValue={openAIParams.max_tokens}
             onChange={(e) => {
-              _openAIParams.max_tokens = e.target.value;
-              _setOpenAIParams(_openAIParams);
+              openAIParams.max_tokens = e.target.value;
+              setOpenAIParams(openAIParams);
             }}
             onKeyPress={(event) => {
               if (!/[0-9]/.test(event.key)) {
@@ -182,8 +178,8 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
               }
             }}
             onFocus={(e) => {
-              _openAIParams.max_tokens = e.target.value;
-              _setOpenAIParams(_openAIParams);
+              openAIParams.max_tokens = e.target.value;
+              setOpenAIParams(openAIParams);
             }}
           />
         </div>
@@ -193,10 +189,10 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
           <input
             className={"baseInput"}
             type={"input"}
-            defaultValue={_openAIParams.best_of}
+            defaultValue={openAIParams.best_of}
             onChange={(e) => {
-              _openAIParams.best_of = e.target.value;
-              _setOpenAIParams(_openAIParams);
+              openAIParams.best_of = e.target.value;
+              setOpenAIParams(openAIParams);
             }}
             onKeyPress={(event) => {
               if (!/[0-9]/.test(event.key)) {
@@ -204,8 +200,8 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
               }
             }}
             onFocus={(e) => {
-              _openAIParams.best_of = e.target.value;
-              _setOpenAIParams(_openAIParams);
+              openAIParams.best_of = e.target.value;
+              setOpenAIParams(openAIParams);
             }}
           />
         </div>
@@ -222,11 +218,6 @@ const Setup = ({ _openAIParams, _setOpenAIParams }) => {
           />
           </div>*/}
       </div>
-    )}
-
-
-
-    </ApplicationContext.Consumer>
 
   );
 };

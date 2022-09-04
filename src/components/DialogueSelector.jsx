@@ -1,31 +1,34 @@
-import React from "react";
+import React, { useContext } from "react";
 import "../styles/App.css";
+import { ApplicationContext } from "../Context";
+import { dialogueTypes } from "../utils/constants";
 
-const DialogueSelector = ({
-  data,
-  dialogueTypes,
-  currentContentType,
-  setCurrentContentType,
-}) => {
-  console.log('data', data);
+const DialogueSelector = () => {
+  const {
+    dialogue,
+    currentDialogueType,
+    setCurrentDialogueType,
+  } = useContext(ApplicationContext);
+
+  console.log('data', dialogue);
   return (
     <div className="sectionWrapper context_wrapped">
       <div className="context-group">
-        {Object.keys(data || []).map((type, index) => {
+        {dialogueTypes.map((type, index) => {
           return (
             <button
               key={index}
-              onClick={(e) => setCurrentContentType(type)}
+              onClick={(e) => setCurrentDialogueType(type)}
               className={
                 "context-group-button" +
-                (type === currentContentType
+                (type === currentDialogueType
                   ? " context-group-button-active"
                   : " context-group-button-inactive")
               }
             >
               {type}|
-              {(data[type] && data[type].length) ||
-                (data[type]["examples"] && data[type]["examples"].length)}
+              {(dialogue[type] && dialogue[type].length) ||
+                (dialogue[type]["examples"] && dialogue[type]["examples"].length)}
             </button>
           );
         })}

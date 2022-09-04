@@ -3,8 +3,7 @@ export { exampleLoreFiles } from "./exampleLoreFiles.js";
 export const views = {
       setup: "Setup",
       base: "Base",
-      ingredients: "Ingredients",
-      files: "Output"
+      builder: "Builder"
 };
 
 export const dialogueTypes = [

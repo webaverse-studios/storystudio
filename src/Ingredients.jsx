@@ -1,32 +1,31 @@
-import { useState } from "react";
-import "./styles/App.css";
-import { entityTypes, dialogueTypes } from "./utils/constants";
-import { generate, makeEmpty } from "./utils/generation";
+import { useContext } from "react";
 import EntityListBox from "./components/EntityListBox";
 import { getFile } from "./components/getFile";
+import { ApplicationContext } from "./Context";
+import "./styles/App.css";
+import { entityTypes } from "./utils/constants";
+import { generate, makeEmpty } from "./utils/generation";
 import { makeId } from "./utils/utils";
 
-function Ingredients({
-  baseData,
-  ingredients,
-  setIngredients,
-  dialogue,
-  setDialogue,
-  exportHandler,
-  importHandler,
-  openErrorModal,
-  forceUpdate,
-  lore,
-  setLore,
-}) {
+function Ingredients() {
+  const {
+    baseData,
+    exportHandler,
+    importHandler,
+    openErrorModal,
+    lore,
+    setLore,
+    ingredients
+  } = useContext(ApplicationContext);
+
   const addEntityCallback = async (
     entityType
   ) => {
-      const entity = await makeEmpty(
-        entityType,
-        openErrorModal
-      );
-   
+    const entity = await makeEmpty(
+      entityType,
+      openErrorModal
+    );
+
     entity.id = makeId(5);
 
     const newEntityData = { ...ingredients };
@@ -35,7 +34,7 @@ function Ingredients({
     }
 
     newEntityData[entityType].unshift(entity);
-        
+
     setIngredients(newEntityData);
   };
   const generateEntityCallback = async (
@@ -43,7 +42,7 @@ function Ingredients({
     data,
     setGenerating,
     second = false
-    ) => {
+  ) => {
     setGenerating(true);
     //console.log("calling baseData", baseData);
     // generate new using openai callback
@@ -190,7 +189,7 @@ function Ingredients({
             <EntityListBox
               key={index}
               type={type}
-              data={ingredients ? ingredients[type] : []}
+              data={ingredients[type]}
               header={type + "s"}
               addEntityCallback={(type) => addEntityCallback(type)}
               generateEntityCallback={(data, setGenerating) =>
@@ -205,13 +204,13 @@ function Ingredients({
         })}
       </div>
       <div className={"importExportButtons"}>
-      <button className={"importButton"} onClick={() => importJson()}>
-        Import All
-      </button>
-      <button className={"exportButton"} onClick={() => exportHandler()}>
-        Export All
-      </button>
-    </div>
+        <button className={"importButton"} onClick={() => importJson()}>
+          Import All
+        </button>
+        <button className={"exportButton"} onClick={() => exportHandler()}>
+          Export All
+        </button>
+      </div>
     </div>
   );
 }
