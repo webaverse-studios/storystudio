@@ -1,18 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
 import "../styles/App.css";
 import Entity from "./Entity";
+import { ApplicationContext } from "../Context";
 
 const EntityListBox = ({
   header,
-  data,
-  type = "",
-  addEntityCallback,
-  generateEntityCallback,
-  editEntityCallback,
-  deleteEntityCallback,
-  moveEntityCallback,
-  handleImport
+  type,
+  data
 }) => {
+  const { 
+    addEntityCallback,
+    generateEntityCallback,
+    editEntityCallback,
+    deleteEntityCallback,
+    moveEntityCallback,
+    handleImport
+  } = useContext(ApplicationContext);
+
   const [generating, setGenerating] = React.useState(false);
 
   return (
@@ -28,7 +32,7 @@ const EntityListBox = ({
         type === "object" ? (
           <button onClick={handleImport}>Import </button>
         ) : null}
-        <button onClick={() => generateEntityCallback(data, setGenerating)}>
+        <button onClick={() => generateEntityCallback(data[type], setGenerating)}>
           {!generating ? "Generate" : "Generating..."}
         </button>
       <button onClick={() => addEntityCallback(type)}>
@@ -37,13 +41,12 @@ const EntityListBox = ({
       </div>
       </div>
       <div className={"section " + type}>
-        {data &&
-          Object.keys(data).map((key, index) => {
+        {data && Object.keys(data[type] || data).map((key, index) => {
             return (
               <Entity
                 key={index}
                 index={index}
-                data={data[key]}
+                data={(data[type] || data)[key]}
                 editEntityCallback={editEntityCallback}
                 deleteEntityCallback={deleteEntityCallback}
                 moveEntityCallback={(entity, up) =>

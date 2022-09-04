@@ -11,7 +11,8 @@ const DialogueListBox = ({
 }) => {
   const [generating, setGenerating] = React.useState(false);
 
-  const { addDialogueCallback,
+  const {
+    addDialogueCallback,
     generateDialogueCallback,
     ingredients,
     dialogue,

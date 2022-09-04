@@ -4,9 +4,9 @@ import {
   defaultOpenAIParams,
   stable_diffusion_url,
   voice_url,
+  exampleLoreFiles
 } from "./constants.js";
 import { makeId } from "./utils.js";
-import { exampleLoreFiles } from "./exampleLoreFiles.js";
 
 export const generateImage = async (text) => {
   const resp = await axios.get(stable_diffusion_url, {

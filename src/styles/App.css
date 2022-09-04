@@ -71,7 +71,7 @@
   min-height: 90vh;
 }
 
-.lore_wrapped {
+.lorefiles_wrapped {
   width:100% !important;
 }
 
@@ -136,9 +136,8 @@
 .context_wrapped {
   width: 20% !important;
 }
-.lorebase_wrapped, .dialog_wrapped {
+.lorebase_wrapped, .dialogue_wrapped {
   width: 80%;
-  min-height: 35em;
 }
 
 .importExportButtons {
@@ -158,7 +157,6 @@
 
 .view {
   margin:1em;
-  height: calc(100vw - 3em)
 }
 
 .openai {
@@ -321,7 +319,7 @@
   overflow: hidden;
 }
 
-.dialog_wrapped {
+.dialogue_wrapped {
   width: 80%;
 }
 
@@ -392,7 +390,7 @@
     padding: 0.5em;
   }
 
-  .dialog_wrapped {
+  .dialogue_wrapped {
     width: 100% !important;
   }
 

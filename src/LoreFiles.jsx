@@ -201,9 +201,9 @@ function LoreFiles() {
     <div className="view">
       <div className="sections">
         <EntityListBox
-          type={dataType}
+          type={'lorefiles'}
           data={loreFiles}
-          header={'lore files'}
+          header={'lorefiles'}
           generateEntityCallback={(data, setGenerating) => {
             generateEntityCallback(setGenerating);
           }}

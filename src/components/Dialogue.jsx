@@ -200,7 +200,8 @@ const Dialogue = ({
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
-  const { addDialogueCallback,
+  const {
+    addDialogueCallback,
     generateDialogueCallback,
     editDialogueCallback,
     deleteDialogueCallback,
@@ -224,16 +225,16 @@ const Dialogue = ({
   };
 
   return (
-    <div className={"dialogue"}>
+    <div className={"entity"}>
       {!shouldDelete && (
-        <span className="dialogueDelete">
+        <span className="entityDelete">
           <button onClick={() => setShouldDelete(true)}>
             <ClearIcon />
           </button>
         </span>
       )}
       {shouldDelete && (
-        <span className="dialogueDelete">
+        <span className="entityDelete">
           <button onClick={() => setShouldDelete(false)}>
             <ClearIcon />
           </button>
