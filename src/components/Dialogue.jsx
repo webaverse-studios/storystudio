@@ -42,29 +42,6 @@ const Dialogue = ({
       }
     }
   
-    // if the key is transcript, render a textarea
-    // if (label === "transcript") {
-    //   return (
-    //     <div>
-    //       <label>{label}</label>
-    //       {/* iterate through the data, and render a textarea for each item */}
-    //       {data.map((item, index) => {
-    //         console.log(item);
-    //         return (
-    //         <textarea
-    //           style={{ width: "100%", height: "100px" }}
-    //           value={data[index]}
-    //           onChange={(e) => {
-    //             item = e.target.value;
-    //           }}
-    //           />
-    //         )
-    //       })
-    //     }
-    //   </div>
-    //   );
-    // }
-  
     else if (label === "target") {
       console.log('type is', type);
       console.log('*** data is', data);
@@ -102,6 +79,7 @@ const Dialogue = ({
       console.log('comment is', data)
       output = (
           <input
+          className="dialogueInput"
             type="text"
             value={data}
             onChange={(e) => {
@@ -115,27 +93,27 @@ const Dialogue = ({
       );
     }
   
-    // else if (label === "speaker"){
-    //   console.log('allData', allData.current);
-    //   output = (
-    //     // render a dropdown selection based on allData.input.characters
-    //     <select
-    //       value={data}
-    //       onChange={(e) => {
-    //         data = e.target.value;
-    //       }}
-    //     >
-    //       {[...allData.current.input.characters, ...allData.current.input.npcs].map((item, index) => {
-    //         return (
-    //           <option key={index} value={item}>
-    //             {item}
-    //           </option>
-    //         );
-    //       }
-    //       )}
-    //     </select>
-    //   )
-    // }
+    else if (label === "speaker"){
+      output = (
+        // render a dropdown selection based on allData.input.characters
+        <select
+          value={data}
+          onChange={(e) => {
+            handleChange(data, selector);
+          }}
+        >
+
+          {[...dialogue[currentDialogueType][_key].input.characters, ...dialogue[currentDialogueType][_key].input.npcs].map((item, index) => {
+            return (
+              <option key={index} value={item}>
+                {item}
+              </option>
+            );
+          }
+          )}
+        </select>
+      )
+    }
   
     else if (label === "setting"){
       output = (
@@ -167,6 +145,7 @@ const Dialogue = ({
           {data.map((item, index) => {
             return (
                 <input
+                className="tagInput"
                   type="text"
                   value={data[index]}
                   onChange={(e) => {
@@ -181,8 +160,9 @@ const Dialogue = ({
               data.push(data[data.length - 1] || "New");
               handleChange(data, selector);
             }}
+            style={{display: "inline"}}
           >
-            Add
+            +
           </button>
         </div>
       );
@@ -191,7 +171,7 @@ const Dialogue = ({
     // if label is target, render a dropdown select
   
   
-    return (<div>{label}
+    return (<div style={{margin: ".5em"}}>{label}
     
     {output}
     
