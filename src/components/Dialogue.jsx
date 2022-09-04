@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useState } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import DeleteForever from "@mui/icons-material/DeleteForever";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -13,6 +13,8 @@ const Dialogue = ({
   _key,
   type,
 }) => {
+  const [lastSelector, setLastSelector] = useState(null);
+  const [lastCursor, setLastCursor] = useState(null);
   function handleChange (data, selector) { console.log('data, selector', data, selector); editDialogueCallback(data, selector, _key, index)}
   function DisplayJSONAsEditableForm({ data, allData, type, label = "", selector = '' }) {
     const {
@@ -103,9 +105,12 @@ const Dialogue = ({
             type="text"
             value={data}
             onChange={(e) => {
-              data = e.target.value;
-              handleChange(data, selector);
+              setLastSelector(selector);
+              // get the position in the input field and call setLastCursor(position)
+              setLastCursor(e.target.selectionStart);
+              handleChange(e.target.value, selector);
             }}
+            autoFocus={lastSelector === selector}
           />
       );
     }

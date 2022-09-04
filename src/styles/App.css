@@ -60,7 +60,6 @@
 
 .section {
   background: none;
-  border: 1px solid #000000;
   margin: 1em;
   width: calc(100% - 2em);
   overflow-y: scroll;
@@ -177,8 +176,8 @@
   font-size: .8em;
   line-height: 1em;
   text-align: left;
-  margin: 0.5em;
-  width: 100%;
+  padding: 1em;
+  width: calc(100% - 2em);
   border-bottom: 1px #000000 solid;
 }
 
@@ -252,19 +251,26 @@
 .entityField input:focus,
 .entityField textarea:focus {
   outline: none;
-  border: 0;
 }
 
 .entity textarea {
   width: calc(100% - 3em);
   height: 3em;
   display: inline-block;
-  border: 0;
+  border: solid 1px #ccc;
   background: none;
-  padding: 0;
+  padding: .5em;
   margin: 0;
   min-width: calc(100% - 3em);
   max-width: calc(100% - 3em);
+}
+
+.entityField {
+  margin-bottom: .5em;
+}
+
+.entity input {
+  border-bottom: 1px solid #ccc;
 }
 
 .lore .entity textarea {
