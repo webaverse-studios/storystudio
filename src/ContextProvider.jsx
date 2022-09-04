@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getFile } from "./components/getFile";
 import { ApplicationContext } from './Context';
 import "./styles/App.css";
-import { defaultDialogue, defaultIngredients, defaultOpenAIParams, dialogueTypes, exampleLoreFiles, lore } from "./utils/constants";
+import { defaultDialogue, defaultEntities, defaultOpenAIParams, dialogueTypes, exampleLoreFiles, lore } from "./utils/constants";
 import murmurhash3String from "./utils/murmurhash3string";
 import {
   makeId,
@@ -24,7 +24,7 @@ function getOpenAIKey() {
 
 function initializeState() {
   if (!localStorage.getItem("entities")) {
-    localStorage.setItem("entities", compressObject(defaultIngredients));
+    localStorage.setItem("entities", compressObject(defaultEntities));
   }
 
   if (!localStorage.getItem("dialogue")) {
@@ -41,12 +41,14 @@ function initializeState() {
 export function ApplicationContextProvider(props) {
   initializeState();
   const [entities, setIngredients] = useState(
-    decompressObject(localStorage.getItem("entities")) || defaultIngredients
+    decompressObject(localStorage.getItem("entities")) || defaultEntities
   );
 
   const [dialogue, setDialogue] = useState(
     localStorage.getItem("dialogue") ? decompressObject(localStorage.getItem("dialogue")) : defaultDialogue
   );
+
+  console.log('dialogue is', dialogue)
 
   const [currentDialogueType, setCurrentDialogueType] = useState(
     localStorage.getItem("dialogueType") ? decompressObject(localStorage.getItem("dialogueType")) : dialogueTypes[0]
@@ -126,7 +128,7 @@ export function ApplicationContextProvider(props) {
   }, [entities]);
 
   useEffect(() => {
-    localStorage.setItem("dialogue", compressObject(entities));
+    localStorage.setItem("dialogue", compressObject(dialogue));
   }, [dialogue]);
 
   useEffect(() => {

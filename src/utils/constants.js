@@ -641,7 +641,7 @@ export const defaultDialogue = {
       ]
 }
 
-export const defaultIngredients = {
+export const defaultEntities = {
       setting: [
             {
                   type: "setting",
