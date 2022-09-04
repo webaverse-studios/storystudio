@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { getFile } from "./components/getFile";
-import { ApplicationContext } from './Context';
+import { ApplicationContext } from "./Context";
 import "./styles/App.css";
-import { defaultDialogue, defaultEntities, defaultOpenAIParams, dialogueTypes, exampleLoreFiles, lore } from "./utils/constants";
+import {
+  defaultDialogue,
+  defaultEntities,
+  defaultOpenAIParams,
+  dialogueTypes,
+  exampleLoreFiles,
+  lore,
+} from "./utils/constants";
 import murmurhash3String from "./utils/murmurhash3string";
 import {
   makeId,
   compressObject,
   decompressObject,
   download_content,
-  fileToDataUri
+  fileToDataUri,
 } from "./utils/utils";
 import { generate, makeEmpty, makeDialogue } from "./utils/generation";
-
 
 function setOpenAIKey(newKey) {
   localStorage.setItem("openai_key", newKey);
@@ -31,48 +37,60 @@ export function ApplicationContextProvider(props) {
     localStorage.setItem("dialogue", compressObject(defaultDialogue));
   }
 
-  if (
-    !localStorage.getItem("loreData")
-  ) {
+  if (!localStorage.getItem("loreData")) {
     localStorage.setItem("loreData", compressObject(lore));
   }
   const [entities, setEntities] = useState(
-    localStorage.getItem("entities") ? decompressObject(localStorage.getItem("entities")) : defaultEntities
+    localStorage.getItem("entities")
+      ? decompressObject(localStorage.getItem("entities"))
+      : defaultEntities
   );
 
   const [dialogue, setDialogue] = useState(
-    localStorage.getItem("dialogue") ? decompressObject(localStorage.getItem("dialogue")) : defaultDialogue
+    localStorage.getItem("dialogue")
+      ? decompressObject(localStorage.getItem("dialogue"))
+      : defaultDialogue
   );
 
   const [currentDialogueType, setCurrentDialogueType] = useState(
-    localStorage.getItem("dialogueType") ? decompressObject(localStorage.getItem("dialogueType")) : dialogueTypes[0]
+    localStorage.getItem("dialogueType")
+      ? decompressObject(localStorage.getItem("dialogueType"))
+      : dialogueTypes[0]
   );
 
   const [loreFiles, setLoreFiles] = useState(
-    localStorage.getItem("loreFiles") ? decompressObject(localStorage.getItem("loreFiles")) : exampleLoreFiles
+    localStorage.getItem("loreFiles")
+      ? decompressObject(localStorage.getItem("loreFiles"))
+      : exampleLoreFiles
   );
 
   const [loreData, setLoreData] = useState(
-    localStorage.getItem("loreData") ? decompressObject(localStorage.getItem("loreData")) : lore
+    localStorage.getItem("loreData")
+      ? decompressObject(localStorage.getItem("loreData"))
+      : lore
   );
 
   const [loreHeader, setLoreHeader] = useState("");
 
-  const [baseData, setBaseData] = useState(localStorage.getItem("baseData")
-    ? JSON.parse(localStorage.getItem("baseData"))
-    : {
-      base: null,
-      url: "./lore-model.js", // "https://webaverse.github.io/lore/lore-model.js",
-      type: "url",
-      module: {},
-    });
+  const [baseData, setBaseData] = useState(
+    localStorage.getItem("baseData")
+      ? JSON.parse(localStorage.getItem("baseData"))
+      : {
+          base: null,
+          url: "./lore-model.js", // "https://webaverse.github.io/lore/lore-model.js",
+          type: "url",
+          module: {},
+        }
+  );
 
   const [errorDialogData, setErrorDialogData] = useState({
     on: false,
     msg: "",
   });
 
-  const [openAIParams, setOpenAIParams] = useState(localStorage.getItem("openAIParams") || defaultOpenAIParams);
+  const [openAIParams, setOpenAIParams] = useState(
+    localStorage.getItem("openAIParams") || defaultOpenAIParams
+  );
 
   useEffect(() => {
     const oap = localStorage.getItem("openAIParams");
@@ -115,15 +133,14 @@ export function ApplicationContextProvider(props) {
     localStorage.setItem("loreFiles", compressObject(loreFiles));
   }, [loreFiles]);
 
-
   useEffect(() => {
     localStorage.setItem("entities", compressObject(entities));
   }, [entities]);
 
   useEffect(() => {
     localStorage.setItem("dialogue", compressObject(dialogue));
-    console.log('dialogue changed');
-    console.log('dialogue')
+    console.log("dialogue changed");
+    console.log("dialogue");
   }, [dialogue]);
 
   useEffect(() => {
@@ -199,7 +216,7 @@ export function ApplicationContextProvider(props) {
         const fileUri = await fileToDataUri(blob);
         // fileUri is a base64 javascript document
         // we want to inject some code into the file before we
-        console.log('File URI is ', fileUri);
+        console.log("File URI is ", fileUri);
         const importedFile = await import(fileUri);
         const firstLine = content.split("\n")?.[0];
 
@@ -294,11 +311,7 @@ export function ApplicationContextProvider(props) {
 
   const handleExport = (type) => {
     const json = JSON.stringify(
-      type === "entities"
-        ? entities
-        : type === "lore"
-          ? loreData
-          : loreFiles
+      type === "entities" ? entities : type === "lore" ? loreData : loreFiles
     );
 
     const element = document.createElement("a");
@@ -310,13 +323,8 @@ export function ApplicationContextProvider(props) {
     element.remove();
   };
 
-  const addEntityCallback = async (
-    entityType
-  ) => {
-    const entity = await makeEmpty(
-      entityType,
-      openErrorModal
-    );
+  const addEntityCallback = async (entityType) => {
+    const entity = await makeEmpty(entityType, openErrorModal);
 
     entity.id = makeId(5);
 
@@ -342,13 +350,7 @@ export function ApplicationContextProvider(props) {
     let entity = null;
     try {
       console.log(baseData);
-      entity = await generate(
-        entityType,
-        data,
-        baseData,
-        openErrorModal,
-        lore
-      );
+      entity = await generate(entityType, data, baseData, openErrorModal, lore);
     } catch (e) {
       // openErrorModal("Error generating entity", e);
       console.log("error", e);
@@ -363,7 +365,7 @@ export function ApplicationContextProvider(props) {
       setGenerating(false);
       return;
     }
-    if (!entity.id) {
+    if (!entity.id && typeof entity === "object") {
       entity.id = makeId(5);
     }
 
@@ -378,34 +380,30 @@ export function ApplicationContextProvider(props) {
     setGenerating(false);
   };
 
-  const deleteEntityCallback = (entity) => {
+  const deleteEntityCallback = (entity, index, type) => {
     const newData = { ...entities };
-    newData[entity.type] = entities[entity.type].filter(
-      (e) => e.id !== entity.id
-    );
+    newData[type].splice(index, 1);
 
     setEntities(newData);
   };
 
-  const editEntityCallback = (entity) => {
+  const editEntityCallback = (entity, index) => {
     let newData = { ...entities };
 
-    const entityIndex = newData[entity.type].findIndex(
-      (e) => e.id === entity.id
-    );
+    const entityIndex =
+      typeof entity === "string" || !Object.keys(entity).includes("type")
+        ? index
+        : newData[entity.type].findIndex((e) => e.id === entity.id);
 
-    newData[entity.type][entityIndex] = entity;
+    newData[Object.keys(entity).includes("type") ? entity.type : "loreFiles"][
+      entityIndex
+    ] = entity;
 
     setEntities(newData);
   };
 
-  const addDialogueCallback = async (
-    type
-  ) => {
-    const d = await makeDialogue(
-      type,
-      openErrorModal
-    );
+  const addDialogueCallback = async (type) => {
+    const d = await makeDialogue(type, openErrorModal);
 
     const newDialogueData = { ...dialogue };
     if (!newDialogueData[type]) {
@@ -429,13 +427,7 @@ export function ApplicationContextProvider(props) {
     let d = null;
     try {
       console.log(baseData);
-      d = await generate(
-        type,
-        data,
-        baseData,
-        openErrorModal,
-        lore
-      );
+      d = await generate(type, data, baseData, openErrorModal, lore);
     } catch (e) {
       // openErrorModal("Error generating entity", e);
       console.log("error", e);
@@ -472,33 +464,34 @@ export function ApplicationContextProvider(props) {
   };
 
   const editDialogueCallback = (d, selector, key, index) => {
-
     // selector is a '.' separated string of the path to the value inside dialogue
     // e.g. 'input.text' would be the text of the input of the dialogue
     let newData = { ...dialogue };
-    console.log('d', d);
-    console.log('selector', selector)
+    console.log("d", d);
+    console.log("selector", selector);
 
     // split the selector into an array
-    const selectorArray = selector.split('.');
-    console.log('key is', key);
+    const selectorArray = selector.split(".");
+    console.log("key is", key);
 
-    console.log('index is', index);
+    console.log("index is", index);
     // drill down into the dialogue object using the selector array
     let current = newData[currentDialogueType][index];
-    console.log('newData[currentDialogueType] is', newData[currentDialogueType]);
-    console.log('index is', index);
-    console.log('oldData is', newData)
-    for (let i = 0; i < selectorArray.length-1; i++) {
-      console.log('selectorArray[i] is', selectorArray[i])
+    console.log(
+      "newData[currentDialogueType] is",
+      newData[currentDialogueType]
+    );
+    console.log("index is", index);
+    console.log("oldData is", newData);
+    for (let i = 0; i < selectorArray.length - 1; i++) {
+      console.log("selectorArray[i] is", selectorArray[i]);
       current = current[selectorArray[i]];
     }
 
-    console.log('current is', current)
+    console.log("current is", current);
 
-    
-    current[selectorArray[selectorArray.length-1]] = d;
-    console.log('newData is', newData)
+    current[selectorArray[selectorArray.length - 1]] = d;
+    console.log("newData is", newData);
     setDialogue(newData);
   };
 
@@ -587,7 +580,7 @@ export function ApplicationContextProvider(props) {
 
   const provider = {
     getOpenAIKey: () => getOpenAIKey(),
-    setOpenAIKey: key => setOpenAIKey(key),
+    setOpenAIKey: (key) => setOpenAIKey(key),
     errorDialogData,
     openAIParams,
     setOpenAIParams,
@@ -618,13 +611,11 @@ export function ApplicationContextProvider(props) {
     addDialogueCallback,
     generateDialogueCallback,
     deleteDialogueCallback,
-    editDialogueCallback
-  }
+    editDialogueCallback,
+  };
 
   return (
-    <ApplicationContext.Provider
-      value={provider}
-    >
+    <ApplicationContext.Provider value={provider}>
       {props.children}
     </ApplicationContext.Provider>
   );

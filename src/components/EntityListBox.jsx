@@ -50,7 +50,7 @@ const EntityListBox = ({
                 index={index}
                 data={(entities[type] || entities)[key]}
                 editEntityCallback={editEntityCallback}
-                deleteEntityCallback={deleteEntityCallback}
+                deleteEntityCallback={() => deleteEntityCallback((entities[type] || entities)[key], index, type)}
                 moveEntityCallback={(entity, up) =>
                   moveEntityCallback(entity, up)
                 }

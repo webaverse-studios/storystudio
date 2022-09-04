@@ -99,7 +99,7 @@ export async function makeEmpty(type, openErrorModal) {
           comment: "This is a comment about a new object",
         }
       }
-    case "lore":
+    case "loreFiles":
       return
       `# Setting
 
@@ -323,7 +323,7 @@ export async function generate(type, data, baseData, openErrorModal) {
       res.description = resp.description;
       res.inventory = resp.inventory;
       break;
-    case "lore":
+    case "loreFiles":
       const newData = { ...data };
       // select a start character from the array provided by data.characters
       const header =
