@@ -231,8 +231,8 @@ const Dialogue = ({ index, _key, type, editJson }) => {
           {!editJson ? (
             <MonacoEditor
               width="100%"
-              height="200%"
-              language="javascript"
+              height="90vh"
+              language="json"
               theme="light"
               value={JSON.stringify(dialogue[currentDialogueType][_key])}
               onChange={(value) => {

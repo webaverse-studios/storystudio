@@ -305,6 +305,13 @@
   background-color: #000;
 }
 
+.dialogueInput {
+  width: 80% !important;
+  outline: none;
+  box-shadow: none;
+  border: 0;
+}
+
 /* create a media query for the mobile view */
 /* setting_wrapped should be 100% width */
 @media (max-width: 1200px) {
@@ -362,13 +369,6 @@
 
   .dialogue_wrapped {
     width: 100% !important;
-  }
-
-  .dialogueInput {
-    width: 80% !important;
-    outline: none;
-    box-shadow: none;
-    border: 0;
   }
 
   .tagInput {
