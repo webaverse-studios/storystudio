@@ -19,6 +19,7 @@ import {
   fileToDataUri,
 } from "./utils/utils";
 import { generate, makeEmpty, makeDialogue } from "./utils/generation";
+import JSZip from "jszip";
 
 function setOpenAIKey(newKey) {
   localStorage.setItem("openai_key", newKey);
@@ -415,6 +416,24 @@ export function ApplicationContextProvider(props) {
     setDialogue(newDialogueData);
   };
 
+  const exportLoreMD = async () => {
+    const data = [...entities["loreFiles"]];
+    const zip = new JSZip();
+    for (let i = 0; i < data.length; i++) {
+      zip.file(
+        `lore_${i}.md`,
+        typeof data[i] === "string" ? data[i] : data[i][0]
+      );
+    }
+    const element = document.createElement("a");
+    const file = await zip.generateAsync({ type: "blob" });
+    element.href = URL.createObjectURL(file);
+    element.download = "lores_" + Date.now() + ".zip";
+    document.body.appendChild(element);
+    element.click();
+    element.remove();
+  };
+
   const generateDialogueCallback = async (
     type,
     data,
@@ -612,6 +631,7 @@ export function ApplicationContextProvider(props) {
     generateDialogueCallback,
     deleteDialogueCallback,
     editDialogueCallback,
+    exportLoreMD,
   };
 
   return (

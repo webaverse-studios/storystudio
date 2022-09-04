@@ -301,7 +301,7 @@ const Entity = ({
       <button onClick={() => moveEntityCallback(data, false)}>
         <ArrowDownwardIcon />
           </button>*/}
-      {type === "lore" ||
+      {type === "loreFiles" ||
       type === "character" ||
       type === "npc" ||
       type === "mob" ||
@@ -310,7 +310,7 @@ const Entity = ({
         <button
           onClick={() => {
             console.log(type);
-            if (type === "lore") {
+            if (type === "loreFiles") {
               const element = document.createElement("a");
               const file = new Blob([data], { type: "application/text" });
               element.href = URL.createObjectURL(file);
@@ -331,7 +331,7 @@ const Entity = ({
             }
           }}
         >
-          {type === "lore" ? "Export MD" : "Export"}
+          {type === "loreFiles" ? "Export MD" : "Export"}
         </button>
       ) : null}
     </div>
