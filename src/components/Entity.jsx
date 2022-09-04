@@ -290,12 +290,13 @@ const Entity = ({
       <button onClick={() => moveEntityCallback(data, false)}>
         <ArrowDownwardIcon />
           </button>*/}
-      {type === "loreFiles" ||
-      type === "character" ||
-      type === "npc" ||
-      type === "mob" ||
-      type === "setting" ||
-      type === "object" ? (
+      {type === "loreFiles"
+      // type === "character" ||
+      // type === "npc" ||
+      // type === "mob" ||
+      // type === "setting" ||
+      // type === "object" 
+      ? (
         <button
           onClick={() => {
             console.log(type);

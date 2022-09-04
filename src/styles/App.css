@@ -364,6 +364,21 @@
     width: 100% !important;
   }
 
+  .dialogueInput {
+    width: 80% !important;
+    outline: none;
+    box-shadow: none;
+    border: 0;
+  }
+
+  .tagInput {
+    outline: none;
+    text-align: center;
+    box-shadow: none;
+    border: 1px solid #ccc;
+    margin: .5em;
+  }
+
   .context-group-button {
     padding-left: 0.25em;
   }
