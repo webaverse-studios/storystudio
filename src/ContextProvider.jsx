@@ -126,6 +126,10 @@ export function ApplicationContextProvider(props) {
   }, [entities]);
 
   useEffect(() => {
+    localStorage.setItem("dialogue", compressObject(entities));
+  }, [dialogue]);
+
+  useEffect(() => {
     localStorage.setItem("loreData", compressObject(loreData));
   }, [loreData]);
 
@@ -417,7 +421,7 @@ export function ApplicationContextProvider(props) {
   };
 
   const generateDialogueCallback = async (
-    entityType,
+    type,
     data,
     setGenerating,
     second = false
@@ -429,7 +433,7 @@ export function ApplicationContextProvider(props) {
     try {
       console.log(baseData);
       entity = await generate(
-        entityType,
+        type,
         data,
         baseData,
         openErrorModal,
@@ -440,7 +444,7 @@ export function ApplicationContextProvider(props) {
       console.log("error", e);
       setGenerating(false);
       if (!second) {
-        generateDialogueCallback(entityType, data, setGenerating, true);
+        generateDialogueCallback(type, data, setGenerating, true);
       }
       return;
     }
@@ -449,26 +453,22 @@ export function ApplicationContextProvider(props) {
       setGenerating(false);
       return;
     }
-    if (!entity.id) {
-      entity.id = makeId(5);
+
+    const newData = { ...dialogue };
+    if (!newData[type]) {
+      newData[type] = [];
     }
 
-    const newEntityData = { ...entities };
-    if (!newEntityData[entityType]) {
-      newEntityData[entityType] = [];
-    }
+    newData[type].unshift(entity);
 
-    newEntityData[entityType].unshift(entity);
-
-    setDialogue(newEntityData);
+    setDialogue(newData);
     setGenerating(false);
   };
 
-  const deleteDialogueCallback = (d) => {
+  const deleteDialogueCallback = (d, index) => {
     const newDialogueData = { ...dialogue };
-    console.log('dialogue[d.type]', dialogue[d.type]);
-    newDialogueData[d.type] = dialogue[d.type].filter(
-      (e) => e.id !== entity.id
+    newDialogueData[currentDialogueType] = dialogue[currentDialogueType].filter(
+      (e, i) => i !== index
     );
 
     setDialogue(newDialogueData);

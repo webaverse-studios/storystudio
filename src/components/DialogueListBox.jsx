@@ -6,8 +6,7 @@ import {ApplicationContext} from '../Context';
 const DialogueListBox = ({
   header = "dialogue",
   /* It's a string that is used to identify the type of dialogue. */
-  type = "",
-  
+  type = ""
 }) => {
   const [generating, setGenerating] = React.useState(false);
 
@@ -18,13 +17,13 @@ const DialogueListBox = ({
     dialogue,
     currentDialogueType
    } = useContext(ApplicationContext);
-
+  console.log('dialogue', dialogue);
   return (
     <div className={"sectionWrapper " + header + "_wrapped"}>
       <div className={"sectionHeader " + currentDialogueType + "_header"}>
         <h1>{header}</h1>
         <div style={{ display: "inline-block", float: "right" }}>
-        <button onClick={() => generateDialogueCallback(dialogue, setGenerating)}>
+        <button onClick={() => generateDialogueCallback(currentDialogueType, dialogue, setGenerating)}>
           {!generating ? "Generate" : "Generating..."}
         </button>
       <button onClick={() => addDialogueCallback(currentDialogueType)}>
@@ -33,7 +32,7 @@ const DialogueListBox = ({
       </div>
       </div>
       <div className={"section " + currentDialogueType}>
-        {Object.keys(dialogue[currentDialogueType]).map((key, index) => {
+        {Object.keys(dialogue[currentDialogueType] || []).map((key, index) => {
             return (
               <Dialogue
                 entities={entities}

@@ -77,7 +77,7 @@ function DisplayJSONAsEditableForm({ data, type, label = "", allData = null }) {
               data = e.target.value;
             }}
           >
-            {/*
+            {
               (type === 'loreExposition' ? 
               [...entities['character'], ...entities['object'], ...entities['setting'], ...entities['npc']] :
               entities[type.replace('loading', 'setting').replace('Comment', '')]).map((item, index) => {
@@ -87,7 +87,7 @@ function DisplayJSONAsEditableForm({ data, type, label = "", allData = null }) {
                 </option>
               );
             }
-          ) */}
+          )}
           </select>
 
         </div>
