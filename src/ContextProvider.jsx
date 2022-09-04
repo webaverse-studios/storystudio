@@ -149,15 +149,11 @@ export function ApplicationContextProvider(props) {
   }, [loreData]);
 
   const handleImport = (type, data) => {
-    if (type === "entities") {
-      setEntities(data);
-    } else if (type === "lore") {
-      console.log("setLoreData:", data);
-      setLoreData(data);
-      console.log("lore Data:", loreData);
-    } else {
-      setLoreFiles(data);
-    }
+    const newData = { ...entities };
+
+    newData[type].unshift(data);
+
+    setEntities(newData);
   };
 
   const loadBaseData = async (data, callback, fromUrl = true) => {
@@ -434,6 +430,30 @@ export function ApplicationContextProvider(props) {
     element.remove();
   };
 
+  const importProject = async () => {
+    const file = await getFile();
+    const text = await file.text();
+    const json = JSON.parse(text);
+    const { entities, dialogue } = json;
+    setEntities(entities);
+    setDialogue(dialogue);
+  };
+  const exportProject = () => {
+    const json = JSON.stringify({
+      entities,
+      dialogue,
+    });
+
+    const element = document.createElement("a");
+    const file = new Blob([json], { type: "application/json" });
+    element.href = URL.createObjectURL(file);
+    element.download = "project_" + new Date().getTime() + ".json";
+    console.log("download name:", element.download);
+    document.body.appendChild(element);
+    element.click();
+    element.remove();
+  };
+
   const generateDialogueCallback = async (
     type,
     data,
@@ -632,6 +652,9 @@ export function ApplicationContextProvider(props) {
     deleteDialogueCallback,
     editDialogueCallback,
     exportLoreMD,
+    exportProject,
+    importProject,
+    handleImport,
   };
 
   return (

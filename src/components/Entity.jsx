@@ -1,19 +1,8 @@
 import React from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import DeleteForever from "@mui/icons-material/DeleteForever";
-import PlusOne from "@mui/icons-material/PlusOne";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import {
-  uniqueNamesGenerator,
-  adjectives,
-  animals,
-  colors,
-} from "unique-names-generator";
 
 import "../styles/App.css";
-import { generateImage, generateVoice } from "../utils/generation";
-import { availableVoices } from "../utils/constants";
 
 //field check if image, set source the img, if name change, generate new image
 const Entity = ({

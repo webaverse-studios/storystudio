@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import "../styles/App.css";
 import Entity from "./Entity";
 import { ApplicationContext } from "../Context";
+import { getFile } from "./getFile";
 
 const EntityListBox = ({ header, type }) => {
   const {
@@ -17,6 +18,13 @@ const EntityListBox = ({ header, type }) => {
 
   const [generating, setGenerating] = React.useState(false);
 
+  const _import = async () => {
+    const file = await getFile();
+    const text = await file.text();
+    const json = JSON.parse(text);
+    handleImport(type, json);
+  };
+
   return (
     <div className={"sectionWrapper " + header + "_wrapped"}>
       <div className={"sectionHeader " + type + "_header"}>
@@ -28,7 +36,7 @@ const EntityListBox = ({ header, type }) => {
           type === "mob" ||
           type === "setting" ||
           type === "object" ? (
-            <button onClick={handleImport}>Import </button>
+            <button onClick={_import}>Import</button>
           ) : null}
           <button
             onClick={() =>
