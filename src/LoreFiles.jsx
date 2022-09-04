@@ -12,7 +12,7 @@ function LoreFiles() {
     dataType,
     baseData,
     ingredients,
-    setIngredients,
+    setEntities,
     loreFiles,
     setLoreFiles,
     exportHandler,

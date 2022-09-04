@@ -32,13 +32,13 @@ const DialogueListBox = ({
       </div>
       </div>
       <div className={"section " + currentDialogueType}>
-        {Object.keys(dialogue[currentDialogueType] || []).map((key, index) => {
+        {Object.keys(dialogue[currentDialogueType]).map((key, index) => {
             return (
               <Dialogue
                 entities={entities}
-                key={index}
+                _key={key}
+                key={key}
                 index={index}
-                data={dialogue[currentDialogueType][key]}
                 type={currentDialogueType}
               />
             );

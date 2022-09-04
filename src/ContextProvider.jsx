@@ -22,7 +22,7 @@ function getOpenAIKey() {
   return localStorage.getItem("openai_key");
 }
 
-function initializeState() {
+export function ApplicationContextProvider(props) {
   if (!localStorage.getItem("entities")) {
     localStorage.setItem("entities", compressObject(defaultEntities));
   }
@@ -36,19 +36,13 @@ function initializeState() {
   ) {
     localStorage.setItem("loreData", compressObject(lore));
   }
-}
-
-export function ApplicationContextProvider(props) {
-  initializeState();
-  const [entities, setIngredients] = useState(
-    decompressObject(localStorage.getItem("entities")) || defaultEntities
+  const [entities, setEntities] = useState(
+    localStorage.getItem("entities") ? decompressObject(localStorage.getItem("entities")) : defaultEntities
   );
 
   const [dialogue, setDialogue] = useState(
     localStorage.getItem("dialogue") ? decompressObject(localStorage.getItem("dialogue")) : defaultDialogue
   );
-
-  console.log('dialogue is', dialogue)
 
   const [currentDialogueType, setCurrentDialogueType] = useState(
     localStorage.getItem("dialogueType") ? decompressObject(localStorage.getItem("dialogueType")) : dialogueTypes[0]
@@ -90,7 +84,6 @@ export function ApplicationContextProvider(props) {
       ? JSON.parse(localStorage.getItem("baseData"))
       : baseData;
 
-    console.log("loaded default data");
     loadBaseData(data, false, !baseData.base);
   }, []);
 
@@ -129,6 +122,8 @@ export function ApplicationContextProvider(props) {
 
   useEffect(() => {
     localStorage.setItem("dialogue", compressObject(dialogue));
+    console.log('dialogue changed');
+    console.log('dialogue')
   }, [dialogue]);
 
   useEffect(() => {
@@ -137,7 +132,7 @@ export function ApplicationContextProvider(props) {
 
   const handleImport = (type, data) => {
     if (type === "entities") {
-      setIngredients(data);
+      setEntities(data);
     } else if (type === "lore") {
       console.log("setLoreData:", data);
       setLoreData(data);
@@ -332,7 +327,7 @@ export function ApplicationContextProvider(props) {
 
     newEntityData[entityType].unshift(entity);
 
-    setIngredients(newEntityData);
+    setEntities(newEntityData);
   };
 
   const generateEntityCallback = async (
@@ -379,7 +374,7 @@ export function ApplicationContextProvider(props) {
 
     newEntityData[entityType].unshift(entity);
 
-    setIngredients(newEntityData);
+    setEntities(newEntityData);
     setGenerating(false);
   };
 
@@ -389,7 +384,7 @@ export function ApplicationContextProvider(props) {
       (e) => e.id !== entity.id
     );
 
-    setIngredients(newData);
+    setEntities(newData);
   };
 
   const editEntityCallback = (entity) => {
@@ -401,7 +396,7 @@ export function ApplicationContextProvider(props) {
 
     newData[entity.type][entityIndex] = entity;
 
-    setIngredients(newData);
+    setEntities(newData);
   };
 
   const addDialogueCallback = async (
@@ -431,10 +426,10 @@ export function ApplicationContextProvider(props) {
     setGenerating(true);
     //console.log("calling baseData", baseData);
     // generate new using openai callback
-    let entity = null;
+    let d = null;
     try {
       console.log(baseData);
-      entity = await generate(
+      d = await generate(
         type,
         data,
         baseData,
@@ -450,7 +445,7 @@ export function ApplicationContextProvider(props) {
       }
       return;
     }
-    if (!entity) {
+    if (!d) {
       // openErrorModal("could not generate entity");
       setGenerating(false);
       return;
@@ -461,7 +456,7 @@ export function ApplicationContextProvider(props) {
       newData[type] = [];
     }
 
-    newData[type].unshift(entity);
+    newData[type].unshift(d);
 
     setDialogue(newData);
     setGenerating(false);
@@ -476,15 +471,34 @@ export function ApplicationContextProvider(props) {
     setDialogue(newDialogueData);
   };
 
-  const editDialogueCallback = (d) => {
+  const editDialogueCallback = (d, selector, key, index) => {
+
+    // selector is a '.' separated string of the path to the value inside dialogue
+    // e.g. 'input.text' would be the text of the input of the dialogue
     let newData = { ...dialogue };
+    console.log('d', d);
+    console.log('selector', selector)
 
-    const index = newData[d.type].findIndex(
-      (e) => e.id === d.id
-    );
+    // split the selector into an array
+    const selectorArray = selector.split('.');
+    console.log('key is', key);
 
-    newData[d.type][index] = d;
+    console.log('index is', index);
+    // drill down into the dialogue object using the selector array
+    let current = newData[currentDialogueType][index];
+    console.log('newData[currentDialogueType] is', newData[currentDialogueType]);
+    console.log('index is', index);
+    console.log('oldData is', newData)
+    for (let i = 0; i < selectorArray.length-1; i++) {
+      console.log('selectorArray[i] is', selectorArray[i])
+      current = current[selectorArray[i]];
+    }
 
+    console.log('current is', current)
+
+    
+    current[selectorArray[selectorArray.length-1]] = d;
+    console.log('newData is', newData)
     setDialogue(newData);
   };
 
@@ -528,7 +542,7 @@ export function ApplicationContextProvider(props) {
     }
 
     newData[entity.type] = newArray;
-    setIngredients(newData);
+    setEntities(newData);
   };
 
   const importEntityList = async () => {
@@ -546,7 +560,7 @@ export function ApplicationContextProvider(props) {
       newData[json.type] = [];
     }
     newData[json.type].unshift(json);
-    setIngredients(newData);
+    setEntities(newData);
   };
 
   const addLore = async (type, setGenerating) => {
@@ -582,7 +596,7 @@ export function ApplicationContextProvider(props) {
     currentDialogueType,
     setCurrentDialogueType,
     entities,
-    setIngredients,
+    setEntities,
     openErrorModal,
     closeErrorDialog,
     loreHeader,

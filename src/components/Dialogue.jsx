@@ -1,228 +1,207 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import DeleteForever from "@mui/icons-material/DeleteForever";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import {ApplicationContext} from '../Context';
 
-function DisplayJSONAsEditableForm({ data, type, label = "", allData = null }) {
-  const {
-    entities
-   } = useContext(ApplicationContext);
-  allData = allData || data;
-  // 1. Iterate through data, and based on it's type, render the appropriate component or recursively drill down
-  // 2. If the data is an array, render a list of the data. Check the data type of the first element, and render the appropriate component
-  // 3. If the data is an object, render a list of the data. Check the data type of the first element, and render the appropriate component
-  // Note: Make sure to recurse through the data, since there can be objects within objects, arrays within arrays, and so on
-  // return a React.Fragment with the appropriate components
 
-  // setting is a dropdown
-  // characters are tags, using react-tag-input
-  // npcs are also tags, using react-tag-input
-  // objects are also tags, using react-tag-input
-
-  let output = null;
-  if (typeof data === "object") {
-    if (Array.isArray(data)) {
-      output = data.map((item, index) => {
-        return (
-          <div style={{marginLeft:"2em"}} key={index}>
-            <DisplayJSONAsEditableForm key={index} type={type} data={item} allData={allData} />
-          </div>
-        );
-      });
-    } else {
-      output = Object.keys(data).map((key, index) => {
-        return (
-          <div style={{marginLeft:"2em"}} key={index}>
-            <DisplayJSONAsEditableForm key={index} type={type} label={key} data={data[key]} allData={allData} />
-          </div>
-        );
-      });
-    }
-  }
-
-  // if the key is transcript, render a textarea
-  // if (label === "transcript") {
-  //   return (
-  //     <div>
-  //       <label>{label}</label>
-  //       {/* iterate through the data, and render a textarea for each item */}
-  //       {data.map((item, index) => {
-  //         console.log(item);
-  //         return (
-  //         <textarea
-  //           style={{ width: "100%", height: "100px" }}
-  //           value={data[index]}
-  //           onChange={(e) => {
-  //             item = e.target.value;
-  //           }}
-  //           />
-  //         )
-  //       })
-  //     }
-  //   </div>
-  //   );
-  // }
-
-  else if (label === "target") {
-    console.log('type is', type);
-      return (
-        <div>
-          <label>{label}</label>
-          {/* render a select dropdown with all of the entities for the current type */}
-          <select
-            value={data}
-            onChange={(e) => {
-              data = e.target.value;
-            }}
-          >
-            {
-              (type === 'loreExposition' ? 
-              [...entities['character'], ...entities['object'], ...entities['setting'], ...entities['npc']] :
-              entities[type.replace('loading', 'setting').replace('Comment', '')]).map((item, index) => {
-              return (
-                <option key={index} value={item}>
-                  {item.name}
-                </option>
-              );
-            }
-          )}
-          </select>
-
-        </div>
-      );
-  }
-  
-
-    // render outputs as an input field
-  else if (label === "message" || label === "action" || label === "comment") {
-    output = (
-        <input
-          type="text"
-          value={data}
-          onChange={(e) => {
-            data = e.target.value;
-          }}
-        />
-    );
-  }
-
-  else if (label === "character" || label === "speaker"){
-    output = (
-      // render a dropdown selection based on allData.input.characters
-      <select
-        value={data}
-        onChange={(e) => {
-          data = e.target.value;
-        }}
-      >
-        {[...allData.input.characters, ...allData.input.npcs].map((item, index) => {
-          return (
-            <option key={index} value={item}>
-              {item}
-            </option>
-          );
-        }
-        )}
-      </select>
-    )
-  }
-
-  else if (label === "setting"){
-    console.log('entities', entities);
-    // render a dropdown select 
-    console.log('entities', entities)
-    output = (
-      <select
-        value={data}
-        onChange={(e) => {
-          data = e.target.value;
-        }
-      }>
-        {entities[label].map((item, index) => {
-          return (
-            <option key={index} value={item.name}>
-              {item.name}
-            </option>
-          );
-        }
-        )}
-      </select>
-    )
-  }
-
-  // if the label is "objects", render a react-tag-input
-  if (label === "objects" || label === "npcs" || label === "characters") {
-    console.log('data', data);
-    output = (
-      <div>
-        {/* iterate through the data, and render a textarea for each item */}
-        {data.map((item, index) => {
-          return (
-              <input
-                type="text"
-                value={data[index]}
-                onChange={(e) => {
-                  data[index] = e.target.value;
-                }}
-              />
-          );
-        })}
-        {/* add a button to add a new item */}
-        <button
-          onClick={() => {
-            data.push("");
-          }}
-        >
-          Add
-        </button>
-      </div>
-    );
-  }
-
-  // if label is target, render a dropdown select
-
-
-  return (<div>{label}
-  
-  {output}
-  
-  </div>);
-}
 
 //field check if image, set source the img, if name change, generate new image
 const Dialogue = ({
   index,
-  data,
+  _key,
   type,
 }) => {
+  function handleChange (data, selector) { console.log('data, selector', data, selector); editDialogueCallback(data, selector, _key, index)}
+  function DisplayJSONAsEditableForm({ data, allData, type, label = "", selector = '' }) {
+    const {
+      entities
+     } = useContext(ApplicationContext);
+  
+    let output = null;
+    if (typeof data === "object") {
+      if (Array.isArray(data)) {
+        output = data.map((item, index) => {
+          return (
+            <div style={{marginLeft:"2em"}} key={index}>
+              <DisplayJSONAsEditableForm key={index} type={type} data={item} allData={allData} selector={selector + (selector !== '' ? '.' : '') + index} />
+            </div>
+          );
+        });
+      } else {
+        output = Object.keys(data).map((key, index) => {
+          return (
+            <div style={{marginLeft:"2em"}} key={index}>
+              <DisplayJSONAsEditableForm key={index} type={type} label={key} data={data[key]} allData={allData} selector={selector + (selector !== '' ? '.' : '') + key} />
+            </div>
+          );
+        });
+      }
+    }
+  
+    // if the key is transcript, render a textarea
+    // if (label === "transcript") {
+    //   return (
+    //     <div>
+    //       <label>{label}</label>
+    //       {/* iterate through the data, and render a textarea for each item */}
+    //       {data.map((item, index) => {
+    //         console.log(item);
+    //         return (
+    //         <textarea
+    //           style={{ width: "100%", height: "100px" }}
+    //           value={data[index]}
+    //           onChange={(e) => {
+    //             item = e.target.value;
+    //           }}
+    //           />
+    //         )
+    //       })
+    //     }
+    //   </div>
+    //   );
+    // }
+  
+    else if (label === "target") {
+      console.log('type is', type);
+      console.log('*** data is', data);
+        return (
+          <div>
+            <label>{label}</label>
+            {/* render a select dropdown with all of the entities for the current type */}
+            <select
+              value={data}
+              onChange={(e) => {
+                data = e.target.value;
+                handleChange(data, selector);
+              }}
+            >
+              {
+                (type === 'loreExposition' ? 
+                [...entities['character'], ...entities['object'], ...entities['setting'], ...entities['npc']] :
+                entities[type.replace('loading', 'setting').replace('Comment', '')]).map((item, index) => {
+                return (
+                  <option key={index} value={item.name}>
+                    {item.name}
+                  </option>
+                );
+              }
+            )}
+            </select>
+  
+          </div>
+        );
+    }
+    
+  
+      // render outputs as an input field
+    else if (label === "message" || label === "action" || label === "comment") {
+      console.log('comment is', data)
+      output = (
+          <input
+            type="text"
+            value={data}
+            onChange={(e) => {
+              data = e.target.value;
+              handleChange(data, selector);
+            }}
+          />
+      );
+    }
+  
+    // else if (label === "speaker"){
+    //   console.log('allData', allData.current);
+    //   output = (
+    //     // render a dropdown selection based on allData.input.characters
+    //     <select
+    //       value={data}
+    //       onChange={(e) => {
+    //         data = e.target.value;
+    //       }}
+    //     >
+    //       {[...allData.current.input.characters, ...allData.current.input.npcs].map((item, index) => {
+    //         return (
+    //           <option key={index} value={item}>
+    //             {item}
+    //           </option>
+    //         );
+    //       }
+    //       )}
+    //     </select>
+    //   )
+    // }
+  
+    else if (label === "setting"){
+      output = (
+        <select
+          value={data}
+          onChange={(e) => {
+            data = e.target.value;
+            handleChange(data, selector);
+          }
+        }>
+          {entities[label].map((item, index) => {
+            return (
+              <option key={index} value={item.name}>
+                {item.name}
+              </option>
+            );
+          }
+          )}
+        </select>
+      )
+    }
+  
+    // if the label is "objects", render a react-tag-input
+    if (label === "objects" || label === "npcs" || label === "characters") {
+      console.log('data', data);
+      output = (
+        <div>
+          {/* iterate through the data, and render a textarea for each item */}
+          {data.map((item, index) => {
+            return (
+                <input
+                  type="text"
+                  value={data[index]}
+                  onChange={(e) => {
+                    data[index] = e.target.value;
+                  }}
+                />
+            );
+          })}
+          {/* add a button to add a new item */}
+          <button
+            onClick={() => {
+              data.push(data[data.length - 1] || "New");
+              handleChange(data, selector);
+            }}
+          >
+            Add
+          </button>
+        </div>
+      );
+    }
+  
+    // if label is target, render a dropdown select
+  
+  
+    return (<div>{label}
+    
+    {output}
+    
+    </div>);
+  }
+
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
   const {
-    addDialogueCallback,
-    generateDialogueCallback,
     editDialogueCallback,
     deleteDialogueCallback,
-    moveDialogueCallback,
-    entities,
     dialogue,
     currentDialogueType
    } = useContext(ApplicationContext);
-
-  const updateDialogue = (entities, field, data, index) => {
-    if (field === "shortname") {
-      return;
-    }
-    let newData = { ...entities };
-    newData[field] = data;
-    // needed?
-    if (!field) {
-      newData = data;
-    }
-    editDialogueCallback(newData, index);
-  };
 
   return (
     <div className={"entity"}>
@@ -240,16 +219,16 @@ const Dialogue = ({
           </button>
           <button
             onClick={() =>
-              deleteDialogueCallback(data, index) | setShouldDelete(false)
+              deleteDialogueCallback(dialogue[currentDialogueType][_key], index) | setShouldDelete(false)
             }
           >
             <DeleteForever />
           </button>
         </span>
       )}
-      {typeof data === "object" && (
+      {typeof dialogue[currentDialogueType][_key] === "object" && (
         <React.Fragment>
-          {DisplayJSONAsEditableForm({ data, type, entities })}
+          {DisplayJSONAsEditableForm({ data: dialogue[currentDialogueType][_key], allData: dialogue, type })}
         </React.Fragment>
       )}
       {/*<button onClick={() => moveDialogueCallback(data, true)}>
