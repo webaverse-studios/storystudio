@@ -13,6 +13,8 @@ import {
   defaultIngredients, defaultOpenAIParams, dialogueTypes, defaultDialogue, exampleLoreFiles, lore, views
 } from "./utils/constants";
 import murmurhash3String from "./utils/murmurhash3string";
+import { BrowserRouter as Router, NavLink } from "react-router-dom";
+import { Route, Routes } from "react-router";
 
 import Header from "./components/Header";
 import {
@@ -69,7 +71,7 @@ function App() {
     msg: "",
   });
   const [forceUpdate, setForceUpdate] = useState(false);
-  const [oepnAIParams, setOpenAIPArams] = useState(defaultOpenAIParams);
+  const [openAIParams, setOpenAIPArams] = useState(defaultOpenAIParams);
   const [darkMode, setDarkMode] = useState(false);
 
   const updateOpenAIParams = (data) => {
@@ -309,8 +311,8 @@ function App() {
       type === "ingredients"
         ? ingredients
         : type === "lore"
-        ? loreData
-        : loreFiles
+          ? loreData
+          : loreFiles
     );
 
     const element = document.createElement("a");
@@ -336,86 +338,85 @@ function App() {
   return (
     <ApplicationContextProvider>
       <div className="App">
+      <Router>
         <Header
-          currentView={currentView}
-          setCurrentView={setCurrentView}
           _darkMode={darkMode}
           _setDarkMode={updateDarkMode}
         />
-        {currentView === "setup" ? (
-          <Setup
-            _openAIParams={oepnAIParams}
-            _setOpenAIParams={updateOpenAIParams}
-          />
-        ) : currentView === "base" ? (
-          <LoreBase
-            loreHeader={loreHeader}
-            setLoreHeader={setLoreHeader}
-            loadBaseData={loadBaseData}
-            loreData={loreData}
-            setLoreData={setLoreData}
-            baseData={baseData}
-            setBaseData={setBaseData}
-            importHandler={(data) => handleImport("lore", data)}
-            exportHandler={() => handleExport("lore")}
-          />
-        ) : currentView === "files" ? (
-          <LoreFiles
-            dataType={"lore"}
-            importHandler={(data) => handleImport("output", data)}
-            exportHandler={() => handleExport("output")}
-            ingredients={ingredients}
-            setIngredients={setIngredients}
-            baseData={baseData}
-            setBaseData={setBaseData}
-            loreFiles={loreFiles}
-            setLoreFiles={setLoreFiles}
-            openErrorDialog={openErrorDialog}
-          />
-        ) : (
-          <React.Fragment>
-          <Ingredients
-            dataType={"ingredients"}
-            importHandler={(data) => handleImport("ingredients", data)}
-            exportHandler={() => handleExport("ingredients")}
-            ingredients={ingredients}
-            setIngredients={setIngredients}
-            baseData={baseData}
-            setBaseData={setBaseData}
-            openErrorModal={openErrorDialog}
-            forceUpdate={_forceUpdate}
-            lore={loreData}
-            setLore={setLoreData}
-          />
-          <DialogueSelector
-          data={dialogue}
-          dialogueTypes={dialogueTypes}
-          currentContentType={currentContentType}
-          setCurrentContentType={setCurrentContentType}
-        />
-        <DialogueListBox
-          ingredients={ingredients}
-          type={currentContentType}
-          data={dialogue}
-          updateLocation={(up) => moveEntity(up)}
-          generateDialogueCallback={(data, setGenerating) => {
-            generateDialogueCallback(
-              dataType,
-              ingredients,
-              setGenerating,
-              false,
-              true
-            );
-          }}
-          editDialogueCallback={(data) => editDialogueCallback(data)}
-          deleteDialogueCallback={(data) => deleteDialogueCallback(data, true)}
-          moveDialogueCallback={(entity, up) => moveDialogue(entity, up)}
-        />
-        </React.Fragment>
-        )}
+          <Routes>
+            <Route path="Setup" element={<Setup
+              _openAIParams={openAIParams}
+              _setOpenAIParams={updateOpenAIParams}
+            />} />
+            <Route path="Base" element={<LoreBase
+              loreHeader={loreHeader}
+              setLoreHeader={setLoreHeader}
+              loadBaseData={loadBaseData}
+              loreData={loreData}
+              setLoreData={setLoreData}
+              baseData={baseData}
+              setBaseData={setBaseData}
+              importHandler={(data) => handleImport("lore", data)}
+              exportHandler={() => handleExport("lore")}
+            />} />
+            <Route path="Output" element={
+              <LoreFiles
+                dataType={"lore"}
+                importHandler={(data) => handleImport("output", data)}
+                exportHandler={() => handleExport("output")}
+                ingredients={ingredients}
+                setIngredients={setIngredients}
+                baseData={baseData}
+                setBaseData={setBaseData}
+                loreFiles={loreFiles}
+                setLoreFiles={setLoreFiles}
+                openErrorDialog={openErrorDialog}
+              />} />
+              <Route path="Ingredients" element={
+                <React.Fragment>
+                <Ingredients
+                  dataType={"ingredients"}
+                  importHandler={(data) => handleImport("ingredients", data)}
+                  exportHandler={() => handleExport("ingredients")}
+                  ingredients={ingredients}
+                  setIngredients={setIngredients}
+                  baseData={baseData}
+                  setBaseData={setBaseData}
+                  openErrorModal={openErrorDialog}
+                  forceUpdate={_forceUpdate}
+                  lore={loreData}
+                  setLore={setLoreData}
+                />
+                <DialogueSelector
+                  data={dialogue}
+                  dialogueTypes={dialogueTypes}
+                  currentContentType={currentContentType}
+                  setCurrentContentType={setCurrentContentType}
+                />
+                <DialogueListBox
+                  ingredients={ingredients}
+                  type={currentContentType}
+                  data={dialogue}
+                  updateLocation={(up) => moveEntity(up)}
+                  generateDialogueCallback={(data, setGenerating) => {
+                    generateDialogueCallback(
+                      dataType,
+                      ingredients,
+                      setGenerating,
+                      false,
+                      true
+                    );
+                  }}
+                  editDialogueCallback={(data) => editDialogueCallback(data)}
+                  deleteDialogueCallback={(data) => deleteDialogueCallback(data, true)}
+                  moveDialogueCallback={(entity, up) => moveDialogue(entity, up)}
+                />
+              </React.Fragment>} />
+          </Routes>
+        </Router>
         {errorDialogData &&
           errorDialogData.on &&
-          errorDialogData.msg && 
+          errorDialogData.msg &&
           errorDialogData.msg.length > 0 && (
             <ErrorModal
               close={closeErrorDialog}

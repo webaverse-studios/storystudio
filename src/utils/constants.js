@@ -226,12 +226,24 @@ export const defaultIngredients = {
                   description: "Standard goblin. Very ugly. Easily vanquished by most adventures.",
                   inventory: [],
             },
+            {
+                  type: "mob",
+                  name: "Horse",
+                  description: "A majestic horse. Probably a unicorn.",
+                  inventory: [],
+            },
       ],
       npc: [
             {
                   type: "npc",
                   name: "Sarah Kerrigan",
                   description: "Queen of Blades. Leader of the Swarm and executor of the Overmind.",
+                  inventory: [],
+            },
+            {
+                  type: "npc",
+                  name: "Jim Raynor",
+                  description: "Raynor's been through hell. But he'll still come through in a pinch.",
                   inventory: [],
             },
       ],

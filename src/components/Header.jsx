@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import "../styles/App.css";
 import { views } from "../utils/constants";
+import { BrowserRouter as Router, Route, NavLink } from "react-router-dom";
 
-const Header = ({ currentView, setCurrentView, _darkMode, _setDarkMode }) => {
+const Header = () => {
   const editMode = new URLSearchParams(window.location.search).get("edit");
 
   return (
@@ -12,6 +13,7 @@ const Header = ({ currentView, setCurrentView, _darkMode, _setDarkMode }) => {
         <h1>Story Studio</h1>
       </div>
       <div className="headerright">
+      <nav>
         {/*<button onClick={_setDarkMode}>
           {_darkMode ? "Light Mode" : "Dark Mode"}
         </button>*/}
@@ -20,20 +22,17 @@ const Header = ({ currentView, setCurrentView, _darkMode, _setDarkMode }) => {
           if ((editMode === "false" || !editMode) && key === "base")
             return null;
           return (
-            <button
+            <NavLink to={views[key]}
               key={key}
-              className={
-                "viewButton " +
-                (currentView === Object.keys(views)[index]
-                  ? "activeButton"
-                  : "")
+              className={isActive =>
+                "viewButton " + (isActive ? "activeButton" : "")
               }
-              onClick={() => setCurrentView(Object.keys(views)[index])}
             >
               {views[key]}
-            </button>
-          );
-        })}
+            </NavLink>
+            );
+          })}
+          </nav>
       </div>
     </div>
   );
