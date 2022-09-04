@@ -47,7 +47,7 @@ const Dialogue = ({
       console.log('*** data is', data);
         return (
           <div>
-            <label>{label}</label>
+            <label style={{margin: ".5em"}}>{label}</label>
             {/* render a select dropdown with all of the entities for the current type */}
             <select
               value={data}

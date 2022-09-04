@@ -23,12 +23,18 @@ import {
   generateCharacterIntroPrompt
 } from './public/lore-model.js'
 
+const args = process.argv;
+// if the first arg contains 'sk-' then it's the openai key
+// otherwise it's the name of the test to run
+
+const test = (!args[2]?.includes('sk-') && args[2]) || (!args[3]?.includes('sk-') && args[3]) || 'all';
+
+
 // get openai key from process.env or args[0]
 function getOpenAIKey() {
-  const key = process?.env?.OPENAI_KEY || process?.argv[0];
+  const key = process?.env?.OPENAI_KEY || (args[2]?.includes('sk-') && args[2]) || (args[3]?.includes('sk-') && args[3]);
   if (!key || key.length <= 0) {
-    console.log("No openai key found");
-    return "";
+    return console.error("No openai key found");
   }
   return key;
 }
@@ -169,16 +175,23 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
   const promises = [];
 
   async function generateObjectCommentTest() {
+    /* Logging the console. */
     console.log('Starting object comment test');
     const output = await generateObjectComment(testData.objects[0], makeGenerateFn());
 
     console.log('*********** generateObjectComment:')
     console.log(output);
 
-    writeData(testData.objects[0], output, 'object_comment');
+    const prompt = output.prompt;
+
+    delete output.prompt;
+
+    writeData(testData.objects[0], prompt, output, 'object_comment');
   }
 
-  promises.push(generateObjectCommentTest);
+  if(test.toLowerCase().includes('all') || test.toLowerCase().includes('objectcomment')) {
+    promises.push(generateObjectCommentTest);
+  }
 
   async function generateReactionTest() {
     console.log('Starting reaction test');
@@ -187,10 +200,16 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
     console.log('*********** reaction:')
     console.log(output);
 
-    writeData(testData.messages[0], output, 'reaction');
+    const prompt = output.prompt;
+
+    delete output.prompt;
+
+    writeData(testData.messages[0], prompt, output.reaction, 'reaction');
   }
 
-  promises.push(generateReactionTest);
+  if(test.toLowerCase().includes('all') || test.toLowerCase().includes('reaction')) {
+    promises.push(generateReactionTest);
+  }
 
   async function generateBanterTest() {
     console.log('Starting banter test');
@@ -203,7 +222,9 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
     writeData(testData.messages[0], output, 'banter');
   }
 
-  promises.push(generateBanterTest);
+  if(test.toLowerCase().includes('all') || test.toLowerCase().includes('banter')) {
+    promises.push(generateBanterTest);
+  }
 
   async function generateExpositionTest() {
     console.log('Starting exposition test');
@@ -216,7 +237,9 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
     writeData(testData.messages[0], output, 'exposition');
   }
 
-  promises.push(generateExpositionTest);
+  if(test.toLowerCase().includes('all') || test.toLowerCase().includes('exposition')) {
+    promises.push(generateExpositionTest);
+  }
 
   async function generateRPGDialogTest() {
     const output = await generateRPGDialogue();
@@ -225,7 +248,9 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
     console.log(output);
   }
 
-  promises.push(generateRPGDialogTest);
+  if(test.toLowerCase().includes('all') || test.toLowerCase().includes('rpg')) {
+    promises.push(generateRPGDialogTest);
+  }
 
   async function generateCutsceneTest() {
 
@@ -235,7 +260,9 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
     console.log(output);
   }
 
-  promises.push(generateCutsceneTest);
+  if(test.toLowerCase().includes('all') || test.toLowerCase().includes('cutscene')) {
+    promises.push(generateCutsceneTest);
+  }
 
   async function generateActionTaskTest() {
     const output = await generateActionTask();
@@ -244,7 +271,13 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
     console.log(output);
   }
 
-  promises.push(generateActionTaskTest);
+  if(
+    test.toLowerCase().includes('all') ||
+    (test.toLowerCase().includes('action')) &&
+    !test.toLowerCase().includes('reaction')
+    ) {
+    promises.push(generateActionTaskTest);
+  }
 
   async function generateSceneTest() {
     const output = await generateScene(makeGenerateFn());
@@ -255,7 +288,9 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
     writeData('', output, 'scene');
   }
 
-  promises.push(generateSceneTest);
+  if(test.toLowerCase().includes('all') || (test.toLowerCase().includes('scene') && !test.toLowerCase().includes('cutscene'))) {
+    promises.push(generateSceneTest);
+  }
 
   async function generateCharacterTest() {
 
@@ -266,8 +301,9 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
 
     writeData('', output, 'character');
   }
-
-  promises.push(generateCharacterTest);
+  if(test.toLowerCase().includes('all') || test.toLowerCase().includes('character')) {
+    promises.push(generateCharacterTest);
+  }
 
   async function generateObjectTest() {
 
@@ -279,17 +315,19 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
     writeData('', output, 'object');
   }
 
-  promises.push(generateObjectTest);
-
-  async function generateLoreTest() {
-
-    const output = await generateLore(makeGenerateFn());
-
-    console.log('*********** generateLore:')
-    console.log(output);
-
-    writeData('', output, 'lore');
+  if(test.toLowerCase().includes('all') || (test.toLowerCase().includes('object') && !test.toLowerCase().includes('objectcomment'))) {
+    promises.push(generateObjectTest);
   }
+
+  // async function generateLoreTest() {
+
+  //   const output = await generateLore(makeGenerateFn());
+
+  //   console.log('*********** generateLore:')
+  //   console.log(output);
+
+  //   writeData('', output, 'lore');
+  // }
 
   // promises.push(generateLoreTest);
 
@@ -332,8 +370,9 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
     writeData({ name: testData.party[1].name, description: testData.party[1].bio }, output, 'select_character_comment');
   }
 
-  promises.push(generateSelectTargetCommentTest);
-
+  if(test.toLowerCase().includes('all') || test.toLowerCase().includes('targetSelect')) {
+    promises.push(generateSelectTargetCommentTest);
+  }
   async function generateChatMessageTest() {
     const output = await generateChatMessage({messages: testData.messages, nextCharacter: testData.party[0]}, makeGenerateFn());
 
@@ -343,7 +382,7 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
     writeData({messages: testData.messages, nextCharacter: testData.party[0]}, output, 'chat_message');
   }
 
-  promises.push(generateChatMessageTest);
+  // promises.push(generateChatMessageTest);
 
   async function generateDialogueOptionsTest() {
 
@@ -355,7 +394,7 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
     writeData({messages: testData.messages, nextCharacter: testData.party[0]}, output, 'dialogue_options');
   }
 
-  promises.push(generateDialogueOptionsTest);
+  // promises.push(generateDialogueOptionsTest);
 
 
   async function generateCharacterIntroPromptTest() {
@@ -367,7 +406,7 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
     writeData({ name: testData.party[0].name, bio: testData.party[0].bio }, output, 'character_intro_prompt');
   }
 
-  promises.push(generateCharacterIntroPromptTest);
+  // promises.push(generateCharacterIntroPromptTest);
 
   const results = await Promise.all(promises.map(p => p()));
   console.log('All tests complete');
