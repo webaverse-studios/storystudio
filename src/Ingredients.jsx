@@ -15,7 +15,8 @@ function Ingredients() {
     openErrorModal,
     lore,
     setLore,
-    ingredients
+    ingredients,
+    setIngredients
   } = useContext(ApplicationContext);
 
   const addEntityCallback = async (

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import MonacoEditor from "@monaco-editor/react";
 import { lore } from "./utils/constants";
 import EntityListBox from "./components/EntityListBox";
@@ -14,25 +14,20 @@ import {
   fileToDataUri,
   makeId,
 } from "./utils/utils";
+import { ApplicationContext } from "./Context";
 
-if (
-  !localStorage.getItem("loreData") ||
-  decompressObject(localStorage.getItem("loreData")) === "[object Object]"
-) {
-  localStorage.setItem("loreData", compressObject(lore));
-}
-
-function LoreBase({
-  baseData,
-  loreHeader,
-  setLoreHeader,
-  loadBaseData,
-  setBaseData,
-  loreData,
-  setLoreData,
-  exportHandler,
-  importHandler,
-}) {
+function LoreBase() {
+  const {
+    baseData,
+    loreHeader,
+    setLoreHeader,
+    loadBaseData,
+    setBaseData,
+    loreData,
+    setLoreData,
+    exportHandler,
+    importHandler
+  } = useContext(ApplicationContext);
   const [editorCode, setEditorCode] = useState("");
   const [currentContentType, setCurrentContentType] = useState(
     Object.keys(lore)[0]
