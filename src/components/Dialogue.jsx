@@ -55,47 +55,14 @@ const Dialogue = ({ index, _key, type, editJson }) => {
           );
         });
       }
-    }
-  
-    else if (label === "target") {
-      console.log('type is', type);
-      console.log('*** data is', data);
-        return (
-          <div>
-            <label>{label}</label>
-            {/* render a select dropdown with all of the entities for the current type */}
-            <select
-              value={data}
-              onChange={(e) => {
-                data = e.target.value;
-                handleChange(data, selector);
-              }}
-            >
-              {
-                (type === 'loreExposition' ? 
-                [...entities['character'], ...entities['object'], ...entities['setting'], ...entities['npc']] :
-                entities[type.replace('loading', 'setting').replace('Comment', '')]).map((item, index) => {
-                return (
-                  <option key={index} value={item.name}>
-                    {item.name}
-                  </option>
-                );
-              }
-            )}
-            </select>
-  
-          </div>
-        );
-    }
-    
-  
-      // render outputs as an input field
-    else if (label === "message" || label === "action" || label === "comment") {
-      console.log('comment is', data)
-      output = (
-          <input
-          className="dialogueInput"
-            type="text"
+    } else if (label === "target") {
+      console.log("type is", type);
+      console.log("*** data is", data);
+      return (
+        <div>
+          <label>{label}</label>
+          {/* render a select dropdown with all of the entities for the current type */}
+          <select
             value={data}
             onChange={(e) => {
               data = e.target.value;
@@ -123,8 +90,25 @@ const Dialogue = ({ index, _key, type, editJson }) => {
         </div>
       );
     }
-  
-    else if (label === "speaker"){
+
+    // render outputs as an input field
+    else if (label === "message" || label === "action" || label === "comment") {
+      console.log("comment is", data);
+      output = (
+        <input
+          className="dialogueInput"
+          type="text"
+          value={data}
+          onChange={(e) => {
+            setLastSelector(selector);
+            // get the position in the input field and call setLastCursor(position)
+            setLastCursor(e.target.selectionStart);
+            handleChange(e.target.value, selector);
+          }}
+          autoFocus={lastSelector === selector}
+        />
+      );
+    } else if (label === "speaker") {
       output = (
         // render a dropdown selection based on allData.input.characters
         <select
@@ -133,20 +117,19 @@ const Dialogue = ({ index, _key, type, editJson }) => {
             handleChange(data, selector);
           }}
         >
-
-          {[...dialogue[currentDialogueType][_key].input.characters, ...dialogue[currentDialogueType][_key].input.npcs].map((item, index) => {
+          {[
+            ...dialogue[currentDialogueType][_key].input.characters,
+            ...dialogue[currentDialogueType][_key].input.npcs,
+          ].map((item, index) => {
             return (
               <option key={index} value={item}>
                 {item}
               </option>
             );
-          }
-          )}
+          })}
         </select>
-      )
-    }
-  
-    else if (label === "setting"){
+      );
+    } else if (label === "setting") {
       output = (
         <select
           value={data}
@@ -175,7 +158,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
           {data.map((item, index) => {
             return (
               <input
-              className="tagInput"
+                className="tagInput"
                 type="text"
                 value={data[index]}
                 onChange={(e) => {
@@ -190,7 +173,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
               data.push(data[data.length - 1] || "New");
               handleChange(data, selector);
             }}
-            style={{display: "inline"}}
+            style={{ display: "inline" }}
           >
             +
           </button>
@@ -199,15 +182,15 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     }
 
     // if label is target, render a dropdown select
-  
-  
-    return (<div style={{margin: ".5em"}}>{label}
-    
-    {output}
-    
-    </div>);
-  }
 
+    return (
+      <div style={{ margin: ".5em" }}>
+        {label}
+
+        {output}
+      </div>
+    );
+  }
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
