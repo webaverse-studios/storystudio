@@ -40,7 +40,9 @@ const EntityListBox = ({ header, type }) => {
             {!generating ? "Generate" : "Generating..."}
           </button>
           <button onClick={() => addEntityCallback(type)}>Add</button>
-          <button onClick={exportLoreMD}>Export MD</button>
+          {type === "loreFiles" ? (
+            <button onClick={exportLoreMD}>Export MD</button>
+          ) : null}
         </div>
       </div>
       <div className={"section " + type}>
