@@ -622,6 +622,14 @@ export function ApplicationContextProvider(props) {
     setErrorDialogData({ on: false, msg: "" });
   };
 
+  const inventoryItems = ["item1", "item2", "item3", "item4"];
+  const getRandomInventoryItem = () => {
+    return inventoryItems[Math.floor(Math.random() * inventoryItems.length)];
+  };
+  const getInventoryItems = () => {
+    return inventoryItems;
+  };
+
   const provider = {
     getOpenAIKey: () => getOpenAIKey(),
     setOpenAIKey: (key) => setOpenAIKey(key),
@@ -661,6 +669,8 @@ export function ApplicationContextProvider(props) {
     importProject,
     handleImport,
     editDialogueJson,
+    getRandomInventoryItem,
+    getInventoryItems,
   };
 
   return (

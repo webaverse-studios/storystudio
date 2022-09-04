@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import DeleteForever from "@mui/icons-material/DeleteForever";
 
 import "../styles/App.css";
+import { ApplicationContext } from "../Context";
 
 //field check if image, set source the img, if name change, generate new image
 const Entity = ({
@@ -13,6 +14,9 @@ const Entity = ({
   moveEntityCallback,
   type,
 }) => {
+  const { getInventoryItems, getRandomInventoryItem } =
+    useContext(ApplicationContext);
+
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
@@ -40,82 +44,84 @@ const Entity = ({
     }
     editEntityCallback(newData, index);
   };
-  // const addInventoryItem = () => {
-  //   const newItem = uniqueNamesGenerator({
-  //     dictionaries: [adjectives, animals, colors],
-  //     length: 2,
-  //     separator: " ",
-  //   });
+  const addInventoryItem = () => {
+    const newItem = getRandomInventoryItem();
 
-  //   updateEntity(
-  //     data,
-  //     "inventory",
-  //     data["inventory"] && data["inventory"]?.length > 0
-  //       ? data["inventory"] + ", " + newItem
-  //       : newItem
-  //   );
-  // };
-  // const removeInventoryItem = (item) => {
-  //   const _inv =
-  //     data["inventory"] && data["inventory"]?.length > 0
-  //       ? data["inventory"].split(", ")
-  //       : [];
+    updateEntity(
+      data,
+      "inventory",
+      data["inventory"] && data["inventory"]?.length > 0
+        ? data["inventory"] + ", " + newItem
+        : newItem
+    );
+  };
+  const removeInventoryItem = (item) => {
+    const _inv =
+      data["inventory"] && data["inventory"]?.length > 0
+        ? data["inventory"].split(", ")
+        : [];
 
-  //   for (let i = 0; i < _inv.length; i++) {
-  //     if (_inv[i] === item) {
-  //       _inv.splice(i, 1);
-  //       break;
-  //     }
-  //   }
+    for (let i = 0; i < _inv.length; i++) {
+      if (_inv[i] === item) {
+        _inv.splice(i, 1);
+        break;
+      }
+    }
 
-  //   updateEntity(data, "inventory", _inv.join(", "));
-  // };
-  // const updateInventoryItem = (oldName, newName) => {
-  //   const _inv =
-  //     data["inventory"] && data["inventory"]?.length > 0
-  //       ? data["inventory"].split(", ")
-  //       : [];
+    updateEntity(data, "inventory", _inv.join(", "));
+  };
+  const updateInventoryItem = (oldName, newName) => {
+    const _inv =
+      data["inventory"] && data["inventory"]?.length > 0
+        ? data["inventory"].split(", ")
+        : [];
 
-  //   for (let i = 0; i < _inv.length; i++) {
-  //     if (_inv[i] === oldName) {
-  //       _inv[i] = newName;
-  //       break;
-  //     }
-  //   }
+    for (let i = 0; i < _inv.length; i++) {
+      if (_inv[i] === oldName) {
+        _inv[i] = newName;
+        break;
+      }
+    }
 
-  //   updateEntity(data, "inventory", _inv.join(", "));
-  // };
-  // const inventoryRender = (inventory, _key) => {
-  //   const _inv =
-  //     inventory && inventory?.length > 0 ? inventory.split(", ") : [];
-  //   return (
-  //     <div key={_key}>
-  //       <br />
-  //       <br />
-  //       {Object.keys(_inv).map((field, index) => {
-  //         return (
-  //           <div key={index}>
-  //             <input
-  //               type="text"
-  //               value={_inv[field]}
-  //               onChange={(e) => {
-  //                 e.preventDefault();
-  //                 updateInventoryItem(_inv[field], e.target.value);
-  //               }}
-  //             />
-  //             <button onClick={() => removeInventoryItem(_inv[field])}>
-  //               <ClearIcon />
-  //             </button>
-  //             <br />
-  //           </div>
-  //         );
-  //       })}
-  //       {/*<button onClick={() => addInventoryItem()}>
-  //         <PlusOne />
-  //     </button>*/}
-  //     </div>
-  //   );
-  // };
+    updateEntity(data, "inventory", _inv.join(", "));
+  };
+  const inventoryRender = (inventory, _key) => {
+    const _inv =
+      inventory && inventory?.length > 0 ? inventory.split(", ") : [];
+    return (
+      <div key={_key}>
+        <br />
+        <br />
+        {Object.keys(_inv).map((field, index) => {
+          return (
+            <div key={index}>
+              <select
+                value={_inv[index]}
+                onChange={(e) =>
+                  updateInventoryItem(_inv[index], e.target.value)
+                }
+              >
+                {getInventoryItems() && getInventoryItems() > 0
+                  ? getInventoryItems().map((item, index) => {
+                      return (
+                        <option key={index} value={item}>
+                          {item}
+                        </option>
+                      );
+                    })
+                  : null}
+              </select>
+              <button onClick={() => removeInventoryItem(_inv[field])}>
+                <ClearIcon />
+              </button>
+              <br />
+            </div>
+          );
+        })}
+        {<button onClick={() => addInventoryItem()}>Add</button>}
+      </div>
+    );
+  };
 
   // const renderVoice = () => {
   //   if (
@@ -190,14 +196,14 @@ const Entity = ({
       {typeof data === "object" && (
         <React.Fragment>
           {Object.keys(data || []).map((field, i) => {
-            // if (
-            //   field === "inventory" &&
-            //   (data["type"] === "character" ||
-            //     data["type"] === "npc" ||
-            //     data["type"] === "mob")
-            // ) {
-            //   return inventoryRender(data["inventory"], i);
-            // }
+            if (
+              field === "inventory" &&
+              (data["type"] === "character" ||
+                data["type"] === "npc" ||
+                data["type"] === "mob")
+            ) {
+              return inventoryRender(data["inventory"], i);
+            }
             // else if (field === "voice") {
             //   return renderVoice();
             // }
@@ -207,8 +213,6 @@ const Entity = ({
               field === "img" ||
               field === "image" ||
               field === "shortname" ||
-
-
               field === "type" ||
               field === "id" ||
               field === "hash" ||
@@ -290,13 +294,12 @@ const Entity = ({
       <button onClick={() => moveEntityCallback(data, false)}>
         <ArrowDownwardIcon />
           </button>*/}
-      {type === "loreFiles"
-      // type === "character" ||
-      // type === "npc" ||
-      // type === "mob" ||
-      // type === "setting" ||
-      // type === "object" 
-      ? (
+      {type === "loreFiles" ? (
+        // type === "character" ||
+        // type === "npc" ||
+        // type === "mob" ||
+        // type === "setting" ||
+        // type === "object"
         <button
           onClick={() => {
             console.log(type);
