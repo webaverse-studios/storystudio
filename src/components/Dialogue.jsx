@@ -55,41 +55,39 @@ const Dialogue = ({ index, _key, type, editJson }) => {
           );
         });
       }
-    } else if (label === "target") {
-      console.log("type is", type);
-      console.log("*** data is", data);
-      return (
-        <div>
-          <label>{label}</label>
-          {/* render a select dropdown with all of the entities for the current type */}
-          <select
-            value={data}
-            onChange={(e) => {
-              data = e.target.value;
-              handleChange(data, selector);
-            }}
-          >
-            {(type === "loreExposition"
-              ? [
-                  ...entities["character"],
-                  ...entities["object"],
-                  ...entities["setting"],
-                  ...entities["npc"],
-                ]
-              : entities[
-                  type.replace("loading", "setting").replace("Comment", "")
-                ]
-            ).map((item, index) => {
-              return (
-                <option key={index} value={item.name}>
-                  {item.name}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-      );
     }
+  
+    else if (label === "target") {
+      console.log('type is', type);
+      console.log('*** data is', data);
+        return (
+          <div>
+            <label style={{margin: ".5em"}}>{label}</label>
+            {/* render a select dropdown with all of the entities for the current type */}
+            <select
+              value={data}
+              onChange={(e) => {
+                data = e.target.value;
+                handleChange(data, selector);
+              }}
+            >
+              {
+                (type === 'loreExposition' ? 
+                [...entities['character'], ...entities['object'], ...entities['setting'], ...entities['npc']] :
+                entities[type.replace('loading', 'setting').replace('Comment', '')]).map((item, index) => {
+                return (
+                  <option key={index} value={item.name}>
+                    {item.name}
+                  </option>
+                );
+              }
+            )}
+            </select>
+  
+          </div>
+        );
+    }
+  
 
     // render outputs as an input field
     else if (label === "message" || label === "action" || label === "comment") {

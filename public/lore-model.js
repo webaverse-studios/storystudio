@@ -1016,10 +1016,9 @@ export async function generateCharacter(generateFn) {
 
 export async function generateReaction(name, generateFn) {
   const reactionsPrompt = `\
-  ${lore["reactions"].prompt}
-  ${shuffleArray(lore["reactions"].examples).join("\n")}
-  ${name?.length > 0 ? name : "prompt:"}:
-  `;
+${lore["reactions"].prompt}
+${shuffleArray(lore["reactions"].examples).join("\n")}
+${name}:`;
 
   const resp = await generateFn(reactionsPrompt, [
     "\n",
@@ -1028,13 +1027,12 @@ export async function generateReaction(name, generateFn) {
   console.log("RESP", resp);
 
   let _resp = "";
-  if (resp?.startsWith(name?.length > 0 ? name : "prompt:")) {
-    _resp = resp.replace(name?.length > 0 ? name : "prompt:", "").trim();
+  if (resp?.startsWith(name ? name : "prompt:")) {
+    _resp = resp.replace(name ? name : "prompt:", "").trim();
   } else {
     _resp = resp;
   }
-
-  return _resp?.replace(/\s+/g, "");
+  return { reaction: _resp?.replace(/\s+/g, ""), prompt: reactionsPrompt}
 }
 
 export async function generateObject(generateFn) {
@@ -1057,7 +1055,11 @@ export async function generateObject(generateFn) {
   };
 }
 
-const commentPrompt = `Comment about a scene, object, or character:
+
+
+export async function generateObjectComment(object, generateFn) {
+  const commentPrompt = `\
+Comment about a scene, object, or character:
 Mountain: That's the biggest mountain i've ever seen!
 Flowers: What a beautiful smell
 Jake: Jake seemed very confused in today's lesson
@@ -1073,24 +1075,21 @@ Forest: Reall scary at night
 Tomb: Weird noise location
 Kim: Really interesting guy
 `;
-
-export async function generateObjectComment(object, generateFn) {
   const objectCommentPrompt = `\
-  ${commentPrompt}
-  ${object?.length > 0 ? object : "House"}:`;
+${commentPrompt}
+${object.name}:`;
 
   const resp = await generateFn(objectCommentPrompt, [
-    "\n",
-    object?.length > 0 ? object : "House:",
-  ]);
+    "\n"]);
 
-  if (resp?.startsWith(object?.length > 0 ? object : "House:")) {
+  if (resp?.startsWith(object.name)) {
     return {
-      name: object?.length > 0 ? object : "House:",
+      name: object.name,
       comment: resp.replace(object?.length > 0 ? object : "House:", "").trim(),
+      prompt: objectCommentPrompt
     };
   } else {
-    return { name: object?.length > 0 ? object : "House:", comment: resp };
+    return { name: object.name, comment: resp, prompt: objectCommentPrompt };
   }
 }
 export async function generateNPCComment(npc, generateFn) {
