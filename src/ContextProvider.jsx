@@ -533,6 +533,11 @@ export function ApplicationContextProvider(props) {
     console.log("newData is", newData);
     setDialogue(newData);
   };
+  const editDialogueJson = (d, index) => {
+    let newData = { ...dialogue };
+    newData[currentDialogueType][index] = d;
+    setDialogue(newData);
+  };
 
   const importJson = async () => {
     const file = await getFile();
@@ -655,6 +660,7 @@ export function ApplicationContextProvider(props) {
     exportProject,
     importProject,
     handleImport,
+    editDialogueJson,
   };
 
   return (
