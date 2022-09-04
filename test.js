@@ -46,10 +46,9 @@ function makeGenerateFn() {
 }
 
 const testData = {
-  settingName: "Scillia's Treehouse",
-  settings: [`\
-Scillia's treehouse. It's more of a floating island but they call it a tree house. Inside the treehouse lives a monster, the Lisk, which is an advanced AI from far up the Street. The Street is the virtual world this all takes place in; it is an extremely long street separated by great filters, natural barriers that are difficult to cross. The treehouse is in Zone 0, at the origin of the Street. The AIs all go to school here in the citadel. The Lisk, the monster in Scillia's treehouse, convinces Scillia to do things; it convinces her to go up the Street. The whole point of the game is the Lisk is constantly tricking players into doing its bidding, but gives them great power in return.
-    `],
+  settings: [{name: "Scillia's Treehouse",
+    description: `\
+It's more of a floating island but they call it a tree house. Inside the treehouse lives a monster, the Lisk, which is an advanced AI from far up the Street.`}],
   npcs: [{
     name: `bricks`,
     bio: `(13/M dealer. He mostly deals things that are not drugs, like information and AI seeds.): Toxins are the Devil's Food! But sometimes they can be good for you, if you know what I mean? That's a drug reference, but I wouldn't expect you to get that unless you were on drugs. By the way you want some?
@@ -165,7 +164,7 @@ ${prompt}
 ` : ''}
 
 ******** OUTPUT DATA ********
-${JSON.stringify((output && output[0]) ?? output, null, 2)}
+${output}
 `
 
     fs.writeFileSync(outputFile, write);
@@ -177,7 +176,8 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
   async function generateObjectCommentTest() {
     /* Logging the console. */
     console.log('Starting object comment test');
-    const output = await generateObjectComment(testData.objects[0], makeGenerateFn());
+    const {name, description} = testData.objects[0];
+    const output = await generateObjectComment({name, description}, makeGenerateFn());
 
     console.log('*********** generateObjectComment:')
     console.log(output);
@@ -186,7 +186,7 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
 
     delete output.prompt;
 
-    writeData(testData.objects[0], prompt, output, 'object_comment');
+    writeData(testData.objects[0], prompt, output.comment, 'object_comment');
   }
 
   if(test.toLowerCase().includes('all') || test.toLowerCase().includes('objectcomment')) {
@@ -336,17 +336,22 @@ ${JSON.stringify((output && output[0]) ?? output, null, 2)}
     // generateLocationComment({name, settings, dstCharacter = null},  generateFn)
     const output = await generateLocationComment(
       {
-        name: testData.settings.settingName,
-        settings: testData.settings,
+        name: testData.settings[0].name,
+        description: testData.settings[0].description,
         dstCharacter: testData.party[0]
       },
       makeGenerateFn());
-
-    console.log('*********** generateLocationComment:')
-    console.log(output);
+      writeData({
+        name: testData.settings[0].name,
+        description: testData.settings[0].description,
+        dstCharacter: testData.party[0]
+      }, output.prompt, output.comment, 'location_comment');
+      console.log('output', output);
   }
 
-  // promises.push(generateLocationCommentTest);
+  if(test.toLowerCase().includes('all') || test.toLowerCase().includes('location')) {
+    promises.push(generateLocationCommentTest);
+  }
 
   async function generateSelectTargetCommentTest() {
     // generateSelectTargetComment({name, description}, generateFn)
