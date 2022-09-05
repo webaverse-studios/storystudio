@@ -50,6 +50,12 @@ export function ApplicationContextProvider(props) {
         entities.current = value;
     }
 
+    let openAiCommitTimer = null;
+    let loreFilesCommitTimer = null;
+    let entitiesCommitTimer = null;
+    let dialogueCommitTimer = null;
+    let loreDataCommitTimer = null;
+
 
   const [dialogue, setDialogue] = useState(
     localStorage.getItem("dialogue")
@@ -128,23 +134,60 @@ export function ApplicationContextProvider(props) {
     }
 
     setOpenAIParams(data);
-    localStorage.setItem("openAIParams", JSON.stringify(data));
+  
+
+    if(openAiCommitTimer){
+      clearTimeout(openAiCommitTimer);
+    }
+    openAiCommitTimer = setTimeout(() => {
+      localStorage.setItem("openAIParams", JSON.stringify(data));      
+    }, 500);
+
+
   };
 
   useEffect(() => {
-    localStorage.setItem("loreFiles", compressObject(loreFiles));
+    if(loreFilesCommitTimer){
+      clearTimeout(loreFilesCommitTimer);
+    }
+    loreFilesCommitTimer = setTimeout(() => {
+      localStorage.setItem("loreFiles", compressObject(loreFiles));
+    }, 500);
+
   }, [loreFiles]);
 
   useEffect(() => {
-    localStorage.setItem("entities", compressObject(entities.current));
+
+    if(entitiesCommitTimer){
+      clearTimeout(entitiesCommitTimer);
+    }
+    entitiesCommitTimer = setTimeout(() => {
+      localStorage.setItem("entities", compressObject(entities.current));
+    }, 500);
+
   }, [entities.current]);
 
   useEffect(() => {
-    localStorage.setItem("dialogue", compressObject(dialogue));
+
+    if(dialogueCommitTimer){
+      clearTimeout(dialogueCommitTimer);
+    }
+    entitiesCommitTimer = setTimeout(() => {
+      localStorage.setItem("dialogue", compressObject(dialogue));
+    }, 500);
+
+
   }, [dialogue]);
 
   useEffect(() => {
-    localStorage.setItem("loreData", compressObject(loreData));
+
+    if(loreDataCommitTimer){
+      clearTimeout(loreDataCommitTimer);
+    }
+    loreDataCommitTimer = setTimeout(() => {
+      localStorage.setItem("loreData", compressObject(loreData));
+    }, 500);
+
   }, [loreData]);
 
   const handleImport = (type, data) => {
