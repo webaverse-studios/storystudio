@@ -506,32 +506,33 @@ export function ApplicationContextProvider(props) {
     // selector is a '.' separated string of the path to the value inside dialogue
     // e.g. 'input.text' would be the text of the input of the dialogue
     let newData = { ...dialogue };
-    console.log("d", d);
-    console.log("selector", selector);
+    //console.log("d", d);
+    //console.log("selector", selector);
 
     // split the selector into an array
     const selectorArray = selector.split(".");
-    console.log("key is", key);
+    //console.log("key is", key);
 
-    console.log("index is", index);
+    //console.log("index is", index);
     // drill down into the dialogue object using the selector array
     let current = newData[currentDialogueType][index];
-    console.log(
+    /*console.log(
       "newData[currentDialogueType] is",
       newData[currentDialogueType]
-    );
-    console.log("index is", index);
-    console.log("oldData is", newData);
+    );*/
+    //console.log("index is", index);
+    //console.log("oldData is", newData);
     for (let i = 0; i < selectorArray.length - 1; i++) {
       console.log("selectorArray[i] is", selectorArray[i]);
       current = current[selectorArray[i]];
     }
 
-    console.log("current is", current);
+    //console.log("current is", current);
 
-    current[selectorArray[selectorArray.length - 1]] = d;
-    console.log("newData is", newData);
+    //current[selectorArray[selectorArray.length - 1]] = d;
+    //console.log("newData is", newData);
     setDialogue(newData);
+    console.log("current:", current);
   };
   const editDialogueJson = (d, index) => {
     let newData = { ...dialogue };
@@ -627,7 +628,7 @@ export function ApplicationContextProvider(props) {
     return inventoryItems[Math.floor(Math.random() * inventoryItems.length)];
   };
   const getInventoryItems = () => {
-    return inventoryItems;
+    return (entities["object"] ?? []).map((e) => e.name);
   };
 
   const provider = {
