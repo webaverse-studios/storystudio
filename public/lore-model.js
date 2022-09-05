@@ -166,8 +166,30 @@ export let lore = {
     ],
   },
   battle: {
-    prompt:
-      "# Character battle introductions\nFinal Fantasy\nSonic\nCalvin and Hobbes\nThe Matrix\nSnow Crash\nPokemon\nVRChat\nFortnite\nOne Piece\nAttack on Titan\nSMG4\nDeath Note\nZelda\nInfinity Train\nDance Dance Revolution\n\nWe need exciting and interesting RPG character dialogue. This plays when the character enters the battle. Each character takes a turn.\n# Examples",
+    prompt: `\
+# Influences and Inspirations
+Final Fantasy
+Sonic
+Calvin and Hobbes
+The Matrix
+Snow Crash
+Pokemon
+VRChat
+Fortnite
+One Piece
+Attack on Titan
+SMG4
+Death Note
+Zelda
+Infinity Train
+Dance Dance Revolution
+
+# Character Battle Introductions
+
+We need exciting and interesting RPG character dialogue. This plays when the character enters the battle. Each character takes a turn.
+
+# Examples
+`,
     examples: [
       'Millie: "You won\'t get away that easy. I have the power of life in me."',
       'Exo: "This is how it ends. With your end."',
@@ -493,7 +515,17 @@ ${shuffleArray(lore.battle.examples).join(`\n`)}
 ${name}: "`;
 };
 const makeBattleIntroductionStop = () => `"`;
-const parseBattleIntroductionResponse = (response) => response;
+const parseBattleIntroductionResponse = (response) => {
+  console.log("***************** PARSING BATTLE INTRO RESPONSE");
+  console.log('response', response);
+  const match = response.match(/\s*([^\n]*)/);
+  // explain how the match in the above regex works
+  // 1. match any number of spaces
+  // 2. match any number of characters that are not a newline
+  // 3. match the end of the string
+  return { value: match && match[1] };
+
+}
 
 const makeChatPrompt = ({
   // name,
@@ -1332,6 +1364,18 @@ export async function generateSelectCharacter({name, description}, generateFn) {
     value: response2.value,
     prompt
   }
+}
+
+export async function generateBattleIntroduction({name, description}, generateFn) {
+  const prompt = makeBattleIntroductionPrompt({
+    name,
+    description,
+  });
+  const stop = makeBattleIntroductionStop();
+  let response = await generateFn(prompt, stop);
+  const response2 = parseBattleIntroductionResponse(response);
+  if(response2) response2.prompt = prompt;
+  return response2 || {value: null, emote: null, done: null, prompt};
 }
 
 export async function generateChatMessage({messages, nextCharacter}, generateFn) {

@@ -21,6 +21,7 @@ import {
   generateChatMessage,
   generateDialogueOptions,
   generateCharacterIntroPrompt,
+  generateBattleIntroduction
 } from './public/lore-model.js'
 
 const args = process.argv;
@@ -339,7 +340,20 @@ ${output}
 
     // ********** CHARACTER BATTLE INTRO **********
 
-
+    async function generateBattleIntroductionTest() {
+      const { name, description } = testData.party[0];
+      const {value, prompt} = await generateBattleIntroduction({ name, description }, makeGenerateFn());
+  
+      const output = `${name}: "${value}"`
+      console.log('prompt: ', prompt);
+      console.log('output: ', output);
+  
+      writeData({ name, description }, prompt, output, 'battle_introduction');
+    }
+  
+    if (test.toLowerCase().includes('all') || test.toLowerCase().includes('battle')) {
+      promises.push(generateBattleIntroductionTest);
+    }
 
 
 
