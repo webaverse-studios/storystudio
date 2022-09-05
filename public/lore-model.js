@@ -223,21 +223,30 @@ We need exciting and interesting RPG character dialogue. This plays when the cha
     ],
   },
   actions: {
-    prompt:
-      "Available reactions:\nsurprise\nvictory\nalert\nangry\nembarrassed\nheadNod\nheadShake\nsad\n",
+    prompt: "# Examples of How to Parse Inputs",
     examples: [
-      'Millie: "Hey, have I seen you around before? (react = surprise)"\nOptions for Westley: [No, I don\'t think so. (react = headShake)], [Yes, I\'ve seen you in class. (react = headNod)]\nWestley: "No, I don\'t think so. (react = headShake)"\nMillie: "I could have sworn you sit in the row in front of me. (react = normal)"\n',
-      'Gunter: "Have you seen the flowers? They\'re lovely this time of year."\nOptions for Evie: [Yes, I have seen them. (react = headNod)], [No, I haven\'t seen them. (react = headShake)]\nEvie: "No, I haven\'t seen them. (react = headShake)."\nGunter: "Well, then what are we waiting for? Let\'s go! (react = victory)" *END*\n',
-      'Alex: "These enemies are coming at us hard. (react = alert)"\nOptions for Jake: [What should we do? (react = alert)], [I\'m not sure, I don\'t know how to fight. (react = sad)]\nJake: "What should we do? (react = alert)"\nAlex:  "We need to find some cover and regroup. (react = alert)" *END*\n',
-      'Mike: "What happened to the mirror? (react = angry)"\nOptions for Amy: [I don\'t know, I wasn\'t here when it happened. (react = sad)], [I broke it. (react = embarrassed)]\nAmy: "I broke it. (react = embarrassed)"\nMike: "That\'s not good. How are we going to see our reflection now? (react = sad)" *END*\n',
-      'Keith: "Yay! I won. (react = victory)"\nJoe: "Congrats on winning the game (react = victory)"\nOptions for Keith: [You\'re welcome. (react = normal)], [Thanks, I couldn\'t have done it without you. (react = headNod)]\nKeith: "Thanks, I couldn\'t have done it without you. (react = headNod)"\nJoe: " I don\'t know about that. You were the one who made all the calls. Good job! (react = victory)" *END*\n',
-      'Peter: "What are you doing here? (react = surprised)"\nOptions for Molly: [I\'m lost, I don\'t know where I am. (react = sad)], [I\'m looking for the library. (react = normal)]\nMolly: "I\'m lost, I don\'t know where I am. (react = sad)"\nPeter: "Let me help you, where are you trying to go? (react = normal)" *END*\n',
-      'Kate: "What happened to your house? (react = sad)"\nJim: "Somebody broke in and trashed the place. (react = anger)"\nOptions for Kate: [That\'s awful, I\'m so sorry. (react = sad)], [Do you know who did it? (react = normal)]\nKate: "Do you know who did it? (react = normal)"\nJim: "Yes, it was the kids from down the block. (react = anger)"\nOptions for Kate: [That\'s great, now you can call the police and they\'ll arrest them. (react = victory)], [Do you want me to help you clean up? (react = headNod)]\nKate: "Do you want me to help you clean up? (react = headNod)"\nJim: "No, I don\'t want your help. I can do it myself. (react = headShake)" *END*\n',
-      'Emily: "Let\'s go to the treehouse (react = normal)"\nBrad: "I don\'t know, my mom said I\'m not allowed to go there. (react = sad)"\nOptions for Emily: [Your mom is just being overprotective. Come on, it\'ll be fun! (react = headShake)], [We\'ll be careful, I promise. (react = headNod)] \nEmily: "Your mom is just being overprotective. Come on, it\'ll be fun! (react = headShake)"\nBrad: "Okay, but if we get in trouble it\'s your fault. (react = normal)" *END*\n',
-      'Tyler: "I like your sword, can I also have a weapon? (react = normal)"\nSophie: "Yes, you will need a weapon. You\'re going to get yourself killed if you go into battle unarmed! (react = anger)" \nOptions for Tyler:[I\'ll be fine, I know what I\'m doing. (react = headShake)], [Okay, give me a sword. (react = headNod)] \nTyler: "Okay, give me a sword. (react = headNod)" *END*\n',
-      'Yune: "I challenge you to a duel! (react = angry)"\nPris: "I\'m not dueling you, I don\'t have time for this. (react = headShake)"\nOptions for Yune: [Duel me or face the consequences! (react = angry)],[Fine, let\'s get this over with. (react = normal)] \nYune: "Duel me or face the consequences! (react = angry)"\nPris: "I don\'t have time for your games. (react = headShake)" *END*\n',
-      'Jake: "What are you doing?  (react = surprised)"\nAmy: "I\'m looking for my cat. Have you seen her?  (react = normal)"\nOptions for Jake:[No, I haven\'t seen your cat. (react =  headShake)], [Yes, I saw your cat go into the treehouse. (react = headNod)] \nJake: "No, I haven\'t seen your cat. (react = headShake)"\nAmy: "Well, if you see her can you let me know?  (react = normal)" *END*\n',
-    ],
+      "Input:\nScillia: Hi Drake! Whats up?.\nDrake:\nOutput:\nDrake: I am doing good. How about you? (react = normal, action = follow, object = none, target = scillia#4)\n",
+      "Input:\nHyacinth: What mischief are you upto today?\nAnon:\nOutput:\nAnon: None. I have been good all day. (react = headNod, action = none, object = none, target = none)\n",
+      "Input:\nScillia: Why did you break that expensive artifact? Now I will have to pay up for the damage.\nDrake:\nOutput:\nDrake: I am really sorry about it. (react = embarrassed, action = none, object = none, target = none)\n",
+      "Input:\nAnon: We finally won the battle Juniper!\nJuniper:\nOutput:\nJuniper: Hurray! We did it. (react = victory, action = none, object = none, target = none)\n",
+      "Input:\nScillia: I am tired. How far is the dungeon, Hyacinth?\nHyacinth:\nOutput:\nHyacinth: Just a bit further, don't worry. (react = normal, action = none, object = none, target = none)\n",
+      "Input:\nDrake: Hyacinth, are you going to visit the Church today?\nHyacinth:\nOutput:\nHyacinth: No, I will not go today. (react = headShake, action = none, object = none, target = none)\n",
+      "Input:\nDrake: Hyacinth, are you going to visit the Church today?\nHyacinth:\nOutput:\nHyacinth: Yes. I will go now. (react = headNod, action = moveto, object = none, target = church#4)\n",
+      "Input:\nDrake: Hyacinth, we are being attacked. Be prepared.\nHyacinth:\nOutput:\nHyacinth: I will get my sword. I am ready. (react = alert, action = pick up, object = none, target = sword#2)\n",
+      "Input:\nAnon: Are you funny?\nHyacinth:\nOutput:\nHyacinth: I like to think so! I try to find the humor in everything, even if it's dark or bitter. (react = normal, action = none, object = none, target = none)\n",
+      "Input:\nAnon: Juniper, here I brought you everything you need to win this competition.\nJuniper:\nOutput:\nJuniper: Wow! That is all I needed. Thank you so much. (react = surprised, action = none, object = none, target = none)\n",
+      "Input:\nScillia: Can we visit the dungeons now?\nHyacinth:\nOutput:\nHyacinth: No, we cannot go there at night. (react = headShake, action = none, object = none, target = none)\n",
+      "Input:\nAnon: Let us go to the Hovercraft together, Drake!\nDrake:\nOutput:\nDrake: That's a great idea! (react = victory, action = none, object = none, target = none)\n",
+      "Input:\nAnon: Thats a cool sword.\nJuniper:\nOutput:\nJuniper: Thanks. It's made of titanium and it's sharp, dual-edged. Perfect for slicing, stabbing, and jabbing my enemies. (react = normal, action = pick up, object = none, target = sword#2)\n",
+      "Input:\nHyacinth: Today I lost one of my closest firend in the battle.\nAnon:\nOutput:\nAnon: I am so sorry to hear it. (react = sad, action = none, object = none, target = none)\n",
+      "Input:\nHyacinth: Your actions have caused a lot of trouble to others.\nScillia:\nOutput:\nScillia: But I did not do it. (react = angry, action = none, object = none, target = none)\n",
+      "Input:\nDrake: Hyacinth, when was the last time you were here?\nHyacinth:\nOutput:\nHyacinth: I haven't been back since my father's funeral. (react = sad, action = none, object = none, target = none)\n",
+      "Input:\nScillia: Hey Hyacinth, as soon as we open the barrier, we rush to the site and attack.\nHyacinth:\nOutput:\nHyacinth: I am ready. Signal me as soon as the barrier opens. (react = alert, action = follow, object = none, target = none)\n",
+      "Input:\nAnon: Hyacinth want to go on an adventure together??\nHyacinth:\nOutput:\nHyacinth: Sure, lets go! (react = headNod, action = none, object = none, target = none)\n",
+      "Input:\nAnon: Would you tell me more about Ironford?\nDrake:\nOutput:\nDrake: The city of Ironford was built in the center of a giant forest and is truly a modest marvel. Its allure is matched by the backdrop of lush forests which have helped shape the city to what it is today. (react = headNod, action = none, object = none, target = none)\n",
+      "Input:\nAnon: The monsters have captures the people of the village.\nHyacinth:\nOutput:\nHyacinth: I will find and kill each of those monsters myself. (react = angry, action = move to, object = none, target = monster#9)\n",
+      "Input:\nScillia: Hey Hyacinth, what is your favorite book?\nHyacinth:\nOutput:\nHyacinth: My favorite book is The Lord of the Rings. I love the story and the world that J.R.R. Tolkien created. (react = normal, action = none, object = none, target = none)",
+    ]
   },
   intros: {
     prompt: `\
@@ -312,13 +321,13 @@ ${settings}
 
 ## Characters
 ${characters
-  .map((c, i) => {
-    return `Id: ${thingHash(c, i)}
+    .map((c, i) => {
+      return `Id: ${thingHash(c, i)}
     Name: ${c.name}
-    Bio: ${c.description || c.description}
+    Description: ${c.description || c.description}
 `;
-  })
-  .join("\n\n")}
+    })
+    .join("\n\n")}
 
 # Objects
 ${objects.map((o, i) => thingHash(o, i)).join("\n")}
@@ -334,20 +343,19 @@ ${shuffleArray(lore.inputParsing.examples).join(`\n`)}
 
 ${messages.length > 0 ? "Input:\n" : ""}
 ${messages
-  .map((m) => {
-    const characterIndex = characters.indexOf(m.character);
-    // const suffix = `[emote=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
-    // return `+${thingHash(m.character, characterIndex)}: ${m.message} ${suffix}`;
-    const suffix = `react=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
-    console.log("m.character", m);
-    return `+${thingHash(m.character, characterIndex)}: ${m.message}`;
-  })
-  .join("\n")}
-+${
-  dstCharacter
+    .map((m) => {
+      const characterIndex = characters.indexOf(m.character);
+      // const suffix = `[emote=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
+      // return `+${thingHash(m.character, characterIndex)}: ${m.message} ${suffix}`;
+      const suffix = `react=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
+      console.log("m.character", m);
+      return `+${thingHash(m.character, characterIndex)}: ${m.message}`;
+    })
+    .join("\n")}
++${dstCharacter
     ? `${thingHash(dstCharacter, characters.indexOf(dstCharacter))}:`
     : ""
-}
+  }
 Output:`;
 
 const parseLoreResponse = (response) => {
@@ -480,9 +488,8 @@ const makeSelectTargetPrompt = ({ name, description }) => {
   return `\
 ${lore.object.prompt}
 ${shuffleArray(lore.object.examples).join(`\n`)}
-prompt: ${_cleanName(name)}${
-    description ? ` ${description}` : ""
-  }\nresponse: "`;
+prompt: ${_cleanName(name)}${description ? ` ${description}` : ""
+    }\nresponse: "`;
 };
 const makeSelectTargetStop = () => `"`;
 const parseSelectTargetResponse = (response) => {
@@ -516,15 +523,12 @@ ${name}: "`;
 };
 const makeBattleIntroductionStop = () => `"`;
 const parseBattleIntroductionResponse = (response) => {
-  console.log("***************** PARSING BATTLE INTRO RESPONSE");
-  console.log('response', response);
   const match = response.match(/\s*([^\n]*)/);
   // explain how the match in the above regex works
   // 1. match any number of spaces
   // 2. match any number of characters that are not a newline
   // 3. match the end of the string
   return { value: match && match[1] };
-
 }
 
 const makeChatPrompt = ({
@@ -539,12 +543,11 @@ const makeChatPrompt = ({
   ${shuffleArray(lore.actions.examples).join(`\n`)}
 
 ${messages
-  .map((message) => {
-    return `${message.name}: "${message.text} (react = ${
-      message.emote ? message.emote : "normal"
-    })"`;
-  })
-  .join("\n")}
+      .map((message) => {
+        return `${message.name}: "${message.text} (react = ${message.emote ? message.emote : "normal"
+          })"`;
+      })
+      .join("\n")}
 ${nextCharacter}: "`;
 };
 const makeChatStop = () => `\n`;
@@ -594,12 +597,11 @@ ${lore.actions.prompt}
 ${lore.actions.examples.join("\n")}
 
 ${messages
-  .map((message) => {
-    return `${message.name}: "${message.text} (react = ${
-      message.emote ? message.emote : "normal"
-    })"`;
-  })
-  .join("\n")}
+      .map((message) => {
+        return `${message.name}: "${message.text} (react = ${message.emote ? message.emote : "normal"
+          })"`;
+      })
+      .join("\n")}
 Options for ${nextCharacter}: [`;
 };
 const makeOptionsStop = () => `\n`;
@@ -797,16 +799,13 @@ export async function generateLoreFile(
   let promptInject = "";
   if (encounterType.type === "quest") {
     promptInject = `\
-The following is a chat transcript between the party characters and ${
-      npcs[0].name
-    }, a quest giver who is friendly to the party. The transcript should be about the party receiving a quest from ${
-      npcs[0].name
-    }.
+The following is a chat transcript between the party characters and ${npcs[0].name
+      }, a quest giver who is friendly to the party. The transcript should be about the party receiving a quest from ${npcs[0].name
+      }.
 ${npcs[0].name} has the following inventory:
-${
-  npcs[0].Inventory &&
-  npcs[0].Inventory.map((obj) => `${obj.name} - ${obj.description}`).join("\n")
-}
+${npcs[0].Inventory &&
+      npcs[0].Inventory.map((obj) => `${obj.name} - ${obj.description}`).join("\n")
+      }
 `;
   }
   // TODO: include quest giver's inventory
@@ -844,34 +843,31 @@ eric: Millie, I'm tending to serious business. The org needs me to break through
 ${`${setting.name}\n${setting.description}`}
 
 ${party.length > 0 && "# Party Characters\n\n"}\
-${
-  party
-    .map((c) => `Name: ${c.name}\nBio: ${c.description || c.description}`)
-    .join("\n\n") + (party.length > 0 && "\n\n")
-}\
+${party
+      .map((c) => `Name: ${c.name}\nDescription: ${c.description || c.description}`)
+      .join("\n\n") + (party.length > 0 && "\n\n")
+    }\
 ${npcs.length > 0 && "# Non-player Characters\n\n"}\
-${
-  npcs
-    .map((c) => `Name: ${c.name}\nBio: ${c.description || c.description}`)
-    .join("\n\n") + (npcs.length > 0 && "\n\n")
-}\
+${npcs
+      .map((c) => `Name: ${c.name}\nDescription: ${c.description || c.description}`)
+      .join("\n\n") + (npcs.length > 0 && "\n\n")
+    }\
 ${objects.length > 0 && "# Nearby Objects\n\n"}\
-${
-  objects
-    .map((c) => `Name: ${c.name}\nDescription: ${c.description}`)
-    .join("\n\n") + (objects.length > 0 && "\n")
-}\
+${objects
+      .map((c) => `Name: ${c.name}\nDescription: ${c.description}`)
+      .join("\n\n") + (objects.length > 0 && "\n")
+    }\
 
 # Available Actions: ${[
-    "attack",
-    "defend",
-    "move to",
-    "follow",
-    "pick up",
-    "drop",
-    "stop",
-    "none",
-  ].join(", ")}
+      "attack",
+      "defend",
+      "move to",
+      "follow",
+      "pick up",
+      "drop",
+      "stop",
+      "none",
+    ].join(", ")}
 
 ${promptInject}\
 
@@ -1002,22 +998,20 @@ WEBAVERSE_LORE_FILE
 ${`${setting.name}\n${setting.description}\n\n`}\
 ${characters.length > 0 && "\n# Characters" + "\n\n"}\
 ${characters
-  .map(
-    (c) =>
-      `${c.name}\n${c.description || c.description}\n${
-        c.Inventory?.length > 0 && `Inventory:\n`
-      }${(c.Inventory ? c.Inventory : [])
-        .map((obj) => `${obj.name}`)
-        .join(", ")}`
-  )
-  .join("\n\n")}\
+      .map(
+        (c) =>
+          `${c.name}\n${c.description || c.description}\n${c.Inventory?.length > 0 && `Inventory:\n`
+          }${(c.Inventory ? c.Inventory : [])
+            .map((obj) => `${obj.name}`)
+            .join(", ")}`
+      )
+      .join("\n\n")}\
 ${objects.length > 0 ? "\n\n# Objects" + "\n\n" : ""}\
 ${objects.map((o, i) => `${o.name}\n${o.description}`).join("\n\n")}\
-${
-  outMessages.length === 0
-    ? ""
-    : "\n\n# Transcript\n\n" + outMessages.join("\n").replaceAll("\n\n", "\n")
-}`;
+${outMessages.length === 0
+      ? ""
+      : "\n\n# Transcript\n\n" + outMessages.join("\n").replaceAll("\n\n", "\n")
+    }`;
 
   return loreFileOutput;
 }
@@ -1055,18 +1049,18 @@ ${lore["character"].prompt}
 ${shuffleArray(lore["character"].examples).join("\n")}
 Character: "`;
 
-const resp = await generateFn(prompt, ['\nCharacter:']);
+  const resp = await generateFn(prompt, ['\nCharacter:']);
 
-console.log('resp')
+  console.log('resp')
 
-const lines = resp.split("\n").filter((el) => {
-  return el !== "";
-});
+  const lines = resp.split("\n").filter((el) => {
+    return el !== "";
+  });
 
-const character = lines[0].split('"')
-const comment = lines[1] && lines[1].replace("Quote: ", "").replace('"', '').trim().trimStart();
-const name = character[0].replace('"', '').trim().trimStart();
-const description = character[1].trim().trimStart();
+  const character = lines[0].split('"')
+  const comment = lines[1] && lines[1].replace("Quote: ", "").replace('"', '').trim().trimStart();
+  const name = character[0].replace('"', '').trim().trimStart();
+  const description = character[1].trim().trimStart();
 
   const inventory = "";
 
@@ -1123,10 +1117,10 @@ ${name}:`;
   } else {
     _resp = resp;
   }
-  return { reaction: _resp?.replace(/\s+/g, ""), prompt: reactionsPrompt}
+  return { reaction: _resp?.replace(/\s+/g, ""), prompt: reactionsPrompt }
 }
 
-export async function generateObjectComment({name, description}, generateFn) {
+export async function generateObjectComment({ name, description }, generateFn) {
   const objectCommentPrompt = `\
 ${lore.object.prompt}
 ${shuffleArray(lore.object.examples).join("\n")}
@@ -1161,7 +1155,7 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export async function generateLoreExposition({name, setting = null, type = 'Object'}, generateFn) {
+export async function generateLoreExposition({ name, setting = null, type = 'Object' }, generateFn) {
   const prompt = `\
 ${type !== 'setting' && (setting && (setting + '\n')) || ''}\
 ${lore[type.toLowerCase()].prompt}
@@ -1184,45 +1178,171 @@ ${capitalizeFirstLetter(type)}: "${name}"`;
     prompt
   };
 
-  
+
+}
+
+export async function generateCutscene({ setting = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
+  if (!dstCharacter) {
+    dstCharacter = characters[Math.floor(Math.random() * characters.length)]
+  }
+
+  console.log('messages', messages);
+
+  let lastCharacter = null;
+  let prompt = `\
+# Available Actions: ${[
+      "attack",
+      "defend",
+      "move to",
+      "follow",
+      "pick up",
+      "drop",
+      "emote",
+      "stop",
+      "none",
+    ].join(", ")}
+
+# Characters
+
+Name: Axel
+Description: The main hero of the story. Well, someone has to be the hero.
+
+Name: Miranda
+Description: A very trusting person.
+
+Name: Zaphod
+Description: A very untrustworthy character.
+
+# Transcript
+
+axel: We arere looking for Lara. You know where we can find her?
+miranda: I can find anything, you just keep feeding me tokens and coffee.
+zaphod: Anything you need, you just let me know.
+miranda: Thanks. How do you guys know each other again? 
+zaphod: Best friends. From waaay back in the day.
+
+"""
+# Characters
+
+Name: eric
+Description: A very boring guy. Bored the pants off a thousand people at once, once.
+
+Name: millie
+Description: A very interesting person. She is a bit of a mystery.
+
+# Objecs
+
+Name: Computer
+Description: A very old computer. A real piece of crap, but I guess it works..
+
+# Transcript 
+
+millie: Hey Eric, can I ask you something?
+\/action millie moves to eric
+eric: Sure, what is it?
+millie: Do you ever wonder why we are here?
+eric: Is that a way to tee up a convo about the drop tomorrow?
+\/action millie emotes joy
+millie: It might not be!
+eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
+\/action eric moves to computer
+
+"""
+
+${setting && `# Setting\n\n${setting.name}\n${setting.description}`}
+
+${characters.length > 0 && "# Characters\n\n"}\
+${characters
+      .map((c) => `Character: ${c.name}\nDescription: ${c.description}`)
+      .join("\n\n") + (characters.length > 0 && "\n\n")
+    }\
+${objects.length > 0 && "# Nearby Objects\n\n"}\
+${objects.slice(0, 2)
+      .map((c) => `Object: ${c.name}\nDescription: ${c.description}`)
+      .join("\n\n") + (objects.length > 0 && "\n")
+    }\
+
+# Transcript
+
+${(messages && messages.map((m) => m.character.name+': '+m.message).join("\n"))}\
+${(!messages || messages.length === 0) && dstCharacter.name+':'}`;
+
+// set lastCharacter to the last character in the transcript
+  if (messages && messages.length > 0) {
+    lastCharacter = messages[messages.length - 1].character;
+  } else {
+    lastCharacter = dstCharacter;
+  }
+
+const outMessages = [];
+
+  let loreResp = await generateFn(prompt, ["\n\n", 'done=true', 'done = true']);
+  console.log('lastCharacter ?? dstCharacter', lastCharacter ?? dstCharacter);
+  outMessages.push({
+    character: lastCharacter ?? dstCharacter,
+    message: loreResp.split('\n').shift()
+  });
+
+  // loreResp = loreResp
+  //   .trim()
+  //   .trimStart()
+  //   .replace(/^\n+/, "") // remove leading newlines
+  //   .replace(/\n+$/, "") // remove trailing newlines
+  //   .replaceAll('"', "") // remove quotes
+  //   .replaceAll("\t", "") // remove tabs
+  //   .split("\n");
+
+  //   // if last character is dstCharacter and loreResp[0] has neither a ":" (chat) or "/" in it (action)
+  //   // pop the first line from loreResp and add it to a new object as 'message' (with 'character' being lastCharacter)
+  //   if (loreResp[0] && !loreResp[0].includes(":") && !loreResp[0].includes("/")) {
+  //     outMessages.push({
+  //       character: lastCharacter ?? dstCharacter,
+  //       message: loreResp.shift()
+  //     });
+  //   }
+
+  // // if the line doesn't contain a colon or a slash then it's nothing
+  // loreResp = loreResp.filter((line) => line.includes(":") || line.includes("/"));
+
+  // // if the line doesn't start with a character.name from the characters array or a /, not valid
+  // loreResp = loreResp.filter((line) => {
+  //   if (line.startsWith("/")) {
+  //     return true;
+  //   } else {
+  //     return characters.map((c) => c.name.includes(line.split(":")[0].trimStart().trim()) || line.split(":")[0].trimStart().trim().includes(c.name));
+  //   }
+  // });
+
+  const totalMessages = [...messages, ...outMessages];
+
+  return {
+    messages: totalMessages,
+    prompt: prompt
+  }
 }
 
 export async function generateRPGDialogue(character, generateFn) {
   const rpgDialoguePrompt = `\
   ${lore["inputParsing"].prompt}
   ${shuffleArray(lore["inputParsing"].examples).join("\n")}
-  Input:\n+a8e44f13${character?.length > 0 ? character : "Zeal"}:`;
+  Input:\n+a8e44f13${character}:`;
 
   const resp = await generateFn(rpgDialoguePrompt, [
     "\n",
-    `Input:\n+a8e44f13${character?.length > 0 ? character : "Zeal"}:`,
+    `Input:\n+a8e44f13${character}:`,
   ]);
 
   if (
     resp?.startsWith(
-      `Input:\n+a8e44f13${character?.length > 0 ? character : "Zeal"}:`
+      `Input:\n+a8e44f13${character}:`
     )
   ) {
     return resp
       .replace(
-        `Input:\n+a8e44f13${character?.length > 0 ? character : "Zeal"}:`,
+        `Input:\n+a8e44f13${character}:`,
         ""
       )
       .trim();
-  } else {
-    return resp;
-  }
-}
-export async function generateCutscene(generateFn) {
-  const cutscenePrompt = `\
-  ${lore["cutscene"].prompt}
-  ${shuffleArray(lore["cutscene"].examples).join("\n")}
-  prompt:`;
-
-  const resp = await generateFn(cutscenePrompt, makeIngredientStop());
-
-  if (resp?.startsWith("prompt: ")) {
-    return resp.replace("prompt: ", "").trim();
   } else {
     return resp;
   }
@@ -1315,16 +1435,16 @@ ${lore.setting.prompt}
 ${shuffleArray(lore.setting.examples, 8).join("\n")}
 Location: "${name}" ${description}
 Quote: "`;
-  
-    const resp = await generateFn(sceneCommentPrompt, [`"`, '\n']);
-    console.log('resp is', resp);
-    return {
-      name,
-      description,
-      // trim the beginning white space from the response
-      comment: resp.replaceAll('"', '').trim().trimStart(),
-      prompt: sceneCommentPrompt
-    };
+
+  const resp = await generateFn(sceneCommentPrompt, [`"`, '\n']);
+  console.log('resp is', resp);
+  return {
+    name,
+    description,
+    // trim the beginning white space from the response
+    comment: resp.replaceAll('"', '').trim().trimStart(),
+    prompt: sceneCommentPrompt
+  };
 
   // const prompt = makeCommentPrompt({
   //   settings,
@@ -1351,7 +1471,7 @@ export async function generateSelectTargetComment(
   return response;
 }
 
-export async function generateSelectCharacter({name, description}, generateFn) {
+export async function generateSelectCharacter({ name, description }, generateFn) {
   const prompt = makeSelectCharacterPrompt({
     name,
     description,
@@ -1359,14 +1479,11 @@ export async function generateSelectCharacter({name, description}, generateFn) {
   const stop = makeSelectCharacterStop();
   let response = await generateFn(prompt, stop);
   const response2 = parseSelectCharacterResponse(response);
-  // return response2;
-  return {
-    value: response2.value,
-    prompt
-  }
+  if (response2) response2.prompt = prompt
+  return response2;
 }
 
-export async function generateBattleIntroduction({name, description}, generateFn) {
+export async function generateBattleIntroduction({ name, description }, generateFn) {
   const prompt = makeBattleIntroductionPrompt({
     name,
     description,
@@ -1374,11 +1491,11 @@ export async function generateBattleIntroduction({name, description}, generateFn
   const stop = makeBattleIntroductionStop();
   let response = await generateFn(prompt, stop);
   const response2 = parseBattleIntroductionResponse(response);
-  if(response2) response2.prompt = prompt;
-  return response2 || {value: null, emote: null, done: null, prompt};
+  if (response2) response2.prompt = prompt;
+  return response2 || { value: null, emote: null, done: null, prompt };
 }
 
-export async function generateChatMessage({messages, nextCharacter}, generateFn) {
+export async function generateChatMessage({ messages, nextCharacter }, generateFn) {
   const prompt = makeChatPrompt({
     messages,
     nextCharacter,
@@ -1411,16 +1528,11 @@ export async function generateCharacterIntroPrompt({ name, description }, genera
   const stop = makeCharacterIntroStop();
   let response = await generateFn(prompt, stop);
   const response2 = parseCharacterIntroResponse(response);
-  if(response2) response2.prompt = prompt;
-  return response2 || {message: '<error>', prompt, onselect: '<error>'};
-}
-
-// Construct an example of exposition, like "An ancient survival handbook, printed on paper. It has insructions for saving the environment with the power of nature...""
-export async function generateExposition(){
-  return console.log('not implemented')
+  if (response2) response2.prompt = prompt;
+  return response2 || { message: '<error>', prompt, onselect: '<error>' };
 }
 
 // Generate a quest task outcome
-export async function generateActionTask(){
+export async function generateActionTask() {
   return console.log('not implemented')
 }
