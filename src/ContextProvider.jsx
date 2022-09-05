@@ -592,13 +592,27 @@ export function ApplicationContextProvider(props) {
   };
   const addDialogueEntry = (_key) => {
     const newData = { ...dialogue };
-    console.log(newData[currentDialogueType][_key].output.transcript);
     newData[currentDialogueType][_key].output.transcript.unshift({
       speaker: "",
       message: "",
     });
     setDialogue(newData);
   };
+  const addDialogueEntryWithData = (_key, speaker, message) => {
+    const newData = { ...dialogue };
+    console.log("adding to new data:", speaker, "|", message);
+    newData[currentDialogueType][_key].output.transcript.unshift({
+      character: speaker,
+      message,
+    });
+    setDialogue(newData);
+  };
+  const setDialogEntries = (_key, transcript) => {
+    const newData = { ...dialogue };
+    newData[currentDialogueType][_key].output.transcript = transcript;
+    setDialogue(newData);
+  };
+
   const editDialogueJson = (d, index) => {
     let newData = { ...dialogue };
     newData[currentDialogueType][index] = d;
@@ -692,6 +706,38 @@ export function ApplicationContextProvider(props) {
     return (entities["object"] ?? []).map((e) => e.name);
   };
 
+  const getObject = (name) => {
+    return entities["object"]?.find((e) => e.name === name);
+  };
+  const getCharacter = (name) => {
+    return entities["character"]?.find((e) => e.name === name);
+  };
+  const getNPC = (name) => {
+    return entities["npc"]?.find((e) => e.name === name);
+  };
+  const getSetting = (name) => {
+    return entities["setting"]?.find((e) => e.name === name);
+  };
+  const getMob = (name) => {
+    return entities["mob"]?.find((e) => e.name === name);
+  };
+
+  const getTypeOfObject = (name) => {
+    if (getObject(name)) {
+      return "object";
+    } else if (getCharacter(name)) {
+      return "character";
+    } else if (getNPC(name)) {
+      return "npc";
+    } else if (getSetting(name)) {
+      return "setting";
+    } else if (getMob(name)) {
+      return "mob";
+    }
+
+    return "character";
+  };
+
   const provider = {
     getOpenAIKey: () => getOpenAIKey(),
     setOpenAIKey: (key) => setOpenAIKey(key),
@@ -734,6 +780,14 @@ export function ApplicationContextProvider(props) {
     getInventoryItems,
     removeEntryFromDialogue,
     addDialogueEntry,
+    addDialogueEntryWithData,
+    getObject,
+    getCharacter,
+    getNPC,
+    getSetting,
+    getMob,
+    getTypeOfObject,
+    setDialogEntries,
   };
 
   return (

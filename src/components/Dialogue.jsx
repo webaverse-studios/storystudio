@@ -5,6 +5,7 @@ import MonacoEditor from "@monaco-editor/react";
 import { WithContext as ReactTags } from "react-tag-input";
 import { useEffect } from "react";
 import { delimiters } from "../utils/constants";
+import { makeGenerateFn } from "../utils/generation";
 
 //field check if image, set source the img, if name change, generate new image
 const Dialogue = ({ index, _key, type, editJson }) => {
@@ -17,6 +18,14 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     entities,
     removeEntryFromDialogue,
     addDialogueEntry,
+    getObject,
+    getCharacter,
+    getNPC,
+    getSetting,
+    getMob,
+    baseData,
+    getTypeOfObject,
+    addDialogueEntryWithData,
   } = useContext(ApplicationContext);
 
   const [lastSelector, setLastSelector] = useState(null);
@@ -104,7 +113,6 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     for (let i = 0; i < newTagsCharacters.length; i++) {
       chars.push(newTagsCharacters[i].text);
     }
-    console.log("UPDATE CHARACTERS:", chars);
     handleChange(chars, "input.characters");
   };
 
@@ -115,7 +123,6 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     updateObjects(newTagsObjects);
   };
   const handleAddObject = (tag) => {
-    console.log("add new object:", tag);
     const newTagsObjects = [...tagObjects];
     newTagsObjects.unshift(tag);
     setTagObjects(newTagsObjects);
@@ -149,11 +156,139 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     handleChange(npcs, "input.npcs");
   };
 
+  const generate = async (selector, type, needsData, data) => {
+    console.log("generate:", selector, type);
+    let res = "";
+
+    if (type === "objectComment") {
+      const obj = getObject(data);
+      const description = obj ? obj.description : "";
+
+      res = await baseData.module.generateObjectComment(
+        { name: data, description },
+        makeGenerateFn()
+      );
+      res = res.value;
+    } else if (type === "npcComment") {
+      const obj = getNPC(data);
+      const description = obj ? obj.description : "";
+
+      res = await baseData.module.generateObjectComment(
+        { name: data, description },
+        makeGenerateFn()
+      );
+      res = res.value;
+    } else if (type === "mobComment") {
+      const obj = getMob(data);
+      const description = obj ? obj.description : "";
+
+      res = await baseData.module.generateObjectComment(
+        { name: data, description },
+        makeGenerateFn()
+      );
+      res = res.value;
+    } else if (type === "loadingComment") {
+      const obj = getSetting(data);
+      const description = obj ? obj.description : "";
+
+      res = await baseData.module.generateLocationComment(
+        {
+          name: data,
+          description,
+          dstCharacter:
+            entities["character"]?.length > 0
+              ? entities["character"][0].name
+              : "user",
+        },
+        makeGenerateFn()
+      );
+      res = res.comment;
+    } else if (type === "loreExposition") {
+      const setting =
+        entities["setting"]?.length > 0
+          ? entities["setting"][
+              Math.floor(Math.random() * entities["setting"].length)
+            ]
+          : { name: "Test", Description: "Test" };
+
+      const character =
+        entities["character"]?.length > 0
+          ? entities["character"][
+              Math.floor(Math.random() * entities["character"].length)
+            ]
+          : { name: "Test" };
+
+      res = await baseData.module.generateLoreExposition(
+        {
+          name: character.name,
+          setting: `${setting.name}\n${setting.description}`,
+          type: getTypeOfObject(data),
+        },
+        makeGenerateFn()
+      );
+      res = res.comment;
+    } else if (
+      type === "banter" ||
+      type === "rpgDialogue" ||
+      type === "reactions" ||
+      type === "actions"
+    ) {
+      res = await baseData.module.generateBanter(
+        dialogue[currentDialogueType][_key].input.characters[
+          Math.floor(
+            Math.random() *
+              dialogue[currentDialogueType][_key].input.characters.length
+          )
+        ],
+        makeGenerateFn()
+      );
+    } else if (type === "cutscenes") {
+      const _input = {
+        setting: dialogue[currentDialogueType][_key].input.setting,
+        chars: dialogue[currentDialogueType][_key].input.characters,
+        npcs: dialogue[currentDialogueType][_key].input.npcs,
+        objects: dialogue[currentDialogueType][_key].input.objects,
+      };
+
+      _input.setting = getSetting(_input.setting);
+      for (let i = 0; i < _input.chars.length; i++) {
+        _input.chars[i] = getCharacter(_input.chars[i]);
+      }
+      for (let i = 0; i < _input.npcs.length; i++) {
+        _input.npcs[i] = getNPC(_input.npcs[i]);
+      }
+      for (let i = 0; i < _input.objects.length; i++) {
+        _input.objects[i] = getObject(_input.objects[i]);
+      }
+      const input = {
+        setting: _input.setting,
+        characters: _input.chars.concat(_input.npcs),
+        objects: _input.objects,
+      };
+
+      res = await baseData.module.generateCutscene(input, makeGenerateFn());
+      for (let i = 0; i < res.messages.length; i++) {
+        addDialogueEntryWithData(
+          _key,
+          res.messages[i].character.name,
+          res.messages[i].message
+        );
+      }
+      return;
+    }
+
+    if (res?.length <= 0 || type === "cutscenes") {
+      return;
+    }
+
+    handleChange(
+      needsData ? { speaker: data["speaker"], message: res } : res,
+      selector
+    );
+  };
   function handleChange(data, selector) {
-    console.log("change:", data, selector);
     //console.log("data, selector", data, selector);
     editDialogueCallback(data, selector, _key, index);
-    console.log("change after:", data, selector);
   }
   function DisplayJSONAsEditableForm({
     data,
@@ -162,6 +297,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     label = "",
     selector = "",
   }) {
+    console.log("DATA:", data);
     const { entities } = useContext(ApplicationContext);
 
     if (label === "characters" || label === "objects" || label === "npcs") {
@@ -215,9 +351,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     let output = null;
     if (typeof data === "object") {
       if (Array.isArray(data)) {
-        console.log("DATA:", data);
         output = data.map((item, index) => {
-          console.log("item, index:", item, index);
           return (
             <div style={{ marginLeft: "2em" }} key={index}>
               <DisplayJSONAsEditableForm
@@ -285,6 +419,11 @@ const Dialogue = ({ index, _key, type, editJson }) => {
                   Delete
                 </button>
               )}
+              {type !== "cutscenes" && (
+                <button onClick={() => generate(selector, type, true, data)}>
+                  Generate
+                </button>
+              )}
             </div>
           );
         } else {
@@ -341,20 +480,35 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     }
     // render outputs as an input field
     else if (label === "message" || label === "action" || label === "comment") {
-      console.log("comment is", data);
       output = (
-        <input
-          className="dialogueInput"
-          type="text"
-          value={data}
-          onChange={(e) => {
-            setLastSelector(selector);
-            // get the position in the input field and call setLastCursor(position)
-            setLastCursor(e.target.selectionStart);
-            handleChange(e.target.value, selector);
-          }}
-          autoFocus={lastSelector === selector}
-        />
+        <div>
+          <input
+            className="dialogueInput"
+            type="text"
+            value={data}
+            onChange={(e) => {
+              setLastSelector(selector);
+              // get the position in the input field and call setLastCursor(position)
+              setLastCursor(e.target.selectionStart);
+              handleChange(e.target.value, selector);
+            }}
+            autoFocus={lastSelector === selector}
+          />
+          {type !== "cutscenes" && (
+            <button
+              onClick={() => {
+                generate(
+                  selector,
+                  type,
+                  false,
+                  dialogue[currentDialogueType][_key].input.target
+                );
+              }}
+            >
+              Generate
+            </button>
+          )}
+        </div>
       );
     } else if (label === "speaker") {
       output = (
@@ -482,6 +636,15 @@ const Dialogue = ({ index, _key, type, editJson }) => {
                   }}
                 >
                   Add Message
+                </button>
+              )}
+              {type === "cutscenes" && (
+                <button
+                  onClick={() => {
+                    generate("", type, false, null);
+                  }}
+                >
+                  Generate
                 </button>
               )}
             </div>
