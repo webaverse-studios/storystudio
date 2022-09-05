@@ -422,6 +422,11 @@ const Dialogue = ({ index, _key, type, editJson }) => {
               height="90vh"
               language="json"
               theme="light"
+              onMount={(editor) => {
+                setTimeout(function() {
+                  editor.getAction('editor.action.formatDocument').run();
+                }, 100);
+              }}
               value={JSON.stringify(dialogue[currentDialogueType][_key])}
               onChange={(value) => {
                 editDialogueJson(JSON.parse(value), _key);
