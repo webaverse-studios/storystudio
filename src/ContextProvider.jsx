@@ -623,10 +623,6 @@ export function ApplicationContextProvider(props) {
     setErrorDialogData({ on: false, msg: "" });
   };
 
-  const inventoryItems = ["item1", "item2", "item3", "item4"];
-  const getRandomInventoryItem = () => {
-    return inventoryItems[Math.floor(Math.random() * inventoryItems.length)];
-  };
   const getInventoryItems = () => {
     return (entities["object"] ?? []).map((e) => e.name);
   };
@@ -670,7 +666,6 @@ export function ApplicationContextProvider(props) {
     importProject,
     handleImport,
     editDialogueJson,
-    getRandomInventoryItem,
     getInventoryItems,
   };
 

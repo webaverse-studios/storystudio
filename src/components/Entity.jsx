@@ -15,7 +15,7 @@ const Entity = ({
   moveEntityCallback,
   type,
 }) => {
-  const { getInventoryItems, getRandomInventoryItem } =
+  const { getInventoryItems } =
     useContext(ApplicationContext);
 
   let audioPlayer = null;
