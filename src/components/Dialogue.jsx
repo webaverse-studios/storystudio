@@ -341,6 +341,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
         <select
           value={data}
           onChange={(e) => {
+            data = e.target.value;
             handleChange(data, selector);
           }}
         >
