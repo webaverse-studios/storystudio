@@ -105,16 +105,6 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     setTagsCharacters(newTagsCharacters);
     updateCharacters(newTagsCharacters);
   };
-  const handleDragCharacter = (tag, currPos, newPos) => {
-    const newTagsCharacters = tagsCharacters.slice();
-
-    newTagsCharacters.splice(currPos, 1);
-    newTagsCharacters.splice(newPos, 0, tag);
-
-    // re-render
-    setTagsCharacters(newTagsCharacters);
-    updateCharacters(newTagsCharacters);
-  };
   const updateCharacters = (newTagsCharacters) => {
     const chars = [];
     for (let i = 0; i < newTagsCharacters.length; i++) {
@@ -137,16 +127,6 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     setTagObjects(newTagsObjects);
     updateObjects(newTagsObjects);
   };
-  const handleDragObject = (tag, currPos, newPos) => {
-    const newTagsObjects = tagObjects.slice();
-
-    newTagsObjects.splice(currPos, 1);
-    newTagsObjects.splice(newPos, 0, tag);
-
-    // re-render
-    setTagObjects(newTagsObjects);
-    updateObjects(newTagsObjects);
-  };
   const updateObjects = (newTagsObjects) => {
     const objects = [];
     for (let i = 0; i < newTagsObjects.length; i++) {
@@ -164,16 +144,6 @@ const Dialogue = ({ index, _key, type, editJson }) => {
   const handleAddNPC = (tag) => {
     const newTagsNPCs = [...tagNPCs];
     newTagsNPCs.unshift(tag);
-    setTagNPCs(newTagsNPCs);
-    updateNPC(newTagsNPCs);
-  };
-  const handleDragNPC = (tag, currPos, newPos) => {
-    const newTagsNPCs = tagNPCs.slice();
-
-    newTagsNPCs.splice(currPos, 1);
-    newTagsNPCs.splice(newPos, 0, tag);
-
-    // re-render
     setTagNPCs(newTagsNPCs);
     updateNPC(newTagsNPCs);
   };
@@ -210,6 +180,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
           :
           <br />
           <ReactTags
+            allowDragDrop={false}
             tags={
               label === "characters"
                 ? tagsCharacters
@@ -238,13 +209,6 @@ const Dialogue = ({ index, _key, type, editJson }) => {
                 : label === "objects"
                 ? handleAddObject
                 : handleAddNPC
-            }
-            handleDrag={
-              label === "characters"
-                ? handleDragCharacter
-                : label === "objects"
-                ? handleDragObject
-                : handleDragNPC
             }
             inputFieldPosition="bottom"
             autocomplete
@@ -438,8 +402,8 @@ const Dialogue = ({ index, _key, type, editJson }) => {
               language="json"
               theme="light"
               onMount={(editor) => {
-                setTimeout(function() {
-                  editor.getAction('editor.action.formatDocument').run();
+                setTimeout(function () {
+                  editor.getAction("editor.action.formatDocument").run();
                 }, 100);
               }}
               value={JSON.stringify(dialogue[currentDialogueType][_key])}

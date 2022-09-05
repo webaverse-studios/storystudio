@@ -91,16 +91,6 @@ const Entity = ({
     setTags(newTags);
     updateInventory(newTags);
   };
-  const handleDrag = (tag, currPos, newPos) => {
-    const newTags = tags.slice();
-
-    newTags.splice(currPos, 1);
-    newTags.splice(newPos, 0, tag);
-
-    // re-render
-    setTags(newTags);
-    updateInventory(newTags);
-  };
   const updateInventory = (newTags) => {
     const inv = [];
     for (let i = 0; i < newTags.length; i++) {
@@ -123,9 +113,9 @@ const Entity = ({
           delimiters={delimiters}
           handleDelete={handleDelete}
           handleAddition={handleAdd}
-          handleDrag={handleDrag}
           inputFieldPosition="bottom"
           autocomplete
+          allowDragDrop={false}
         />
       </div>
     );
