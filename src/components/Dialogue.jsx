@@ -1,8 +1,5 @@
 import React, { useContext, useState } from "react";
-import ClearIcon from "@mui/icons-material/Clear";
-import DeleteForever from "@mui/icons-material/DeleteForever";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import { ClearIcon, DeleteForever } from '../styles/icons/icons';
 import { ApplicationContext } from "../Context";
 import MonacoEditor from "@monaco-editor/react";
 

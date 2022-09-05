@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
-import ClearIcon from "@mui/icons-material/Clear";
-import DeleteForever from "@mui/icons-material/DeleteForever";
+import { ClearIcon, DeleteForever } from '../styles/icons/icons';
 
 import "../styles/App.css";
 import { ApplicationContext } from "../Context";
