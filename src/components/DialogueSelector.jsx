@@ -10,7 +10,7 @@ const DialogueSelector = () => {
     setCurrentDialogueType,
   } = useContext(ApplicationContext);
 
-  console.log('data', dialogue);
+  //console.log('data', dialogue);
   return (
     <div className="sectionWrapper context_wrapped">
       <div className="context-group">

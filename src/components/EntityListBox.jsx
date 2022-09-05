@@ -14,6 +14,7 @@ const EntityListBox = ({ header, type }) => {
     moveEntityCallback,
     handleImport,
     exportLoreMD,
+    loreFiles,
   } = useContext(ApplicationContext);
 
   const [generating, setGenerating] = React.useState(false);
@@ -55,25 +56,33 @@ const EntityListBox = ({ header, type }) => {
       </div>
       <div className={"section " + type}>
         {entities &&
-          Object.keys(entities[type] || entities).map((key, index) => {
+          Object.keys(
+            type === "loreFiles" ? loreFiles : entities[type] || entities
+          ).map((key, index) => {
             return (
-              <Entity
-                key={index}
-                index={index}
-                data={(entities[type] || entities)[key]}
-                editEntityCallback={editEntityCallback}
-                deleteEntityCallback={() =>
-                  deleteEntityCallback(
-                    (entities[type] || entities)[key],
-                    index,
-                    type
-                  )
-                }
-                moveEntityCallback={(entity, up) =>
-                  moveEntityCallback(entity, up)
-                }
-                type={type}
-              />
+              <div>
+                <Entity
+                  key={index}
+                  index={index}
+                  data={
+                    type === "loreFiles"
+                      ? loreFiles
+                      : (entities[type] || entities)[key]
+                  }
+                  editEntityCallback={editEntityCallback}
+                  deleteEntityCallback={() =>
+                    deleteEntityCallback(
+                      (entities[type] || entities)[key],
+                      index,
+                      type
+                    )
+                  }
+                  moveEntityCallback={(entity, up) =>
+                    moveEntityCallback(entity, up)
+                  }
+                  type={type}
+                />
+              </div>
             );
           })}
       </div>

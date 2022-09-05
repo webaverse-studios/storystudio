@@ -1,9 +1,10 @@
 import React, { useContext } from "react";
-import ClearIcon from "@mui/icons-material/Clear";
-import DeleteForever from "@mui/icons-material/DeleteForever";
+import { ClearIcon, DeleteForever } from "../styles/icons/icons";
 
 import "../styles/App.css";
 import { ApplicationContext } from "../Context";
+import { WithContext as ReactTags } from "react-tag-input";
+import { useEffect } from "react";
 
 //field check if image, set source the img, if name change, generate new image
 const Entity = ({
@@ -14,111 +15,118 @@ const Entity = ({
   moveEntityCallback,
   type,
 }) => {
-  const { getInventoryItems, getRandomInventoryItem } =
-    useContext(ApplicationContext);
+  const { getInventoryItems } = useContext(ApplicationContext);
 
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
   const updateEntity = (entities, field, data, index) => {
-    if (field === "shortname") {
-      return;
-    }
-    let newData = { ...entities };
-    newData[field] = data;
-    if (field === "name") {
-      console.log("name updated:", newData);
-      // newData["shortname"] =
-      //   data.replace(" ", "").trim().toLowerCase().substring(0, 7) +
-      //   "#" +
-      //   newData["id"];
-    }
-    // else if (field === "id") {
-    //   newData["shortname"] =
-    //     newData["name"].replace(" ", "").trim().toLowerCase().substring(0, 7) +
-    //     "#" +
-    //     data;
-    // }
-    if (!field) {
-      newData = data;
-    }
-    editEntityCallback(newData, index);
-  };
-  const addInventoryItem = () => {
-    const newItem = getRandomInventoryItem();
-
-    updateEntity(
-      data,
-      "inventory",
-      data["inventory"] && data["inventory"]?.length > 0
-        ? data["inventory"] + ", " + newItem
-        : newItem
-    );
-  };
-  const removeInventoryItem = (item) => {
-    const _inv =
-      data["inventory"] && data["inventory"]?.length > 0
-        ? data["inventory"].split(", ")
-        : [];
-
-    for (let i = 0; i < _inv.length; i++) {
-      if (_inv[i] === item) {
-        _inv.splice(i, 1);
-        break;
+    if (field && field?.length > 0) {
+      if (field === "shortname") {
+        return;
       }
-    }
-
-    updateEntity(data, "inventory", _inv.join(", "));
-  };
-  const updateInventoryItem = (oldName, newName) => {
-    const _inv =
-      data["inventory"] && data["inventory"]?.length > 0
-        ? data["inventory"].split(", ")
-        : [];
-
-    for (let i = 0; i < _inv.length; i++) {
-      if (_inv[i] === oldName) {
-        _inv[i] = newName;
-        break;
+      let newData = { ...entities };
+      newData[field] = data;
+      if (field === "name") {
+        console.log("name updated:", newData);
+        // newData["shortname"] =
+        //   data.replace(" ", "").trim().toLowerCase().substring(0, 7) +
+        //   "#" +
+        //   newData["id"];
+      } else if (field === "inventory") {
+        console.log("updating inventory:", newData["inventory"], data);
       }
+      // else if (field === "id") {
+      //   newData["shortname"] =
+      //     newData["name"].replace(" ", "").trim().toLowerCase().substring(0, 7) +
+      //     "#" +
+      //     data;
+      // }
+      if (!field) {
+        newData = data;
+      }
+      editEntityCallback(newData, index);
+    } else {
+      console.log("editing");
+      editEntityCallback(data, index);
     }
-
-    updateEntity(data, "inventory", _inv.join(", "));
   };
+
+  const suggestions = getInventoryItems().map((item) => {
+    return {
+      id: item,
+      text: item,
+    };
+  });
+
+  const KeyCodes = {
+    comma: 188,
+    enter: 13,
+  };
+
+  const delimiters = [KeyCodes.comma, KeyCodes.enter];
+
+  const [tags, setTags] = React.useState([]);
+  useEffect(() => {
+    if (data["inventory"] && data["inventory"]?.length > 0) {
+      setTags(
+        data["inventory"].split(", ").map((item) => {
+          return {
+            id: item,
+            text: item,
+          };
+        })
+      );
+    }
+  }, []);
+  const handleDelete = (i) => {
+    const newTags = [...tags];
+    newTags.splice(i, 1);
+    setTags(newTags);
+    updateInventory(newTags);
+  };
+  const handleAdd = (tag) => {
+    const newTags = [...tags];
+    newTags.unshift(tag);
+    setTags(newTags);
+    updateInventory(newTags);
+  };
+  const handleDrag = (tag, currPos, newPos) => {
+    const newTags = tags.slice();
+
+    newTags.splice(currPos, 1);
+    newTags.splice(newPos, 0, tag);
+
+    // re-render
+    setTags(newTags);
+    updateInventory(newTags);
+  };
+  const updateInventory = (newTags) => {
+    const inv = [];
+    for (let i = 0; i < newTags.length; i++) {
+      inv.push(newTags[i].text);
+    }
+    updateEntity(data, "inventory", inv.join(", "), index);
+  };
+
   const inventoryRender = (inventory, _key) => {
     const _inv =
       inventory && inventory?.length > 0 ? inventory.split(", ") : [];
     return (
       <div key={_key}>
+        Inventory:
         <br />
         <br />
-        {Object.keys(_inv).map((field, index) => {
-          return (
-            <div key={index}>
-              <select
-                value={_inv[index]}
-                onChange={(e) =>
-                  updateInventoryItem(_inv[index], e.target.value)
-                }
-              >
-                {getInventoryItems() && getInventoryItems().length > 0
-                  ? getInventoryItems().map((item, index) => {
-                      return (
-                        <option key={index} value={item}>
-                          {item}
-                        </option>
-                      );
-                    })
-                  : null}
-              </select>
-              <button onClick={() => removeInventoryItem(_inv[field])}>
-                <ClearIcon />
-              </button>
-              <br />
-            </div>
-          );
-        })}
-        {<button onClick={() => addInventoryItem()}>Add</button>}
+        <ReactTags
+          tags={tags}
+          suggestions={suggestions}
+          delimiters={delimiters}
+          handleDelete={handleDelete}
+          handleAddition={handleAdd}
+          handleDrag={handleDrag}
+          inputFieldPosition="bottom"
+          autocomplete
+        />
       </div>
     );
   };
@@ -193,7 +201,7 @@ const Entity = ({
           </button>
         </span>
       )}
-      {typeof data === "object" && (
+      {typeof data === "object" && type !== "loreFiles" ? (
         <React.Fragment>
           {Object.keys(data || []).map((field, i) => {
             if (
@@ -275,8 +283,20 @@ const Entity = ({
             );
           })}
         </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <textarea
+            key={index}
+            type="text"
+            value={data[index]}
+            onChange={(e) => {
+              e.preventDefault();
+              updateEntity(data[index], null, e.target.value, index);
+            }}
+          />
+        </React.Fragment>
       )}
-      {typeof data === "string" && (
+      {typeof data === "string" && type !== "loreFiles" && (
         <React.Fragment>
           <textarea
             type="text"
