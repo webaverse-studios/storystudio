@@ -523,16 +523,14 @@ export function ApplicationContextProvider(props) {
     //console.log("index is", index);
     //console.log("oldData is", newData);
     for (let i = 0; i < selectorArray.length - 1; i++) {
-      console.log("selectorArray[i] is", selectorArray[i]);
+      //console.log("selectorArray[i] is", selectorArray[i]);
       current = current[selectorArray[i]];
     }
 
     //console.log("current is", current);
 
-    //current[selectorArray[selectorArray.length - 1]] = d;
+    current[selectorArray[selectorArray.length - 1]] = d;
     //console.log("newData is", newData);
-    setDialogue(newData);
-    console.log("current:", current);
   };
   const editDialogueJson = (d, index) => {
     let newData = { ...dialogue };

@@ -1,14 +1,198 @@
 import React, { useContext, useState } from "react";
-import { ClearIcon, DeleteForever } from '../styles/icons/icons';
+import { ClearIcon, DeleteForever } from "../styles/icons/icons";
 import { ApplicationContext } from "../Context";
 import MonacoEditor from "@monaco-editor/react";
+import { WithContext as ReactTags } from "react-tag-input";
+import { useEffect } from "react";
 
 //field check if image, set source the img, if name change, generate new image
 const Dialogue = ({ index, _key, type, editJson }) => {
+  const {
+    editDialogueCallback,
+    deleteDialogueCallback,
+    dialogue,
+    currentDialogueType,
+    editDialogueJson,
+    entities,
+  } = useContext(ApplicationContext);
+
   const [lastSelector, setLastSelector] = useState(null);
   const [lastCursor, setLastCursor] = useState(null);
+  const [tagsCharacters, setTagsCharacters] = useState([]);
+  const [tagObjects, setTagObjects] = useState([]);
+  const [tagNPCs, setTagNPCs] = useState([]);
+
+  useEffect(() => {
+    const newTagsCharacters = (
+      dialogue[currentDialogueType][_key].input.characters ?? []
+    ).map((character) => {
+      return { id: character, text: character };
+    });
+    setTagsCharacters(newTagsCharacters);
+
+    const newTagsObjects = (
+      dialogue[currentDialogueType][_key].input.objects ?? []
+    ).map((obj) => {
+      return { id: obj, text: obj };
+    });
+    setTagObjects(newTagsObjects);
+
+    const newTagsNPCs = (
+      dialogue[currentDialogueType][_key].input.npcs ?? []
+    ).map((npc) => {
+      return { id: npc, text: npc };
+    });
+    setTagNPCs(newTagsNPCs);
+    console.log(
+      "DATA2: CHARACTERS",
+      newTagsCharacters,
+      "OBJECTS",
+      newTagsObjects,
+      "NPCS",
+      newTagsNPCs
+    );
+  }, [currentDialogueType]);
+
+  let suggestionsCharacters = (entities["character"] ?? []).map((item) => {
+    return {
+      id: item.name,
+      text: item.name,
+    };
+  });
+  let suggestionsObjects = (entities["object"] ?? []).map((item) => {
+    return {
+      id: item.name,
+      text: item.name,
+    };
+  });
+  let suggestionsNPCs = (entities["npcs"] ?? []).map((item) => {
+    return {
+      id: item.name,
+      text: item.name,
+    };
+  });
+  useEffect(() => {
+    suggestionsCharacters = (entities["character"] ?? []).map((item) => {
+      return {
+        id: item.name,
+        text: item.name,
+      };
+    });
+    suggestionsObjects = (entities["object"] ?? []).map((item) => {
+      return {
+        id: item.name,
+        text: item.name,
+      };
+    });
+    suggestionsNPCs = (entities["npcs"] ?? []).map((item) => {
+      return {
+        id: item.name,
+        text: item.name,
+      };
+    });
+  }, [entities]);
+
+  const KeyCodes = {
+    comma: 188,
+    enter: 13,
+  };
+
+  const delimiters = [KeyCodes.comma, KeyCodes.enter];
+
+  const handleDeleteCharacter = (i) => {
+    const newTagsCharacters = [...tagsCharacters];
+    newTagsCharacters.splice(i, 1);
+    setTagsCharacters(newTagsCharacters);
+    updateCharacters(newTagsCharacters);
+  };
+  const handleAddCharacter = (tag) => {
+    const newTagsCharacters = [...tagsCharacters];
+    newTagsCharacters.unshift(tag);
+    setTagsCharacters(newTagsCharacters);
+    updateCharacters(newTagsCharacters);
+  };
+  const handleDragCharacter = (tag, currPos, newPos) => {
+    const newTagsCharacters = tagsCharacters.slice();
+
+    newTagsCharacters.splice(currPos, 1);
+    newTagsCharacters.splice(newPos, 0, tag);
+
+    // re-render
+    setTagsCharacters(newTagsCharacters);
+    updateCharacters(newTagsCharacters);
+  };
+  const updateCharacters = (newTagsCharacters) => {
+    const chars = [];
+    for (let i = 0; i < newTagsCharacters.length; i++) {
+      chars.push(newTagsCharacters[i].text);
+    }
+    console.log("UPDATE CHARACTERS:", chars);
+    handleChange(chars, "input.characters");
+  };
+
+  const handleDeleteObject = (i) => {
+    const newTagsObjects = [...tagObjects];
+    newTagsObjects.splice(i, 1);
+    setTagObjects(newTagsObjects);
+    updateObjects(newTagsObjects);
+  };
+  const handleAddObject = (tag) => {
+    console.log('add new object:', tag)
+    const newTagsObjects = [...tagObjects];
+    newTagsObjects.unshift(tag);
+    setTagObjects(newTagsObjects);
+    updateObjects(newTagsObjects);
+  };
+  const handleDragObject = (tag, currPos, newPos) => {
+    const newTagsObjects = tagObjects.slice();
+
+    newTagsObjects.splice(currPos, 1);
+    newTagsObjects.splice(newPos, 0, tag);
+
+    // re-render
+    setTagObjects(newTagsObjects);
+    updateObjects(newTagsObjects);
+  };
+  const updateObjects = (newTagsObjects) => {
+    const objects = [];
+    for (let i = 0; i < newTagsObjects.length; i++) {
+      objects.push(newTagsObjects[i].text);
+    }
+    handleChange(objects, "input.objects");
+  };
+
+  const handleDeleteNPC = (i) => {
+    const newTagsNPCs = [...tagNPCs];
+    newTagsNPCs.splice(i, 1);
+    setTagNPCs(newTagsNPCs);
+    updateNPC(newTagsNPCs);
+  };
+  const handleAddNPC = (tag) => {
+    const newTagsNPCs = [...tagNPCs];
+    newTagsNPCs.unshift(tag);
+    setTagNPCs(newTagsNPCs);
+    updateNPC(newTagsNPCs);
+  };
+  const handleDragNPC = (tag, currPos, newPos) => {
+    const newTagsNPCs = tagNPCs.slice();
+
+    newTagsNPCs.splice(currPos, 1);
+    newTagsNPCs.splice(newPos, 0, tag);
+
+    // re-render
+    setTagNPCs(newTagsNPCs);
+    updateNPC(newTagsNPCs);
+  };
+  const updateNPC = (newTagsNPCs) => {
+    const npcs = [];
+    for (let i = 0; i < newTagsNPCs.length; i++) {
+      npcs.push(newTagsNPCs[i].text);
+    }
+    handleChange(npcs, "input.npcs");
+  };
+
   function handleChange(data, selector) {
-    console.log("data, selector", data, selector);
+    //console.log("data, selector", data, selector);
     editDialogueCallback(data, selector, _key, index);
   }
   function DisplayJSONAsEditableForm({
@@ -20,6 +204,60 @@ const Dialogue = ({ index, _key, type, editJson }) => {
   }) {
     const { entities } = useContext(ApplicationContext);
 
+    if (label === "characters" || label === "objects" || label === "npcs") {
+      return (
+        <div>
+          {label === "characters"
+            ? "Characters"
+            : label === "objects"
+            ? "Objects"
+            : "NPCs"}
+          :
+          <br />
+          <ReactTags
+            tags={
+              label === "characters"
+                ? tagsCharacters
+                : label === "objects"
+                ? tagObjects
+                : tagNPCs
+            }
+            suggestions={
+              label === "characters"
+                ? suggestionsCharacters
+                : label === "objects"
+                ? suggestionsObjects
+                : suggestionsNPCs
+            }
+            delimiters={delimiters}
+            handleDelete={
+              label === "characters"
+                ? handleDeleteCharacter
+                : label === "objects"
+                ? handleDeleteObject
+                : handleDeleteNPC
+            }
+            handleAddition={
+              label === "characters"
+                ? handleAddCharacter
+                : label === "objects"
+                ? handleAddObject
+                : handleAddNPC
+            }
+            handleDrag={
+              label === "characters"
+                ? handleDragCharacter
+                : label === "objects"
+                ? handleDragObject
+                : handleDragNPC
+            }
+            inputFieldPosition="bottom"
+            autocomplete
+          />
+          <br />
+        </div>
+      );
+    }
     let output = null;
     if (typeof data === "object") {
       if (Array.isArray(data)) {
@@ -52,43 +290,44 @@ const Dialogue = ({ index, _key, type, editJson }) => {
           );
         });
       }
+    } else if (label === "ta  rget") {
+      //console.log("type is", type);
+      //console.log("*** data is", data);
+      return (
+        <div>
+          <label style={{ margin: ".5em" }}>{label}</label>
+          {/* render a select dropdown with all of the entities for the current type */}
+          <select
+            value={data}
+            onChange={(e) => {
+              data = e.target.value;
+              handleChange(data, selector);
+            }}
+          >
+            {(type === "loreExposition"
+              ? [
+                  ...entities["character"],
+                  ...entities["object"],
+                  ...entities["setting"],
+                  ...entities["npc"],
+                ]
+              : entities[
+                  type.replace("loading", "setting").replace("Comment", "")
+                ]
+            ).map((item, index) => {
+              return (
+                <option key={index} value={item.name}>
+                  {item.name}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+      );
     }
-  
-    else if (label === "target") {
-      console.log('type is', type);
-      console.log('*** data is', data);
-        return (
-          <div>
-            <label style={{margin: ".5em"}}>{label}</label>
-            {/* render a select dropdown with all of the entities for the current type */}
-            <select
-              value={data}
-              onChange={(e) => {
-                data = e.target.value;
-                handleChange(data, selector);
-              }}
-            >
-              {
-                (type === 'loreExposition' ? 
-                [...entities['character'], ...entities['object'], ...entities['setting'], ...entities['npc']] :
-                entities[type.replace('loading', 'setting').replace('Comment', '')]).map((item, index) => {
-                return (
-                  <option key={index} value={item.name}>
-                    {item.name}
-                  </option>
-                );
-              }
-            )}
-            </select>
-  
-          </div>
-        );
-    }
-  
-
     // render outputs as an input field
     else if (label === "message" || label === "action" || label === "comment") {
-      console.log("comment is", data);
+      //console.log("comment is", data);
       output = (
         <input
           className="dialogueInput"
@@ -144,40 +383,6 @@ const Dialogue = ({ index, _key, type, editJson }) => {
       );
     }
 
-    // if the label is "objects", render a react-tag-input
-    if (label === "objects" || label === "npcs" || label === "characters") {
-      console.log("data", data);
-      output = (
-        <div>
-          {/* iterate through the data, and render a textarea for each item */}
-          {data.map((item, index) => {
-            return (
-              <input
-                className="tagInput"
-                type="text"
-                value={data[index]}
-                onChange={(e) => {
-                  data[index] = e.target.value;
-                }}
-              />
-            );
-          })}
-          {/* add a button to add a new item */}
-          <button
-            onClick={() => {
-              data.push(data[data.length - 1] || "New");
-              handleChange(data, selector);
-            }}
-            style={{ display: "inline" }}
-          >
-            +
-          </button>
-        </div>
-      );
-    }
-
-    // if label is target, render a dropdown select
-
     return (
       <div style={{ margin: ".5em" }}>
         {label}
@@ -188,14 +393,6 @@ const Dialogue = ({ index, _key, type, editJson }) => {
   }
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
-
-  const {
-    editDialogueCallback,
-    deleteDialogueCallback,
-    dialogue,
-    currentDialogueType,
-    editDialogueJson,
-  } = useContext(ApplicationContext);
 
   return (
     <div className={"entity"}>

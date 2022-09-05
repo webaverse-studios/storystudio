@@ -15,8 +15,7 @@ const Entity = ({
   moveEntityCallback,
   type,
 }) => {
-  const { getInventoryItems } =
-    useContext(ApplicationContext);
+  const { getInventoryItems } = useContext(ApplicationContext);
 
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
@@ -110,6 +109,7 @@ const Entity = ({
       inventory && inventory?.length > 0 ? inventory.split(", ") : [];
     return (
       <div key={_key}>
+        Inventory:
         <br />
         <br />
         <ReactTags
