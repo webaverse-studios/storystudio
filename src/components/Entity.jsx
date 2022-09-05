@@ -5,6 +5,7 @@ import "../styles/App.css";
 import { ApplicationContext } from "../Context";
 import { WithContext as ReactTags } from "react-tag-input";
 import { useEffect } from "react";
+import { delimiters } from "../utils/constants";
 
 //field check if image, set source the img, if name change, generate new image
 const Entity = ({
@@ -59,13 +60,6 @@ const Entity = ({
     };
   });
 
-  const KeyCodes = {
-    comma: 188,
-    enter: 13,
-  };
-
-  const delimiters = [KeyCodes.comma, KeyCodes.enter];
-
   const [tags, setTags] = React.useState([]);
   useEffect(() => {
     if (data["inventory"] && data["inventory"]?.length > 0) {
@@ -91,16 +85,6 @@ const Entity = ({
     setTags(newTags);
     updateInventory(newTags);
   };
-  const handleDrag = (tag, currPos, newPos) => {
-    const newTags = tags.slice();
-
-    newTags.splice(currPos, 1);
-    newTags.splice(newPos, 0, tag);
-
-    // re-render
-    setTags(newTags);
-    updateInventory(newTags);
-  };
   const updateInventory = (newTags) => {
     const inv = [];
     for (let i = 0; i < newTags.length; i++) {
@@ -123,9 +107,9 @@ const Entity = ({
           delimiters={delimiters}
           handleDelete={handleDelete}
           handleAddition={handleAdd}
-          handleDrag={handleDrag}
           inputFieldPosition="bottom"
           autocomplete
+          allowDragDrop={false}
         />
       </div>
     );
