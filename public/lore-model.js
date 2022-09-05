@@ -218,8 +218,30 @@ export let lore = {
     ],
   },
   intros: {
-    prompt:
-      "Anime script for a dark children's show.\n\n# Inspirations\n\nFinal Fantasy\nSonic\nCalvin and Hobbes\nThe Matrix\nSnow Crash\nPokemon\nVRChat\nFortnite\nOne Piece\nAttack on Titan\nSMG4\nDeath Note\nZelda\nInfinity Train\nDance Dance Revolution\n\n# Character intro\n\nEach character has an intro. These should be unique and funny.\n\n",
+    prompt: `\
+Anime script for a dark children's show.
+      
+# Inspirations
+Final Fantasy
+Sonic
+Calvin and Hobbes
+The Matrix
+Snow Crash
+Pokemon
+VRChat
+Fortnite
+One Piece
+Attack on Titan
+SMG4
+Death Note
+Zelda
+Infinity Train
+Dance Dance Revolution
+
+# Character intro
+
+Each character has an intro. These should be unique and funny.
+`,
     examples: [
       "Bricks (13/M dealer. He mostly deals things that are not drugs, like information and AI seeds.): Toxins are the Devil's Food! But sometimes they can be good for you, if you know what I mean? That's a drug reference, but I wouldn't expect you to get that unless you were on drugs. By the way you want some?\n(onselect: I don't do drugs, but I know someone who does. Let me introduce you to my friend Bricks.)",
       "Artemis (15/F pet breeder. She synthesizes pet animals by combining their neural genes.): Do you ever wonder why we keep pets on leashes? I mean they are technically AIs, so we could reprogram them to not need leashes. But someone somewhere decided that leashes were the prettier choice. Life is nice. (onselect: Bless the hearts of the birds, because they paint the sky.)",
@@ -271,7 +293,7 @@ ${characters
   .map((c, i) => {
     return `Id: ${thingHash(c, i)}
     Name: ${c.name}
-    Bio: ${c.bio || c.description}
+    Bio: ${c.description || c.description}
 `;
   })
   .join("\n\n")}
@@ -464,7 +486,7 @@ const parseSelectCharacterResponse = (response) => {
   };
 };
 
-const makeBattleIntroductionPrompt = ({ name, bio }) => {
+const makeBattleIntroductionPrompt = ({ name, description }) => {
   return `\
 ${lore.battle.prompt}
 ${shuffleArray(lore.battle.examples).join(`\n`)}
@@ -475,7 +497,7 @@ const parseBattleIntroductionResponse = (response) => response;
 
 const makeChatPrompt = ({
   // name,
-  // bio,
+  // description,
   messages,
   nextCharacter,
 }) => {
@@ -531,7 +553,7 @@ const parseChatResponse = (response) => {
 
 const makeOptionsPrompt = ({
   // name,
-  // bio,
+  // description,
   messages,
   nextCharacter,
 }) => {
@@ -577,11 +599,11 @@ const parseOptionsResponse = (response) => {
   };
 };
 
-const makeCharacterIntroPrompt = ({ name, bio }) => {
+const makeCharacterIntroPrompt = ({ name, description }) => {
   return `\
 ${lore.intros.prompt}
 ${shuffleArray(lore.intros.examples).join(`\n`)}
-${name}${bio ? ` (${bio})` : ""}:`;
+${name}${description ? ` (${description})` : ""}:`;
 };
 const makeCharacterIntroStop = () => `\n`;
 const parseCharacterIntroResponse = (response) => {
@@ -792,13 +814,13 @@ ${`${setting.name}\n${setting.description}`}
 ${party.length > 0 && "# Party Characters\n\n"}\
 ${
   party
-    .map((c) => `Name: ${c.name}\nBio: ${c.bio || c.description}`)
+    .map((c) => `Name: ${c.name}\nBio: ${c.description || c.description}`)
     .join("\n\n") + (party.length > 0 && "\n\n")
 }\
 ${npcs.length > 0 && "# Non-player Characters\n\n"}\
 ${
   npcs
-    .map((c) => `Name: ${c.name}\nBio: ${c.bio || c.description}`)
+    .map((c) => `Name: ${c.name}\nBio: ${c.description || c.description}`)
     .join("\n\n") + (npcs.length > 0 && "\n\n")
 }\
 ${objects.length > 0 && "# Nearby Objects\n\n"}\
@@ -950,7 +972,7 @@ ${characters.length > 0 && "\n# Characters" + "\n\n"}\
 ${characters
   .map(
     (c) =>
-      `${c.name}\n${c.bio || c.description}\n${
+      `${c.name}\n${c.description || c.description}\n${
         c.Inventory?.length > 0 && `Inventory:\n`
       }${(c.Inventory ? c.Inventory : [])
         .map((obj) => `${obj.name}`)
@@ -1017,9 +1039,9 @@ const description = character[1].trim().trimStart();
   const inventory = "";
 
   return {
-    name: name,
-    bio: description,
-    comment: comment,
+    name,
+    description,
+    comment,
     inventory,
     prompt
   };
@@ -1084,28 +1106,9 @@ Quote: "`;
   return {
     name,
     description,
-    comment: resp.trim(),
+    value: resp.trim(),
     prompt: objectCommentPrompt
   };
-}
-export async function generateLoadingComment(setting, generateFn) {
-  const loadingCommentPrompt = `\
-  ${commentPrompt}
-  ${setting?.length > 0 ? setting : "Lake"}:`;
-
-  const resp = await generateFn(loadingCommentPrompt, [
-    "\n",
-    setting?.length > 0 ? setting : "Lake:",
-  ]);
-
-  if (resp?.startsWith(setting?.length > 0 ? setting : "Lake:")) {
-    return {
-      name: setting?.length > 0 ? setting : "Lake:",
-      comment: resp.replace(setting, "").trim(),
-    };
-  } else {
-    return { name: setting?.length > 0 ? setting : "Lake:", comment: resp };
-  }
 }
 
 export async function generateBanter(name, generateFn) {
@@ -1326,7 +1329,7 @@ export async function generateSelectCharacter({name, description}, generateFn) {
   const response2 = parseSelectCharacterResponse(response);
   // return response2;
   return {
-    comment: response2.value,
+    value: response2.value,
     prompt
   }
 }
@@ -1356,15 +1359,16 @@ export async function generateDialogueOptions(
   return response2;
 }
 
-export async function generateCharacterIntroPrompt({ name, bio }, generateFn) {
+export async function generateCharacterIntroPrompt({ name, description }, generateFn) {
   const prompt = makeCharacterIntroPrompt({
     name,
-    bio,
+    description,
   });
   const stop = makeCharacterIntroStop();
   let response = await generateFn(prompt, stop);
   const response2 = parseCharacterIntroResponse(response);
-  return response2;
+  if(response2) response2.prompt = prompt;
+  return response2 || {message: '<error>', prompt, onselect: '<error>'};
 }
 
 // Construct an example of exposition, like "An ancient survival handbook, printed on paper. It has insructions for saving the environment with the power of nature...""

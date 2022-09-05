@@ -52,7 +52,7 @@ const testData = {
 It's more of a floating island but they call it a tree house. Inside the treehouse lives a monster, the Lisk, which is an advanced AI from far up the Street.`}],
   npcs: [{
     name: `bricks`,
-    bio: `(13/M dealer. He mostly deals things that are not drugs, like information and AI seeds.): Toxins are the Devil's Food! But sometimes they can be good for you, if you know what I mean? That's a drug reference, but I wouldn't expect you to get that unless you were on drugs. By the way you want some?
+    description: `(13/M dealer. He mostly deals things that are not drugs, like information and AI seeds.): Toxins are the Devil's Food! But sometimes they can be good for you, if you know what I mean? That's a drug reference, but I wouldn't expect you to get that unless you were on drugs. By the way you want some?
       (onselect: I don't do drugs, but I know someone who does. Let me introduce you to my friend Bricks.)`,
     Inventory: [{
       name: `sword`,
@@ -62,7 +62,7 @@ It's more of a floating island but they call it a tree house. Inside the treehou
   },
   {
     name: `artemis`,
-    bio: `(15/F pet breeder. She synthesizes pet animals by combining their neural genes.): Do you ever wonder why we keep pets on leashes? I mean they are technically AIs, so we could reprogram them to not need leashes. But someone somewhere decided that leashes were the prettier choice. Life is nice. (onselect: Bless the hearts of the birds, because they paint the sky.)`,
+    description: `(15/F pet breeder. She synthesizes pet animals by combining their neural genes.): Do you ever wonder why we keep pets on leashes? I mean they are technically AIs, so we could reprogram them to not need leashes. But someone somewhere decided that leashes were the prettier choice. Life is nice. (onselect: Bless the hearts of the birds, because they paint the sky.)`,
     Inventory: [{
       name: `pistol`,
       description: `Basic pistol.`,
@@ -70,7 +70,7 @@ It's more of a floating island but they call it a tree house. Inside the treehou
   },
   {
     name: `bailey`,
-    bio: `(13/F black witch. She is smart, reserved, and studious, but has a dark side to her.): Listen up, if you need quality potions, I'm your ma'am, ma'am. Yes I may be a witch but that doesn't mean I'm not a lady. I'll take your money and turn it into something magical. Just don't anger me, or you'll be a tree. (onselect: Witchcraft is not a sin. It's a science.)`,
+    description: `(13/F black witch. She is smart, reserved, and studious, but has a dark side to her.): Listen up, if you need quality potions, I'm your ma'am, ma'am. Yes I may be a witch but that doesn't mean I'm not a lady. I'll take your money and turn it into something magical. Just don't anger me, or you'll be a tree. (onselect: Witchcraft is not a sin. It's a science.)`,
     Inventory: [{
       name: `bow`,
       description: `A basic bow. It looks like something rambo would use.`
@@ -78,7 +78,7 @@ It's more of a floating island but they call it a tree house. Inside the treehou
   }],
   party: [{
     name: `scillia`,
-    bio: `Her nickname is Scilly or SLY. 13/F drop hunter. She is an adventurer, swordfighter and fan of potions. She is exceptionally skilled and can go Super Saiyan.`,
+    description: `Her nickname is Scilly or SLY. 13/F drop hunter. She is an adventurer, swordfighter and fan of potions. She is exceptionally skilled and can go Super Saiyan.`,
     Inventory: [{
       name: `sword`,
       description: `A rusty old sword.`,
@@ -87,7 +87,7 @@ It's more of a floating island but they call it a tree house. Inside the treehou
   },
   {
     name: `drake`,
-    bio: `His nickname is DRK. 15/M hacker. Loves guns. Likes plotting new hacks. He has the best equipment and is always ready for a fight.`,
+    description: `His nickname is DRK. 15/M hacker. Loves guns. Likes plotting new hacks. He has the best equipment and is always ready for a fight.`,
     Inventory: [{
       name: `pistol`,
       description: `Basic pistol.`,
@@ -95,7 +95,7 @@ It's more of a floating island but they call it a tree house. Inside the treehou
   },
   {
     name: `hyacinth`,
-    bio: `Also known as Hya. 15/F beast tamer. Influencer famous for her pets, and friend of Scillia's. She is really bad in school but the richest one in the group.`,
+    description: `Also known as Hya. 15/F beast tamer. Influencer famous for her pets, and friend of Scillia's. She is really bad in school but the richest one in the group.`,
     Inventory: [{
       name: `bow`,
       description: `A basic bow. It looks like something rambo would use.`
@@ -188,7 +188,7 @@ ${output}
 
     delete output.prompt;
 
-    writeData(testData.objects[0], prompt, output.comment, 'object_comment');
+    writeData(testData.objects[0], prompt, output.value, 'object_comment');
   }
 
   if (test.toLowerCase().includes('all') || test.toLowerCase().includes('objectcomment')) {
@@ -208,7 +208,7 @@ ${output}
       name: testData.settings[0].name,
       description: testData.settings[0].description,
       dstCharacter: testData.party[0]
-    }, output.prompt, output.comment, 'location_comment');
+    }, output.prompt, output.value, 'location_comment');
   }
 
   if (test.toLowerCase().includes('all') || test.toLowerCase().includes('location')) {
@@ -217,13 +217,13 @@ ${output}
 
   // ********** SELECT CHARACTER **********
   async function generateSelectCharacterTest() {
-    const { name, bio } = testData.party[1];
-    const output = await generateSelectCharacter({ name, description: bio }, makeGenerateFn());
+    const { name, description } = testData.party[1];
+    const output = await generateSelectCharacter({ name, description }, makeGenerateFn());
 
     console.log('*********** generateSelectCharacter:')
     console.log(output);
 
-    writeData({ name, description: bio }, output.prompt, output.comment, 'select_character');
+    writeData({ name, description }, output.prompt, output.value, 'select_character');
   }
 
   if (test.toLowerCase().includes('all') || test.toLowerCase().includes('selectcharacter')) {
@@ -231,7 +231,6 @@ ${output}
   }
 
   // ********** LORE EXPOSITION **********
-  // test: failed
 
   async function generateExpositionObjectTest() {
     let { name, description, comment, prompt } = await generateLoreExposition(
@@ -271,11 +270,6 @@ ${output}
     promises.push(generateExpositionSettingTest);
   }
 
-
-  
-
-
-
   // ********** GENERATE NEW SCENE **********
 
   async function generateSettingTest() {
@@ -295,8 +289,8 @@ ${output}
     // ********** GENERATE NEW CHARACTER **********
 
   async function generateCharacterTest() {
-    const { name, bio, prompt, comment } = await generateCharacter(makeGenerateFn());
-    const formattedOutput =`Character: "${name}" ${bio}\nQuote: "${comment}"`
+    const { name, description, prompt, comment } = await generateCharacter(makeGenerateFn());
+    const formattedOutput =`Character: "${name}" ${description}\nQuote: "${comment}"`
 
     console.log('*********** generateCharacter:')
     console.log(formattedOutput);
@@ -322,6 +316,28 @@ ${output}
   if (test.toLowerCase().includes('all') || (test.toLowerCase().includes('object') && !test.toLowerCase().includes('objectcomment'))) {
     promises.push(generateObjectTest);
   }
+
+  // ********** CHARACTER SELECTION INTRO **********
+
+  async function generateCharacterIntroPromptTest() {
+    const { name, description } = testData.party[0];
+    const {message, onselect, prompt} = await generateCharacterIntroPrompt({ name, description }, makeGenerateFn());
+
+    //
+    const output = `${name} (${description}): ${message}\n(onselect: ${onselect})`
+
+    console.log('*********** generateCharacterIntroPrompt:')
+    console.log(prompt);
+    console.log(output);
+
+    writeData({ name, description }, prompt, output, 'character_intro_prompt');
+  }
+
+  if (test.toLowerCase().includes('all') || test.toLowerCase().includes('intro')) {
+    promises.push(generateCharacterIntroPromptTest);
+  }
+
+    // ********** CHARACTER BATTLE INTRO **********
 
 
 
@@ -438,18 +454,6 @@ ${output}
   }
 
   // promises.push(generateDialogueOptionsTest);
-
-
-  async function generateCharacterIntroPromptTest() {
-    const output = await generateCharacterIntroPrompt({ name: testData.party[0].name, bio: testData.party[0].bio }, makeGenerateFn());
-
-    console.log('*********** generateCharacterIntroPrompt:')
-    console.log(output);
-
-    writeData({ name: testData.party[0].name, bio: testData.party[0].bio }, output, 'character_intro_prompt');
-  }
-
-  // promises.push(generateCharacterIntroPromptTest);
 
   const results = await Promise.all(promises.map(p => p()));
   console.log('All tests complete');
