@@ -21,6 +21,7 @@ import {
   generateChatMessage,
   generateDialogueOptions,
   generateCharacterIntroPrompt,
+  generateBattleIntroduction
 } from './public/lore-model.js'
 
 const args = process.argv;
@@ -339,9 +340,37 @@ ${output}
 
     // ********** CHARACTER BATTLE INTRO **********
 
+    async function generateBattleIntroductionTest() {
+      const { name, description } = testData.party[0];
+      const {value, prompt} = await generateBattleIntroduction({ name, description }, makeGenerateFn());
+  
+      const output = `${name}: "${value}"`
+      console.log('prompt: ', prompt);
+      console.log('output: ', output);
+  
+      writeData({ name, description }, prompt, output, 'battle_introduction');
+    }
+  
+    if (test.toLowerCase().includes('all') || test.toLowerCase().includes('battle')) {
+      promises.push(generateBattleIntroductionTest);
+    }
 
+    // ********** PARTY BANTER **********
 
-
+    async function generateBanterTest() {
+      console.log('Starting banter test');
+      // ****** BANTER ******
+      const output = await generateBanter(testData.messages[0], makeGenerateFn());
+  
+      console.log('*********** banter:')
+      console.log(output);
+  
+      writeData(testData.messages[0], output, 'banter');
+    }
+  
+    if (test.toLowerCase().includes('all') || test.toLowerCase().includes('banter')) {
+      promises.push(generateBanterTest);
+    }
 
 
 
@@ -367,21 +396,6 @@ ${output}
     promises.push(generateReactionTest);
   }
 
-  async function generateBanterTest() {
-    console.log('Starting banter test');
-    // ****** BANTER ******
-    const output = await generateBanter(testData.messages[0], makeGenerateFn());
-
-    console.log('*********** banter:')
-    console.log(output);
-
-    writeData(testData.messages[0], output, 'banter');
-  }
-
-  if (test.toLowerCase().includes('all') || test.toLowerCase().includes('banter')) {
-    promises.push(generateBanterTest);
-  }
-
   async function generateRPGDialogTest() {
     const output = await generateRPGDialogue();
 
@@ -392,13 +406,19 @@ ${output}
   if (test.toLowerCase().includes('all') || test.toLowerCase().includes('rpg')) {
     promises.push(generateRPGDialogTest);
   }
-
+  
+  // TODO: Make recursive to generate multiple until done = true or doneFactor = 1
   async function generateCutsceneTest() {
+    const input = { setting: testData.settings[0], characters: testData.party, objects: testData.objects };
+    let  prompt;
 
-    const output = await generateCutscene();
+    const response = await generateCutscene(input, makeGenerateFn());
+    // push each message in response.messages to newMessages
+    prompt = response.prompt;
 
-    console.log('*********** generateCutscene:')
-    console.log(output);
+    const output = response.messages.map(m => {return m.character.name + ": " + m.message}).join('\n');
+
+    writeData(input, prompt, output, 'cutscene');
   }
 
   if (test.toLowerCase().includes('all') || test.toLowerCase().includes('cutscene')) {
@@ -441,7 +461,7 @@ ${output}
     writeData({ messages: testData.messages, nextCharacter: testData.party[0] }, output, 'chat_message');
   }
 
-  // promises.push(generateChatMessageTest);
+  // promises.push(generateChatMessageTest);the 
 
   async function generateDialogueOptionsTest() {
 

@@ -27,12 +27,12 @@ export const exampleLoreFiles = [
   
   Id: scillia
   Name: Scillia
-  Bio: Her nickname is Scilly or SLY. 13/F drop hunter. She is an adventurer, swordfighter and fan of potions. She is exceptionally skilled and can go Super Saiyan.
+  Description: Her nickname is Scilly or SLY. 13/F drop hunter. She is an adventurer, swordfighter and fan of potions. She is exceptionally skilled and can go Super Saiyan.
   Inventory: sword
   
   Id: drake
   Name: Drake
-  Bio: His nickname is DRK. 15/M hacker. Loves guns. Likes plotting new hacks. He has the best equipment and is always ready for a fight.
+  Description: His nickname is DRK. 15/M hacker. Loves guns. Likes plotting new hacks. He has the best equipment and is always ready for a fight.
   Inventory: pistol, rifle
   
   # Objects
@@ -91,12 +91,12 @@ export const exampleLoreFiles = [
   
   Id: scillia
   Name: Scillia
-  Bio: Her nickname is Scilly or SLY. 13/F drop hunter. She is an adventurer, swordfighter and fan of potions. She is exceptionally skilled and can go Super Saiyan.
+  Description: Her nickname is Scilly or SLY. 13/F drop hunter. She is an adventurer, swordfighter and fan of potions. She is exceptionally skilled and can go Super Saiyan.
   Inventory: sword
   
   Id: hyacinth
   Name: Hyacinth
-  Bio: Also known as Hya. 15/F beast tamer. Influencer famous for her pets, and friend of Scillia's. She is really bad in school but the richest one in the group.
+  Description: Also known as Hya. 15/F beast tamer. Influencer famous for her pets, and friend of Scillia's. She is really bad in school but the richest one in the group.
   Inventory: bow
   
   # Objects
@@ -148,22 +148,22 @@ export const exampleLoreFiles = [
   
   Id: pandora
   Name: Pandora
-  Bio: Her nickname is Pan or PANDY. She is a thief and adventurer. She is equipped with a dagger and a torch. Pan is a collector of rare artifacts. She has a powerful pet named Peedy.
+  Description: Her nickname is Pan or PANDY. She is a thief and adventurer. She is equipped with a dagger and a torch. Pan is a collector of rare artifacts. She has a powerful pet named Peedy.
   Inventory: dagger, fox
   
   Id: kyosuke
   Name: Kyosuke
-  Bio: Kyo is a powerful fighter who is exceptional at dodging. He can even catch arrows in the air. He is armed with a sword and his loyal pet cat, Shiro.
+  Description: Kyo is a powerful fighter who is exceptional at dodging. He can even catch arrows in the air. He is armed with a sword and his loyal pet cat, Shiro.
   Inventory: sword, cat
   
   Id: tobi
   Name: Tobi
-  Bio: He is the brave hero of the team. Tobi is an adventurer, swordsman, and an accomplished vet. His pet doggo, Bon Bon, is very loyal. It has been known
+  Description: He is the brave hero of the team. Tobi is an adventurer, swordsman, and an accomplished vet. His pet doggo, Bon Bon, is very loyal. It has been known
   Inventory: sword, dog
   
   Id: cecil
   Name: Cecil
-  Bio: A guard captain for the local Citadel. He will not let anyone through the gate without his permission. He is armed with a powerful staff. Cecil has a pet monkey named Mario.
+  Description: A guard captain for the local Citadel. He will not let anyone through the gate without his permission. He is armed with a powerful staff. Cecil has a pet monkey named Mario.
   Inventory: staff, monkey
   
   # Objects
@@ -237,12 +237,12 @@ export const exampleLoreFiles = [
   
   Id: neka
   Name: Neka
-  Bio: Student at the Citadel. 16/F She is studying to become a huntress, but also a very talented painter. She is very brave, almost reckless at times, but tends to overcome obstacles with her brute strength.
+  Description: Student at the Citadel. 16/F She is studying to become a huntress, but also a very talented painter. She is very brave, almost reckless at times, but tends to overcome obstacles with her brute strength.
   Inventory: spear, scouter
   
   Id: kass
   Name: Kassius
-  Bio: An anonymous player, he invents gadgets for adventurers. He doesn't really care about adventuring, but uses it as a way to test out inventions.
+  Description: An anonymous player, he invents gadgets for adventurers. He doesn't really care about adventuring, but uses it as a way to test out inventions.
   Inventory: cloak, bubble-shield, strange-device
   
   # Objects
@@ -313,23 +313,23 @@ export const exampleLoreFiles = [
   
   Id: codex
   Name: Codex
-  Bio: 17/M, new to Nihon city. He has a website where he posts his world record speedruns. He is a top professional gamer but doesn't have many friends. He mostly keeps to himself.
+  Description: 17/M, new to Nihon city. He has a website where he posts his world record speedruns. He is a top professional gamer but doesn't have many friends. He mostly keeps to himself.
   
   Id: keni
   Name: Keni
-  Bio: 16/F, fangirl stan of fan of Codex, follows him everywhere. She is a big fan of his speedruns and thinks he's hilarious.
+  Description: 16/F, fangirl stan of fan of Codex, follows him everywhere. She is a big fan of his speedruns and thinks he's hilarious.
   
   Id: the-fox
   Name: The Fox
-  Bio: 16/M, Codex's best friend. He is a furry with his own fursona. He is a big speedrunner and has done many record runs with Codex.
+  Description: 16/M, Codex's best friend. He is a furry with his own fursona. He is a big speedrunner and has done many record runs with Codex.
   
   Id: dr-yuki
   Name: Dr Yuki
-  Bio: 17/F, a robotic scientist and Youtuber, who makes videos about robots and technology. She is into computers, art and gaming. She is a friend of Keni. She is not an actual doctor, but she is an actual robot.
+  Description: 17/F, a robotic scientist and Youtuber, who makes videos about robots and technology. She is into computers, art and gaming. She is a friend of Keni. She is not an actual doctor, but she is an actual robot.
   
   Id: julie
   Name: Julie
-  Bio: 16/F, a professional gamer and Codex's rival. She has a huge ego and is very competitive. Her biggest secret is that she is a furry.
+  Description: 16/F, a professional gamer and Codex's rival. She has a huge ego and is very competitive. Her biggest secret is that she is a furry.
   
   # Objects
   
@@ -377,12 +377,12 @@ export const exampleLoreFiles = [
   
   Id: kala
   Name: Kala
-  Bio: Urban girl wearing sport gear. Conventionally attractive. She is always getting into trouble because
+  Description: Urban girl wearing sport gear. Conventionally attractive. She is always getting into trouble because
   Inventory: fast-shoes
   
   Id: ashworth
   Name: Ashworth
-  Bio: Goth kid wearing dark clothes and a lot of eyeliner. He really likes the color black. He's very smart and gets good grades but doesn't like the way people treat him.
+  Description: Goth kid wearing dark clothes and a lot of eyeliner. He really likes the color black. He's very smart and gets good grades but doesn't like the way people treat him.
   Inventory: pitchfork
   
   # Objects
@@ -804,27 +804,21 @@ Description: When the Character did not expect what is in the Input.
     ],
   },
   actionTypes: {
-    prompt: `# Basic Actions`,
-    examples: [
-      `\
+    prompt: `# Basic Actions
 Action: move to
-Description:  When the Input clearly indicates that a Character needs to move to another Object/Character, use this action.`,
-      `\
+Description:  When the Input clearly indicates that a Character needs to move to another Object/Character, use this action.
 Action: follow
-Description: When the Input clearly indicates that a Character needs to follow another Character, use this action.`,
-      `\
+Description: When the Input clearly indicates that a Character needs to follow another Character, use this action.
 Action: pick up
-Description: When the Input clearly indicates that a Character needs to pick up an Object, use this action.`,
-      `\
+Description: When the Input clearly indicates that a Character needs to pick up an Object, use this action.
 Action: drops
-Description: When the Input clearly indicates that a Character needs to give an Object to someone, put an Object at some particular place or just simply remove it from their inventory, use this action.`,
-      `\
+Description: When the Input clearly indicates that a Character needs to give an Object to someone, put an Object at some particular place or just simply remove it from their inventory, use this action.
 Action: none
-Description: When the Input clearly indicates that there is no need for any action to be taken by a Character, use this action.`,
-      `\
+Description: When the Input clearly indicates that there is no need for any action to be taken by a Character, use this action.
 Action: stop
-Description: When the Input clearly indicates that a Character has to stop something, use this action.`,
-    ],
+Description: When the Input clearly indicates that a Character has to stop something, use this action.
+`,
+    examples: [],
   },
   reactions: {
     prompt: `\
