@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./styles/App.css";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { Visibility, VisibilityOff } from './styles/icons/icons';
 import { ApplicationContext } from "./Context";
 
 const Setup = () => {
@@ -59,7 +58,7 @@ const Setup = () => {
           value={apiKeyVisible}
           onClick={(e) => setApiKeyVisible(!apiKeyVisible)}
         >
-          {apiKeyVisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
+          {apiKeyVisible ? <Visibility /> : <VisibilityOff />}
         </button>
       </div>
       <br />
