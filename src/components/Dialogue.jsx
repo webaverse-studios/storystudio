@@ -14,6 +14,8 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     currentDialogueType,
     editDialogueJson,
     entities,
+    removeEntryFromDialogue,
+    addDialogueEntry,
   } = useContext(ApplicationContext);
 
   const [lastSelector, setLastSelector] = useState(null);
@@ -338,24 +340,37 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     } else if (label === "speaker") {
       output = (
         // render a dropdown selection based on allData.input.characters
-        <select
-          value={data}
-          onChange={(e) => {
-            data = e.target.value;
-            handleChange(data, selector);
-          }}
-        >
-          {[
-            ...dialogue[currentDialogueType][_key].input.characters,
-            ...dialogue[currentDialogueType][_key].input.npcs,
-          ].map((item, index) => {
-            return (
-              <option key={index} value={item}>
-                {item}
-              </option>
-            );
-          })}
-        </select>
+        <div>
+          <select
+            value={data}
+            onChange={(e) => {
+              data = e.target.value;
+              handleChange(data, selector);
+            }}
+          >
+            {[
+              ...dialogue[currentDialogueType][_key].input.characters,
+              ...dialogue[currentDialogueType][_key].input.npcs,
+            ].map((item, index) => {
+              return (
+                <option key={index} value={item}>
+                  {item}
+                </option>
+              );
+            })}
+          </select>
+          {(type === "rpgDialogue" ||
+            type === "banter" ||
+            type === "cutscenes") && (
+            <button
+              onClick={() => {
+                removeEntryFromDialogue(selector, index);
+              }}
+            >
+              Delete
+            </button>
+          )}
+        </div>
       );
     } else if (label === "setting") {
       output = (
@@ -428,11 +443,24 @@ const Dialogue = ({ index, _key, type, editJson }) => {
               }}
             />
           ) : (
-            DisplayJSONAsEditableForm({
-              data: dialogue[currentDialogueType][_key],
-              allData: dialogue,
-              type,
-            })
+            <div>
+              {DisplayJSONAsEditableForm({
+                data: dialogue[currentDialogueType][_key],
+                allData: dialogue,
+                type,
+              })}
+              {(type === "rpgDialogue" ||
+                type === "banter" ||
+                type === "cutscenes") && (
+                <button
+                  onClick={() => {
+                    addDialogueEntry(_key);
+                  }}
+                >
+                  Add Message
+                </button>
+              )}
+            </div>
           )}
         </React.Fragment>
       )}

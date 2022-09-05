@@ -580,6 +580,25 @@ export function ApplicationContextProvider(props) {
     setDialogue(newData);
     //console.log("newData is", newData);
   };
+  const removeEntryFromDialogue = (selector, index) => {
+    const newData = { ...dialogue };
+    const selectorArray = selector.split(".");
+    const _index = parseInt(selectorArray[selectorArray.length - 2]);
+    newData[currentDialogueType][index]["output"]["transcript"].splice(
+      _index,
+      1
+    );
+    setDialogue(newData);
+  };
+  const addDialogueEntry = (_key) => {
+    const newData = { ...dialogue };
+    console.log(newData[currentDialogueType][_key].output.transcript);
+    newData[currentDialogueType][_key].output.transcript.unshift({
+      speaker: "",
+      message: "",
+    });
+    setDialogue(newData);
+  };
   const editDialogueJson = (d, index) => {
     let newData = { ...dialogue };
     newData[currentDialogueType][index] = d;
@@ -713,6 +732,8 @@ export function ApplicationContextProvider(props) {
     handleImport,
     editDialogueJson,
     getInventoryItems,
+    removeEntryFromDialogue,
+    addDialogueEntry,
   };
 
   return (
