@@ -4,6 +4,7 @@ import { ApplicationContext } from "../Context";
 import MonacoEditor from "@monaco-editor/react";
 import { WithContext as ReactTags } from "react-tag-input";
 import { useEffect } from "react";
+import { delimiters } from "../utils/constants";
 
 //field check if image, set source the img, if name change, generate new image
 const Dialogue = ({ index, _key, type, editJson }) => {
@@ -85,13 +86,6 @@ const Dialogue = ({ index, _key, type, editJson }) => {
       };
     });
   }, [entities]);
-
-  const KeyCodes = {
-    comma: 188,
-    enter: 13,
-  };
-
-  const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
   const handleDeleteCharacter = (i) => {
     const newTagsCharacters = [...tagsCharacters];

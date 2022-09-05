@@ -5,6 +5,7 @@ import "../styles/App.css";
 import { ApplicationContext } from "../Context";
 import { WithContext as ReactTags } from "react-tag-input";
 import { useEffect } from "react";
+import { delimiters } from "../utils/constants";
 
 //field check if image, set source the img, if name change, generate new image
 const Entity = ({
@@ -58,13 +59,6 @@ const Entity = ({
       text: item,
     };
   });
-
-  const KeyCodes = {
-    comma: 188,
-    enter: 13,
-  };
-
-  const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
   const [tags, setTags] = React.useState([]);
   useEffect(() => {
