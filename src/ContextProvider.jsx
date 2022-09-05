@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { getFile } from "./components/getFile";
 import { ApplicationContext } from "./Context";
 import "./styles/App.css";
@@ -29,8 +29,7 @@ function getOpenAIKey() {
   return localStorage.getItem("openai_key");
 }
 
-export function ApplicationContextProvider(props) {
-  if (!localStorage.getItem("entities")) {
+if (!localStorage.getItem("entities")) {
     localStorage.setItem("entities", compressObject(defaultEntities));
   }
 
@@ -41,11 +40,16 @@ export function ApplicationContextProvider(props) {
   if (!localStorage.getItem("loreData")) {
     localStorage.setItem("loreData", compressObject(lore));
   }
-  const [entities, setEntities] = useState(
-    localStorage.getItem("entities")
-      ? decompressObject(localStorage.getItem("entities"))
-      : defaultEntities
-  );
+/******/
+
+
+export function ApplicationContextProvider(props) {
+
+    const entities = useRef(localStorage.getItem("entities") ? decompressObject(localStorage.getItem("entities")) : defaultEntities);
+    const setEntities = (value) => {
+        entities.current = value;
+    }
+
 
   const [dialogue, setDialogue] = useState(
     localStorage.getItem("dialogue")
@@ -132,8 +136,8 @@ export function ApplicationContextProvider(props) {
   }, [loreFiles]);
 
   useEffect(() => {
-    localStorage.setItem("entities", compressObject(entities));
-  }, [entities]);
+    localStorage.setItem("entities", compressObject(entities.current));
+  }, [entities.current]);
 
   useEffect(() => {
     localStorage.setItem("dialogue", compressObject(dialogue));
@@ -144,7 +148,7 @@ export function ApplicationContextProvider(props) {
   }, [loreData]);
 
   const handleImport = (type, data) => {
-    const newData = { ...entities };
+    const newData = { ...entities.current };
 
     newData[type].unshift(data);
 
@@ -302,7 +306,7 @@ export function ApplicationContextProvider(props) {
 
   const handleExport = (type) => {
     const json = JSON.stringify(
-      type === "entities" ? entities : type === "lore" ? loreData : loreFiles
+      type === "entities" ? entities.current : type === "lore" ? loreData : loreFiles
     );
 
     const element = document.createElement("a");
@@ -325,10 +329,10 @@ export function ApplicationContextProvider(props) {
 
       entity.id = makeId(5);
 
-      const newEntityData = { ...entities };
-      if (!newEntityData[entityType]) {
-        newEntityData[entityType] = [];
-      }
+    const newEntityData = { ...entities.current };
+    if (!newEntityData[entityType]) {
+      newEntityData[entityType] = [];
+    }
 
       newEntityData[entityType].unshift(entity);
 
@@ -390,11 +394,10 @@ export function ApplicationContextProvider(props) {
       if (!entity.id && typeof entity === "object") {
         entity.id = makeId(5);
       }
-
-      const newEntityData = { ...entities };
-      if (!newEntityData[entityType]) {
-        newEntityData[entityType] = [];
-      }
+    const newEntityData = { ...entities.current };
+    if (!newEntityData[entityType]) {
+      newEntityData[entityType] = [];
+    }
 
       newEntityData[entityType].unshift(entity);
 
@@ -404,13 +407,15 @@ export function ApplicationContextProvider(props) {
   };
 
   const deleteEntityCallback = (entity, index, type) => {
+
     if (type === "loreFiles") {
       const newLoreFiles = [...loreFiles];
       newLoreFiles.splice(index, 1);
       setLoreFiles(newLoreFiles);
     } else {
-      const newData = { ...entities };
-      newData[type].splice(index, 1);
+
+    const newData = { ...entities.current };
+    newData[type].splice(index, 1);
 
       setEntities(newData);
     }
@@ -428,7 +433,7 @@ export function ApplicationContextProvider(props) {
       );
       setLoreFiles(newLoreFiles);
     } else {
-      let newData = { ...entities };
+    let newData = { ...entities.current };
 
       const entityIndex =
         typeof entity === "string" || !Object.keys(entity).includes("type")
@@ -457,7 +462,7 @@ export function ApplicationContextProvider(props) {
   };
 
   const exportLoreMD = async () => {
-    const data = [...entities["loreFiles"]];
+    const data = [...entities.current["loreFiles"]];
     const zip = new JSZip();
     for (let i = 0; i < data.length; i++) {
       zip.file(
@@ -484,7 +489,7 @@ export function ApplicationContextProvider(props) {
   };
   const exportProject = () => {
     const json = JSON.stringify({
-      entities,
+      etities: entities.current,
       dialogue,
     });
 
@@ -635,14 +640,14 @@ export function ApplicationContextProvider(props) {
       return;
     }
 
-    const index = entities[entity.type].findIndex(
+    const index = entities.current[entity.type].findIndex(
       (e) => e.name === entity.name
     );
     if (index === null || index === undefined || index <= -1) {
       return;
     }
 
-    const newData = { ...entities };
+    const newData = { ...entities.current };
     const newArray = [...newData[entity.type]];
     if (newArray?.length <= 1) {
       return;
@@ -650,7 +655,7 @@ export function ApplicationContextProvider(props) {
 
     if (index === 0 && up) {
       newArray.push(newArray.shift());
-    } else if (index === entities[entity.type].length - 1 && !up) {
+    } else if (index === entities.current[entity.type].length - 1 && !up) {
       newArray.unshift(newArray.pop());
     } else {
       const newIndex = up ? index - 1 : index + 1;
@@ -671,12 +676,12 @@ export function ApplicationContextProvider(props) {
     const file = await getFile();
     const text = await file.text();
     const json = JSON.parse(text);
-    const index = entities[json.type].findIndex((e) => e.id === json.id);
+    const index = entities.current[json.type].findIndex((e) => e.id === json.id);
     if (index !== -1) {
       return;
     }
 
-    const newData = { ...entities };
+    const newData = { ...entities.current };
     if (!newData[json.type]) {
       newData[json.type] = [];
     }
@@ -752,7 +757,7 @@ export function ApplicationContextProvider(props) {
     setDialogue,
     currentDialogueType,
     setCurrentDialogueType,
-    entities,
+    entities:entities.current,
     setEntities,
     openErrorModal,
     closeErrorDialog,

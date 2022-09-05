@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { ClearIcon, DeleteForever } from "../styles/icons/icons";
+import {TextInput} from './EditableBox';
 
 import "../styles/App.css";
 import { ApplicationContext } from "../Context";
@@ -162,6 +163,8 @@ const Entity = ({
   //   }
   // };
 
+  console.log("Re-render of entity")
+
   return (
     <div className={"entity"}>
       {!shouldDelete && (
@@ -246,23 +249,13 @@ const Entity = ({
             return (
               <div key={i} className={"entityField " + field}>
                 <label style={{ display: "inline" }}>{field}</label>
-                {field === "description" ? (
-                  <textarea
+                <TextInput 
                     value={data[field]}
-                    onChange={(e) =>
-                      updateEntity(data, field, e.target.value, index)
-                    }
-                  />
-                ) : (
-                  <input
-                    type="text"
-                    value={data[field]}
-                    onChange={(e) => {
-                      e.preventDefault();
-                      updateEntity(data, field, e.target.value, index);
+                    setText = {(text)=>{
+                      updateEntity(data, field, text, index)
                     }}
-                  />
-                )}
+                    field = {field}                  
+                    ></TextInput>
               </div>
             );
           })}
