@@ -153,6 +153,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     console.log("change:", data, selector);
     //console.log("data, selector", data, selector);
     editDialogueCallback(data, selector, _key, index);
+    console.log("change after:", data, selector);
   }
   function DisplayJSONAsEditableForm({
     data,
@@ -214,7 +215,9 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     let output = null;
     if (typeof data === "object") {
       if (Array.isArray(data)) {
+        console.log("DATA:", data);
         output = data.map((item, index) => {
+          console.log("item, index:", item, index);
           return (
             <div style={{ marginLeft: "2em" }} key={index}>
               <DisplayJSONAsEditableForm
@@ -228,20 +231,78 @@ const Dialogue = ({ index, _key, type, editJson }) => {
           );
         });
       } else {
-        output = Object.keys(data).map((key, index) => {
-          return (
-            <div style={{ marginLeft: "2em" }} key={index}>
-              <DisplayJSONAsEditableForm
-                key={index}
-                type={type}
-                label={key}
-                data={data[key]}
-                allData={allData}
-                selector={selector + (selector !== "" ? "." : "") + key}
+        if (
+          Object.keys(data).includes("speaker") &&
+          Object.keys(data).includes("message")
+        ) {
+          output = (
+            <div>
+              <select
+                value={data["speaker"]}
+                onChange={(e) => {
+                  data["speaker"] = e.target.value;
+                  handleChange(
+                    { speaker: data["speaker"], message: data["message"] },
+                    selector
+                  );
+                }}
+              >
+                {[
+                  ...dialogue[currentDialogueType][_key].input.characters,
+                  ...dialogue[currentDialogueType][_key].input.npcs,
+                ].map((item, index) => {
+                  return (
+                    <option key={index} value={item}>
+                      {item}
+                    </option>
+                  );
+                })}
+              </select>
+              :{" "}
+              <input
+                className="dialogueInput"
+                type="text"
+                value={data["message"]}
+                onChange={(e) => {
+                  setLastSelector(selector);
+                  // get the position in the input field and call setLastCursor(position)
+                  setLastCursor(e.target.selectionStart);
+                  handleChange(
+                    { speaker: data["speaker"], message: e.target.value },
+                    selector
+                  );
+                }}
+                autoFocus={lastSelector === selector}
               />
+              {(type === "rpgDialogue" ||
+                type === "banter" ||
+                type === "cutscenes") && (
+                <button
+                  onClick={() => {
+                    removeEntryFromDialogue(selector, index);
+                  }}
+                >
+                  Delete
+                </button>
+              )}
             </div>
           );
-        });
+        } else {
+          output = Object.keys(data).map((key, index) => {
+            return (
+              <div style={{ marginLeft: "2em" }} key={index}>
+                <DisplayJSONAsEditableForm
+                  key={index}
+                  type={type}
+                  label={key}
+                  data={data[key]}
+                  allData={allData}
+                  selector={selector + (selector !== "" ? "." : "") + key}
+                />
+              </div>
+            );
+          });
+        }
       }
     } else if (label === "target") {
       //console.log("type is", type);
@@ -280,7 +341,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     }
     // render outputs as an input field
     else if (label === "message" || label === "action" || label === "comment") {
-      //console.log("comment is", data);
+      console.log("comment is", data);
       output = (
         <input
           className="dialogueInput"
