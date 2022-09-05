@@ -204,7 +204,6 @@ const Entity = ({
       {typeof data === "object" && type !== "loreFiles" ? (
         <React.Fragment>
           {Object.keys(data || []).map((field, i) => {
-            console.log("field:", field);
             if (
               field === "inventory" &&
               (data["type"] === "character" ||

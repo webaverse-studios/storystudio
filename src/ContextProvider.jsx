@@ -577,6 +577,7 @@ export function ApplicationContextProvider(props) {
     //console.log("current is", current);
 
     current[selectorArray[selectorArray.length - 1]] = d;
+    setDialogue(newData);
     //console.log("newData is", newData);
   };
   const editDialogueJson = (d, index) => {

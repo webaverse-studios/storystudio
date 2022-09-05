@@ -184,6 +184,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
   };
 
   function handleChange(data, selector) {
+    console.log("change:", data, selector);
     //console.log("data, selector", data, selector);
     editDialogueCallback(data, selector, _key, index);
   }
@@ -282,7 +283,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
           );
         });
       }
-    } else if (label === "ta  rget") {
+    } else if (label === "target") {
       //console.log("type is", type);
       //console.log("*** data is", data);
       return (
