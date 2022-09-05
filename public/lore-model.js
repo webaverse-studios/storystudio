@@ -548,7 +548,7 @@ ${messages
           })"`;
       })
       .join("\n")}
-${nextCharacter}: "`;
+${nextCharacter.name}: "`;
 };
 const makeChatStop = () => `\n`;
 const parseChatResponse = (response) => {
@@ -602,7 +602,7 @@ ${messages
           })"`;
       })
       .join("\n")}
-Options for ${nextCharacter}: [`;
+Options for ${nextCharacter.name}: [`;
 };
 const makeOptionsStop = () => `\n`;
 const parseOptionsResponse = (response) => {
@@ -1137,18 +1137,119 @@ Quote: "`;
   };
 }
 
-export async function generateBanter(name, generateFn) {
-  const banterPrompt = `\
-  ${lore["battle"].prompt}
-  ${shuffleArray(lore["battle"].examples).join("\n")}
-  ${name?.length > 0 ? name : "Zeal"}:`;
+export async function generateBanter({ setting = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
+  if (!dstCharacter) {
+    dstCharacter = characters[Math.floor(Math.random() * characters.length)]
+  }
 
-  const resp = await generateFn(banterPrompt, [
-    "\n",
-    name?.length > 0 ? name : "Zeal",
-  ]);
+  let lastCharacter = null;
+  let prompt = `\
+# Available Actions: ${[
+      "attack",
+      "defend",
+      "move to",
+      "follow",
+      "pick up",
+      "drop",
+      "emote",
+      "stop",
+      "none",
+    ].join(", ")}
 
-  return resp;
+# Characters
+
+Name: Axel
+Description: The main hero of the story. Well, someone has to be the hero.
+
+Name: Miranda
+Description: A very trusting person.
+
+Name: Zaphod
+Description: A very untrustworthy character.
+
+# Transcript
+
+axel: We arere looking for Lara. You know where we can find her?
+miranda: I can find anything, you just keep feeding me tokens and coffee.
+zaphod: Anything you need, you just let me know.
+miranda: Thanks. How do you guys know each other again? 
+zaphod: Best friends. From waaay back in the day.
+
+"""
+# Characters
+
+Name: eric
+Description: A very boring guy. Bored the pants off a thousand people at once, once.
+
+Name: millie
+Description: A very interesting person. She is a bit of a mystery.
+
+# Objects
+
+Name: Computer
+Description: A very old computer. A real piece of crap, but I guess it works..
+
+# Transcript 
+
+millie: Hey Eric, can I ask you something?
+\/action millie moves to eric
+eric: Sure, what is it?
+millie: Do you ever wonder why we are here?
+eric: Is that a way to tee up a convo about the drop tomorrow?
+\/action millie emotes joy
+millie: It might not be!
+eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
+\/action eric moves to computer
+
+"""
+
+${setting && `# Setting\n\n${setting.name}\n${setting.description}`}
+
+${characters.length > 0 && "# Characters\n\n"}\
+${characters
+      .map((c) => `Character: ${c.name}\nDescription: ${c.description}`)
+      .join("\n\n") + (characters.length > 0 && "\n\n")
+    }\
+${objects.length > 0 && "# Nearby Objects\n\n"}\
+${objects.slice(0, 2)
+      .map((c) => `Object: ${c.name}\nDescription: ${c.description}`)
+      .join("\n\n") + (objects.length > 0 && "\n")
+    }\
+
+# Transcript
+
+${messages ? (messages.map((m) => m.character.name+': '+m.message).join("\n")) : ''}\
+${(!messages || messages.length === 0) && dstCharacter.name+':'}`;
+
+// set lastCharacter to the last character in the transcript
+  if (messages && messages.length > 0) {
+    lastCharacter = messages[messages.length - 1].character;
+  } else {
+    lastCharacter = dstCharacter;
+  }
+
+const outMessages = [];
+
+  let loreResp = await generateFn(prompt, ["\n\n", 'done=true', 'done = true']);
+
+  loreResp = loreResp
+    .trim()
+    .trimStart()
+    .replace(/^\n+/, "") // remove leading newlines
+    .replace(/\n+$/, "") // remove trailing newlines
+    .replaceAll('"', "") // remove quotes
+    .replaceAll("\t", "") // remove tabs
+    .split("\n");
+
+    outMessages.push({
+      character: lastCharacter ?? dstCharacter,
+      message: loreResp.shift().replaceAll((lastCharacter ?? dstCharacter).name + ':', '').trim().trimStart()
+    });
+
+  return {
+    messages: outMessages,
+    prompt: prompt
+  }
 }
 
 function capitalizeFirstLetter(string) {
@@ -1230,7 +1331,7 @@ Description: A very boring guy. Bored the pants off a thousand people at once, o
 Name: millie
 Description: A very interesting person. She is a bit of a mystery.
 
-# Objecs
+# Objects
 
 Name: Computer
 Description: A very old computer. A real piece of crap, but I guess it works..
@@ -1264,7 +1365,7 @@ ${objects.slice(0, 2)
 
 # Transcript
 
-${(messages && messages.map((m) => m.character.name+': '+m.message).join("\n"))}\
+${messages ? (messages.map((m) => m.character.name+': '+m.message).join("\n")) : ''}\
 ${(!messages || messages.length === 0) && dstCharacter.name+':'}`;
 
 // set lastCharacter to the last character in the transcript
@@ -1278,19 +1379,21 @@ const outMessages = [];
 
   let loreResp = await generateFn(prompt, ["\n\n", 'done=true', 'done = true']);
   console.log('lastCharacter ?? dstCharacter', lastCharacter ?? dstCharacter);
-  outMessages.push({
-    character: lastCharacter ?? dstCharacter,
-    message: loreResp.split('\n').shift()
-  });
 
-  // loreResp = loreResp
-  //   .trim()
-  //   .trimStart()
-  //   .replace(/^\n+/, "") // remove leading newlines
-  //   .replace(/\n+$/, "") // remove trailing newlines
-  //   .replaceAll('"', "") // remove quotes
-  //   .replaceAll("\t", "") // remove tabs
-  //   .split("\n");
+
+  loreResp = loreResp
+    .trim()
+    .trimStart()
+    .replace(/^\n+/, "") // remove leading newlines
+    .replace(/\n+$/, "") // remove trailing newlines
+    .replaceAll('"', "") // remove quotes
+    .replaceAll("\t", "") // remove tabs
+    .split("\n");
+
+    outMessages.push({
+      character: lastCharacter ?? dstCharacter,
+      message: loreResp.shift().replaceAll((lastCharacter ?? dstCharacter).name + ':', '').trim().trimStart()
+    });
 
   //   // if last character is dstCharacter and loreResp[0] has neither a ":" (chat) or "/" in it (action)
   //   // pop the first line from loreResp and add it to a new object as 'message' (with 'character' being lastCharacter)
@@ -1313,10 +1416,8 @@ const outMessages = [];
   //   }
   // });
 
-  const totalMessages = [...messages, ...outMessages];
-
   return {
-    messages: totalMessages,
+    messages: outMessages,
     prompt: prompt
   }
 }
@@ -1503,6 +1604,7 @@ export async function generateChatMessage({ messages, nextCharacter }, generateF
   const stop = makeChatStop();
   let response = await generateFn(prompt, stop);
   const response2 = parseChatResponse(response);
+  if(response2) response2.prompt = prompt;
   return response2;
 }
 

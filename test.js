@@ -409,14 +409,24 @@ ${output}
   
   // TODO: Make recursive to generate multiple until done = true or doneFactor = 1
   async function generateCutsceneTest() {
-    const input = { setting: testData.settings[0], characters: testData.party, objects: testData.objects };
-    let  prompt;
+    const messages = [];
+    let prompt;
+    const input = { setting: testData.settings[0], characters: testData.party, objects: testData.objects, messages };
 
-    const response = await generateCutscene(input, makeGenerateFn());
-    // push each message in response.messages to newMessages
-    prompt = response.prompt;
+    // iterate 3 times or until done
+    for (let i = 0; i < 3; i++) {
+      input.messages = messages;
+      const response = await generateCutscene(input, makeGenerateFn());
+      // push each message in response.messages to newMessages
+      prompt = response.prompt;
+      const message = response.messages[0];
+      messages.push(message);
+    }
 
-    const output = response.messages.map(m => {return m.character.name + ": " + m.message}).join('\n');
+    console.log('******************** messages: ');
+    console.log(JSON.stringify(messages, null, 2));
+
+    const output = messages.map(m => {return m.character.name + ": " + m.message}).join('\n');
 
     writeData(input, prompt, output, 'cutscene');
   }
@@ -453,15 +463,25 @@ ${output}
   // promises.push(generateLoreTest);
 
   async function generateChatMessageTest() {
-    const output = await generateChatMessage({ messages: testData.messages, nextCharacter: testData.party[0] }, makeGenerateFn());
-
+    const outputs = []
+    let prompt;
+    // iterate over testData.party.length
+    for (let i = 0; i < testData.party.length; i++) {
+    const {value, emote, done, prompt} = await generateChatMessage({ messages: testData.messages, nextCharacter: testData.party[i] }, makeGenerateFn());
+    outputs.push(`${testData.party[i].name}: ${value} (emote = ${emote})`);
+      if(done){
+        break;
+      }
+  }
     console.log('*********** generateChatMessage:')
-    console.log(output);
+    console.log(JSON.stringify(outputs));
 
-    writeData({ messages: testData.messages, nextCharacter: testData.party[0] }, output, 'chat_message');
+    writeData({ messages: testData.messages, nextCharacter: testData.party[0] }, prompt, outputs.join('\n'), 'chat_message');
   }
 
-  // promises.push(generateChatMessageTest);the 
+  if (test.toLowerCase().includes('all') || test.toLowerCase().includes('chat')) {
+    promises.push(generateChatMessageTest);
+  }
 
   async function generateDialogueOptionsTest() {
 
