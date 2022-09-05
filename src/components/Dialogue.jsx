@@ -43,14 +43,6 @@ const Dialogue = ({ index, _key, type, editJson }) => {
       return { id: npc, text: npc };
     });
     setTagNPCs(newTagsNPCs);
-    console.log(
-      "DATA2: CHARACTERS",
-      newTagsCharacters,
-      "OBJECTS",
-      newTagsObjects,
-      "NPCS",
-      newTagsNPCs
-    );
   }, [currentDialogueType]);
 
   let suggestionsCharacters = (entities["character"] ?? []).map((item) => {
@@ -137,7 +129,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     updateObjects(newTagsObjects);
   };
   const handleAddObject = (tag) => {
-    console.log('add new object:', tag)
+    console.log("add new object:", tag);
     const newTagsObjects = [...tagObjects];
     newTagsObjects.unshift(tag);
     setTagObjects(newTagsObjects);

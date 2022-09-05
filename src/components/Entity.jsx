@@ -21,30 +21,35 @@ const Entity = ({
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
   const updateEntity = (entities, field, data, index) => {
-    if (field === "shortname") {
-      return;
+    if (field && field?.length > 0) {
+      if (field === "shortname") {
+        return;
+      }
+      let newData = { ...entities };
+      newData[field] = data;
+      if (field === "name") {
+        console.log("name updated:", newData);
+        // newData["shortname"] =
+        //   data.replace(" ", "").trim().toLowerCase().substring(0, 7) +
+        //   "#" +
+        //   newData["id"];
+      } else if (field === "inventory") {
+        console.log("updating inventory:", newData["inventory"], data);
+      }
+      // else if (field === "id") {
+      //   newData["shortname"] =
+      //     newData["name"].replace(" ", "").trim().toLowerCase().substring(0, 7) +
+      //     "#" +
+      //     data;
+      // }
+      if (!field) {
+        newData = data;
+      }
+      editEntityCallback(newData, index);
+    } else {
+      console.log("editing");
+      editEntityCallback(data, index);
     }
-    let newData = { ...entities };
-    newData[field] = data;
-    if (field === "name") {
-      console.log("name updated:", newData);
-      // newData["shortname"] =
-      //   data.replace(" ", "").trim().toLowerCase().substring(0, 7) +
-      //   "#" +
-      //   newData["id"];
-    } else if (field === "inventory") {
-      console.log("updating inventory:", newData["inventory"], data);
-    }
-    // else if (field === "id") {
-    //   newData["shortname"] =
-    //     newData["name"].replace(" ", "").trim().toLowerCase().substring(0, 7) +
-    //     "#" +
-    //     data;
-    // }
-    if (!field) {
-      newData = data;
-    }
-    editEntityCallback(newData, index);
   };
 
   const suggestions = getInventoryItems().map((item) => {
@@ -196,9 +201,10 @@ const Entity = ({
           </button>
         </span>
       )}
-      {typeof data === "object" && (
+      {typeof data === "object" && type !== "loreFiles" ? (
         <React.Fragment>
           {Object.keys(data || []).map((field, i) => {
+            console.log("field:", field);
             if (
               field === "inventory" &&
               (data["type"] === "character" ||
@@ -278,8 +284,20 @@ const Entity = ({
             );
           })}
         </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <textarea
+            key={index}
+            type="text"
+            value={data[index]}
+            onChange={(e) => {
+              e.preventDefault();
+              updateEntity(data[index], null, e.target.value, index);
+            }}
+          />
+        </React.Fragment>
       )}
-      {typeof data === "string" && (
+      {typeof data === "string" && type !== "loreFiles" && (
         <React.Fragment>
           <textarea
             type="text"

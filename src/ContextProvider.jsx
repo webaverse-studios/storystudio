@@ -140,8 +140,6 @@ export function ApplicationContextProvider(props) {
 
   useEffect(() => {
     localStorage.setItem("dialogue", compressObject(dialogue));
-    console.log("dialogue changed");
-    console.log("dialogue");
   }, [dialogue]);
 
   useEffect(() => {
@@ -213,7 +211,6 @@ export function ApplicationContextProvider(props) {
         const fileUri = await fileToDataUri(blob);
         // fileUri is a base64 javascript document
         // we want to inject some code into the file before we
-        console.log("File URI is ", fileUri);
         const importedFile = await import(fileUri);
         const firstLine = content.split("\n")?.[0];
 
@@ -321,18 +318,25 @@ export function ApplicationContextProvider(props) {
   };
 
   const addEntityCallback = async (entityType) => {
-    const entity = await makeEmpty(entityType, openErrorModal);
+    if (entityType === "loreFiles") {
+      const entity = await makeEmpty(entityType, openErrorModal);
+      const newLoreFiles = [...loreFiles];
+      newLoreFiles.unshift(entity);
+      setLoreFiles(newLoreFiles);
+    } else {
+      const entity = await makeEmpty(entityType, openErrorModal);
 
-    entity.id = makeId(5);
+      entity.id = makeId(5);
 
-    const newEntityData = { ...entities };
-    if (!newEntityData[entityType]) {
-      newEntityData[entityType] = [];
+      const newEntityData = { ...entities };
+      if (!newEntityData[entityType]) {
+        newEntityData[entityType] = [];
+      }
+
+      newEntityData[entityType].unshift(entity);
+
+      setEntities(newEntityData);
     }
-
-    newEntityData[entityType].unshift(entity);
-
-    setEntities(newEntityData);
   };
 
   const generateEntityCallback = async (
@@ -344,59 +348,102 @@ export function ApplicationContextProvider(props) {
     setGenerating(true);
     //console.log("calling baseData", baseData);
     // generate new using openai callback
-    let entity = null;
-    try {
-      console.log(baseData);
-      entity = await generate(entityType, data, baseData, openErrorModal, lore);
-    } catch (e) {
-      // openErrorModal("Error generating entity", e);
-      console.log("error", e);
-      setGenerating(false);
-      if (!second) {
-        generateEntityCallback(entityType, data, setGenerating, true);
+    if (entityType === "loreFiles") {
+      const entity = await generate(
+        entityType,
+        data,
+        baseData,
+        openErrorModal,
+        lore
+      );
+
+      if (!entity) {
+        setGenerating(false);
+        return;
       }
-      return;
-    }
-    if (!entity) {
-      // openErrorModal("could not generate entity");
-      setGenerating(false);
-      return;
-    }
-    if (!entity.id && typeof entity === "object") {
-      entity.id = makeId(5);
-    }
 
-    const newEntityData = { ...entities };
-    if (!newEntityData[entityType]) {
-      newEntityData[entityType] = [];
+      const newLoreFiles = [...loreFiles];
+      newLoreFiles.unshift(entity);
+      setLoreFiles(newLoreFiles);
+    } else {
+      let entity = null;
+      try {
+        console.log(baseData);
+        entity = await generate(
+          entityType,
+          data,
+          baseData,
+          openErrorModal,
+          lore
+        );
+      } catch (e) {
+        // openErrorModal("Error generating entity", e);
+        console.log("error", e);
+        setGenerating(false);
+        if (!second) {
+          generateEntityCallback(entityType, data, setGenerating, true);
+        }
+        return;
+      }
+      if (!entity) {
+        // openErrorModal("could not generate entity");
+        setGenerating(false);
+        return;
+      }
+      if (!entity.id && typeof entity === "object") {
+        entity.id = makeId(5);
+      }
+
+      const newEntityData = { ...entities };
+      if (!newEntityData[entityType]) {
+        newEntityData[entityType] = [];
+      }
+
+      newEntityData[entityType].unshift(entity);
+
+      setEntities(newEntityData);
     }
-
-    newEntityData[entityType].unshift(entity);
-
-    setEntities(newEntityData);
     setGenerating(false);
   };
 
   const deleteEntityCallback = (entity, index, type) => {
-    const newData = { ...entities };
-    newData[type].splice(index, 1);
+    if (type === "loreFiles") {
+      const newLoreFiles = [...loreFiles];
+      newLoreFiles.splice(index, 1);
+      setLoreFiles(newLoreFiles);
+    } else {
+      const newData = { ...entities };
+      newData[type].splice(index, 1);
 
-    setEntities(newData);
+      setEntities(newData);
+    }
   };
 
   const editEntityCallback = (entity, index) => {
-    let newData = { ...entities };
+    if (typeof entity === "string") {
+      const newLoreFiles = [...loreFiles];
+      newLoreFiles[index] = entity;
+      console.log(
+        "editing lore file, index:",
+        index,
+        "data are the same:",
+        entity === loreFiles[index]
+      );
+      setLoreFiles(newLoreFiles);
+    } else {
+      let newData = { ...entities };
 
-    const entityIndex =
-      typeof entity === "string" || !Object.keys(entity).includes("type")
-        ? index
-        : newData[entity.type].findIndex((e) => e.id === entity.id);
+      const entityIndex =
+        typeof entity === "string" || !Object.keys(entity).includes("type")
+          ? index
+          : newData[entity.type].findIndex((e) => e.id === entity.id);
 
-    newData[Object.keys(entity).includes("type") ? entity.type : "loreFiles"][
-      entityIndex
-    ] = entity;
+      newData[Object.keys(entity).includes("type") ? entity.type : "loreFiles"][
+        entityIndex
+      ] = entity;
 
-    setEntities(newData);
+      setEntities(newData);
+    }
   };
 
   const addDialogueCallback = async (type) => {
