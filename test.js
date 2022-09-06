@@ -278,16 +278,16 @@ const run = async () => {
         testData.locations[0].name + "\n" + testData.locations[0].description,
       type: "object",
     };
-    const prompt = makeExpositionPrompt(input);
-    const { name, description, comment } = await generateExposition(
+
+    const { prompt, parsed } = await generateExposition(
       input,
       makeGenerateFn()
     );
 
     writeData(
-      { name },
+      { name: input.name },
       prompt,
-      description + (comment ? "\nQuote: " + comment : ""),
+      testData.objects[0].description + (parsed ? "\nQuote: " + parsed : ""),
       "exposition_object",
       makeExpositionStop(input.type)
     );
@@ -299,17 +299,16 @@ const run = async () => {
       location: `${testData.locations[0].name}\n${testData.locations[0].description}`,
       type: "character",
     };
-    const prompt = makeExpositionPrompt(input);
 
-    let { name, description, comment } = await generateExposition(
+    const { prompt, parsed } = await generateExposition(
       input,
       makeGenerateFn()
     );
 
     writeData(
-      { name },
+      { name: input.name },
       prompt,
-      description + (comment ? "\nQuote: " + comment : ""),
+      testData.party[0].description + (parsed ? "\nQuote: " + parsed : ""),
       "exposition_character",
       makeExpositionStop(input.type)
     );
@@ -320,16 +319,16 @@ const run = async () => {
       name: testData.locations[0].name,
       type: "location",
     };
-    const prompt = makeExpositionPrompt(input);
-    let { name, description, comment } = await generateExposition(
+
+    const { prompt, parsed } = await generateExposition(
       input,
       makeGenerateFn()
     );
 
     writeData(
-      { name },
+      { name: input.name },
       prompt,
-      description + (comment ? "\nQuote: " + comment : ""),
+      testData.locations[0].description + (parsed ? "\nQuote: " + parsed : ""),
       "exposition_location",
       makeExpositionStop(input.type)
     );
@@ -561,12 +560,12 @@ const run = async () => {
       messages,
       dstCharacter: testData.npcs[0],
     };
-    const prompt = makeRPGDialoguePrompt(input);
+    let res = null
     // iterate 3 times or until done
     for (let i = 0; i < 6; i++) {
-      const message = await generateRPGDialogue(input, makeGenerateFn());
+      res = await generateRPGDialogue(input, makeGenerateFn());
       // push each message in response.messages to newMessages
-      messages.push(message);
+      messages.push(res.parsed);
     }
 
     console.log("messages", messages);
@@ -577,7 +576,7 @@ const run = async () => {
       })
       .join("\n");
 
-    writeData(input, prompt, output, "rpg_dialogue", makeRPGDialogueStop());
+    writeData(input, res.prompt, output, "rpg_dialogue", makeRPGDialogueStop());
   }
 
   if (

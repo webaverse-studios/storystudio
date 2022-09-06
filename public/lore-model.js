@@ -539,9 +539,12 @@ export async function generateExposition(
   generateFn
 ) {
   const input = { name, location, type };
-  return parseExpositionResponse(
-    await generateFn(makeExpositionPrompt(input), makeExpositionStop(type))
-  );
+  const prompt = makeExpositionPrompt(input);
+  const stop = makeExpositionStop(type);
+  const response = await generateFn(prompt, stop);
+  const parsed = parseExpositionResponse(response);
+
+  return { prompt, parsed, unparsed: response };
 }
 
 // CUTSCENES
@@ -862,9 +865,11 @@ export async function generateRPGDialogue(
   generateFn
 ) {
   const input = { location, characters, objects, messages, dstCharacter };
-  return parseRPGDialogueResponse(
-    await generateFn(makeRPGDialoguePrompt(input), makeRPGDialogueStop())
-  );
+  const prompt = makeRPGDialoguePrompt(input);
+  const stop = makeRPGDialogueStop();
+  const output = await generateFn(prompt, stop);
+  const parsed = parseRPGDialogueResponse(output);
+  return { parsed, unparsed: output, prompt };
 }
 
 // QUESTS

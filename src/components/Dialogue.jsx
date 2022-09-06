@@ -160,7 +160,7 @@ const Dialogue = ({ index, _key, type }) => {
 
   const generateOutputs = async (type) => {
     let selector = "";
-    //const module = await import("../../public/lore-model");
+    const module = await import("../../public/lore-model");
     const inputs = dialogue[currentDialogueType][_key].input;
     let res = "";
 
@@ -221,6 +221,8 @@ const Dialogue = ({ index, _key, type }) => {
       handleChange(res.comment, "output.response");
       res = res.comment;
     } else if (type === "exposition") {
+      selector = "output.comment";
+      const data = inputs.target;
       const location =
         entities["location"]?.length > 0
           ? entities["location"][
@@ -228,22 +230,17 @@ const Dialogue = ({ index, _key, type }) => {
             ]
           : { name: "Test", Description: "Test" };
 
-      const character =
-        entities["character"]?.length > 0
-          ? entities["character"][
-              Math.floor(Math.random() * entities["character"].length)
-            ]
-          : { name: "Test" };
-
       res = await baseData.module.generateExposition(
         {
-          name: character.name,
+          name: data,
           location: `${location.name}\n${location.description}`,
           type: getTypeOfObject(data),
         },
         makeGenerateFn()
       );
-      res = res.comment;
+      handleChange(res.prompt, "output.prompt");
+      handleChange(res.unparsed, "output.response");
+      res = res.parsed;
     } else if (type === "banter") {
       const messages = [];
       const data = inputs;
@@ -286,15 +283,49 @@ const Dialogue = ({ index, _key, type }) => {
       type === "reactions" ||
       type === "actions"
     ) {
-      res = await baseData.module.generateBanter(
-        dialogue[currentDialogueType][_key].input.characters[
-          Math.floor(
-            Math.random() *
-              dialogue[currentDialogueType][_key].input.characters.length
-          )
-        ],
-        makeGenerateFn()
-      );
+      const messages = [];
+      const data = inputs;
+      const location = getSetting(data.location);
+      const chars = data.characters;
+      const _npcs = data.npcs;
+      const objs = data.objects;
+
+      const characters = [];
+      const objects = [];
+
+      for (let i = 0; i < chars.length; i++) {
+        characters.push(getCharacter(chars[i]));
+      }
+      for (let i = 0; i < _npcs.length; i++) {
+        characters.push(getNPC(_npcs[i]));
+      }
+      for (let i = 0; i < objs.length; i++) {
+        objects.push(getObject(objs[i]));
+      }
+
+      const input = {
+        location,
+        character: characters[0],
+        characters,
+        objects,
+        messages,
+        dstCharacter: getNPC(_npcs[0]),
+      };
+
+      for (let i = 0; i < 6; i++) {
+        res = await baseData.module.generateRPGDialogue(input, makeGenerateFn());
+        const message = res.parsed;
+        messages.push(message);
+      }
+
+      handleChange(res.prompt, "output.prompt");
+      handleChange(JSON.stringify(res.unparsed), "output.response");
+
+      cleanDialogueMessages(_key);
+      for (let i = 0; i < messages.length; i++) {
+        addDialogueEntryWithData(_key, messages[i].name, messages[i].message);
+      }
+      return;
     } else if (type === "cutscenes") {
       const messages = [];
       const data = inputs;
