@@ -172,7 +172,6 @@ const Dialogue = ({ index, _key, type }) => {
   });
   const getPrompt = async (type, input) => {
     if (currentPrompt[type]?.length > 0) {
-      console.log("returning current prompt:", currentPrompt[type]);
       return currentPrompt[type];
     }
 
@@ -182,7 +181,6 @@ const Dialogue = ({ index, _key, type }) => {
       const newData = { ...currentPrompt };
       newData[type] = temp;
       setCurrentPrompt(newData);
-      console.log("returning from temp");
       return currentPrompt[type];
     } else {
       switch (type) {
@@ -254,7 +252,7 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const stop = baseData.module.makeCommentStop();
-      res = await baseData.module.generateObjectComment(
+      res = await baseData.module.generateObjectComment({name: data, description},
         makeGenerationFn(prompt, stop)
       );
 

@@ -73,10 +73,7 @@ export function ApplicationContextProvider(props) {
 
   const [loreHeader, setLoreHeader] = useState("");
 
-  const [baseData, setBaseData] = useState(
-    localStorage.getItem("baseData")
-      ? JSON.parse(localStorage.getItem("baseData"))
-      : {
+  const [baseData, setBaseData] = useState({
           base: null,
           url: "./lore-model.js", // "https://webaverse.github.io/lore/lore-model.js",
           type: "url",
@@ -140,6 +137,8 @@ export function ApplicationContextProvider(props) {
 
   useEffect(() => {
     localStorage.setItem("dialogue", compressObject(dialogue));
+    console.log("dialogue changed");
+    console.log("dialogue");
   }, [dialogue]);
 
   useEffect(() => {
@@ -211,6 +210,7 @@ export function ApplicationContextProvider(props) {
         const fileUri = await fileToDataUri(blob);
         // fileUri is a base64 javascript document
         // we want to inject some code into the file before we
+        console.log("File URI is ", fileUri);
         const importedFile = await import(fileUri);
         const firstLine = content.split("\n")?.[0];
 
@@ -318,25 +318,18 @@ export function ApplicationContextProvider(props) {
   };
 
   const addEntityCallback = async (entityType) => {
-    if (entityType === "loreFiles") {
-      const entity = await makeEmpty(entityType, openErrorModal);
-      const newLoreFiles = [...loreFiles];
-      newLoreFiles.unshift(entity);
-      setLoreFiles(newLoreFiles);
-    } else {
-      const entity = await makeEmpty(entityType, openErrorModal);
+    const entity = await makeEmpty(entityType, openErrorModal);
 
-      entity.id = makeId(5);
+    entity.id = makeId(5);
 
-      const newEntityData = { ...entities };
-      if (!newEntityData[entityType]) {
-        newEntityData[entityType] = [];
-      }
-
-      newEntityData[entityType].unshift(entity);
-
-      setEntities(newEntityData);
+    const newEntityData = { ...entities };
+    if (!newEntityData[entityType]) {
+      newEntityData[entityType] = [];
     }
+
+    newEntityData[entityType].unshift(entity);
+
+    setEntities(newEntityData);
   };
 
   const generateEntityCallback = async (
@@ -348,102 +341,59 @@ export function ApplicationContextProvider(props) {
     setGenerating(true);
     //console.log("calling baseData", baseData);
     // generate new using openai callback
-    if (entityType === "loreFiles") {
-      const entity = await generate(
-        entityType,
-        data,
-        baseData,
-        openErrorModal,
-        lore
-      );
-
-      if (!entity) {
-        setGenerating(false);
-        return;
+    let entity = null;
+    try {
+      console.log(baseData);
+      entity = await generate(entityType, data, baseData, openErrorModal, lore);
+    } catch (e) {
+      // openErrorModal("Error generating entity", e);
+      console.log("error", e);
+      setGenerating(false);
+      if (!second) {
+        generateEntityCallback(entityType, data, setGenerating, true);
       }
-
-      const newLoreFiles = [...loreFiles];
-      newLoreFiles.unshift(entity);
-      setLoreFiles(newLoreFiles);
-    } else {
-      let entity = null;
-      try {
-        console.log(baseData);
-        entity = await generate(
-          entityType,
-          data,
-          baseData,
-          openErrorModal,
-          lore
-        );
-      } catch (e) {
-        // openErrorModal("Error generating entity", e);
-        console.log("error", e);
-        setGenerating(false);
-        if (!second) {
-          generateEntityCallback(entityType, data, setGenerating, true);
-        }
-        return;
-      }
-      if (!entity) {
-        // openErrorModal("could not generate entity");
-        setGenerating(false);
-        return;
-      }
-      if (!entity.id && typeof entity === "object") {
-        entity.id = makeId(5);
-      }
-
-      const newEntityData = { ...entities };
-      if (!newEntityData[entityType]) {
-        newEntityData[entityType] = [];
-      }
-
-      newEntityData[entityType].unshift(entity);
-
-      setEntities(newEntityData);
+      return;
     }
+    if (!entity) {
+      // openErrorModal("could not generate entity");
+      setGenerating(false);
+      return;
+    }
+    if (!entity.id && typeof entity === "object") {
+      entity.id = makeId(5);
+    }
+
+    const newEntityData = { ...entities };
+    if (!newEntityData[entityType]) {
+      newEntityData[entityType] = [];
+    }
+
+    newEntityData[entityType].unshift(entity);
+
+    setEntities(newEntityData);
     setGenerating(false);
   };
 
   const deleteEntityCallback = (entity, index, type) => {
-    if (type === "loreFiles") {
-      const newLoreFiles = [...loreFiles];
-      newLoreFiles.splice(index, 1);
-      setLoreFiles(newLoreFiles);
-    } else {
-      const newData = { ...entities };
-      newData[type].splice(index, 1);
+    const newData = { ...entities };
+    newData[type].splice(index, 1);
 
-      setEntities(newData);
-    }
+    setEntities(newData);
   };
 
   const editEntityCallback = (entity, index) => {
-    if (typeof entity === "string") {
-      const newLoreFiles = [...loreFiles];
-      newLoreFiles[index] = entity;
-      console.log(
-        "editing lore file, index:",
-        index,
-        "data are the same:",
-        entity === loreFiles[index]
-      );
-      setLoreFiles(newLoreFiles);
-    } else {
-      let newData = { ...entities };
+    let newData = { ...entities };
 
-      const entityIndex =
-        typeof entity === "string" || !Object.keys(entity).includes("type")
-          ? index
-          : newData[entity.type].findIndex((e) => e.id === entity.id);
+    const entityIndex =
+      typeof entity === "string" || !Object.keys(entity).includes("type")
+        ? index
+        : newData[entity.type].findIndex((e) => e.id === entity.id);
 
-      newData[Object.keys(entity).includes("type") ? entity.type : "loreFiles"][
-        entityIndex
-      ] = entity;
+    newData[Object.keys(entity).includes("type") ? entity.type : "loreFiles"][
+      entityIndex
+    ] = entity;
 
-      setEntities(newData);
-    }
+    setEntities(newData);
   };
 
   const addDialogueCallback = async (type) => {
@@ -513,7 +463,7 @@ export function ApplicationContextProvider(props) {
     let d = null;
     try {
       console.log(baseData);
-      d = await generate(type, entities, baseData, openErrorModal);
+      d = await generate(type, data, baseData, openErrorModal, lore);
     } catch (e) {
       // openErrorModal("Error generating entity", e);
       console.log("error", e);
@@ -523,8 +473,6 @@ export function ApplicationContextProvider(props) {
       }
       return;
     }
-    console.log("generated dialogue", d);
-    return;
     if (!d) {
       // openErrorModal("could not generate entity");
       setGenerating(false);
@@ -555,74 +503,17 @@ export function ApplicationContextProvider(props) {
     // selector is a '.' separated string of the path to the value inside dialogue
     // e.g. 'input.text' would be the text of the input of the dialogue
     let newData = { ...dialogue };
-    //console.log("d", d);
-    //console.log("selector", selector);
 
     // split the selector into an array
     const selectorArray = selector.split(".");
-    //console.log("key is", key);
-
-    //console.log("index is", index);
     // drill down into the dialogue object using the selector array
     let current = newData[currentDialogueType][index];
-    /*console.log(
-      "newData[currentDialogueType] is",
-      newData[currentDialogueType]
-    );*/
-    //console.log("index is", index);
-    //console.log("oldData is", newData);
+
     for (let i = 0; i < selectorArray.length - 1; i++) {
-      //console.log("selectorArray[i] is", selectorArray[i]);
       current = current[selectorArray[i]];
     }
 
-    //console.log("current is", current);
-
     current[selectorArray[selectorArray.length - 1]] = d;
-    setDialogue(newData);
-    //console.log("newData is", newData);
-  };
-  const removeEntryFromDialogue = (selector, index) => {
-    const newData = { ...dialogue };
-    const selectorArray = selector.split(".");
-    const _index = parseInt(selectorArray[selectorArray.length - 2]);
-    newData[currentDialogueType][index]["output"]["transcript"].splice(
-      _index,
-      1
-    );
-    setDialogue(newData);
-  };
-  const addDialogueEntry = (_key) => {
-    const newData = { ...dialogue };
-    newData[currentDialogueType][_key].output.transcript.unshift({
-      speaker: "",
-      message: "",
-    });
-    setDialogue(newData);
-  };
-  const cleanDialogueMessages = (_key) => {
-    const newData = { ...dialogue };
-    newData[currentDialogueType][_key].output.transcript = [];
-    setDialogue(newData);
-  };
-  const addDialogueEntryWithData = (_key, speaker, message) => {
-    const newData = { ...dialogue };
-    console.log("adding to new data:", speaker, "|", message);
-    newData[currentDialogueType][_key].output.transcript.unshift({
-      speaker: speaker,
-      message,
-    });
-    setDialogue(newData);
-  };
-  const setDialogEntries = (_key, transcript) => {
-    const newData = { ...dialogue };
-    newData[currentDialogueType][_key].output.transcript = transcript;
-    setDialogue(newData);
-  };
-
-  const editDialogueJson = (d, index) => {
-    let newData = { ...dialogue };
-    newData[currentDialogueType][index] = d;
     setDialogue(newData);
   };
 
@@ -709,42 +600,6 @@ export function ApplicationContextProvider(props) {
     setErrorDialogData({ on: false, msg: "" });
   };
 
-  const getInventoryItems = () => {
-    return (entities["object"] ?? []).map((e) => e.name);
-  };
-
-  const getObject = (name) => {
-    return entities["object"]?.find((e) => e.name === name);
-  };
-  const getCharacter = (name) => {
-    return entities["character"]?.find((e) => e.name === name);
-  };
-  const getNPC = (name) => {
-    return entities["npc"]?.find((e) => e.name === name);
-  };
-  const getSetting = (name) => {
-    return entities["setting"]?.find((e) => e.name === name);
-  };
-  const getMob = (name) => {
-    return entities["mob"]?.find((e) => e.name === name);
-  };
-
-  const getTypeOfObject = (name) => {
-    if (getObject(name)) {
-      return "object";
-    } else if (getCharacter(name)) {
-      return "character";
-    } else if (getNPC(name)) {
-      return "npc";
-    } else if (getSetting(name)) {
-      return "setting";
-    } else if (getMob(name)) {
-      return "mob";
-    }
-
-    return "character";
-  };
-
   const provider = {
     getOpenAIKey: () => getOpenAIKey(),
     setOpenAIKey: (key) => setOpenAIKey(key),
@@ -783,19 +638,6 @@ export function ApplicationContextProvider(props) {
     exportProject,
     importProject,
     handleImport,
-    editDialogueJson,
-    getInventoryItems,
-    removeEntryFromDialogue,
-    addDialogueEntry,
-    addDialogueEntryWithData,
-    getObject,
-    getCharacter,
-    getNPC,
-    getSetting,
-    getMob,
-    getTypeOfObject,
-    setDialogEntries,
-    cleanDialogueMessages,
   };
 
   return (
