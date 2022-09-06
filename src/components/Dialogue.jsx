@@ -457,16 +457,17 @@ const Dialogue = ({ index, _key, type, editJson }) => {
               handleChange(data, selector);
             }}
           >
-            {(type === "exposition"
-              ? [
-                  ...entities["character"],
-                  ...entities["object"],
-                  ...entities["location"],
-                  ...entities["npc"],
-                ]
-              : entities[
-                  type.replace("loading", "location").replace("Comment", "")
-                ]
+            {(
+              (type === "exposition"
+                ? [
+                    ...entities["character"],
+                    ...entities["object"],
+                    ...entities["location"],
+                    ...entities["npc"],
+                  ]
+                : entities[
+                    type.replace("loading", "location").replace("Comment", "")
+                  ]) ?? []
             ).map((item, index) => {
               return (
                 <option key={index} value={item.name}>
@@ -479,7 +480,13 @@ const Dialogue = ({ index, _key, type, editJson }) => {
       );
     }
     // render outputs as an input field
-    else if (label === "message" || label === "action" || label === "comment" || label === "reward" || label === "task") {
+    else if (
+      label === "message" ||
+      label === "action" ||
+      label === "comment" ||
+      label === "reward" ||
+      label === "task"
+    ) {
       output = (
         <div>
           <input

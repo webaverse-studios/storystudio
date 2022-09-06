@@ -1,5 +1,3 @@
-import { parse } from "path";
-
 // LORE_HEADER_START
 export let lore = {
   overview: {
@@ -248,7 +246,7 @@ We need exciting and interesting RPG character dialogue. This plays when the cha
       "Input:\nAnon: Would you tell me more about Ironford?\nDrake:\nOutput:\nDrake: The city of Ironford was built in the center of a giant forest and is truly a modest marvel. Its allure is matched by the backdrop of lush forests which have helped shape the city to what it is today. (react = headNod, action = none, object = none, target = none)\n",
       "Input:\nAnon: The monsters have captures the people of the village.\nHyacinth:\nOutput:\nHyacinth: I will find and kill each of those monsters myself. (react = angry, action = move to, object = none, target = monster#9)\n",
       "Input:\nScillia: Hey Hyacinth, what is your favorite book?\nHyacinth:\nOutput:\nHyacinth: My favorite book is The Lord of the Rings. I love the story and the world that J.R.R. Tolkien created. (react = normal, action = none, object = none, target = none)",
-    ]
+    ],
   },
   intros: {
     prompt: `\
@@ -313,9 +311,9 @@ export const makeLocationPrompt = () => {
   ${lore["location"].prompt}
   ${shuffleArray(lore["location"].examples).join("\n")}
   Location:"`;
-}
+};
 
-export const makeLocationStop = () => ['\nLocation:']
+export const makeLocationStop = () => ["\nLocation:"];
 
 // TODO
 export const parseLocationResponse = (resp) => {
@@ -323,21 +321,26 @@ export const parseLocationResponse = (resp) => {
     return el !== "";
   });
 
-  const location = lines[0].split('"')
-  const comment = lines[1].replace("Quote: ", "").replace('"', '').trim().trimStart();
-  const name = location[0].replace('"', '').trim().trimStart();
+  const location = lines[0].split('"');
+  const comment = lines[1]
+    .replace("Quote: ", "")
+    .replace('"', "")
+    .trim()
+    .trimStart();
+  const name = location[0].replace('"', "").trim().trimStart();
   const description = location[1].trim().trimStart();
-
 
   return {
     name,
     description,
-    comment
+    comment,
   };
-}
+};
 
 export async function generateLocation(generateFn) {
-  return parseLocationResponse(await generateFn(makeLocationPrompt(), makeLocationStop()));
+  return parseLocationResponse(
+    await generateFn(makeLocationPrompt(), makeLocationStop())
+  );
 }
 
 // NEW CHARACTER
@@ -346,19 +349,21 @@ export const makeCharacterPrompt = () => {
   return `\
   ${lore["character"].prompt}
   ${shuffleArray(lore["character"].examples).join("\n")}
-  Character:"`
-}
+  Character:"`;
+};
 
-export const makeCharacterStop = () => ['\nCharacter:']
+export const makeCharacterStop = () => ["\nCharacter:"];
 
 export const parseCharacterResponse = (resp) => {
   const lines = resp.split("\n").filter((el) => {
     return el !== "";
   });
 
-  const character = lines[0].split('"')
-  const comment = lines[1] && lines[1].replace("Quote: ", "").replace('"', '').trim().trimStart();
-  const name = character[0].replace('"', '').trim().trimStart();
+  const character = lines[0].split('"');
+  const comment =
+    lines[1] &&
+    lines[1].replace("Quote: ", "").replace('"', "").trim().trimStart();
+  const name = character[0].replace('"', "").trim().trimStart();
   const description = character[1].trim().trimStart();
 
   const inventory = "";
@@ -367,12 +372,14 @@ export const parseCharacterResponse = (resp) => {
     name,
     description,
     comment,
-    inventory
+    inventory,
   };
-}
+};
 
 export async function generateCharacter(generateFn) {
-  return parseCharacterResponse(await generateFn(makeCharacterPrompt(), makeCharacterStop()))
+  return parseCharacterResponse(
+    await generateFn(makeCharacterPrompt(), makeCharacterStop())
+  );
 }
 
 // NEW OBJECT
@@ -381,31 +388,34 @@ export const makeObjectPrompt = () => {
   return `\
   ${lore["object"].prompt}
   ${shuffleArray(lore["object"].examples).join("\n")}
-  Object: "`
-}
+  Object: "`;
+};
 
-export const makeObjectStop = () => ['\nObject:']
+export const makeObjectStop = () => ["\nObject:"];
 
 export const parseObjectResponse = (resp) => {
   const lines = resp.split("\n").filter((el) => {
     return el !== "";
   });
 
-
-  const obj = lines[0].split('"')
-  const comment = lines[1] && lines[1].replace("Quote: ", "").replace('"', '').trim().trimStart();
-  const name = obj[0].replace('"', '').trim().trimStart();
+  const obj = lines[0].split('"');
+  const comment =
+    lines[1] &&
+    lines[1].replace("Quote: ", "").replace('"', "").trim().trimStart();
+  const name = obj[0].replace('"', "").trim().trimStart();
   const description = obj[1].trim().trimStart();
 
   return {
     name,
     description,
-    comment
+    comment,
   };
-}
+};
 
 export async function generateObject(generateFn) {
-  return parseObjectResponse(await generateFn(makeObjectPrompt(), makeObjectStop()))
+  return parseObjectResponse(
+    await generateFn(makeObjectPrompt(), makeObjectStop())
+  );
 }
 
 // REACTIONS
@@ -414,10 +424,10 @@ export const makeReactionPrompt = () => {
   return `\
   ${lore["reactions"].prompt}
   ${shuffleArray(lore["reactions"].examples).join("\n")}
-  ${name}:`
-}
+  ${name}:`;
+};
 
-export const makeReactionStop = (name) =>  ["\n", name + ':']
+export const makeReactionStop = (name) => ["\n", name + ":"];
 
 export const parseReactionResponse = (resp) => {
   let _resp = "";
@@ -426,11 +436,13 @@ export const parseReactionResponse = (resp) => {
   } else {
     _resp = resp;
   }
-  return { reaction: _resp?.replace(/\s+/g, ""), prompt: prompt }
-}
+  return { reaction: _resp?.replace(/\s+/g, ""), prompt: prompt };
+};
 
 export async function generateReaction(name, generateFn) {
-  return parseReactionResponse(await generateFn(makeReactionPrompt(), makeReactionStop(name)));
+  return parseReactionResponse(
+    await generateFn(makeReactionPrompt(), makeReactionStop(name))
+  );
 }
 
 // BANTER
@@ -478,23 +490,25 @@ Description: A very old computer. A real piece of crap, but I guess it works..
 ${location && `# Location\n\n${location.name}\n${location.description}`}
 
 ${characters.length > 0 && "# Characters\n\n"}\
-${characters
-      .map((c) => `Character: ${c.name}\nDescription: ${c.description}`)
-      .join("\n\n") + (characters.length > 0 && "\n\n")
-    }\
+${
+  characters
+    .map((c) => `Character: ${c.name}\nDescription: ${c.description}`)
+    .join("\n\n") + (characters.length > 0 && "\n\n")
+}\
 ${objects.length > 0 && "# Nearby Objects\n\n"}\
-${objects.slice(0, 2)
-      .map((c) => `Object: ${c.name}\nDescription: ${c.description}`)
-      .join("\n\n") + (objects.length > 0 && "\n")
-    }\
+${
+  objects
+    .slice(0, 2)
+    .map((c) => `Object: ${c.name}\nDescription: ${c.description}`)
+    .join("\n\n") + (objects.length > 0 && "\n")
+}\
 
 (TASK) Using ${objects && objects.length > 0 && objects.map(o => o.name + ', ')} ${location && 'and ' +location.name} as context, write a transcript of light banter between the characters.
 
 # Transcript
-
 ${messages ? (messages.map((m) => '>> ' + m.name + ': ' + m.message).join("\n")) + '\n>>' : '>>'}`}
 
-export const makeBanterStop = () => ["\n\n", 'done=true', 'done = true'];
+export const makeBanterStop = () => ["\n\n", "done=true", "done = true"];
 
 export const parseBanterResponse = (resp) => {
   // TODO: parse the character speaking
@@ -542,15 +556,22 @@ export async function generateBanter({ location = null, characters = [], objects
 
 // EXPOSITION
 
-export const makeExpositionPrompt = ({ name, location = null, type = 'Object' }) => {
+export const makeExpositionPrompt = ({
+  name,
+  location = null,
+  type = "Object",
+}) => {
   return `\
-${type !== 'location' && (location && (location + '\n')) || ''}\
+${(type !== "location" && location && location + "\n") || ""}\
 ${lore[type.toLowerCase()].prompt}
 ${shuffleArray(lore[type.toLowerCase()].examples).join("\n")}
-${capitalizeFirstLetter(type)}: "${name}"`
-}
+${capitalizeFirstLetter(type)}: "${name}"`;
+};
 
-export const makeExpositionStop = (type) => [`\n${type.toUpperCase()}:`, '\n\n'];
+export const makeExpositionStop = (type) => [
+  `\n${type.toUpperCase()}:`,
+  "\n\n",
+];
 
 export const parseExpositionResponse = (resp) => {
   const lines = resp.split("\n").filter((el) => {
@@ -558,17 +579,24 @@ export const parseExpositionResponse = (resp) => {
   });
 
   const description = lines[0].trimStart().trim();
-  const comment = lines[1] && lines[1].replaceAll("Quote: ", "").replaceAll('"', '').trim().trimStart();
+  const comment =
+    lines[1] &&
+    lines[1].replaceAll("Quote: ", "").replaceAll('"', "").trim().trimStart();
 
   return {
     description,
-    comment
+    comment,
   };
-}
+};
 
-export async function generateExposition({ name, location = null, type = 'Object' }, generateFn) {
+export async function generateExposition(
+  { name, location = null, type = "Object" },
+  generateFn
+) {
   const input = { name, location, type };
-  return parseExpositionResponse(await generateFn(makeExpositionPrompt(input), makeExpositionStop()));
+  return parseExpositionResponse(
+    await generateFn(makeExpositionPrompt(input), makeExpositionStop())
+  );
 }
 
 // CUTSCENES
@@ -645,49 +673,71 @@ eric: Millie, I am tending to serious business. The org needs me to break throug
 ${location && `# Location\n\n${location.name}\n${location.description}`}
 
 ${characters.length > 0 && "# Characters\n\n"}\
-${characters
-      .map((c) => `Character: ${c.name}\nDescription: ${c.description}`)
-      .join("\n\n") + (characters.length > 0 && "\n\n")
-    }\
+${
+  characters
+    .map((c) => `Character: ${c.name}\nDescription: ${c.description}`)
+    .join("\n\n") + (characters.length > 0 && "\n\n")
+}\
 ${objects.length > 0 && "# Nearby Objects\n\n"}\
-${objects.slice(0, 2)
-      .map((c) => `Object: ${c.name}\nDescription: ${c.description}`)
-      .join("\n\n") + (objects.length > 0 && "\n")
-    }\
+${
+  objects
+    .slice(0, 2)
+    .map((c) => `Object: ${c.name}\nDescription: ${c.description}`)
+    .join("\n\n") + (objects.length > 0 && "\n")
+}\
 
 # Transcript
 
-${messages ? (messages.map((m) => m.character.name + ': ' + m.message).join("\n")) : ''}\
-${(!messages || messages.length === 0) && dstCharacter.name + ':'}`;
-}
+${
+  messages
+    ? messages.map((m) => m.character.name + ": " + m.message).join("\n")
+    : ""
+}\
+${(!messages || messages.length === 0) && dstCharacter.name + ":"}`;
+};
 
-export const makeCutsceneStop = () => ["\n\n", 'done=true', 'done = true'];
+export const makeCutsceneStop = () => ["\n\n", "done=true", "done = true"];
 
 export const parseCutsceneResponse = (resp) => {
   const messages = [];
 
   resp = resp
-  .trim()
-  .trimStart()
-  .replace(/^\n+/, "") // remove leading newlines
-  .replace(/\n+$/, "") // remove trailing newlines
-  .replaceAll('"', "") // remove quotes
-  .replaceAll("\t", "") // remove tabs
-  .split("\n");
+    .trim()
+    .trimStart()
+    .replace(/^\n+/, "") // remove leading newlines
+    .replace(/\n+$/, "") // remove trailing newlines
+    .replaceAll('"', "") // remove quotes
+    .replaceAll("\t", "") // remove tabs
+    .split("\n");
 
   messages.push({
-    character: 'TODO',
-    message: resp.shift().replaceAll('TODO-CHARACTERNAME' + ':', '').trim().trimStart()
+    character: "TODO",
+    message: resp
+      .shift()
+      .replaceAll("TODO-CHARACTERNAME" + ":", "")
+      .trim()
+      .trimStart(),
   });
 
   return {
-    messages
-  }
-}
+    messages,
+  };
+};
 
-export async function generateCutscene({ location = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
+export async function generateCutscene(
+  {
+    location = null,
+    characters = [],
+    objects = [],
+    messages = [],
+    dstCharacter = null,
+  },
+  generateFn
+) {
   const input = { location, characters, objects, messages, dstCharacter };
-  return parseCutsceneResponse(await generateFn(makeCutscenePrompt(input), makeCutsceneStop()));
+  return parseCutsceneResponse(
+    await generateFn(makeCutscenePrompt(input), makeCutsceneStop())
+  );
 }
 
 // RPG DIALOGUE
@@ -696,11 +746,11 @@ export const makeRPGDialoguePrompt = ({ character }) => {
   return `\
 ${lore["inputParsing"].prompt}
 ${shuffleArray(lore["inputParsing"].examples).join("\n")}
-Input:\n+a8e44f13${character.name}:`
-}
+Input:\n+a8e44f13${character.name}:`;
+};
 
 export const makeRPGDialogueStop = (/*character*/) => [
-  "\n"
+  "\n",
   // `Input:\n+a8e44f13${character.name}:`,
 ];
 
@@ -717,13 +767,18 @@ export const parseRPGDialogueResponse = (resp) => {
   //     )
   //     .trim();
   // } else {
-    return resp;
+  return resp;
   // }
-}
+};
 
-export async function generateRPGDialogue({character}, generateFn) {
-  const input = {character};
-  return parseRPGDialogueResponse(await generateFn(makeRPGDialoguePrompt(input), makeRPGDialogueStop(character)));
+export async function generateRPGDialogue({ character }, generateFn) {
+  const input = { character };
+  return parseRPGDialogueResponse(
+    await generateFn(
+      makeRPGDialoguePrompt(input),
+      makeRPGDialogueStop(character)
+    )
+  );
 }
 
 // QUESTS
@@ -748,16 +803,14 @@ The North Pole: Survive a day at the North Pole, without getting lost|Reward: 70
 The South Pole: Survive a day at the South Pole, without getting lost|Reward: 8000xp
 The Moon: Survive a day on the moon, without getting lost|Reward: 9000xp
 The Sun: Survive a day on the sun, without getting burned|Reward: 10000xp
-${location}:`
-}
+${location}:`;
+};
 
 export const makeQuestStop = () => ["\n"];
 
 export const parseQuestResponse = (resp) => {
   if (resp.startsWith(location)) {
-    const data = resp
-      .replace(location, "")
-      .trim();
+    const data = resp.replace(location, "").trim();
     const [quest, reward] = data.split("|");
     return {
       location: location,
@@ -765,21 +818,21 @@ export const parseQuestResponse = (resp) => {
       reward: reward.trim(),
     };
   } else {
-    const data = resp
-      .replace(location, "")
-      .trim();
+    const data = resp.replace(location, "").trim();
     const [quest, reward] = data.split("|");
     return {
       location: location,
       quest: quest.trim(),
-      reward: reward.trim()
+      reward: reward.trim(),
     };
   }
-}
+};
 
 export async function generateQuest({ location }, generateFn) {
   const input = { location };
-  return parseQuestResponse(await generateFn(makeQuestPrompt(input), makeQuestStop()))  
+  return parseQuestResponse(
+    await generateFn(makeQuestPrompt(input), makeQuestStop())
+  );
 }
 
 // ****************** RUNTIME API **********************
@@ -801,13 +854,13 @@ ${locations}
 
 ## Characters
 ${characters
-    .map((c, i) => {
-      return `Id: ${thingHash(c, i)}
+  .map((c, i) => {
+    return `Id: ${thingHash(c, i)}
     Name: ${c.name}
     Description: ${c.description || c.description}
 `;
-    })
-    .join("\n\n")}
+  })
+  .join("\n\n")}
 
 # Objects
 ${objects.map((o, i) => thingHash(o, i)).join("\n")}
@@ -823,19 +876,20 @@ ${shuffleArray(lore.inputParsing.examples).join(`\n`)}
 
 ${messages.length > 0 ? "Input:\n" : ""}
 ${messages
-    .map((m) => {
-      const characterIndex = characters.indexOf(m.character);
-      // const suffix = `[emote=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
-      // return `+${thingHash(m.character, characterIndex)}: ${m.message} ${suffix}`;
-      const suffix = `react=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
-      console.log("m.character", m);
-      return `+${thingHash(m.character, characterIndex)}: ${m.message}`;
-    })
-    .join("\n")}
-+${dstCharacter
+  .map((m) => {
+    const characterIndex = characters.indexOf(m.character);
+    // const suffix = `[emote=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
+    // return `+${thingHash(m.character, characterIndex)}: ${m.message} ${suffix}`;
+    const suffix = `react=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
+    console.log("m.character", m);
+    return `+${thingHash(m.character, characterIndex)}: ${m.message}`;
+  })
+  .join("\n")}
++${
+  dstCharacter
     ? `${thingHash(dstCharacter, characters.indexOf(dstCharacter))}:`
     : ""
-  }
+}
 Output:`;
 
 export const parseLoreResponse = (response) => {
@@ -977,31 +1031,34 @@ export async function generateLore(
 
 // ENTITY COMMENTS
 
-export const makeCommentPrompt = ({
-  name,
-  description,
-  type = "Object",
-}) => {
+export const makeCommentPrompt = ({ name, description, type = "Object" }) => {
   const typeAttribute = type.toLowerCase();
   return `\
 ${lore[typeAttribute].prompt}
 ${shuffleArray(lore[typeAttribute].examples, 8).join(`\n`)}
-${type}: "${name.replaceAll('"', '')}" ${description}
+${type}: "${name.replaceAll('"', "")}" ${description}
 Quote: "`;
 };
 
-export const makeCommentStop = () => [`"`, '\n'];
+export const makeCommentStop = () => [`"`, "\n"];
 
 export const parseCommentResponse = (response) => response.replace(/^ /, "");
 
 export async function generateObjectComment({ name, description }, generateFn) {
-  const input = { name, description, type: 'Object' };
-  return parseCommentResponse(await generateFn(makeCommentPrompt(input), makeCommentStop()));
+  const input = { name, description, type: "Object" };
+  return parseCommentResponse(
+    await generateFn(makeCommentPrompt(input), makeCommentStop())
+  );
 }
 
-export async function generateLocationComment({ name, description }, generateFn) {
-  const input = { name, description, type: 'Location' };
-  return parseCommentResponse(await generateFn(makeCommentPrompt(input), makeCommentStop()));
+export async function generateLocationComment(
+  { name, description },
+  generateFn
+) {
+  const input = { name, description, type: "Location" };
+  return parseCommentResponse(
+    await generateFn(makeCommentPrompt(input), makeCommentStop())
+  );
 }
 
 // SELECT TARGET
@@ -1010,8 +1067,9 @@ export const makeSelectTargetPrompt = ({ name, description }) => {
   return `\
 ${lore.object.prompt}
 ${shuffleArray(lore.object.examples).join(`\n`)}
-prompt: ${_cleanName(name)}${description ? ` ${description}` : ""
-    }\nresponse: "`;
+prompt: ${_cleanName(name)}${
+    description ? ` ${description}` : ""
+  }\nresponse: "`;
 };
 
 export const makeSelectTargetStop = () => `"`;
@@ -1021,9 +1079,14 @@ export const parseSelectTargetResponse = (response) => {
   return match ? match[1] : "";
 };
 
-export async function generateSelectTargetComment({ name, description }, generateFn) {
+export async function generateSelectTargetComment(
+  { name, description },
+  generateFn
+) {
   const input = { name, description };
-  return parseSelectTargetResponse(await generateFn(makeSelectTargetPrompt(input), makeSelectTargetStop()));
+  return parseSelectTargetResponse(
+    await generateFn(makeSelectTargetPrompt(input), makeSelectTargetStop())
+  );
 }
 
 // SELECT CHARACTER
@@ -1033,7 +1096,7 @@ export const makeSelectCharacterPrompt = ({ name, description }) => {
 ${lore.character.prompt}
 ${shuffleArray(lore.character.examples).join(`\n`)}
 Character: "${_cleanName(name)}" ${description}
-Quote: "`
+Quote: "`;
 };
 
 export const makeSelectCharacterStop = () => `"`;
@@ -1048,16 +1111,29 @@ export const parseSelectCharacterResponse = (response) => {
   };
 };
 
-export async function generateSelectCharacter({ name, description }, generateFn) {
+export async function generateSelectCharacter(
+  { name, description },
+  generateFn
+) {
   const input = { name, description };
-  return parseSelectCharacterResponse(await generateFn(makeSelectCharacterPrompt(input), makeSelectCharacterStop()));
+  return parseSelectCharacterResponse(
+    await generateFn(
+      makeSelectCharacterPrompt(input),
+      makeSelectCharacterStop()
+    )
+  );
 }
 
 // BATTLE INTRODUCTION
 
 export async function generateBattleIntroduction({ name }, generateFn) {
   const input = { name };
-  return parseBattleIntroductionResponse(await generateFn(makeBattleIntroductionPrompt(input), makeBattleIntroductionStop()));
+  return parseBattleIntroductionResponse(
+    await generateFn(
+      makeBattleIntroductionPrompt(input),
+      makeBattleIntroductionStop()
+    )
+  );
 }
 
 export const makeBattleIntroductionPrompt = ({ name }) => {
@@ -1072,7 +1148,7 @@ export const makeBattleIntroductionStop = () => `"`;
 export const parseBattleIntroductionResponse = (response) => {
   const match = response.match(/\s*([^\n]*)/);
   return { value: match && match[1] };
-}
+};
 
 // CHAT MESSAGE
 
@@ -1088,11 +1164,12 @@ export const makeChatPrompt = ({
   ${shuffleArray(lore.actions.examples).join(`\n`)}
 
 ${messages
-      .map((message) => {
-        return `${message.name}: "${message.text} (react = ${message.emote ? message.emote : "normal"
-          })"`;
-      })
-      .join("\n")}
+  .map((message) => {
+    return `${message.name}: "${message.text} (react = ${
+      message.emote ? message.emote : "normal"
+    })"`;
+  })
+  .join("\n")}
 ${nextCharacter.name}: "`;
 };
 
@@ -1133,9 +1210,14 @@ export const parseChatResponse = (response) => {
   }
 };
 
-export async function generateChatMessage({ messages, nextCharacter }, generateFn) {
+export async function generateChatMessage(
+  { messages, nextCharacter },
+  generateFn
+) {
   const input = { messages, nextCharacter };
-  return parseChatResponse(await generateFn(makeChatPrompt(input), makeChatStop()));
+  return parseChatResponse(
+    await generateFn(makeChatPrompt(input), makeChatStop())
+  );
 }
 
 // CHARACTER INTRODUCTION
@@ -1165,10 +1247,19 @@ export const parseCharacterIntroResponse = (response) => {
   }
 };
 
-export async function generateCharacterIntro({ name, description }, generateFn) {
+export async function generateCharacterIntro(
+  { name, description },
+  generateFn
+) {
   const input = { name, description };
-  return parseCharacterIntroResponse(await generateFn(makeCharacterIntroPrompt(input), makeCharacterIntroStop()))
-    || { message: '<error>', prompt, onselect: '<error>' };
+  return (
+    parseCharacterIntroResponse(
+      await generateFn(
+        makeCharacterIntroPrompt(input),
+        makeCharacterIntroStop()
+      )
+    ) || { message: "<error>", prompt, onselect: "<error>" }
+  );
 }
 
 // DIALOGUE OPTIONS
@@ -1184,11 +1275,12 @@ ${lore.actions.prompt}
 ${lore.actions.examples.join("\n")}
 
 ${messages
-      .map((message) => {
-        return `${message.name}: "${message.text} (react = ${message.emote ? message.emote : "normal"
-          })"`;
-      })
-      .join("\n")}
+  .map((message) => {
+    return `${message.name}: "${message.text} (react = ${
+      message.emote ? message.emote : "normal"
+    })"`;
+  })
+  .join("\n")}
 Options for ${nextCharacter.name}: [`;
 };
 
@@ -1222,9 +1314,14 @@ export const parseOptionsResponse = (response) => {
   };
 };
 
-export async function generateDialogueOptions({ messages, nextCharacter }, generateFn) {
+export async function generateDialogueOptions(
+  { messages, nextCharacter },
+  generateFn
+) {
   const input = { messages, nextCharacter };
-  return parseOptionsResponse(await generateFn(makeOptionsPrompt(input), makeOptionsStop()));
+  return parseOptionsResponse(
+    await generateFn(makeOptionsPrompt(input), makeOptionsStop())
+  );
 }
 
 // ****************** UTILITY FUNCTIONS ******************
