@@ -670,13 +670,6 @@ export const makeRPGDialoguePrompt = ({
   objects = [],
   messages = [],
 }) => {
-<<<<<<< HEAD
-  console.log('messages are')
-  console.log(messages)
-=======
-  console.log("messages", messages);
-
->>>>>>> 323c2391f2a5786bd9200651e84dce1fe56fe4fb
   return `\
 # Transcript 
 >> Alyx: Just the person I needed. You busy?
@@ -758,30 +751,12 @@ ${
 # Target Character
 "${dstCharacter.name}" ${dstCharacter.description}
 
-<<<<<<< HEAD
 (TASK) Using ${objects && objects.length > 0 && objects.map((o) => o.name).join(", ")}${location ? " and " + location.name : ''}\
  as context, write a video game RPG cutscene between the characters${dstCharacter && " and " + dstCharacter.name}.
 
 # Transcript
 ${(messages.map((m) => '>> ' + m.type === 'options' ? ('(OPTIONS): ' + m.options.map(o => `[${o}]`).join(' ')) : m.name + ': ' + m.message).join("\n")) + (messages.length > 0 ? '\n' : '') + '>>'}`
 }
-=======
-(TASK) Using ${
-    objects && objects.length > 0 && objects.map((o) => o.name).join(", ")
-  } ${
-    location && "and " + location.name
-  } as context, write a video game RPG cutscene between the characters${
-    dstCharacter && " and " + dstCharacter.name
-  }.
-
-# Transcript
-${
-  messages.map((m) => ">> " + m.name + ": " + m.message).join("\n") +
-  (messages.length > 0 ? "\n" : "") +
-  ">>"
-}`;
-};
->>>>>>> 323c2391f2a5786bd9200651e84dce1fe56fe4fb
 
 export const makeRPGDialogueStop = () => ['END*'];
 
