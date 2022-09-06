@@ -11,9 +11,9 @@ export const views = {
 };
 
 export const briefViews = {
-      setup: "Setup",
-      dialogue: "Dialogue"
-    };
+  setup: "Setup",
+  dialogue: "Dialogue",
+};
 
 export const exampleLoreFiles = [
   `\
@@ -460,6 +460,8 @@ export const defaultDialogue = {
       output: {
         comment:
           "That's a pretty cool sword. It looks exactly one I lost a long time ago.",
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -471,6 +473,8 @@ export const defaultDialogue = {
       output: {
         comment:
           "She scares the crap out of me. But she's usually pretty nice.",
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -481,6 +485,8 @@ export const defaultDialogue = {
       },
       output: {
         comment: "I could probably take on four or five goblins at once.",
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -491,6 +497,8 @@ export const defaultDialogue = {
       },
       output: {
         comment: "The Safehouse is a good place to lay low for a while.",
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -525,6 +533,8 @@ export const defaultDialogue = {
             message: "No, you should stay with Leeloo.",
           },
         ],
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -536,6 +546,8 @@ export const defaultDialogue = {
       output: {
         comment:
           "The Silver Sword is a legendary sword that was forged by the dwarves of the mountain range. It is said that the sword was forged from the tears of the gods themselves.",
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -562,6 +574,8 @@ export const defaultDialogue = {
             message: "You got it. One pizza, coming right up.",
           },
         ],
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -576,32 +590,34 @@ export const defaultDialogue = {
       output: {
         transcript: [
           {
-            character: "Korben Dallas",
+            speaker: "Korben Dallas",
             message: "I've had enough, Sarah. It's time to do business.",
           },
           {
-            character: "Sarah Kerrigan",
+            speaker: "Sarah Kerrigan",
             message: "Yes, it is time. What business exactly?",
           },
           {
-            character: "Korben Dallas",
+            speaker: "Korben Dallas",
             message: "You know what I'm talking about.",
           },
           {
-            character: "Sarah Kerrigan",
+            speaker: "Sarah Kerrigan",
             message: "I have no idea, honestly.",
           },
           {
-            character: "Korben Dallas",
+            speaker: "Korben Dallas",
             message:
               "You abandoned our party to die. And everyone did. Even me. I wasted almost a week grinding to get back to my level.",
           },
           {
-            character: "Sarah Kerrigan",
+            speaker: "Sarah Kerrigan",
             message:
               "Oh, well, that's how it is. Now if you're here to challenge me, I'll gladly help you waste a few more weeks!",
           },
         ],
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -611,21 +627,14 @@ export const defaultDialogue = {
         location: "New Location",
         characters: ["New Character"],
         npcs: ["New NPC"],
-        objects: ["New Object"],
-        task:
-          {
-            npc: "New NPC",
-            task: "Survive the night",
-            metadata: {
-                  reward: "1000",
-                  location: "New Location"
-            }
-          },
       },
       output: {
         speaker: "New Character",
         action: "picks up New Object",
+        reward: "100xp",
       },
+      prompt: "Prompt",
+      response: "Response",
     },
   ],
   reactions: [
@@ -634,7 +643,6 @@ export const defaultDialogue = {
         location: "New Location",
         characters: ["New Character"],
         npcs: ["New NPC"],
-        objects: ["New Object"],
         messages: [
           {
             speaker: "New NPC",
@@ -643,10 +651,9 @@ export const defaultDialogue = {
         ],
       },
       output: {
-        transcript: {
-          speaker: "New Character",
-          reaction: "surprise",
-        },
+        reaction: "New reaction",
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],

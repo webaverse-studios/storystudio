@@ -496,6 +496,17 @@ export async function openaiRequest(key, prompt, stop) {
   });
 }
 
+export function makeGenerationFn(prompt, stop) {
+  return async () => {
+    console.log("STOP:", stop);
+    return await openaiRequest(
+      localStorage.getItem("openai_key"),
+      prompt,
+      stop
+    );
+  };
+}
+
 export function makeGenerateFn() {
   return async (prompt, stop) => {
     console.log("STOP:", stop);
