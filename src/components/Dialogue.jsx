@@ -160,7 +160,6 @@ const Dialogue = ({ index, _key, type }) => {
 
   const generateOutputs = async (type) => {
     let selector = "";
-    const module = await import("../../public/lore-model");
     const inputs = dialogue[currentDialogueType][_key].input;
     let res = "";
 
@@ -390,7 +389,8 @@ const Dialogue = ({ index, _key, type }) => {
       const location = data.location;
 
       const input = { location: location };
-      res = await module.generateQuest(input, makeGenerateFn());
+      res = await baseData.module.generateQuest(input, makeGenerateFn());
+
       handleChange(res.parsed.quest, "output.action");
       handleChange(res.parsed.reward, "output.reward");
       handleChange(res.prompt, "output.prompt");
