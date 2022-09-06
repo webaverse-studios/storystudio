@@ -4,7 +4,7 @@ import {
   defaultOpenAIParams,
   stable_diffusion_url,
   voice_url,
-  exampleLoreFiles
+  exampleLoreFiles,
 } from "./constants.js";
 import { makeId } from "./utils.js";
 import * as defaultModule from "../../public/lore-model.js";
@@ -32,26 +32,24 @@ export const generateVoice = async (character, text) => {
 };
 
 const getRandomEntity = (data, type) => {
+  console.log("data", data);
   if (!data || !data[type] || data[type].length === 0) {
+    console.log("empty data");
     return "";
   }
 
   const index = Math.floor(Math.random() * data[type].length);
   const name = data[type][index].name;
-  if (type === "location") {
-    return name;
-  } else if (name.startsWith('"')) {
-    const si = name.indexOf('"', 1);
-    const res = name.substring(0, si);
-    const res2 = res.substring(1);
-    return res2;
+  return name;
+};
+const getRandomEntityFull = (data, type) => {
+  if (!data || !data[type] || data[type].length === 0) {
+    return { name: "", description: "" };
   }
 
-  const split = name?.split(" ");
-  if (split && split.length > 1) {
-    return split[0];
-  }
-  return "";
+  const index = Math.floor(Math.random() * data[type].length);
+  const entity = data[type][index];
+  return { name: entity.name, description: entity.description };
 };
 
 export async function makeEmpty(type, openErrorModal) {
@@ -60,36 +58,36 @@ export async function makeEmpty(type, openErrorModal) {
       return {
         type: type,
         name: "New Location",
-        description: "This is a description of a new location"
-      }
+        description: "This is a description of a new location",
+      };
     case "character":
       return {
         type: type,
         name: "New Character",
         description: "This is a description of a new character",
-        inventory: []
-      }
+        inventory: [],
+      };
     case "object":
       return {
         type: type,
         name: "New Object",
         description: "This is a description of a new object",
-        inventory: []
-      }
+        inventory: [],
+      };
     case "npc":
       return {
         type: type,
         name: "New NPC",
         description: "This is a description of a new NPC",
-        inventory: []
-      }
+        inventory: [],
+      };
     case "mob":
       return {
         type: type,
         name: "New mob",
         description: "This is a description of a new mob",
-        inventory: []
-      }
+        inventory: [],
+      };
     case "objectComment":
       return {
         input: {
@@ -97,10 +95,10 @@ export async function makeEmpty(type, openErrorModal) {
         },
         output: {
           comment: "This is a comment about a new object",
-        }
-      }
+        },
+      };
     case "loreFiles":
-      return
+      return;
       `# Location
 
 # Characters
@@ -125,8 +123,8 @@ export async function makeDialogue(type, openErrorModal) {
         },
         output: {
           comment: "This is a comment about a new object",
-        }
-      }
+        },
+      };
     case "npcComment":
       return {
         input: {
@@ -134,8 +132,8 @@ export async function makeDialogue(type, openErrorModal) {
         },
         output: {
           comment: "This is a comment about an NPC",
-        }
-      }
+        },
+      };
     case "mobComment":
       return {
         input: {
@@ -143,8 +141,8 @@ export async function makeDialogue(type, openErrorModal) {
         },
         output: {
           comment: "This is a comment about a Mob",
-        }
-      }
+        },
+      };
     case "loadingComment":
       return {
         input: {
@@ -152,77 +150,78 @@ export async function makeDialogue(type, openErrorModal) {
         },
         output: {
           comment: "This is a comment about the location that is loading",
-        }
-      }
+        },
+      };
     case "banter":
       return {
         input: {
           location: "New Location",
           characters: ["New Character"],
           npcs: ["New NPC"],
-          objects: ["New Object"]
+          objects: ["New Object"],
         },
         output: {
           transcript: [
             {
               speaker: "New Character",
-              message: "This is a message."
-            }
-          ]
-        }
-      }
+              message: "This is a message.",
+            },
+          ],
+        },
+      };
 
     case "exposition":
       return {
         input: {
-          target: "New Object"
+          target: "New Object",
         },
         output: {
-          comment: "This is some historical information about the object."
-        }
-      }
+          comment: "This is some historical information about the object.",
+        },
+      };
     case "rpgDialogue":
       return {
         input: {
           location: "New Location",
           characters: ["New Character"],
           npcs: ["New NPC"],
-          objects: ["New Object"]
+          objects: ["New Object"],
         },
         output: {
           transcript: [
             {
               speaker: "New NPC",
-              message: "Which door do you choose? [The Red Door] [The Blue Door]"
+              message:
+                "Which door do you choose? [The Red Door] [The Blue Door]",
             },
             {
               speaker: "New Character",
-              message: "[The Blue Door]*"
-            }
-          ]
-        }
-      }
+              message: "[The Blue Door]*",
+            },
+          ],
+        },
+      };
     case "cutscenes":
       return {
         input: {
           location: "New Location",
           characters: ["New Character"],
           npcs: ["New NPC"],
-          objects: ["New Object"]
+          objects: ["New Object"],
         },
         output: {
           transcript: [
             {
               speaker: "New NPC",
-              message: "Let's do something in this cutscene."
+              message: "Let's do something in this cutscene.",
             },
             {
               speaker: "New Character",
-              message: "Yes, let's.*"
-            }
-          ]
-        }
-      }
+              message: "Yes, let's.*",
+            },
+          ],
+        },
+      };
     case "actions":
       return {
         input: {
@@ -230,16 +229,18 @@ export async function makeDialogue(type, openErrorModal) {
           characters: ["New Character"],
           npcs: ["New NPC"],
           objects: ["New Object"],
-          messages: [{
-            speaker: "New NPC",
-            action: "You should pick up the object"
-          }]
+          messages: [
+            {
+              speaker: "New NPC",
+              action: "You should pick up the object",
+            },
+          ],
         },
         output: {
           speaker: "New Character",
-          action: "picks up New Object"
-        }
-      }
+          action: "picks up New Object",
+        },
+      };
 
     case "reactions":
       return {
@@ -248,18 +249,20 @@ export async function makeDialogue(type, openErrorModal) {
           characters: ["New Character"],
           npcs: ["New NPC"],
           objects: ["New Object"],
-          messages: [{
-            speaker: "New NPC",
-            action: "I am your father"
-          }]
+          messages: [
+            {
+              speaker: "New NPC",
+              action: "I am your father",
+            },
+          ],
         },
         output: {
           transcript: {
             speaker: "New Character",
-            reaction: "surprise"
-          }
-        }
-      }
+            reaction: "surprise",
+          },
+        },
+      };
     default:
       openErrorModal("Unknown type " + type);
       return null;
@@ -335,33 +338,33 @@ export async function generate(type, data, baseData, openErrorModal) {
       return resp;
     case "objectComment":
       resp = await module.generateObjectComment(
-        getRandomEntity(data, "object"),
-        makeGenerateFn(),
+        getRandomEntityFull(data, "object"),
+        makeGenerateFn()
       );
       return resp;
     case "npcComment":
       resp = await module.generateNPCComment(
-        getRandomEntity(data, "npc"),
-        makeGenerateFn(),
+        getRandomEntityFull(data, "npc"),
+        makeGenerateFn()
       );
       return resp;
     case "mobComment":
       resp = await module.generateMobComment(
-        getRandomEntity(data, "mob"),
-        makeGenerateFn(),
+        getRandomEntityFull(data, "mob"),
+        makeGenerateFn()
       );
       return resp;
     case "loadingComment":
       resp = await module.generateLoadingComment(
-        getRandomEntity(data, "location"),
-        makeGenerateFn(),
+        getRandomEntityFull(data, "location"),
+        makeGenerateFn()
       );
       return resp;
     case "banter":
       console.log("generating banter");
       resp = await module.generateBanter(
         getRandomEntity(data, "character"),
-        makeGenerateFn(),
+        makeGenerateFn()
       );
       if (!resp || resp?.length <= 0) {
         return generate("banter", data, baseData, openErrorModal);
@@ -377,7 +380,7 @@ export async function generate(type, data, baseData, openErrorModal) {
     case "rpgDialogue":
       resp = await module.generateRPGDialogue(
         getRandomEntity(data, "character"),
-        makeGenerateFn(),
+        makeGenerateFn()
       );
       if (!resp || resp?.length <= 0) {
         return generate("rpgDialogue", data, baseData, openErrorModal);
@@ -387,7 +390,7 @@ export async function generate(type, data, baseData, openErrorModal) {
       console.log(module);
       resp = await module.generateReaction(
         getRandomEntity(data, "character"),
-        makeGenerateFn(),
+        makeGenerateFn()
       );
       if (!resp || resp?.length <= 0) {
         return generate("reactions", data, baseData, openErrorModal);
@@ -403,7 +406,7 @@ export async function generate(type, data, baseData, openErrorModal) {
     case "quests":
       resp = await module.generateAction(
         getRandomEntity(data, "location"),
-        makeGenerateFn(),
+        makeGenerateFn()
       );
       console.log("ACTION:", resp);
       return resp;
@@ -496,6 +499,10 @@ export async function openaiRequest(key, prompt, stop) {
 export function makeGenerateFn() {
   return async (prompt, stop) => {
     console.log("STOP:", stop);
-    return await openaiRequest(localStorage.getItem("openai_key"), prompt, stop);
+    return await openaiRequest(
+      localStorage.getItem("openai_key"),
+      prompt,
+      stop
+    );
   };
 }

@@ -8,10 +8,15 @@ const DialogueListBox = ({
   /* It's a string that is used to identify the type of dialogue. */
   type = "",
 }) => {
-  const [editJson, setEditJson] = React.useState(true);
+  const [generating, setGenerating] = React.useState(false);
 
-  const { addDialogueCallback, entities, dialogue, currentDialogueType } =
-    useContext(ApplicationContext);
+  const {
+    addDialogueCallback,
+    generateDialogueCallback,
+    entities,
+    dialogue,
+    currentDialogueType,
+  } = useContext(ApplicationContext);
   console.log("dialogue", dialogue);
   return (
     <div className={"sectionWrapper " + header + "_wrapped"}>
@@ -20,13 +25,6 @@ const DialogueListBox = ({
         <div style={{ display: "inline-block", float: "right" }}>
           <button onClick={() => addDialogueCallback(currentDialogueType)}>
             Add
-          </button>
-          <button
-            onClick={() => {
-              setEditJson(!editJson);
-            }}
-          >
-            {editJson ? "JSON" : "Text"}
           </button>
         </div>
       </div>
@@ -39,7 +37,6 @@ const DialogueListBox = ({
               key={key}
               index={index}
               type={currentDialogueType}
-              editJson={editJson}
             />
           );
         })}

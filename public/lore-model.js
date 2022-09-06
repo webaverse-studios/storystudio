@@ -447,7 +447,12 @@ export async function generateReaction(name, generateFn) {
 
 // BANTER
 
-export const makeBanterPrompt = ({ location = null, characters = [], objects = [], messages = [] }) => {
+export const makeBanterPrompt = ({
+  location = null,
+  characters = [],
+  objects = [],
+  messages = [],
+}) => {
   return `\
 # Objects
 "Sword of Gothika" A rare and legendary sword.
@@ -482,21 +487,31 @@ export const makeBanterPrompt = ({ location = null, characters = [], objects = [
 ${location && `# Location\n"${location.name}" ${location.description}`}
 
 ${objects.length > 0 && "# Objects\n\n"}\
-${objects
-      .slice(0, 2)
-      .map((c) => `"${c.name}" ${c.description}`)
-      .join("\n\n") + (objects.length > 0 && "\n")
-    }\
+${
+  objects
+    .slice(0, 2)
+    .map((c) => `"${c.name}" ${c.description}`)
+    .join("\n\n") + (objects.length > 0 && "\n")
+}\
 
 ${characters.length > 0 && "# Characters\n"}\
-${characters.map((c) => `"${c.name}" ${c.description}`)
-      .join("\n") + (characters.length > 0 && "\n")
-    }\
-(TASK) Using ${objects && objects.length > 0 && objects.map(o => o.name).join(', ')} ${location && 'and ' + location.name} as context, write a transcript of light banter between the characters.
+${
+  characters.map((c) => `"${c.name}" ${c.description}`).join("\n") +
+  (characters.length > 0 && "\n")
+}\
+(TASK) Using ${
+    objects && objects.length > 0 && objects.map((o) => o.name).join(", ")
+  } ${
+    location && "and " + location.name
+  } as context, write a transcript of light banter between the characters.
 
 # Transcript
-${messages ? (messages.map((m) => '>> ' + m.name + ': ' + m.message).join("\n")) + '\n>>' : '>>'}`
-}
+${
+  messages
+    ? messages.map((m) => ">> " + m.name + ": " + m.message).join("\n") + "\n>>"
+    : ">>"
+}`;
+};
 
 export const makeBanterStop = () => ["\n\n", "done=true", "done = true"];
 
@@ -515,37 +530,47 @@ export const parseBanterResponse = (resp) => {
   const responseArray = [...resp];
   while (responseArray.length > 0) {
     try {
-      const fullMessage = responseArray.shift().replaceAll('>> ', '').replaceAll('>', '').trim();
+      const fullMessage = responseArray
+        .shift()
+        .replaceAll(">> ", "")
+        .replaceAll(">", "")
+        .trim();
       // if fullMessage contains a '<' or https, continue
-      if (fullMessage.includes('<') || fullMessage.includes('https')) {
+      if (fullMessage.includes("<") || fullMessage.includes("https")) {
         continue;
       }
-      const splitMessage = fullMessage.split(':');
+      const splitMessage = fullMessage.split(":");
       if (splitMessage.length !== 2) {
-        console.log('invalid message format');
+        console.log("invalid message format");
         continue;
       }
 
       // split name by spaces and get the last one
-      const name = splitMessage[0].trim().trimStart().split(' ').pop();
+      const name = splitMessage[0].trim().trimStart().split(" ").pop();
       const message = splitMessage[1].trim().trimStart();
-      if (name && messages) messages.push({ name, message, done: message.includes('(done)') });
+      if (name && messages)
+        messages.push({ name, message, done: message.includes("(done)") });
 
       // check for (done)
-      if (message.includes('(done)')) {
+      if (message.includes("(done)")) {
         break;
       }
     } catch (error) {
-      console.warn('Could not format message', error);
+      console.warn("Could not format message", error);
     }
   }
 
-  return messages
-}
+  return messages;
+};
 
-export async function generateBanter({ location = null, characters = [], objects = [], messages = [] }, generateFn) {
+export async function generateBanter(
+  { location = null, characters = [], objects = [], messages = [] },
+  generateFn
+) {
   const input = { location, characters, objects, messages };
-  return parseBanterResponse(await generateFn(makeBanterPrompt(input), makeBanterStop()));
+  return parseBanterResponse(
+    await generateFn(makeBanterPrompt(input), makeBanterStop())
+  );
 }
 
 // EXPOSITION
@@ -595,7 +620,12 @@ export async function generateExposition(
 
 // CUTSCENES
 
-export const makeCutscenePrompt = ({ location = null, characters = [], objects = [], messages = [] }) => {
+export const makeCutscenePrompt = ({
+  location = null,
+  characters = [],
+  objects = [],
+  messages = [],
+}) => {
   return `\
 # Objects
 "Sword of Gothika" A rare and legendary sword.
@@ -630,22 +660,31 @@ export const makeCutscenePrompt = ({ location = null, characters = [], objects =
 ${location && `# Location\n"${location.name}" ${location.description}`}
 
 ${objects.length > 0 && "# Nearby Objects\n"}\
-${objects
-      .slice(0, 2)
-      .map((c) => `"${c.name}" ${c.description}`)
-      .join("\n\n") + (objects.length > 0 && "\n")
-    }\
+${
+  objects
+    .slice(0, 2)
+    .map((c) => `"${c.name}" ${c.description}`)
+    .join("\n\n") + (objects.length > 0 && "\n")
+}\
 ${characters.length > 0 && "# Characters\n"}\
-${characters
-      .map((c) => `"${c.name}" ${c.description}`)
-      .join("\n\n") + (characters.length > 0 && "\n\n")
-    }
+${
+  characters.map((c) => `"${c.name}" ${c.description}`).join("\n\n") +
+  (characters.length > 0 && "\n\n")
+}
 
-(TASK) Using ${objects && objects.length > 0 && objects.map(o => o.name).join(', ')} ${location && 'and ' + location.name} as context, write a video game RPG cutscene between the characters.
+(TASK) Using ${
+    objects && objects.length > 0 && objects.map((o) => o.name).join(", ")
+  } ${
+    location && "and " + location.name
+  } as context, write a video game RPG cutscene between the characters.
 
 # Transcript
-${messages ? (messages.map((m) => '>> ' + m.name + ': ' + m.message).join("\n")) + '\n>>' : '>>'}`
-}
+${
+  messages
+    ? messages.map((m) => ">> " + m.name + ": " + m.message).join("\n") + "\n>>"
+    : ">>"
+}`;
+};
 
 export const makeCutsceneStop = () => ["\n\n", "done=true", "done = true"];
 
@@ -664,32 +703,37 @@ export const parseCutsceneResponse = (resp) => {
   const responseArray = [...resp];
   while (responseArray.length > 0) {
     try {
-      const fullMessage = responseArray.shift().replaceAll('>> ', '').replaceAll('>', '').trim();
+      const fullMessage = responseArray
+        .shift()
+        .replaceAll(">> ", "")
+        .replaceAll(">", "")
+        .trim();
       // if fullMessage contains a '<' or https, continue
-      if (fullMessage.includes('<') || fullMessage.includes('https')) {
+      if (fullMessage.includes("<") || fullMessage.includes("https")) {
         continue;
       }
-      const splitMessage = fullMessage.split(':');
+      const splitMessage = fullMessage.split(":");
       if (splitMessage.length !== 2) {
-        console.log('invalid message format');
+        console.log("invalid message format");
         continue;
       }
 
       // split name by spaces and get the last one
-      const name = splitMessage[0].trim().trimStart().split(' ').pop();
+      const name = splitMessage[0].trim().trimStart().split(" ").pop();
       const message = splitMessage[1].trim().trimStart();
-      if (name && messages) messages.push({ name, message, done: message.includes('(done)') });
+      if (name && messages)
+        messages.push({ name, message, done: message.includes("(done)") });
 
       // check for (done)
-      if (message.includes('(done)')) {
+      if (message.includes("(done)")) {
         break;
       }
     } catch (error) {
-      console.warn('Could not format message', error);
+      console.warn("Could not format message", error);
     }
   }
 
-  return messages
+  return messages;
 };
 
 export async function generateCutscene(
@@ -822,13 +866,13 @@ ${locations}
 
 ## Characters
 ${characters
-    .map((c, i) => {
-      return `Id: ${thingHash(c, i)}
+  .map((c, i) => {
+    return `Id: ${thingHash(c, i)}
     Name: ${c.name}
     Description: ${c.description || c.description}
 `;
-    })
-    .join("\n\n")}
+  })
+  .join("\n\n")}
 
 # Objects
 ${objects.map((o, i) => thingHash(o, i)).join("\n")}
@@ -844,19 +888,20 @@ ${shuffleArray(lore.inputParsing.examples).join(`\n`)}
 
 ${messages.length > 0 ? "Input:\n" : ""}
 ${messages
-    .map((m) => {
-      const characterIndex = characters.indexOf(m.character);
-      // const suffix = `[emote=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
-      // return `+${thingHash(m.character, characterIndex)}: ${m.message} ${suffix}`;
-      const suffix = `react=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
-      console.log("m.character", m);
-      return `+${thingHash(m.character, characterIndex)}: ${m.message}`;
-    })
-    .join("\n")}
-+${dstCharacter
+  .map((m) => {
+    const characterIndex = characters.indexOf(m.character);
+    // const suffix = `[emote=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
+    // return `+${thingHash(m.character, characterIndex)}: ${m.message} ${suffix}`;
+    const suffix = `react=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
+    console.log("m.character", m);
+    return `+${thingHash(m.character, characterIndex)}: ${m.message}`;
+  })
+  .join("\n")}
++${
+  dstCharacter
     ? `${thingHash(dstCharacter, characters.indexOf(dstCharacter))}:`
     : ""
-  }
+}
 Output:`;
 
 export const parseLoreResponse = (response) => {
@@ -1013,9 +1058,26 @@ export const parseCommentResponse = (response) => response.replace(/^ /, "");
 
 export async function generateObjectComment({ name, description }, generateFn) {
   const input = { name, description, type: "Object" };
-  return parseCommentResponse(
-    await generateFn(makeCommentPrompt(input), makeCommentStop())
-  );
+  const prompt = makeCommentPrompt(input);
+  const res = await generateFn(prompt, makeCommentStop());
+  const parsed = parseCommentResponse(res);
+  return { comment: parsed, prompt };
+}
+
+export async function generateNPCComment({ name, description }, generateFn) {
+  const input = { name, description, type: "Character" };
+  const prompt = makeCommentPrompt(input);
+  const res = await generateFn(prompt, makeCommentStop());
+  const parsed = parseCommentResponse(res);
+  return { comment: parsed, prompt };
+}
+
+export async function generateMobComment({ name, description }, generateFn) {
+  const input = { name, description, type: "Character" };
+  const prompt = makeCommentPrompt(input);
+  const res = await generateFn(prompt, makeCommentStop());
+  const parsed = parseCommentResponse(res);
+  return { comment: parsed, prompt };
 }
 
 export async function generateLocationComment(
@@ -1023,9 +1085,10 @@ export async function generateLocationComment(
   generateFn
 ) {
   const input = { name, description, type: "Location" };
-  return parseCommentResponse(
-    await generateFn(makeCommentPrompt(input), makeCommentStop())
-  );
+  const prompt = makeCommentPrompt(input);
+  const res = await generateFn(prompt, makeCommentStop());
+  const parsed = parseCommentResponse(res);
+  return { comment: parsed, prompt };
 }
 
 // SELECT TARGET
@@ -1034,8 +1097,9 @@ export const makeSelectTargetPrompt = ({ name, description }) => {
   return `\
 ${lore.object.prompt}
 ${shuffleArray(lore.object.examples).join(`\n`)}
-prompt: ${_cleanName(name)}${description ? ` ${description}` : ""
-    }\nresponse: "`;
+prompt: ${_cleanName(name)}${
+    description ? ` ${description}` : ""
+  }\nresponse: "`;
 };
 
 export const makeSelectTargetStop = () => `"`;
@@ -1130,11 +1194,12 @@ export const makeChatPrompt = ({
   ${shuffleArray(lore.actions.examples).join(`\n`)}
 
 ${messages
-      .map((message) => {
-        return `${message.name}: "${message.text} (react = ${message.emote ? message.emote : "normal"
-          })"`;
-      })
-      .join("\n")}
+  .map((message) => {
+    return `${message.name}: "${message.text} (react = ${
+      message.emote ? message.emote : "normal"
+    })"`;
+  })
+  .join("\n")}
 ${nextCharacter.name}: "`;
 };
 
@@ -1240,11 +1305,12 @@ ${lore.actions.prompt}
 ${lore.actions.examples.join("\n")}
 
 ${messages
-      .map((message) => {
-        return `${message.name}: "${message.text} (react = ${message.emote ? message.emote : "normal"
-          })"`;
-      })
-      .join("\n")}
+  .map((message) => {
+    return `${message.name}: "${message.text} (react = ${
+      message.emote ? message.emote : "normal"
+    })"`;
+  })
+  .join("\n")}
 Options for ${nextCharacter.name}: [`;
 };
 
