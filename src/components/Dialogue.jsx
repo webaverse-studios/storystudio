@@ -274,7 +274,10 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const stop = baseData.module.makeCommentStop();
-      res = await baseData.module.generateNPCComment(
+      res = await baseData.module.generateNPCComment({
+        name: data,
+        description,
+      },
         makeGenerationFn(prompt, stop)
       );
 
@@ -296,7 +299,10 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const stop = baseData.module.makeCommentStop();
-      res = await baseData.module.generateMobComment(
+      res = await baseData.module.generateMobComment({
+        name: data,
+        description,
+      },
         makeGenerationFn(prompt, stop)
       );
 
@@ -319,6 +325,7 @@ const Dialogue = ({ index, _key, type }) => {
 
       const stop = baseData.module.makeCommentStop();
       res = await baseData.module.generateLocationComment(
+        { name: data, description },
         makeGenerationFn(prompt, stop)
       );
 
@@ -345,7 +352,10 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const stop = baseData.module.makeExpositionStop(type);
-      res = await baseData.module.generateExposition(
+      res = await baseData.module.generateExposition({
+        name: data,
+        location: `${location.name}\n${location.description}`
+      },
         makeGenerationFn(prompt, stop)
       );
 
@@ -362,6 +372,8 @@ const Dialogue = ({ index, _key, type }) => {
       const characters = [];
       const objects = [];
 
+      console.log('chars', chars);
+
       for (let i = 0; i < chars.length; i++) {
         characters.push(getCharacter(chars[i]));
       }
@@ -375,18 +387,16 @@ const Dialogue = ({ index, _key, type }) => {
       const input = { location, characters, objects, messages };
       const stop = baseData.module.makeBanterStop();
       console.log("input:", input);
-      for (let i = 0; i < 3; i++) {
-        const prompt = await getPrompt(type, input);
-        if (!prompt || prompt?.length <= 0) {
-          return;
-        }
-
-        res = await baseData.module.generateBanter(
-          makeGenerationFn(prompt, stop)
-        );
-        const newMessages = res.parsed;
-        messages.push(...newMessages);
+      const prompt = await getPrompt(type, input);
+      if (!prompt || prompt?.length <= 0) {
+        return;
       }
+
+      const newMessages = await baseData.module.generateBanter(
+        input,
+        makeGenerationFn(prompt, stop)
+      );
+      messages.push(...newMessages);
 
       handleChange(JSON.stringify(res.unparsed), "output.response");
 
@@ -426,19 +436,14 @@ const Dialogue = ({ index, _key, type }) => {
       };
 
       const stop = baseData.module.makeRPGDialogueStop();
-      for (let i = 0; i < 6; i++) {
-        const prompt = await getPrompt(type, input);
-        if (!prompt || prompt?.length <= 0) {
-          console.log("invalid prompt:", prompt);
-          return;
-        }
-
-        res = await baseData.module.generateRPGDialogue(
-          makeGenerationFn(prompt, stop)
-        );
-        const message = res.parsed;
-        messages.push(message);
+      const prompt = await getPrompt(type, input);
+      if (!prompt || prompt?.length <= 0) {
+        console.log("invalid prompt:", prompt);
+        return;
       }
+
+      const message = await baseData.module.generateRPGDialogue(input, makeGenerationFn(prompt, stop));
+      messages.push(message);
 
       handleChange(JSON.stringify(res.unparsed), "output.response");
 
@@ -457,12 +462,12 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const stop = baseData.module.makeReactionStop(message.speaker);
-      res = await baseData.module.generateReaction(
+      const reaction = await baseData.module.generateReaction(
+        input,
         makeGenerationFn(prompt, stop)
       );
 
-      handleChange(JSON.stringify(res.unparsed), "output.response");
-      res = res.parsed;
+      handleChange(JSON.stringify(reaction), "output.response");
     } else if (type === "cutscenes") {
       const messages = [];
       const data = inputs;
@@ -503,15 +508,15 @@ const Dialogue = ({ index, _key, type }) => {
           return;
         }
 
-        res = await baseData.module.generateCutscene(
+        const newMessages = await baseData.module.generateCutscene(
+          input,
           makeGenerationFn(prompt, stop)
         );
-        const newMessages = res.parsed;
-        messages.push(newMessages[0]);
+        messages.push(...newMessages);
       }
 
-      handleChange(res.prompt, "output.prompt");
-      handleChange(JSON.stringify(res.unparsed), "output.response");
+      handleChange(prompt, "output.prompt");
+      handleChange(JSON.stringify(newMessages), "output.response");
 
       cleanDialogueMessages(_key);
       console.log("MESSAGES:", messages);
