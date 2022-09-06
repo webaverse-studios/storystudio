@@ -71,8 +71,8 @@ export const parseLocationResponse = (resp) => {
     .replace('"', "")
     .trim()
     .trimStart();
-  const name = location[0].replace('"', "").trim().trimStart();
-  const description = location[1].trim().trimStart();
+  const name = location[0].replace('"', "").trim();
+  const description = location[1].trim();
 
   return {
     name,
@@ -137,9 +137,9 @@ export const parseCharacterResponse = (resp) => {
   const character = lines[0].split('"');
   const comment =
     lines[1] &&
-    lines[1].replace("Quote: ", "").replace('"', "").trim().trimStart();
-  const name = character[0].replace('"', "").trim().trimStart();
-  const description = character[1].trim().trimStart();
+    lines[1].replace("Quote: ", "").replace('"', "").trim();
+  const name = character[0].replace('"', "").trim();
+  const description = character[1].trim();
 
   const inventory = "";
 
@@ -237,9 +237,9 @@ export const parseObjectResponse = (resp) => {
   const obj = lines[0].split('"');
   const comment =
     lines[1] &&
-    lines[1].replace("Quote: ", "").replace('"', "").trim().trimStart();
-  const name = obj[0].replace('"', "").trim().trimStart();
-  const description = obj[1].trim().trimStart();
+    lines[1].replace("Quote: ", "").replace('"', "").trim();
+  const name = obj[0].replace('"', "").trim();
+  const description = obj[1].trim();
 
   return {
     name,
@@ -397,7 +397,7 @@ ${
 # Transcript
 ${
   messages
-    ? messages.map((m) => ">> " + m.name + ": " + m.message).join("\n") + "\n>>"
+    ? messages.map((m) => ">> " + m.name + ": " + m.message).join("\n") + (messages.length > 0 ? '\n' : '') + ">>"
     : ">>"
 }`;
 };
@@ -435,8 +435,8 @@ export const parseBanterResponse = (resp) => {
       }
 
       // split name by spaces and get the last one
-      const name = splitMessage[0].trim().trimStart().split(" ").pop();
-      const message = splitMessage[1].trim().trimStart();
+      const name = splitMessage[0].trim().split(" ").pop();
+      const message = splitMessage[1].trim();
       if (name && messages)
         messages.push({ name, message, done: message.includes("(done)") });
 
@@ -522,10 +522,10 @@ export const parseExpositionResponse = (resp) => {
     return el !== "";
   });
 
-  const description = lines[0].trimStart().trim();
+  const description = lines[0].trim();
   const comment =
     lines[1] &&
-    lines[1].replaceAll("Quote: ", "").replaceAll('"', "").trim().trimStart();
+    lines[1].replaceAll("Quote: ", "").replaceAll('"', "").trim();
 
   return {
     description,
@@ -604,7 +604,7 @@ ${
   } as context, write a video game RPG cutscene between the characters.
 
 # Transcript
-${messages ? (messages.map((m) => '>> ' + m?.name + ': ' + m?.message).join("\n")) + '\n>>' : '>>'}`
+${messages ? (messages.map((m) => '>> ' + m?.name + ': ' + m?.message).join("\n")) + (messages.length > 0 ? '\n' : '') + '>>' : '>>'}`
 }
 
 export const makeCutsceneStop = () => ["\n\n", "done=true", "done = true"];
@@ -640,8 +640,8 @@ export const parseCutsceneResponse = (resp) => {
       }
 
       // split name by spaces and get the last one
-      const name = splitMessage[0].trim().trimStart().split(" ").pop();
-      const message = splitMessage[1].trim().trimStart();
+      const name = splitMessage[0].trim().split(" ").pop();
+      const message = splitMessage[1].trim();
       if (name && messages)
         messages.push({ name, message, done: message.includes("(done)") });
 
@@ -675,145 +675,175 @@ export async function generateCutscene(
 
 // RPG DIALOGUE
 
-export const makeRPGDialoguePrompt = ({ character }) => {
-  return `\
-# Examples of How to Parse Inputs
-Input:
-+a8e44f13/Scillia#4: Hi Drake! Whats up?.
-+707fbe84/Drake#3:
-Output:
-+707fbe84/Drake#3: I am doing good. How about you? (react = normal, action = follow, object = none, target = scillia#4)
-Input:
-+9f493510/Hyacinth#2: What mischief are you upto today?
-+8c83258d/Anon#1:
-Output:
-+8c83258d/Anon#1: None. I have been good all day. (react = headNod, action = none, object = none, target = none)
-Input:
-+a8e44f13/Scillia#4: Why did you break that expensive artifact? Now I will have to pay up for the damage.
-+707fbe84/Drake#3:
-Output:
-+707fbe84/Drake#3: I am really sorry about it. (react = embarrassed, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: We finally won the battle Juniper!
-+a6dfd77c/Juniper#5:
-Output:
-+a6dfd77c/Juniper#5: Hurray! We did it. (react = victory, action = none, object = none, target = none)
-Input:
-+a8e44f13/Scillia#4: I am tired. How far is the dungeon, Hyacinth?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: Just a bit further, don't worry. (react = normal, action = none, object = none, target = none)
-Input:
-+707fbe84/Drake#3: Hyacinth, are you going to visit the Church today?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: No, I will not go today. (react = headShake, action = none, object = none, target = none)
-Input:
-+707fbe84/Drake#3: Hyacinth, are you going to visit the Church today?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: Yes. I will go now. (react = headNod, action = moveto, object = none, target = church#4)
-Input:
-+707fbe84/Drake#3: Hyacinth, we are being attacked. Be prepared.
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I will get my sword. I am ready. (react = alert, action = pick up, object = none, target = sword#2)
-Input:
-+8c83258d/Anon#1: Are you funny?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I like to think so! I try to find the humor in everything, even if it's dark or bitter. (react = normal, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Juniper, here I brought you everything you need to win this competition.
-+a6dfd77c/Juniper#5:
-Output:
-+a6dfd77c/Juniper#5: Wow! That is all I needed. Thank you so much. (react = surprised, action = none, object = none, target = none)
-Input:
-+a8e44f13/Scillia#4: Can we visit the dungeons now?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: No, we cannot go there at night. (react = headShake, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Let us go to the Hovercraft together, Drake!
-+707fbe84/Drake#3:
-Output:
-+707fbe84/Drake#3: That's a great idea! (react = victory, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Thats a cool sword.
-+a6dfd77c/Juniper#5:
-Output:
-+a6dfd77c/Juniper#5: Thanks. It's made of titanium and it's sharp, dual-edged. Perfect for slicing, stabbing, and jabbing my enemies. (react = normal, action = pick up, object = none, target = sword#2)
-Input:
-+9f493510/Hyacinth#2: Today I lost one of my closest firend in the battle.
-+8c83258d/Anon#1:
-Output:
-+8c83258d/Anon#1: I am so sorry to hear it. (react = sad, action = none, object = none, target = none)
-Input:
-+9f493510/Hyacinth#2: Your actions have caused a lot of trouble to others.
-+a8e44f13/Scillia#4:
-Output:
-+a8e44f13/Scillia#4: But I did not do it. (react = angry, action = none, object = none, target = none)
-Input:
-+707fbe84/Drake#3: Hyacinth, when was the last time you were here?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I haven't been back since my father's funeral. (react = sad, action = none, object = none, target = none)
-Input:
-+a8e44f13/Scillia#4: Hey Hyacinth, as soon as we open the barrier, we rush to the site and attack.
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I am ready. Signal me as soon as the barrier opens. (react = alert, action = follow, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Hyacinth want to go on an adventure together??
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: Sure, lets go! (react = headNod, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Would you tell me more about Ironford?
-+707fbe84/Drake#3:
-Output:
-+707fbe84/Drake#3: The city of Ironford was built in the center of a giant forest and is truly a modest marvel. Its allure is matched by the backdrop of lush forests which have helped shape the city to what it is today. (react = headNod, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: The monsters have captures the people of the village.
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I will find and kill each of those monsters myself. (react = angry, action = move to, object = none, target = monster#9)
-Input:
-+a8e44f13/Scillia#4: Hey Hyacinth, what is your favorite book?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: My favorite book is The Lord of the Rings. I love the story and the world that J.R.R. Tolkien created. (react = normal, action = none, object = none, target = none)
-Input:`;
-};
+export const makeRPGDialoguePrompt = ({
+  dstCharacter,
+  characters,
+  location = null,
+  objects = [],
+  messages = [],
+}) => {
+  console.log('messages', messages);
 
-export const makeRPGDialogueStop = (/*character*/) => [
+  return `\
+# Objects
+"Sword of Gothika" A rare and legendary sword.
+
+# Characters
+"Jade64" A human adventurer. Kind of a noob but thinks he has mad skills.
+"Eris22" Pro player, power leveler for hire. She's a bit of a jerk-- unless you're paying her.
+"Maxx" Orc Berserker. Badass NPC Boss, every hunter has to kill him at least once.
+
+(TASK) Using the Sword of Gothika as context, write a video game cutscene conversation between the Jade64, Eris22 and Maxx, who are players in an MMORPG. Add (done) at the end of the sentence when a character no longer wants to engage in banter.
+
+# Transcript
+>> Jade64: Alright Maxx. I've come for the sword.
+>> Maxx: You really think you have what it takes to wield the legendary Sword of Gothika?
+>> Jade64: No. But my friend Eris does!
+>> Eris22: That's right Maxx. I'm here to claim the sword and power level my little bro.
+>> Maxx: How cute. now prepare to die! (done)
+"""
+# Objects
+"Computer" A very old computer. A real piece of crap, but I guess it works..
+
+# Characters
+"Eric" Hacker. Gunner. Good with anything that has a keyboard or a trigger.
+"Millie" She is a bit of a mystery. Works for the org, but no one knows what she does.
+
+(TASK) Using Computer as context, write a short cutscene between the Eric and Millie, who are players in an MMORPG. Add (done) at the end of the sentence when the cutscene is over.
+
+# Transcript 
+>> Millie: Just the person I needed. You busy?
+>> Eric: [Yes, I am, sorry!] [>I've always got time for you, Millie!]
+>> Millie: Great! Do you ever wonder why we are here?
+>> Eric: [Yes] [No] [>Is that a way to tee up a convo about the drop tomorrow?]
+>> Millie: In a roundabout way, yes. Listen, if I ask you for a favor, but you can't ask what it's for, will you do it?
+>> Eric: [>Yes, I trust you] [I'm sorry Millie, I'm not comfortable with that]
+>> Millie: Great. That's all I needed to know right now.
+>> Eric: What? You're just going to leave me hanging?
+>> Millie: You promised you wouldn't ask!
+>> Eric: Dang. Yeah. Okay, I won't ask about it. (done)
+"""
+
+${location && `# Location\n"${location.name}" ${location.description}`}
+
+${objects.length > 0 && "# Nearby Objects\n"}\
+${
+  objects
+    .slice(0, 2)
+    .map((c) => `"${c.name}" ${c.description}`)
+    .join("\n\n") + (objects.length > 0 && "\n")
+}\
+${characters.length > 0 && "# Characters\n"}\
+${
+  characters.map((c) => `"${c.name}" ${c.description}`).join("\n\n") +
+  (characters.length > 0 && "\n\n")
+}
+
+# Target Character
+"${dstCharacter.name}" ${dstCharacter.description}
+
+(TASK) Using ${
+    objects && objects.length > 0 && objects.map((o) => o.name).join(", ")
+  } ${
+    location && "and " + location.name
+  } as context, write a video game RPG cutscene between the characters${dstCharacter && " and " + dstCharacter.name}.
+
+# Transcript
+${(messages.map((m) => '>> ' + m.name + ': ' + m.message).join("\n")) + (messages.length > 0 ? '\n' : '') + '>>'}`
+}
+
+// export const makeRPGDialoguePrompt = ({ character }) => {
+//   return `\
+// # Examples of How to Parse Inputs
+// >> Scillia: Hi Drake! Whats up?
+// >> Drake: I am doing good. How about you? (react = normal, action = follow, object = none, target = scillia)
+
+// >> Hyacinth: What mischief are you upto today?
+// >> Anon: None. I have been good all day. (react = headNod, action = none, object = none, target = none)
+
+// >> Scillia: Why did you break that expensive artifact? Now I will have to pay up for the damage.
+// >> Drake: I am really sorry about it. (react = embarrassed, action = none, object = none, target = none)
+
+// >> Anon: We finally won the battle Juniper!
+// >> Juniper: Hurray! We did it. (react = victory, action = none, object = none, target = none)
+
+// >> Scillia: I am tired. How far is the dungeon, Hyacinth?
+// >> Hyacinth: Just a bit further, dont worry. (react = normal, action = none, object = none, target = none)
+
+// >> Drake: Hyacinth, are you going to visit the Church today?
+// >> Hyacinth: No, I will not go today. (react = headShake, action = none, object = none, target = none)
+
+// >> Drake: Hyacinth, are you going to visit the Church today?
+// >> Hyacinth: Yes. I will go now. (react = headNod, action = moveto, object = none, target = church)
+
+// >> Drake: Hyacinth, we are being attacked. Be prepared.
+// >> Hyacinth: I will get my sword. I am ready. (react = alert, action = pick up, object = none, target = sword)
+
+// >> Anon: Are you funny?
+// >> Hyacinth: I like to think so! I try to find the humor in everything, even if it's dark or bitter. (react = normal, action = none, object = none, target = none)
+
+// >> Anon: Juniper, here I brought you everything you need to win this competition.
+// >> Juniper: Wow! That is all I needed. Thank you so much. (react = surprised, action = none, object = none, target = none)
+
+// >> Scillia: Can we visit the dungeons now?
+// >> Hyacinth: No, we cannot go there at night. (react = headShake, action = none, object = none, target = none)
+
+// >> Anon: Let us go to the Hovercraft together, Drake!
+// >> Drake: That's a great idea! (react = victory, action = none, object = none, target = none)
+
+// >> Anon: Thats a cool sword.
+// >> Juniper: Thanks. It's made of titanium and it's sharp, dual-edged. Perfect for slicing, stabbing, and jabbing my enemies. (react = normal, action = pick up, object = none, target = sword)
+
+// >> Hyacinth: Today I lost one of my closest firend in the battle.
+// >> Anon: I am so sorry to hear it. (react = sad, action = none, object = none, target = none)
+
+// >> Hyacinth: Your actions have caused a lot of trouble to others.
+// >> Scillia: But I did not do it. (react = angry, action = none, object = none, target = none)
+
+// >> Drake: Hyacinth, when was the last time you were here?
+// >> Hyacinth: I haven't been back since my father's funeral. (react = sad, action = none, object = none, target = none)
+
+// >> Scillia: Hey Hyacinth, as soon as we open the barrier, we rush to the site and attack.
+// >> Hyacinth: I am ready. Signal me as soon as the barrier opens. (react = alert, action = follow, object = none, target = none)
+
+// >> Anon: Hyacinth want to go on an adventure together??
+// >> Hyacinth: Sure, lets go! (react = headNod, action = none, object = none, target = none)
+
+// >> Anon: Would you tell me more about Ironford?
+// >> Drake: The city of Ironford was built in the center of a giant forest and is truly a modest marvel. Its allure is matched by the backdrop of lush forests which have helped shape the city to what it is today. (react = headNod, action = none, object = none, target = none)
+
+// >> Anon: The monsters have captures the people of the village.
+// >> Hyacinth: I will find and kill each of those monsters myself. (react = angry, action = move to, object = none, target = monster)
+
+// >> Scillia: Hey Hyacinth, what is your favorite book?
+// >> Hyacinth: My favorite book is The Lord of the Rings. I love the story and the world that J.R.R. Tolkien created. (react = normal, action = none, object = none, target = none)
+
+// >> ${character.name}: `;
+// };
+
+export const makeRPGDialogueStop = () => [
   "\n",
-  // `Input:\n+a8e44f13${character.name}:`,
 ];
 
 export const parseRPGDialogueResponse = (resp) => {
-  // if (
-  //   resp.startsWith(
-  //     `Input:\n+a8e44f13${character.name}:`
-  //   )
-  // ) {
-  //   return resp
-  //     .replace(
-  //       `Input:\n+a8e44f13${character.name}:`,
-  //       ""
-  //     )
-  //     .trim();
-  // } else {
-  return resp;
-  // }
+  // first, split by line, and remove ">> ", then remove any > or <
+  console.log('resp is ', resp);
+  const line = resp.trim();
+  const split = line.split(":");
+  const name = split[0].trim();
+  const message = split[1].trim();
+  return {
+    name,
+    message
+  };
 };
 
-export async function generateRPGDialogue({ character }, generateFn) {
-  const input = { character };
+export async function generateRPGDialogue({ location = null, characters = [], objects = [],  messages = [], dstCharacter = null}, generateFn) {
+  const input = { location, characters, objects,  messages, dstCharacter }
   return parseRPGDialogueResponse(
     await generateFn(
       makeRPGDialoguePrompt(input),
-      makeRPGDialogueStop(character)
+      makeRPGDialogueStop()
     )
   );
 }
@@ -846,7 +876,7 @@ ${location}:`;
 export const makeQuestStop = () => ["\n"];
 
 export const parseQuestResponse = (resp) => {
-    const [quest, reward] = resp.trim().trimStart().split("|");
+    const [quest, reward] = resp.trim().split("|");
     return {
       quest: quest.trim(),
       reward: reward.trim(),
@@ -877,158 +907,93 @@ AI anime avatars in a virtual world. They have human-level intelligence and uniq
 ${locations}
 
 ## Characters
-${characters
-  .map((c, i) => {
-    return `Id: ${thingHash(c, i)}
-    Name: ${c.name}
-    Description: ${c.description || c.description}
-`;
-  })
-  .join("\n\n")}
+${characters.map((c) => `"${c.name}" ${c.description}\n`).join("\n")}
 
 # Objects
-${objects.map((o, i) => thingHash(o, i)).join("\n")}
+${objects.map((o) => `"${o.name}" ${o.description}\n`).join("\n")}
 
 # Basic Reactions
-Reaction: headShake
-Description: When the Character does not agree with what is in the Input.
-Reaction: headNod
-Description: When the Character agrees with what is being said in the Input.
-Reaction: normal
-Description: When the Character has no emotion attached to the Input.
-Reaction: sad
-Description: When the Character feels sad or bad about what is in the Input.
-Reaction: victory
-Description: When the Character is happy or overjoyed by what is in the Input.
-Reaction: alert
-Description: When the Character gets cautious about what is in the Input.
-Reaction: angry
-Description: When the Character is not satisfied or angry of what is in the Input.
-Reaction: embarrassed
-Description: When the Character is ashamed of what is in the Input.
-Reaction: surprised
-Description: When the Character did not expect what is in the Input.
+normal: When the Character has no emotion attached to the Input.
+headShake: When the Character does not agree with what is in the Input.
+headNod: When the Character agrees with what is being said in the Input.
+sad: When the Character feels sad or bad about what is in the Input.
+victory: When the Character is happy or overjoyed by what is in the Input.
+alert: When the Character gets cautious about what is in the Input.
+angry: When the Character is not satisfied or angry of what is in the Input.
+embarrassed: When the Character is ashamed of what is in the Input.
+surprised: When the Character did not expect what is in the Input.
 
 # Basic Actions
-Action: move to
-Description:  When the Input clearly indicates that a Character needs to move to another Object/Character, use this action.
-Action: follow
-Description: When the Input clearly indicates that a Character needs to follow another Character, use this action.
-Action: pick up
-Description: When the Input clearly indicates that a Character needs to pick up an Object, use this action.
-Action: drops
-Description: When the Input clearly indicates that a Character needs to give an Object to someone, put an Object at some particular place or just simply remove it from their inventory, use this action.
-Action: none
-Description: When the Input clearly indicates that there is no need for any action to be taken by a Character, use this action.
-Action: stop
-Description: When the Input clearly indicates that a Character has to stop something, use this action.
+move to: When the Input clearly indicates that a Character needs to move to another Object/Character, use this action.
+follow: When the Input clearly indicates that a Character needs to follow another Character, use this action.
+pick up: When the Input clearly indicates that a Character needs to pick up an Object, use this action.
+drops: When the Input clearly indicates that a Character needs to give an Object to someone, put an Object at some particular place or just simply remove it from their inventory, use this action.
+none: When the Input clearly indicates that there is no need for any action to be taken by a Character, use this action.
+stop: When the Input clearly indicates that a Character has to stop something, use this action.
 
 # Examples of How to Parse Inputs
-Input:
-+a8e44f13/Scillia#4: Hi Drake! Whats up?.
-+707fbe84/Drake#3:
-Output:
-+707fbe84/Drake#3: I am doing good. How about you? (react = normal, action = follow, object = none, target = scillia#4)
-Input:
-+9f493510/Hyacinth#2: What mischief are you upto today?
-+8c83258d/Anon#1:
-Output:
-+8c83258d/Anon#1: None. I have been good all day. (react = headNod, action = none, object = none, target = none)
-Input:
-+a8e44f13/Scillia#4: Why did you break that expensive artifact? Now I will have to pay up for the damage.
-+707fbe84/Drake#3:
-Output:
-+707fbe84/Drake#3: I am really sorry about it. (react = embarrassed, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: We finally won the battle Juniper!
-+a6dfd77c/Juniper#5:
-Output:
-+a6dfd77c/Juniper#5: Hurray! We did it. (react = victory, action = none, object = none, target = none)
-Input:
-+a8e44f13/Scillia#4: I am tired. How far is the dungeon, Hyacinth?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: Just a bit further, don't worry. (react = normal, action = none, object = none, target = none)
-Input:
-+707fbe84/Drake#3: Hyacinth, are you going to visit the Church today?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: No, I will not go today. (react = headShake, action = none, object = none, target = none)
-Input:
-+707fbe84/Drake#3: Hyacinth, are you going to visit the Church today?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: Yes. I will go now. (react = headNod, action = moveto, object = none, target = church#4)
-Input:
-+707fbe84/Drake#3: Hyacinth, we are being attacked. Be prepared.
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I will get my sword. I am ready. (react = alert, action = pick up, object = none, target = sword#2)
-Input:
-+8c83258d/Anon#1: Are you funny?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I like to think so! I try to find the humor in everything, even if it's dark or bitter. (react = normal, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Juniper, here I brought you everything you need to win this competition.
-+a6dfd77c/Juniper#5:
-Output:
-+a6dfd77c/Juniper#5: Wow! That is all I needed. Thank you so much. (react = surprised, action = none, object = none, target = none)
-Input:
-+a8e44f13/Scillia#4: Can we visit the dungeons now?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: No, we cannot go there at night. (react = headShake, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Let us go to the Hovercraft together, Drake!
-+707fbe84/Drake#3:
-Output:
-+707fbe84/Drake#3: That's a great idea! (react = victory, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Thats a cool sword.
-+a6dfd77c/Juniper#5:
-Output:
-+a6dfd77c/Juniper#5: Thanks. It's made of titanium and it's sharp, dual-edged. Perfect for slicing, stabbing, and jabbing my enemies. (react = normal, action = pick up, object = none, target = sword#2)
-Input:
-+9f493510/Hyacinth#2: Today I lost one of my closest firend in the battle.
-+8c83258d/Anon#1:
-Output:
-+8c83258d/Anon#1: I am so sorry to hear it. (react = sad, action = none, object = none, target = none)
-Input:
-+9f493510/Hyacinth#2: Your actions have caused a lot of trouble to others.
-+a8e44f13/Scillia#4:
-Output:
-+a8e44f13/Scillia#4: But I did not do it. (react = angry, action = none, object = none, target = none)
-Input:
-+707fbe84/Drake#3: Hyacinth, when was the last time you were here?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I haven't been back since my father's funeral. (react = sad, action = none, object = none, target = none)
-Input:
-+a8e44f13/Scillia#4: Hey Hyacinth, as soon as we open the barrier, we rush to the site and attack.
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I am ready. Signal me as soon as the barrier opens. (react = alert, action = follow, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Hyacinth want to go on an adventure together??
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: Sure, lets go! (react = headNod, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Would you tell me more about Ironford?
-+707fbe84/Drake#3:
-Output:
-+707fbe84/Drake#3: The city of Ironford was built in the center of a giant forest and is truly a modest marvel. Its allure is matched by the backdrop of lush forests which have helped shape the city to what it is today. (react = headNod, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: The monsters have captures the people of the village.
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I will find and kill each of those monsters myself. (react = angry, action = move to, object = none, target = monster#9)
-Input:
-+a8e44f13/Scillia#4: Hey Hyacinth, what is your favorite book?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: My favorite book is The Lord of the Rings. I love the story and the world that J.R.R. Tolkien created. (react = normal, action = none, object = none, target = none)
+>> Scillia: Hi Drake! Whats up?
+>> Drake: I am doing good. How about you? (react = normal, action = follow, object = none, target = scillia)
+
+>> Hyacinth: What mischief are you upto today?
+>> Anon: None. I have been good all day. (react = headNod, action = none, object = none, target = none)
+
+>> Scillia: Why did you break that expensive artifact? Now I will have to pay up for the damage.
+>> Drake: I am really sorry about it. (react = embarrassed, action = none, object = none, target = none)
+
+>> Anon: We finally won the battle Juniper!
+>> Juniper: Hurray! We did it. (react = victory, action = none, object = none, target = none)
+
+>> Scillia: I am tired. How far is the dungeon, Hyacinth?
+>> Hyacinth: Just a bit further, dont worry. (react = normal, action = none, object = none, target = none)
+
+>> Drake: Hyacinth, are you going to visit the Church today?
+>> Hyacinth: No, I will not go today. (react = headShake, action = none, object = none, target = none)
+
+>> Drake: Hyacinth, are you going to visit the Church today?
+>> Hyacinth: Yes. I will go now. (react = headNod, action = moveto, object = none, target = church)
+
+>> Drake: Hyacinth, we are being attacked. Be prepared.
+>> Hyacinth: I will get my sword. I am ready. (react = alert, action = pick up, object = none, target = sword)
+
+>> Anon: Are you funny?
+>> Hyacinth: I like to think so! I try to find the humor in everything, even if it's dark or bitter. (react = normal, action = none, object = none, target = none)
+
+>> Anon: Juniper, here I brought you everything you need to win this competition.
+>> Juniper: Wow! That is all I needed. Thank you so much. (react = surprised, action = none, object = none, target = none)
+
+>> Scillia: Can we visit the dungeons now?
+>> Hyacinth: No, we cannot go there at night. (react = headShake, action = none, object = none, target = none)
+
+>> Anon: Let us go to the Hovercraft together, Drake!
+>> Drake: That's a great idea! (react = victory, action = none, object = none, target = none)
+
+>> Anon: Thats a cool sword.
+>> Juniper: Thanks. It's made of titanium and it's sharp, dual-edged. Perfect for slicing, stabbing, and jabbing my enemies. (react = normal, action = pick up, object = none, target = sword)
+
+>> Hyacinth: Today I lost one of my closest firend in the battle.
+>> Anon: I am so sorry to hear it. (react = sad, action = none, object = none, target = none)
+
+>> Hyacinth: Your actions have caused a lot of trouble to others.
+>> Scillia: But I did not do it. (react = angry, action = none, object = none, target = none)
+
+>> Drake: Hyacinth, when was the last time you were here?
+>> Hyacinth: I haven't been back since my father's funeral. (react = sad, action = none, object = none, target = none)
+
+>> Scillia: Hey Hyacinth, as soon as we open the barrier, we rush to the site and attack.
+>> Hyacinth: I am ready. Signal me as soon as the barrier opens. (react = alert, action = follow, object = none, target = none)
+
+>> Anon: Hyacinth want to go on an adventure together??
+>> Hyacinth: Sure, lets go! (react = headNod, action = none, object = none, target = none)
+
+>> Anon: Would you tell me more about Ironford?
+>> Drake: The city of Ironford was built in the center of a giant forest and is truly a modest marvel. Its allure is matched by the backdrop of lush forests which have helped shape the city to what it is today. (react = headNod, action = none, object = none, target = none)
+
+>> Anon: The monsters have captures the people of the village.
+>> Hyacinth: I will find and kill each of those monsters myself. (react = angry, action = move to, object = none, target = monster)
+
+>> Scillia: Hey Hyacinth, what is your favorite book?
+>> Hyacinth: My favorite book is The Lord of the Rings. I love the story and the world that J.R.R. Tolkien created. (react = normal, action = none, object = none, target = none)
 
 ${messages.length > 0 ? "Input:\n" : ""}
 ${messages
@@ -1494,6 +1459,70 @@ export const parseBattleIntroductionResponse = (response) => {
 
 // CHAT MESSAGE
 
+const actionsExamples = `\
+Available reactions:
+surprise
+victory
+alert
+angry
+embarrassed
+headNod
+headShake
+sad
+Millie: "Hey, have I seen you around before? (react = surprise)"
+Options for Westley: [No, I don't think so. (react = headShake)], [Yes, I've seen you in class. (react = headNod)]
+Westley: "No, I don't think so. (react = headShake)"
+Millie: "I could have sworn you sit in the row in front of me. (react = normal)"
+Gunter: "Have you seen the flowers? They're lovely this time of year."
+Options for Evie: [Yes, I have seen them. (react = headNod)], [No, I haven't seen them. (react = headShake)]
+Evie: "No, I haven't seen them. (react = headShake)."
+Gunter: "Well, then what are we waiting for? Let's go! (react = victory)" *END*
+ 
+Alex: "These enemies are coming at us hard. (react = alert)"
+Options for Jake: [What should we do? (react = alert)], [I'm not sure, I don't know how to fight. (react = sad)]
+Jake: "What should we do? (react = alert)"
+Alex:  "We need to find some cover and regroup. (react = alert)" *END*
+Mike: "What happened to the mirror? (react = angry)"
+Options for Amy: [I don't know, I wasn't here when it happened. (react = sad)], [I broke it. (react = embarrassed)]
+Amy: "I broke it. (react = embarrassed)"
+Mike: "That's not good. How are we going to see our reflection now? (react = sad)" *END*
+Keith: "Yay! I won. (react = victory)"
+Joe: "Congrats on winning the game (react = victory)"
+Options for Keith: [You're welcome. (react = normal)], [Thanks, I couldn't have done it without you. (react = headNod)]
+Keith: "Thanks, I couldn't have done it without you. (react = headNod)"
+Joe: " I don't know about that. You were the one who made all the calls. Good job! (react = victory)" *END*
+Peter: "What are you doing here? (react = surprised)"
+Options for Molly: [I'm lost, I don't know where I am. (react = sad)], [I'm looking for the library. (react = normal)]
+Molly: "I'm lost, I don't know where I am. (react = sad)"
+Peter: "Let me help you, where are you trying to go? (react = normal)" *END*
+Kate: "What happened to your house? (react = sad)"
+Jim: "Somebody broke in and trashed the place. (react = anger)"
+Options for Kate: [That's awful, I'm so sorry. (react = sad)], [Do you know who did it? (react = normal)]
+Kate: "Do you know who did it? (react = normal)"
+Jim: "Yes, it was the kids from down the block. (react = anger)"
+Options for Kate: [That's great, now you can call the police and they'll arrest them. (react = victory)], [Do you want me to help you clean up? (react = headNod)]
+Kate: "Do you want me to help you clean up? (react = headNod)"
+Jim: "No, I don't want your help. I can do it myself. (react = headShake)" *END*
+Emily: "Let's go to the treehouse (react = normal)"
+Brad: "I don't know, my mom said I'm not allowed to go there. (react = sad)"
+Options for Emily: [Your mom is just being overprotective. Come on, it'll be fun! (react = headShake)], [We'll be careful, I promise. (react = headNod)] 
+Emily: "Your mom is just being overprotective. Come on, it'll be fun! (react = headShake)"
+Brad: "Okay, but if we get in trouble it's your fault. (react = normal)" *END*
+Tyler: "I like your sword, can I also have a weapon? (react = normal)"
+Sophie: "Yes, you will need a weapon. You're going to get yourself killed if you go into battle unarmed! (react = anger)" 
+Options for Tyler:[I'll be fine, I know what I'm doing. (react = headShake)], [Okay, give me a sword. (react = headNod)] 
+Tyler: "Okay, give me a sword. (react = headNod)" *END*
+Yune: "I challenge you to a duel! (react = angry)"
+Pris: "I'm not dueling you, I don't have time for this. (react = headShake)"
+Options for Yune: [Duel me or face the consequences! (react = angry)],[Fine, let's get this over with. (react = normal)] 
+Yune: "Duel me or face the consequences! (react = angry)"
+Pris: "I don't have time for your games. (react = headShake)" *END*
+Jake: "What are you doing?  (react = surprised)"
+Amy: "I'm looking for my cat. Have you seen her?  (react = normal)"
+Options for Jake:[No, I haven't seen your cat. (react =  headShake)], [Yes, I saw your cat go into the treehouse. (react = headNod)] 
+Jake: "No, I haven't seen your cat. (react = headShake)"
+Amy: "Well, if you see her can you let me know?  (react = normal)" *END*`;
+
 export const makeChatPrompt = ({
   // name,
   // description,
@@ -1502,120 +1531,12 @@ export const makeChatPrompt = ({
 }) => {
   // Modifying messages to include emotes
   return `\
-# Examples of How to Parse Inputs
-Input:
-Scillia: Hi Drake! Whats up?.
-Drake:
-Output:
-Drake: I am doing good. How about you? (react = normal, action = follow, object = none, target = scillia#4)
-Input:
-Hyacinth: What mischief are you upto today?
-Anon:
-Output:
-Anon: None. I have been good all day. (react = headNod, action = none, object = none, target = none)
-Input:
-Scillia: Why did you break that expensive artifact? Now I will have to pay up for the damage.
-Drake:
-Output:
-Drake: I am really sorry about it. (react = embarrassed, action = none, object = none, target = none)
-Input:
-Anon: We finally won the battle Juniper!
-Juniper:
-Output:
-Juniper: Hurray! We did it. (react = victory, action = none, object = none, target = none)
-Input:
-Scillia: I am tired. How far is the dungeon, Hyacinth?
-Hyacinth:
-Output:
-Hyacinth: Just a bit further, don't worry. (react = normal, action = none, object = none, target = none)
-Input:
-Drake: Hyacinth, are you going to visit the Church today?
-Hyacinth:
-Output:
-Hyacinth: No, I will not go today. (react = headShake, action = none, object = none, target = none)
-Input:
-Drake: Hyacinth, are you going to visit the Church today?
-Hyacinth:
-Output:
-Hyacinth: Yes. I will go now. (react = headNod, action = moveto, object = none, target = church#4)
-Input:
-Drake: Hyacinth, we are being attacked. Be prepared.
-Hyacinth:
-Output:
-Hyacinth: I will get my sword. I am ready. (react = alert, action = pick up, object = none, target = sword#2)
-Input:
-Anon: Are you funny?
-Hyacinth:
-Output:
-Hyacinth: I like to think so! I try to find the humor in everything, even if it's dark or bitter. (react = normal, action = none, object = none, target = none)
-Input:
-Anon: Juniper, here I brought you everything you need to win this competition.
-Juniper:
-Output:
-Juniper: Wow! That is all I needed. Thank you so much. (react = surprised, action = none, object = none, target = none)
-Input:
-Scillia: Can we visit the dungeons now?
-Hyacinth:
-Output:
-Hyacinth: No, we cannot go there at night. (react = headShake, action = none, object = none, target = none)
-Input:
-Anon: Let us go to the Hovercraft together, Drake!
-Drake:
-Output:
-Drake: That's a great idea! (react = victory, action = none, object = none, target = none)
-Input:
-Anon: Thats a cool sword.
-Juniper:
-Output:
-Juniper: Thanks. It's made of titanium and it's sharp, dual-edged. Perfect for slicing, stabbing, and jabbing my enemies. (react = normal, action = pick up, object = none, target = sword#2)
-Input:
-Hyacinth: Today I lost one of my closest firend in the battle.
-Anon:
-Output:
-Anon: I am so sorry to hear it. (react = sad, action = none, object = none, target = none)
-Input:
-Hyacinth: Your actions have caused a lot of trouble to others.
-Scillia:
-Output:
-Scillia: But I did not do it. (react = angry, action = none, object = none, target = none)
-Input:
-Drake: Hyacinth, when was the last time you were here?
-Hyacinth:
-Output:
-Hyacinth: I haven't been back since my father's funeral. (react = sad, action = none, object = none, target = none)
-Input:
-Scillia: Hey Hyacinth, as soon as we open the barrier, we rush to the site and attack.
-Hyacinth:
-Output:
-Hyacinth: I am ready. Signal me as soon as the barrier opens. (react = alert, action = follow, object = none, target = none)
-Input:
-Anon: Hyacinth want to go on an adventure together??
-Hyacinth:
-Output:
-Hyacinth: Sure, lets go! (react = headNod, action = none, object = none, target = none)
-Input:
-Anon: Would you tell me more about Ironford?
-Drake:
-Output:
-Drake: The city of Ironford was built in the center of a giant forest and is truly a modest marvel. Its allure is matched by the backdrop of lush forests which have helped shape the city to what it is today. (react = headNod, action = none, object = none, target = none)
-Input:
-Anon: The monsters have captures the people of the village.
-Hyacinth:
-Output:
-Hyacinth: I will find and kill each of those monsters myself. (react = angry, action = move to, object = none, target = monster#9)
-Input:
-Scillia: Hey Hyacinth, what is your favorite book?
-Hyacinth:
-Output:
-Hyacinth: My favorite book is The Lord of the Rings. I love the story and the world that J.R.R. Tolkien created. (react = normal, action = none, object = none, target = none)
+${actionsExamples}
 
-${messages
-  .map((message) => {
-    return `${message.name}: "${message.text} (react = ${
-      message.emote ? message.emote : "normal"
-    })"`;
-  })
-  .join("\n")}
+${messages.map((message, i) => { return `\
+${i % 2 === 0 ? "Input:" : "Output:"}
+${message.name}: ${message.text} (react = ${message.emote || "normal"})`;
+}).join("\n")}
 ${nextCharacter.name}: "`;
 };
 
@@ -1762,112 +1683,7 @@ export const makeOptionsPrompt = ({
   nextCharacter,
 }) => {
   return `\
-# Examples of How to Parse Inputs
-Input:
-+a8e44f13/Scillia#4: Hi Drake! Whats up?.
-+707fbe84/Drake#3:
-Output:
-+707fbe84/Drake#3: I am doing good. How about you? (react = normal, action = follow, object = none, target = scillia#4)
-Input:
-+9f493510/Hyacinth#2: What mischief are you upto today?
-+8c83258d/Anon#1:
-Output:
-+8c83258d/Anon#1: None. I have been good all day. (react = headNod, action = none, object = none, target = none)
-Input:
-+a8e44f13/Scillia#4: Why did you break that expensive artifact? Now I will have to pay up for the damage.
-+707fbe84/Drake#3:
-Output:
-+707fbe84/Drake#3: I am really sorry about it. (react = embarrassed, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: We finally won the battle Juniper!
-+a6dfd77c/Juniper#5:
-Output:
-+a6dfd77c/Juniper#5: Hurray! We did it. (react = victory, action = none, object = none, target = none)
-Input:
-+a8e44f13/Scillia#4: I am tired. How far is the dungeon, Hyacinth?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: Just a bit further, don't worry. (react = normal, action = none, object = none, target = none)
-Input:
-+707fbe84/Drake#3: Hyacinth, are you going to visit the Church today?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: No, I will not go today. (react = headShake, action = none, object = none, target = none)
-Input:
-+707fbe84/Drake#3: Hyacinth, are you going to visit the Church today?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: Yes. I will go now. (react = headNod, action = moveto, object = none, target = church#4)
-Input:
-+707fbe84/Drake#3: Hyacinth, we are being attacked. Be prepared.
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I will get my sword. I am ready. (react = alert, action = pick up, object = none, target = sword#2)
-Input:
-+8c83258d/Anon#1: Are you funny?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I like to think so! I try to find the humor in everything, even if it's dark or bitter. (react = normal, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Juniper, here I brought you everything you need to win this competition.
-+a6dfd77c/Juniper#5:
-Output:
-+a6dfd77c/Juniper#5: Wow! That is all I needed. Thank you so much. (react = surprised, action = none, object = none, target = none)
-Input:
-+a8e44f13/Scillia#4: Can we visit the dungeons now?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: No, we cannot go there at night. (react = headShake, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Let us go to the Hovercraft together, Drake!
-+707fbe84/Drake#3:
-Output:
-+707fbe84/Drake#3: That's a great idea! (react = victory, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Thats a cool sword.
-+a6dfd77c/Juniper#5:
-Output:
-+a6dfd77c/Juniper#5: Thanks. It's made of titanium and it's sharp, dual-edged. Perfect for slicing, stabbing, and jabbing my enemies. (react = normal, action = pick up, object = none, target = sword#2)
-Input:
-+9f493510/Hyacinth#2: Today I lost one of my closest firend in the battle.
-+8c83258d/Anon#1:
-Output:
-+8c83258d/Anon#1: I am so sorry to hear it. (react = sad, action = none, object = none, target = none)
-Input:
-+9f493510/Hyacinth#2: Your actions have caused a lot of trouble to others.
-+a8e44f13/Scillia#4:
-Output:
-+a8e44f13/Scillia#4: But I did not do it. (react = angry, action = none, object = none, target = none)
-Input:
-+707fbe84/Drake#3: Hyacinth, when was the last time you were here?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I haven't been back since my father's funeral. (react = sad, action = none, object = none, target = none)
-Input:
-+a8e44f13/Scillia#4: Hey Hyacinth, as soon as we open the barrier, we rush to the site and attack.
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I am ready. Signal me as soon as the barrier opens. (react = alert, action = follow, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Hyacinth want to go on an adventure together??
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: Sure, lets go! (react = headNod, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: Would you tell me more about Ironford?
-+707fbe84/Drake#3:
-Output:
-+707fbe84/Drake#3: The city of Ironford was built in the center of a giant forest and is truly a modest marvel. Its allure is matched by the backdrop of lush forests which have helped shape the city to what it is today. (react = headNod, action = none, object = none, target = none)
-Input:
-+8c83258d/Anon#1: The monsters have captures the people of the village.
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: I will find and kill each of those monsters myself. (react = angry, action = move to, object = none, target = monster#9)
-Input:
-+a8e44f13/Scillia#4: Hey Hyacinth, what is your favorite book?
-+9f493510/Hyacinth#2:
-Output:
-+9f493510/Hyacinth#2: My favorite book is The Lord of the Rings. I love the story and the world that J.R.R. Tolkien created. (react = normal, action = none, object = none, target = none)
+${actionExamples}
 ${messages.map((message) => {
         return `${message.name}: "${message.text} (react = ${message.emote ? message.emote : "normal"
           })"`;

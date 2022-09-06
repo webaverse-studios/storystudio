@@ -401,21 +401,18 @@ const run = async () => {
 
   async function generateRPGDialogTest() {
     const messages = [];
-    const input = { character: testData.party[0], location: testData.locations[0], characters: testData.party, objects: testData.objects, messages };
+    const input = { character: testData.party[0], location: testData.locations[0], characters: testData.party, objects: testData.objects, messages, dstCharacter: testData.npcs[0] };
     const prompt = makeRPGDialoguePrompt(input);
     // iterate 3 times or until done
-    for (let i = 0; i < 3; i++) {
-      input.messages = messages;
-      const response = await generateRPGDialogue(input, makeGenerateFn());
+    for (let i = 0; i < 6; i++) {
+      const message = await generateRPGDialogue(input, makeGenerateFn());
       // push each message in response.messages to newMessages
-      const message = response[0];
-      console.log('response is: ', response);
       messages.push(message);
     }
 
     console.log('messages', messages);
 
-    const output = messages.map(m => { return m?.name + ": " + m?.message }).join('\n');
+    const output = messages.map(m => { return m.name + ": " + m.message }).join('\n');
 
     writeData(input, prompt, output, 'rpg_dialogue', makeRPGDialogueStop());
   }
