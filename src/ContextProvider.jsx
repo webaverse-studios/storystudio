@@ -601,11 +601,16 @@ export function ApplicationContextProvider(props) {
     });
     setDialogue(newData);
   };
+  const cleanDialogueMessages = (_key) => {
+    const newData = { ...dialogue };
+    newData[currentDialogueType][_key].output.transcript = [];
+    setDialogue(newData);
+  };
   const addDialogueEntryWithData = (_key, speaker, message) => {
     const newData = { ...dialogue };
     console.log("adding to new data:", speaker, "|", message);
     newData[currentDialogueType][_key].output.transcript.unshift({
-      character: speaker,
+      speaker: speaker,
       message,
     });
     setDialogue(newData);
@@ -791,6 +796,7 @@ export function ApplicationContextProvider(props) {
     getMob,
     getTypeOfObject,
     setDialogEntries,
+    cleanDialogueMessages,
   };
 
   return (

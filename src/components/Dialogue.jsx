@@ -26,6 +26,7 @@ const Dialogue = ({ index, _key, type }) => {
     baseData,
     getTypeOfObject,
     addDialogueEntryWithData,
+    cleanDialogueMessages,
   } = useContext(ApplicationContext);
 
   const [editJson, setEditJson] = useState(true);
@@ -159,7 +160,7 @@ const Dialogue = ({ index, _key, type }) => {
 
   const generateOutputs = async (type) => {
     let selector = "";
-    const module = await import("../../public/lore-model");
+    //const module = await import("../../public/lore-model");
     const inputs = dialogue[currentDialogueType][_key].input;
     let res = "";
 
@@ -169,7 +170,7 @@ const Dialogue = ({ index, _key, type }) => {
       const obj = getObject(data);
       const description = obj ? obj.description : "";
 
-      res = await module.generateObjectComment(
+      res = await baseData.module.generateObjectComment(
         { name: data, description },
         makeGenerateFn()
       );
@@ -183,7 +184,7 @@ const Dialogue = ({ index, _key, type }) => {
       const description = obj ? obj.description : "";
       console.log(data);
 
-      res = await module.generateNPCComment(
+      res = await baseData.module.generateNPCComment(
         { name: data, description },
         makeGenerateFn()
       );
@@ -196,7 +197,7 @@ const Dialogue = ({ index, _key, type }) => {
       const obj = getMob(data);
       const description = obj ? obj.description : "";
 
-      res = await module.generateMobComment(
+      res = await baseData.module.generateMobComment(
         { name: data, description },
         makeGenerateFn()
       );
@@ -209,7 +210,7 @@ const Dialogue = ({ index, _key, type }) => {
       const obj = getSetting(data);
       const description = obj ? obj.description : "";
 
-      res = await module.generateLocationComment(
+      res = await baseData.module.generateLocationComment(
         {
           name: data,
           description,
@@ -243,8 +244,44 @@ const Dialogue = ({ index, _key, type }) => {
         makeGenerateFn()
       );
       res = res.comment;
+    } else if (type === "banter") {
+      const messages = [];
+      const data = inputs;
+      const location = getSetting(data.location);
+      const chars = data.characters;
+      const _npcs = data.npcs;
+      const objs = data.objects;
+
+      const characters = [];
+      const objects = [];
+
+      for (let i = 0; i < chars.length; i++) {
+        characters.push(getCharacter(chars[i]));
+      }
+      for (let i = 0; i < _npcs.length; i++) {
+        characters.push(getNPC(_npcs[i]));
+      }
+      for (let i = 0; i < objs.length; i++) {
+        objects.push(getObject(objs[i]));
+      }
+
+      const input = { location, characters, objects, messages };
+      console.log("input:", input);
+      for (let i = 0; i < 3; i++) {
+        res = await baseData.module.generateBanter(input, makeGenerateFn());
+        const newMessages = res.parsed;
+        messages.push(...newMessages);
+      }
+
+      handleChange(res.prompt, "output.prompt");
+      handleChange(JSON.stringify(res.unparsed), "output.response");
+
+      cleanDialogueMessages(_key);
+      for (let i = 0; i < messages.length; i++) {
+        addDialogueEntryWithData(_key, messages[i].name, messages[i].message);
+      }
+      return;
     } else if (
-      type === "banter" ||
       type === "rpgDialogue" ||
       type === "reactions" ||
       type === "actions"
@@ -259,36 +296,49 @@ const Dialogue = ({ index, _key, type }) => {
         makeGenerateFn()
       );
     } else if (type === "cutscenes") {
-      const _input = {
-        location: dialogue[currentDialogueType][_key].input.location,
-        chars: dialogue[currentDialogueType][_key].input.characters,
-        npcs: dialogue[currentDialogueType][_key].input.npcs,
-        objects: dialogue[currentDialogueType][_key].input.objects,
-      };
+      const messages = [];
+      const data = inputs;
+      const location = getSetting(data.location);
+      const chars = data.characters;
+      const _npcs = data.npcs;
+      const objs = data.objects;
 
-      _input.location = getSetting(_input.location);
-      for (let i = 0; i < _input.chars.length; i++) {
-        _input.chars[i] = getCharacter(_input.chars[i]);
+      const characters = [];
+      const npcs = [];
+      const objects = [];
+
+      for (let i = 0; i < chars.length; i++) {
+        characters.push(getCharacter(chars[i]));
       }
-      for (let i = 0; i < _input.npcs.length; i++) {
-        _input.npcs[i] = getNPC(_input.npcs[i]);
+      for (let i = 0; i < _npcs.length; i++) {
+        npcs.push(getNPC(_npcs[i]));
       }
-      for (let i = 0; i < _input.objects.length; i++) {
-        _input.objects[i] = getObject(_input.objects[i]);
+      for (let i = 0; i < objs.length; i++) {
+        objects.push(getObject(objs[i]));
       }
+
       const input = {
-        location: _input.location,
-        characters: _input.chars.concat(_input.npcs),
-        objects: _input.objects,
+        location: location,
+        npcs: npcs,
+        mobs: [],
+        characters,
+        objects,
+        messages,
       };
 
-      res = await baseData.module.generateCutscene(input, makeGenerateFn());
-      for (let i = 0; i < res.messages.length; i++) {
-        addDialogueEntryWithData(
-          _key,
-          res.messages[i].character.name,
-          res.messages[i].message
-        );
+      for (let i = 0; i < 3; i++) {
+        res = await baseData.module.generateCutscene(input, makeGenerateFn());
+        const newMessages = res.parsed;
+        messages.push(newMessages[0]);
+      }
+
+      handleChange(res.prompt, "output.prompt");
+      handleChange(JSON.stringify(res.unparsed), "output.response");
+
+      cleanDialogueMessages(_key);
+      console.log("MESSAGES:", messages);
+      for (let i = 0; i < messages.length; i++) {
+        addDialogueEntryWithData(_key, messages[i].name, messages[i].message);
       }
       return;
     }
@@ -589,17 +639,24 @@ const Dialogue = ({ index, _key, type }) => {
 
   const saveAsMD = () => {
     console.log(dialogue[currentDialogueType][_key]);
-    let md = "#Inputs\n\n";
+    let md = "# Inputs\n\n";
     const inputs = Object.keys(dialogue[currentDialogueType][_key].input);
     for (const inp of inputs) {
-      md += `##${inp}\n`;
+      md += `## ${inp}\n`;
       md += `* ${dialogue[currentDialogueType][_key].input[inp]}\n\n`;
     }
-    md += "#Outputs\n\n";
+    md += "# Outputs\n\n";
     const outputs = Object.keys(dialogue[currentDialogueType][_key].output);
     for (const out of outputs) {
-      md += `##${out}\n`;
-      md += `${dialogue[currentDialogueType][_key].output[out]}\n\n`;
+      md += `## ${out}\n`;
+      if (typeof dialogue[currentDialogueType][_key].output[out] === "object") {
+        for (const obj of dialogue[currentDialogueType][_key].output[out]) {
+          md += `* ${obj.speaker}: ${obj.message}\n`;
+        }
+        md += "\n";
+      } else {
+        md += `${dialogue[currentDialogueType][_key].output[out]}\n\n`;
+      }
     }
 
     const element = document.createElement("a");
