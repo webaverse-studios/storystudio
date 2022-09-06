@@ -304,9 +304,530 @@ Each character has an intro. These should be unique and funny.
 };
 // LORE_HEADER_END
 
-// ********************** PRIVATE FUNCTIONS **********************
+// NEW SETTING
 
-const makeLorePrompt = ({
+export const makeSettingPrompt = () => {
+  return `\
+  ${lore["setting"].prompt}
+  ${shuffleArray(lore["setting"].examples).join("\n")}
+  Location:"`;
+}
+
+export const makeSettingStop = () => ['\nLocation:']
+
+// TODO
+export const parseSettingResponse = (response) => {}
+
+export async function generateSetting(generateFn) {
+  const prompt = makeSettingPrompt();
+
+  const resp = await generateFn(prompt, makeSettingStop());
+
+  const lines = resp.split("\n").filter((el) => {
+    return el !== "";
+  });
+
+  const location = lines[0].split('"')
+  const comment = lines[1].replace("Quote: ", "").replace('"', '').trim().trimStart();
+  const name = location[0].replace('"', '').trim().trimStart();
+  const description = location[1].trim().trimStart();
+
+  return {
+    name,
+    description,
+    comment,
+    prompt
+  };
+}
+
+// NEW CHARACTER
+
+export const makeCharacterPrompt = () => {
+  return `\
+  ${lore["character"].prompt}
+  ${shuffleArray(lore["character"].examples).join("\n")}
+  Character:"`
+}
+
+export const makeCharacterStop = () => ['\nCharacter:']
+
+export async function generateCharacter(generateFn) {
+  const prompt = makeCharacterPrompt();
+
+  const resp = await generateFn(prompt, makeCharacterStop());
+
+  const lines = resp.split("\n").filter((el) => {
+    return el !== "";
+  });
+
+  const character = lines[0].split('"')
+  const comment = lines[1] && lines[1].replace("Quote: ", "").replace('"', '').trim().trimStart();
+  const name = character[0].replace('"', '').trim().trimStart();
+  const description = character[1].trim().trimStart();
+
+  const inventory = "";
+
+  return {
+    name,
+    description,
+    comment,
+    inventory,
+    prompt
+  };
+}
+
+// NEW OBJECT
+
+export const makeObjectPrompt = () => {
+  return `\
+  ${lore["object"].prompt}
+  ${shuffleArray(lore["object"].examples).join("\n")}
+  Object: "`
+}
+
+export async function generateObject(generateFn) {
+  const prompt = makeObjectPrompt();
+
+  const resp = await generateFn(prompt, ['\nObject:', '\n\n']);
+
+  const lines = resp.split("\n").filter((el) => {
+    return el !== "";
+  });
+
+
+  const obj = lines[0].split('"')
+  const comment = lines[1] && lines[1].replace("Quote: ", "").replace('"', '').trim().trimStart();
+  const name = obj[0].replace('"', '').trim().trimStart();
+  const description = obj[1].trim().trimStart();
+
+  return {
+    name,
+    description,
+    comment,
+    prompt
+  };
+}
+
+// REACTIONS
+
+export const makeReactionPrompt = () => {
+  return `\
+  ${lore["reactions"].prompt}
+  ${shuffleArray(lore["reactions"].examples).join("\n")}
+  ${name}:`
+}
+
+export const makeReactionStop = (name) =>  ["\n", name + ':']
+
+// TODO
+export const parseReactionResponse = (response) => {}
+
+export async function generateReaction(name, generateFn) {
+  const prompt = makeReactionPrompt();
+
+  const resp = await generateFn(prompt, makeReactionStop(name));
+
+  let _resp = "";
+  if (resp.startsWith(name ? name : "prompt:")) {
+    _resp = resp.replace(name ? name : "prompt:", "").trim();
+  } else {
+    _resp = resp;
+  }
+  return { reaction: _resp?.replace(/\s+/g, ""), prompt: prompt }
+}
+
+// BANTER
+
+export const makeBanterPrompt = ({ setting = null, characters = [], objects = [], messages = [], dstCharacter = null }) => {
+  return `\
+# Available Actions
+attack
+defend
+move to
+follow
+pick up
+drop
+emote
+stop
+none
+
+# Characters
+
+Name: Axel
+Description: The main hero of the story. Well, someone has to be the hero.
+
+Name: Miranda
+Description: A very trusting person.
+
+Name: Zaphod
+Description: A very untrustworthy character.
+
+# Transcript
+
+axel: We arere looking for Lara. You know where we can find her?
+miranda: I can find anything, you just keep feeding me tokens and coffee.
+zaphod: Anything you need, you just let me know.
+miranda: Thanks. How do you guys know each other again? 
+zaphod: Best friends. From waaay back in the day.
+
+"""
+# Characters
+
+Name: eric
+Description: A very boring guy. Bored the pants off a thousand people at once, once.
+
+Name: millie
+Description: A very interesting person. She is a bit of a mystery.
+
+# Objects
+
+Name: Computer
+Description: A very old computer. A real piece of crap, but I guess it works..
+
+# Transcript 
+
+millie: Hey Eric, can I ask you something?
+\/action millie moves to eric
+eric: Sure, what is it?
+millie: Do you ever wonder why we are here?
+eric: Is that a way to tee up a convo about the drop tomorrow?
+\/action millie emotes joy
+millie: It might not be!
+eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
+\/action eric moves to computer
+
+"""
+
+${setting && `# Setting\n\n${setting.name}\n${setting.description}`}
+
+${characters.length > 0 && "# Characters\n\n"}\
+${characters
+      .map((c) => `Character: ${c.name}\nDescription: ${c.description}`)
+      .join("\n\n") + (characters.length > 0 && "\n\n")
+    }\
+${objects.length > 0 && "# Nearby Objects\n\n"}\
+${objects.slice(0, 2)
+      .map((c) => `Object: ${c.name}\nDescription: ${c.description}`)
+      .join("\n\n") + (objects.length > 0 && "\n")
+    }\
+
+# Transcript
+
+${messages ? (messages.map((m) => m.character.name + ': ' + m.message).join("\n")) : ''}\
+${(!messages || messages.length === 0) && dstCharacter.name + ':'}`;
+}
+
+export const makeBanterStop = () => ["\n\n", 'done=true', 'done = true'];
+
+// TODO
+export const parseBanterResponse = (response) => {}
+
+export async function generateBanter({ setting = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
+  if (!dstCharacter) {
+    dstCharacter = characters[Math.floor(Math.random() * characters.length)]
+  }
+
+  let lastCharacter = null;
+
+  const prompt = makeBanterPrompt({ setting, characters, objects, messages, dstCharacter });
+
+  // set lastCharacter to the last character in the transcript
+  if (messages && messages.length > 0) {
+    lastCharacter = messages[messages.length - 1].character;
+  } else {
+    lastCharacter = dstCharacter;
+  }
+
+  const outMessages = [];
+
+  let loreResp = await generateFn(prompt, makeBanterStop());
+
+  loreResp = loreResp
+    .trim()
+    .trimStart()
+    .replace(/^\n+/, "") // remove leading newlines
+    .replace(/\n+$/, "") // remove trailing newlines
+    .replaceAll('"', "") // remove quotes
+    .replaceAll("\t", "") // remove tabs
+    .split("\n");
+
+  outMessages.push({
+    character: lastCharacter ?? dstCharacter,
+    message: loreResp.shift().replaceAll((lastCharacter ?? dstCharacter).name + ':', '').trim().trimStart()
+  });
+
+  return {
+    messages: outMessages,
+    prompt
+  }
+}
+
+// EXPOSITION
+
+export const makeExpositionPrompt = ({ name, setting = null, type = 'Object' }) => {
+  return `\
+${type !== 'setting' && (setting && (setting + '\n')) || ''}\
+${lore[type.toLowerCase()].prompt}
+${shuffleArray(lore[type.toLowerCase()].examples).join("\n")}
+${capitalizeFirstLetter(type)}: "${name}"`
+}
+
+export const makeExpositionStop = () => [`\n${type.toUpperCase()}:`, '\n\n'];
+
+// TODO
+export const parseExpositionResponse = (response) => {}
+
+export async function generateExposition({ name, setting = null, type = 'Object' }, generateFn) {
+  const prompt = makeExpositionPrompt({ name, setting, type });
+
+  const resp = await generateFn(prompt, makeExpositionStop());
+
+  const lines = resp.split("\n").filter((el) => {
+    return el !== "";
+  });
+
+  const description = lines[0].trimStart().trim();
+  const comment = lines[1] && lines[1].replaceAll("Quote: ", "").replaceAll('"', '').trim().trimStart();
+
+  return {
+    name,
+    description,
+    comment,
+    prompt
+  };
+}
+
+// CUTSCENES
+
+export const makeCutscenePrompt = ({ setting = null, characters = [], objects = [], messages = [], dstCharacter = null }) => {
+  return `\
+# Available Actions
+attack
+defend
+move to
+follow
+pick up
+drop
+emote
+stop
+none
+
+# Characters
+
+Name: Axel
+Description: The main hero of the story. Well, someone has to be the hero.
+
+Name: Miranda
+Description: A very trusting person.
+
+Name: Zaphod
+Description: A very untrustworthy character.
+
+# Transcript
+
+axel: We arere looking for Lara. You know where we can find her?
+miranda: I can find anything, you just keep feeding me tokens and coffee.
+zaphod: Anything you need, you just let me know.
+miranda: Thanks. How do you guys know each other again? 
+zaphod: Best friends. From waaay back in the day.
+
+"""
+# Characters
+
+Name: eric
+Description: A very boring guy. Bored the pants off a thousand people at once, once.
+
+Name: millie
+Description: A very interesting person. She is a bit of a mystery.
+
+# Objects
+
+Name: Computer
+Description: A very old computer. A real piece of crap, but I guess it works..
+
+# Transcript 
+
+millie: Hey Eric, can I ask you something?
+\/action millie moves to eric
+eric: Sure, what is it?
+millie: Do you ever wonder why we are here?
+eric: Is that a way to tee up a convo about the drop tomorrow?
+\/action millie emotes joy
+millie: It might not be!
+eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
+\/action eric moves to computer
+
+"""
+
+${setting && `# Setting\n\n${setting.name}\n${setting.description}`}
+
+${characters.length > 0 && "# Characters\n\n"}\
+${characters
+      .map((c) => `Character: ${c.name}\nDescription: ${c.description}`)
+      .join("\n\n") + (characters.length > 0 && "\n\n")
+    }\
+${objects.length > 0 && "# Nearby Objects\n\n"}\
+${objects.slice(0, 2)
+      .map((c) => `Object: ${c.name}\nDescription: ${c.description}`)
+      .join("\n\n") + (objects.length > 0 && "\n")
+    }\
+
+# Transcript
+
+${messages ? (messages.map((m) => m.character.name + ': ' + m.message).join("\n")) : ''}\
+${(!messages || messages.length === 0) && dstCharacter.name + ':'}`;
+}
+
+export const makeCutsceneStop = () => ["\n\n", 'done=true', 'done = true'];
+
+// TODO
+export const parseCutsceneResponse = (response) => {}
+
+export async function generateCutscene({ setting = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
+  if (!dstCharacter) {
+    dstCharacter = characters[Math.floor(Math.random() * characters.length)]
+  }
+
+  console.log('messages', messages);
+
+  let lastCharacter = null;
+  const prompt = makeCutscenePrompt({ setting, characters, objects, messages, dstCharacter });
+
+
+  // set lastCharacter to the last character in the transcript
+  if (messages && messages.length > 0) {
+    lastCharacter = messages[messages.length - 1].character;
+  } else {
+    lastCharacter = dstCharacter;
+  }
+
+  const outMessages = [];
+
+  let loreResp = await generateFn(prompt, makeCutsceneStop());
+  console.log('lastCharacter ?? dstCharacter', lastCharacter ?? dstCharacter);
+
+  loreResp = loreResp
+    .trim()
+    .trimStart()
+    .replace(/^\n+/, "") // remove leading newlines
+    .replace(/\n+$/, "") // remove trailing newlines
+    .replaceAll('"', "") // remove quotes
+    .replaceAll("\t", "") // remove tabs
+    .split("\n");
+
+  outMessages.push({
+    character: lastCharacter ?? dstCharacter,
+    message: loreResp.shift().replaceAll((lastCharacter ?? dstCharacter).name + ':', '').trim().trimStart()
+  });
+
+  return {
+    messages: outMessages,
+    prompt
+  }
+}
+
+// RPG DIALOGUE
+
+export const makeRPGDialoguePrompt = ({ character }) => {
+  return `\
+${lore["inputParsing"].prompt}
+${shuffleArray(lore["inputParsing"].examples).join("\n")}
+Input:\n+a8e44f13${character.name}:`
+}
+
+export const makeRPGDialogueStop = (character) => [
+  "\n",
+  `Input:\n+a8e44f13${character.name}:`,
+];
+
+//TODO
+export const parseRPGDialogueResponse = (response) => {}
+
+export async function generateRPGDialogue(character, generateFn) {
+  const rpgDialoguePrompt = makeRPGDialoguePrompt
+
+  const resp = await generateFn(rpgDialoguePrompt, makeRPGDialogueStop(character));
+
+  if (
+    resp?.startsWith(
+      `Input:\n+a8e44f13${character.name}:`
+    )
+  ) {
+    return resp
+      .replace(
+        `Input:\n+a8e44f13${character.name}:`,
+        ""
+      )
+      .trim();
+  } else {
+    return resp;
+  }
+}
+
+// QUESTS
+
+export const makeQuestPrompt = ({ setting }) => {
+  return `\
+Utopia: Stay for a day inside, while bothering others|Reward: 100xp
+Dreamland: Try to escape dreamland, without destroying others' dreams|Reward: 200xp
+Hellwhole: Save your loved ones, surviving the wrath of the demons|Reward: 5000xp
+Dark Forest: Survive the night in the dark forest|Reward: 1000xp
+Devastated Building: Get outside, without getting hurt|Reward: 500xp
+Tomb: Escape from the Dead|Reward: 10000xp
+Space Station: Survive an attack by aliens, while trying to repair the station|Reward: 2000xp
+Escape The Maze: Escape the maze, while avoiding the traps|Reward: 1500xp
+The Island: Get off the island, without getting lost|Reward: 4000xp
+The City: Survive a day in the city, without getting lost|Reward: 3000xp
+The Mountain: Get to the top of the mountain, without getting lost|Reward: 6000xp
+The Desert: Survive a day in the desert, without getting lost|Reward: 4000xp
+The Jungle: Get through the jungle, without getting lost|Reward: 5000xp
+The Ocean: Survive a day in the ocean, without getting lost|Reward: 3000xp
+The North Pole: Survive a day at the North Pole, without getting lost|Reward: 7000xp
+The South Pole: Survive a day at the South Pole, without getting lost|Reward: 8000xp
+The Moon: Survive a day on the moon, without getting lost|Reward: 9000xp
+The Sun: Survive a day on the sun, without getting burned|Reward: 10000xp
+${setting}:`
+}
+
+export const makeQuestStop = () => ["\n"];
+
+//TODO
+export const parseQuestResponse = (response) => {}
+
+export async function generateQuest({ setting }, generateFn) {
+  const prompt = makeQuestPrompt({ setting });
+
+  const resp = await generateFn(prompt, makeQuestStop());
+
+  if (resp?.startsWith(setting)) {
+    const data = resp
+      .replace(setting, "")
+      .trim();
+    const [quest, reward] = data.split("|");
+    return {
+      location: setting,
+      quest: quest.trim(),
+      reward: reward.trim(),
+    };
+  } else {
+    const data = resp
+      .replace(setting, "")
+      .trim();
+    const [quest, reward] = data.split("|");
+    return {
+      location: setting,
+      quest: quest.trim(),
+      reward: reward.trim(),
+      prompt
+    };
+  }
+}
+
+// ****************** RUNTIME API **********************
+
+// LORE
+
+export const makeLorePrompt = ({
   settings,
   characters,
   messages,
@@ -358,7 +879,7 @@ ${messages
   }
 Output:`;
 
-const parseLoreResponse = (response) => {
+export const parseLoreResponse = (response) => {
   let match;
   if (
     (match = response?.match(
@@ -456,56 +977,139 @@ const parseLoreResponse = (response) => {
     return null;
   }
 };
-const makeLoreStop = (localCharacter, localCharacterIndex) =>
+
+export const makeLoreStop = (localCharacter, localCharacterIndex) =>
   `\n+${thingHash(localCharacter, localCharacterIndex)}`;
-const postProcessResponse = (response, characters, dstCharacter) => {
+
+export const postProcessResponse = (response, characters, dstCharacter) => {
   response = response.trim();
   return response;
 };
-const parseLoreResponses = (response) =>
+
+export const parseLoreResponses = (response) =>
   response
     .split("\n")
     .map((s) => parseLoreResponse(s))
     .filter((o) => o !== null);
 
-const makeCommentPrompt = ({
-  name,
-  // age,
-  // sex,
-}) => {
-  return `\
-${lore.setting.prompt}
-${shuffleArray(lore.setting.examples).join(`\n`)}
-prompt: ${name}
-response:`;
-};
-const makeCommentStop = () => {
-  return `\n\n`;
-};
-const parseCommentResponse = (response) => response.replace(/^ /, "");
+export async function generateLore(
+  {
+    settings,
+    characters,
+    messages = [],
+    objects,
+    dstCharacter = null,
+    localCharacter,
+  },
+  generateFn
+) {
+  const prompt = makeLorePrompt({
+    settings,
+    characters,
+    messages,
+    objects,
+    dstCharacter,
+  });
+  const stop = makeLoreStop(localCharacter, 0);
+  let response = await generateFn(prompt, stop);
+  response = postProcessResponse(response, characters, dstCharacter);
+  return response;
+}
 
-const makeSelectTargetPrompt = ({ name, description }) => {
+// ENTITY COMMENTS
+
+export const makeCommentPrompt = ({
+  name,
+  description,
+  type = "Object",
+}) => {
+  const typeAttribute = type.toLowerCase();
+  return `\
+${lore[typeAttribute].prompt}
+${shuffleArray(lore[typeAttribute].examples, 8).join(`\n`)}
+${type}: "${name.replaceAll('"', '')}" ${description}
+Quote: "`;
+};
+
+export const makeCommentStop = () => [`"`, '\n'];
+
+export const parseCommentResponse = (response) => response.replace(/^ /, "");
+
+export async function generateObjectComment({ name, description }, generateFn) {
+  const prompt = makeCommentPrompt({ name, description, type: 'Object' });
+
+  
+  const resp = await generateFn(prompt, makeCommentStop());
+
+  return {
+    name,
+    description,
+    value: resp.trim(),
+    prompt
+  };
+}
+
+export async function generateLocationComment(
+  { name, description },
+  generateFn
+) {
+
+  const prompt = makeCommentPrompt({ name, description, type: 'Setting' });
+
+  const resp = await generateFn(prompt, makeCommentStop());
+  return {
+    name,
+    description,
+    // trim the beginning white space from the response
+    comment: resp.replaceAll('"', '').trim().trimStart(),
+    prompt
+  };
+}
+
+// SELECT TARGET
+
+export const makeSelectTargetPrompt = ({ name, description }) => {
   return `\
 ${lore.object.prompt}
 ${shuffleArray(lore.object.examples).join(`\n`)}
 prompt: ${_cleanName(name)}${description ? ` ${description}` : ""
     }\nresponse: "`;
 };
-const makeSelectTargetStop = () => `"`;
-const parseSelectTargetResponse = (response) => {
+
+export const makeSelectTargetStop = () => `"`;
+
+export const parseSelectTargetResponse = (response) => {
   const match = response.match(/\s*([^\n]*)/);
   return match ? match[1] : "";
 };
 
-const makeSelectCharacterPrompt = ({ name, description }) => {
+export async function generateSelectTargetComment(
+  { name, description },
+  generateFn
+) {
+  const prompt = makeSelectTargetPrompt({
+    name,
+    description,
+  });
+  const stop = makeSelectTargetStop();
+  let response = await generateFn(prompt, stop);
+  response = parseSelectTargetResponse(response);
+  return response;
+}
+
+// SELECT CHARACTER
+
+export const makeSelectCharacterPrompt = ({ name, description }) => {
   return `\
 ${lore.character.prompt}
 ${shuffleArray(lore.character.examples).join(`\n`)}
 Character: "${_cleanName(name)}" ${description}
 Quote: "`
 };
-const makeSelectCharacterStop = () => `"`;
-const parseSelectCharacterResponse = (response) => {
+
+export const makeSelectCharacterStop = () => `"`;
+
+export const parseSelectCharacterResponse = (response) => {
   const match = response.match(/([^\n]*)/);
   const value = match ? match[1] : "";
   const done = !value;
@@ -515,14 +1119,41 @@ const parseSelectCharacterResponse = (response) => {
   };
 };
 
-const makeBattleIntroductionPrompt = ({ name, description }) => {
+export async function generateSelectCharacter({ name, description }, generateFn) {
+  const prompt = makeSelectCharacterPrompt({
+    name,
+    description,
+  });
+  const stop = makeSelectCharacterStop();
+  let response = await generateFn(prompt, stop);
+  const response2 = parseSelectCharacterResponse(response);
+  if (response2) response2.prompt = prompt
+  return response2;
+}
+
+// BATTLE INTRODUCTION
+
+export async function generateBattleIntroduction({ name }, generateFn) {
+  const prompt = makeBattleIntroductionPrompt({
+    name
+  });
+  const stop = makeBattleIntroductionStop();
+  let response = await generateFn(prompt, stop);
+  const response2 = parseBattleIntroductionResponse(response);
+  if (response2) response2.prompt = prompt;
+  return response2 || { value: null, emote: null, done: null, prompt };
+}
+
+export const makeBattleIntroductionPrompt = ({ name }) => {
   return `\
 ${lore.battle.prompt}
 ${shuffleArray(lore.battle.examples).join(`\n`)}
 ${name}: "`;
 };
-const makeBattleIntroductionStop = () => `"`;
-const parseBattleIntroductionResponse = (response) => {
+
+export const makeBattleIntroductionStop = () => `"`;
+
+export const parseBattleIntroductionResponse = (response) => {
   const match = response.match(/\s*([^\n]*)/);
   // explain how the match in the above regex works
   // 1. match any number of spaces
@@ -531,7 +1162,9 @@ const parseBattleIntroductionResponse = (response) => {
   return { value: match && match[1] };
 }
 
-const makeChatPrompt = ({
+// CHAT MESSAGE
+
+export const makeChatPrompt = ({
   // name,
   // description,
   messages,
@@ -550,8 +1183,10 @@ ${messages
       .join("\n")}
 ${nextCharacter.name}: "`;
 };
-const makeChatStop = () => `\n`;
-const parseChatResponse = (response) => {
+
+export const makeChatStop = () => `\n`;
+
+export const parseChatResponse = (response) => {
   response = '"' + response;
 
   let match;
@@ -586,7 +1221,60 @@ const parseChatResponse = (response) => {
   }
 };
 
-const makeOptionsPrompt = ({
+export async function generateChatMessage({ messages, nextCharacter }, generateFn) {
+  const prompt = makeChatPrompt({
+    messages,
+    nextCharacter,
+  });
+  const stop = makeChatStop();
+  let response = await generateFn(prompt, stop);
+  const response2 = parseChatResponse(response);
+  if (response2) response2.prompt = prompt;
+  return response2;
+}
+
+// CHARACTER INTRODUCTION
+
+export const makeCharacterIntroPrompt = ({ name, description }) => {
+  return `\
+${lore.intros.prompt}
+${shuffleArray(lore.intros.examples).join(`\n`)}
+${name}${description ? ` (${description})` : ""}:`;
+};
+export const makeCharacterIntroStop = () => `\n`;
+
+export const parseCharacterIntroResponse = (response) => {
+  response = response.replace(/^ /, "");
+  const match = response.match(/^(.*)\s+\(onselect:\s+(.*)\)$/);
+
+  if (match) {
+    const message = match[1] || "";
+    const onselect = match[2] || "";
+
+    return {
+      message,
+      onselect,
+    };
+  } else {
+    return null;
+  }
+};
+
+export async function generateCharacterIntroPrompt({ name, description }, generateFn) {
+  const prompt = makeCharacterIntroPrompt({
+    name,
+    description,
+  });
+  const stop = makeCharacterIntroStop();
+  let response = await generateFn(prompt, stop);
+  const response2 = parseCharacterIntroResponse(response);
+  if (response2) response2.prompt = prompt;
+  return response2 || { message: '<error>', prompt, onselect: '<error>' };
+}
+
+// DIALOGUE OPTIONS
+
+export const makeOptionsPrompt = ({
   // name,
   // description,
   messages,
@@ -604,8 +1292,10 @@ ${messages
       .join("\n")}
 Options for ${nextCharacter.name}: [`;
 };
-const makeOptionsStop = () => `\n`;
-const parseOptionsResponse = (response) => {
+
+export const makeOptionsStop = () => `\n`;
+
+export const parseOptionsResponse = (response) => {
   response = "[" + response;
 
   const options = [];
@@ -633,31 +1323,19 @@ const parseOptionsResponse = (response) => {
   };
 };
 
-const makeCharacterIntroPrompt = ({ name, description }) => {
-  return `\
-${lore.intros.prompt}
-${shuffleArray(lore.intros.examples).join(`\n`)}
-${name}${description ? ` (${description})` : ""}:`;
-};
-const makeCharacterIntroStop = () => `\n`;
-const parseCharacterIntroResponse = (response) => {
-  response = response.replace(/^ /, "");
-  const match = response.match(/^(.*)\s+\(onselect:\s+(.*)\)$/);
-
-  if (match) {
-    const message = match[1] || "";
-    const onselect = match[2] || "";
-
-    return {
-      message,
-      onselect,
-    };
-  } else {
-    return null;
-  }
-};
-
-const makeIngredientStop = () => [".\n", "prompt:"];
+export async function generateDialogueOptions(
+  { messages, nextCharacter },
+  generateFn
+) {
+  const prompt = makeOptionsPrompt({
+    messages,
+    nextCharacter,
+  });
+  const stop = makeOptionsStop();
+  let response = await generateFn(prompt, stop);
+  const response2 = parseOptionsResponse(response);
+  return response2;
+}
 
 // ****************** UTILITY FUNCTIONS ******************
 
@@ -753,888 +1431,6 @@ function _cleanName(name) {
   return JSON.stringify(name.replace(/[\_\-]+/g, " ").replace(/\s+/g, " "));
 }
 
-// ****************** INGREDIENT CREATION API ******************
-export async function generateLoreFile(
-  { header, setting, character, npc, mob, object },
-  generateFn
-) {
-  // decide on what is happening in this setting
-  const encounterTypes = [
-    { type: "quest", npcs: 1, mobs: 0, objects: 1, party: 2 },
-    // { type: 'battle', npcs: {min: 0, max: 2}, mobs: {min: 1, max: 3}, objects: {min: 0, max: 2}, party: {min: 1, max: 4}},
-    // { type: 'banter', npcs: {min: 0, max: 1}, mobs: {min: 0, max: 1}, objects: {min: 0, max: 1}, party: {min: 1, max: 4}},
-    // { type: 'friend', npcs: {min: 1, max: 2}, mobs: {min: 0, max: 0}, objects: {min: 0, max: 2}, party: {min: 2, max: 4}},
-    // { type: 'comment', npcs: {min: 0, max: 1}, mobs: {min: 0, max: 1}, objects: {min: 1, max: 3}, party: {min: 1, max: 4}},
-    // { type: 'party', npcs: {min: 0, max: 0}, mobs: {min: 0, max: 0}, objects: {min: 0, max: 0}, party: {min: 2, max: 4}}
-  ];
-
-  const encounterType =
-    encounterTypes[Math.floor(Math.random() * encounterTypes.length)];
-
-  // const numberOfMobs = Math.floor(Math.random() * (encounterType.mobs.max - encounterType.mobs.min + 1)) + encounterType.mobs.min;
-  // const numberOfNpcs = Math.floor(Math.random() * (encounterType.npcs.max - encounterType.npcs.min + 1)) + encounterType.npcs.min;
-  // const numberOfObjects = Math.floor(Math.random() * (encounterType.objects.max - encounterType.objects.min + 1)) + encounterType.objects.min;
-  // const numberOfParty = Math.floor(Math.random() * (encounterType.party.max - encounterType.party.min + 1)) + encounterType.party.min;
-
-  const numberOfMobs = 0;
-  const numberOfNpcs = 1;
-  const numberOfObjects = 1;
-  const numberOfParty = 2;
-
-  // get numberOfMobs mobs from the array provided by data.mobs
-  const mobs = mob.slice(0, numberOfMobs);
-
-  // get numberOfNpcs npcs from the array provided by data.npcs
-  const npcs = npc.slice(0, numberOfNpcs);
-
-  // get numberOfObjects objects from the array provided by data.objects
-  const objects = object.slice(0, numberOfObjects);
-
-  // get numberOfParty party from the array provided by data.party
-  const party = character.slice(0, numberOfParty);
-
-  // combine npcs and party into a single array called characters
-  const characters = [...npcs, ...party];
-
-  let promptInject = "";
-  if (encounterType.type === "quest") {
-    promptInject = `\
-The following is a chat transcript between the party characters and ${npcs[0].name
-      }, a quest giver who is friendly to the party. The transcript should be about the party receiving a quest from ${npcs[0].name
-      }.
-${npcs[0].name} has the following inventory:
-${npcs[0].Inventory &&
-      npcs[0].Inventory.map((obj) => `${obj.name} - ${obj.description}`).join("\n")
-      }
-`;
-  }
-  // TODO: include quest giver's inventory
-  let prompt = `\
-${header}
-
-"""
-
-# Transcript
-
-axel: We're looking for Lara. You know where we can find her?
-miranda: I can find anything, you just keep feeding me tokens and coffee.
-zaphod: Anything you need, you just let me know.
-miranda: Thanks. How do you guys know each other again? 
-zaphod: Best friends. From waaay back in the day.
-
-"""
-
-# Transcript 
-
-millie: Hey Eric, can I ask you something?
-/action millie moves to eric
-eric: Sure, what is it?
-millie: Do you ever wonder why we're here?
-eric: Is that a way to tee up a convo about the drop tomorrow?
-/action millie emotes joy
-millie: It might not be!
-eric: Millie, I'm tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
-/action eric moves to computer
-
-"""
-
-# Setting
-
-${`${setting.name}\n${setting.description}`}
-
-${party.length > 0 && "# Party Characters\n\n"}\
-${party
-      .map((c) => `Name: ${c.name}\nDescription: ${c.description || c.description}`)
-      .join("\n\n") + (party.length > 0 && "\n\n")
-    }\
-${npcs.length > 0 && "# Non-player Characters\n\n"}\
-${npcs
-      .map((c) => `Name: ${c.name}\nDescription: ${c.description || c.description}`)
-      .join("\n\n") + (npcs.length > 0 && "\n\n")
-    }\
-${objects.length > 0 && "# Nearby Objects\n\n"}\
-${objects
-      .map((c) => `Name: ${c.name}\nDescription: ${c.description}`)
-      .join("\n\n") + (objects.length > 0 && "\n")
-    }\
-
-# Available Actions: ${[
-      "attack",
-      "defend",
-      "move to",
-      "follow",
-      "pick up",
-      "drop",
-      "stop",
-      "none",
-    ].join(", ")}
-
-${promptInject}\
-
-# Transcript
-
-`;
-
-  // generate a random int between 3 and 8
-  const numberOfMessages = Math.floor(Math.random() * (12 - 3 + 1)) + 3;
-  let outMessages = [];
-
-  for (let i = 0; i < numberOfMessages; i++) {
-    let dstCharacterIndex = Math.floor(Math.random() * characters.length);
-
-    let dstCharacter = characters[dstCharacterIndex];
-
-    prompt += `${dstCharacter.name}:`;
-
-    console.log("**************** SENDING PROMPT TO OPENAI ****************");
-    console.log(prompt);
-    let loreResp = await generateFn(prompt, ["\n\n", '"""']);
-    // remove any newlines from the beginning or end of the response
-
-    loreResp = loreResp
-      .trim()
-      .replace(/^\n+/, "")
-      .replace(/\n+$/, "")
-      .replaceAll('"', "")
-      .replaceAll("\t", "")
-      .split("\n");
-
-    // if loreResp contains < and >, the remove them and everything between them. if contains a < or > then just remove those characters
-    loreResp = loreResp
-      .map((line) => {
-        if (line.includes("<") && line.includes(">")) {
-          return line.replace(/<[^>]*>/g, "");
-        } else if (line.includes("<")) {
-          return line.replace(/<[^>]*>/g, "");
-        } else if (line.includes(">")) {
-          return line.replace(/<[^>]*>/g, "");
-        } else {
-          return line;
-        }
-      })
-      .filter((line) => line.length > 0);
-
-    console.log(
-      "**************** RECEIVED RESPONSE FROM OPENAI ****************"
-    );
-    console.log("loreResp is", loreResp);
-
-    let additionalPrompt = [`${dstCharacter.name}: ` + loreResp[0] + "\n"];
-
-    // if there are more than one lines in the response, check if they contain /action or start with any of the character's names (character[i].name)
-    if (loreResp.length > 1) {
-      for (let j = 1; j < loreResp.length; j++) {
-        console.log("processing loreResp[j]", loreResp[j]);
-        // we are going to iterate with some heuristics for a valid response
-        // if the prompt is very strong, the likelihood of a good set of responses is higher
-        // however, since we are doing some complex stuff, the prompt can sometimes veer off regardless,
-        // especially on choosing an action
-
-        let validResponse = false;
-
-        // if loreResp[j] contains /action, then it might be a valid response
-        if (loreResp[j].includes("/action")) validResponse = true;
-        else {
-          let name =
-            loreResp[j].split(":").length > 1 &&
-            loreResp[j].split(":").length < 3 &&
-            loreResp[j].split("/").length > 1 &&
-            loreResp[j].split("/")[1].split("#")[0];
-          console.log("name is", name);
-          if (name && name.length < 20) {
-            // if loreResp[j] starts with any of the character's names, then it might be a valid response
-            for (let k = 0; k < characters.length; k++) {
-              // name is between the first / and the first #
-              if (
-                name.includes(characters[k].name) ||
-                characters[k].name.includes(name)
-              ) {
-                validResponse = true;
-              }
-            }
-          }
-        }
-
-        // if loreResp[j] contains a URL it is not valid
-        if (loreResp[j].includes("http")) validResponse = false;
-
-        // if it's really long, that is probably an issue
-        if (loreResp[j].length > 300) validResponse = false;
-
-        // if it isn't an action but doesn't include a ':' indicating chat, it's not valid
-        if (!loreResp[j].includes("/action") && !loreResp[j].split(":")[1])
-          validResponse = false;
-
-        // if it's an empty response, invalidate it
-        if (loreResp[j] === "") validResponse = false;
-        if (loreResp[j].length < 18) {
-          console.log("**** ERROR: loreResp[j] is too short", loreResp[j]);
-          validResponse = false;
-        }
-
-        // if the first character is a '/' but the word after is not action, it's not valid
-        if (loreResp[j].startsWith("/") && !loreResp[j].includes("/action"))
-          validResponse = false;
-
-        if (validResponse) {
-          console.log('***adding response "', loreResp[j], '" to prompt');
-          additionalPrompt.push(loreResp[j]);
-        }
-      }
-    }
-    i += additionalPrompt.length;
-
-    outMessages = [...outMessages, ...additionalPrompt];
-    prompt += "\n" + additionalPrompt.join("\n");
-  }
-
-  console.log("**************** FINAL LOREFILE ****************");
-
-  const loreFileOutput = `\
-WEBAVERSE_LORE_FILE
-
-# Setting
-
-${`${setting.name}\n${setting.description}\n\n`}\
-${characters.length > 0 && "\n# Characters" + "\n\n"}\
-${characters
-      .map(
-        (c) =>
-          `${c.name}\n${c.description || c.description}\n${c.Inventory?.length > 0 && `Inventory:\n`
-          }${(c.Inventory ? c.Inventory : [])
-            .map((obj) => `${obj.name}`)
-            .join(", ")}`
-      )
-      .join("\n\n")}\
-${objects.length > 0 ? "\n\n# Objects" + "\n\n" : ""}\
-${objects.map((o, i) => `${o.name}\n${o.description}`).join("\n\n")}\
-${outMessages.length === 0
-      ? ""
-      : "\n\n# Transcript\n\n" + outMessages.join("\n").replaceAll("\n\n", "\n")
-    }`;
-
-  return loreFileOutput;
-}
-
-export async function generateSetting(generateFn) {
-
-  // `Location: "The Trash" The dump where trash from all over the metaverse is kept. The Trash is dangerous and crime ridden, but home to many who are desperate.\nQuote: "Ugh, the dregs of society live here. It's the worst. It's just a disgusting slum. I'm honestly surprised there's not more crime."`,
-  const prompt = `\
-${lore["setting"].prompt}
-${shuffleArray(lore["setting"].examples).join("\n")}
-Location: "`;
-
-  const resp = await generateFn(prompt, ['\nLocation:']);
-
-  const lines = resp.split("\n").filter((el) => {
-    return el !== "";
-  });
-
-  const location = lines[0].split('"')
-  const comment = lines[1].replace("Quote: ", "").replace('"', '').trim().trimStart();
-  const name = location[0].replace('"', '').trim().trimStart();
-  const description = location[1].trim().trimStart();
-
-  return {
-    name,
-    description,
-    comment,
-    prompt
-  };
-}
-
-export async function generateCharacter(generateFn) {
-  const prompt = `\
-${lore["character"].prompt}
-${shuffleArray(lore["character"].examples).join("\n")}
-Character: "`;
-
-  const resp = await generateFn(prompt, ['\nCharacter:']);
-
-  console.log('resp')
-
-  const lines = resp.split("\n").filter((el) => {
-    return el !== "";
-  });
-
-  const character = lines[0].split('"')
-  const comment = lines[1] && lines[1].replace("Quote: ", "").replace('"', '').trim().trimStart();
-  const name = character[0].replace('"', '').trim().trimStart();
-  const description = character[1].trim().trimStart();
-
-  const inventory = "";
-
-  return {
-    name,
-    description,
-    comment,
-    inventory,
-    prompt
-  };
-}
-
-export async function generateObject(generateFn) {
-  const prompt = `\
-${lore["object"].prompt}
-${shuffleArray(lore["object"].examples).join("\n")}
-Object: "`;
-
-  const resp = await generateFn(prompt, ['\nObject:', '\n\n']);
-
-  const lines = resp.split("\n").filter((el) => {
-    return el !== "";
-  });
-
-
-  const obj = lines[0].split('"')
-  const comment = lines[1] && lines[1].replace("Quote: ", "").replace('"', '').trim().trimStart();
-  const name = obj[0].replace('"', '').trim().trimStart();
-  const description = obj[1].trim().trimStart();
-
-  return {
-    name,
-    description,
-    comment,
-    prompt
-  };
-}
-
-export async function generateReaction(name, generateFn) {
-  const reactionsPrompt = `\
-${lore["reactions"].prompt}
-${shuffleArray(lore["reactions"].examples).join("\n")}
-${name}:`;
-
-  const resp = await generateFn(reactionsPrompt, [
-    "\n",
-    name?.length > 0 ? name : "prompt:",
-  ]);
-  console.log("RESP", resp);
-
-  let _resp = "";
-  if (resp?.startsWith(name ? name : "prompt:")) {
-    _resp = resp.replace(name ? name : "prompt:", "").trim();
-  } else {
-    _resp = resp;
-  }
-  return { reaction: _resp?.replace(/\s+/g, ""), prompt: reactionsPrompt }
-}
-
-export async function generateObjectComment({ name, description }, generateFn) {
-  const objectCommentPrompt = `\
-${lore.object.prompt}
-${shuffleArray(lore.object.examples).join("\n")}
-Object: "${name}" ${description}
-Quote: "`;
-
-  const resp = await generateFn(objectCommentPrompt, [`"`, '\n\n']);
-  console.log('resp is', resp);
-  return {
-    name,
-    description,
-    value: resp.trim(),
-    prompt: objectCommentPrompt
-  };
-}
-
-export async function generateBanter({ setting = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
-  if (!dstCharacter) {
-    dstCharacter = characters[Math.floor(Math.random() * characters.length)]
-  }
-
-  let lastCharacter = null;
-  let prompt = `\
-# Available Actions: ${[
-      "attack",
-      "defend",
-      "move to",
-      "follow",
-      "pick up",
-      "drop",
-      "emote",
-      "stop",
-      "none",
-    ].join(", ")}
-
-# Characters
-
-Name: Axel
-Description: The main hero of the story. Well, someone has to be the hero.
-
-Name: Miranda
-Description: A very trusting person.
-
-Name: Zaphod
-Description: A very untrustworthy character.
-
-# Transcript
-
-axel: We arere looking for Lara. You know where we can find her?
-miranda: I can find anything, you just keep feeding me tokens and coffee.
-zaphod: Anything you need, you just let me know.
-miranda: Thanks. How do you guys know each other again? 
-zaphod: Best friends. From waaay back in the day.
-
-"""
-# Characters
-
-Name: eric
-Description: A very boring guy. Bored the pants off a thousand people at once, once.
-
-Name: millie
-Description: A very interesting person. She is a bit of a mystery.
-
-# Objects
-
-Name: Computer
-Description: A very old computer. A real piece of crap, but I guess it works..
-
-# Transcript 
-
-millie: Hey Eric, can I ask you something?
-\/action millie moves to eric
-eric: Sure, what is it?
-millie: Do you ever wonder why we are here?
-eric: Is that a way to tee up a convo about the drop tomorrow?
-\/action millie emotes joy
-millie: It might not be!
-eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
-\/action eric moves to computer
-
-"""
-
-${setting && `# Setting\n\n${setting.name}\n${setting.description}`}
-
-${characters.length > 0 && "# Characters\n\n"}\
-${characters
-      .map((c) => `Character: ${c.name}\nDescription: ${c.description}`)
-      .join("\n\n") + (characters.length > 0 && "\n\n")
-    }\
-${objects.length > 0 && "# Nearby Objects\n\n"}\
-${objects.slice(0, 2)
-      .map((c) => `Object: ${c.name}\nDescription: ${c.description}`)
-      .join("\n\n") + (objects.length > 0 && "\n")
-    }\
-
-# Transcript
-
-${messages ? (messages.map((m) => m.character.name+': '+m.message).join("\n")) : ''}\
-${(!messages || messages.length === 0) && dstCharacter.name+':'}`;
-
-// set lastCharacter to the last character in the transcript
-  if (messages && messages.length > 0) {
-    lastCharacter = messages[messages.length - 1].character;
-  } else {
-    lastCharacter = dstCharacter;
-  }
-
-const outMessages = [];
-
-  let loreResp = await generateFn(prompt, ["\n\n", 'done=true', 'done = true']);
-
-  loreResp = loreResp
-    .trim()
-    .trimStart()
-    .replace(/^\n+/, "") // remove leading newlines
-    .replace(/\n+$/, "") // remove trailing newlines
-    .replaceAll('"', "") // remove quotes
-    .replaceAll("\t", "") // remove tabs
-    .split("\n");
-
-    outMessages.push({
-      character: lastCharacter ?? dstCharacter,
-      message: loreResp.shift().replaceAll((lastCharacter ?? dstCharacter).name + ':', '').trim().trimStart()
-    });
-
-  return {
-    messages: outMessages,
-    prompt: prompt
-  }
-}
-
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-export async function generateLoreExposition({ name, setting = null, type = 'Object' }, generateFn) {
-  const prompt = `\
-${type !== 'setting' && (setting && (setting + '\n')) || ''}\
-${lore[type.toLowerCase()].prompt}
-${shuffleArray(lore[type.toLowerCase()].examples).join("\n")}
-${capitalizeFirstLetter(type)}: "${name}"`;
-
-  const resp = await generateFn(prompt, [`\n${type.toUpperCase()}:`, '\n\n']);
-
-  const lines = resp.split("\n").filter((el) => {
-    return el !== "";
-  });
-
-  const description = lines[0].trimStart().trim();
-  const comment = lines[1] && lines[1].replaceAll("Quote: ", "").replaceAll('"', '').trim().trimStart();
-
-  return {
-    name,
-    description,
-    comment,
-    prompt
-  };
-
-
-}
-
-export async function generateCutscene({ setting = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
-  if (!dstCharacter) {
-    dstCharacter = characters[Math.floor(Math.random() * characters.length)]
-  }
-
-  console.log('messages', messages);
-
-  let lastCharacter = null;
-  let prompt = `\
-# Available Actions: ${[
-      "attack",
-      "defend",
-      "move to",
-      "follow",
-      "pick up",
-      "drop",
-      "emote",
-      "stop",
-      "none",
-    ].join(", ")}
-
-# Characters
-
-Name: Axel
-Description: The main hero of the story. Well, someone has to be the hero.
-
-Name: Miranda
-Description: A very trusting person.
-
-Name: Zaphod
-Description: A very untrustworthy character.
-
-# Transcript
-
-axel: We arere looking for Lara. You know where we can find her?
-miranda: I can find anything, you just keep feeding me tokens and coffee.
-zaphod: Anything you need, you just let me know.
-miranda: Thanks. How do you guys know each other again? 
-zaphod: Best friends. From waaay back in the day.
-
-"""
-# Characters
-
-Name: eric
-Description: A very boring guy. Bored the pants off a thousand people at once, once.
-
-Name: millie
-Description: A very interesting person. She is a bit of a mystery.
-
-# Objects
-
-Name: Computer
-Description: A very old computer. A real piece of crap, but I guess it works..
-
-# Transcript 
-
-millie: Hey Eric, can I ask you something?
-\/action millie moves to eric
-eric: Sure, what is it?
-millie: Do you ever wonder why we are here?
-eric: Is that a way to tee up a convo about the drop tomorrow?
-\/action millie emotes joy
-millie: It might not be!
-eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
-\/action eric moves to computer
-
-"""
-
-${setting && `# Setting\n\n${setting.name}\n${setting.description}`}
-
-${characters.length > 0 && "# Characters\n\n"}\
-${characters
-      .map((c) => `Character: ${c.name}\nDescription: ${c.description}`)
-      .join("\n\n") + (characters.length > 0 && "\n\n")
-    }\
-${objects.length > 0 && "# Nearby Objects\n\n"}\
-${objects.slice(0, 2)
-      .map((c) => `Object: ${c.name}\nDescription: ${c.description}`)
-      .join("\n\n") + (objects.length > 0 && "\n")
-    }\
-
-# Transcript
-
-${messages ? (messages.map((m) => m.character.name+': '+m.message).join("\n")) : ''}\
-${(!messages || messages.length === 0) && dstCharacter.name+':'}`;
-
-// set lastCharacter to the last character in the transcript
-  if (messages && messages.length > 0) {
-    lastCharacter = messages[messages.length - 1].character;
-  } else {
-    lastCharacter = dstCharacter;
-  }
-
-const outMessages = [];
-
-  let loreResp = await generateFn(prompt, ["\n\n", 'done=true', 'done = true']);
-  console.log('lastCharacter ?? dstCharacter', lastCharacter ?? dstCharacter);
-
-
-  loreResp = loreResp
-    .trim()
-    .trimStart()
-    .replace(/^\n+/, "") // remove leading newlines
-    .replace(/\n+$/, "") // remove trailing newlines
-    .replaceAll('"', "") // remove quotes
-    .replaceAll("\t", "") // remove tabs
-    .split("\n");
-
-    outMessages.push({
-      character: lastCharacter ?? dstCharacter,
-      message: loreResp.shift().replaceAll((lastCharacter ?? dstCharacter).name + ':', '').trim().trimStart()
-    });
-
-  //   // if last character is dstCharacter and loreResp[0] has neither a ":" (chat) or "/" in it (action)
-  //   // pop the first line from loreResp and add it to a new object as 'message' (with 'character' being lastCharacter)
-  //   if (loreResp[0] && !loreResp[0].includes(":") && !loreResp[0].includes("/")) {
-  //     outMessages.push({
-  //       character: lastCharacter ?? dstCharacter,
-  //       message: loreResp.shift()
-  //     });
-  //   }
-
-  // // if the line doesn't contain a colon or a slash then it's nothing
-  // loreResp = loreResp.filter((line) => line.includes(":") || line.includes("/"));
-
-  // // if the line doesn't start with a character.name from the characters array or a /, not valid
-  // loreResp = loreResp.filter((line) => {
-  //   if (line.startsWith("/")) {
-  //     return true;
-  //   } else {
-  //     return characters.map((c) => c.name.includes(line.split(":")[0].trimStart().trim()) || line.split(":")[0].trimStart().trim().includes(c.name));
-  //   }
-  // });
-
-  return {
-    messages: outMessages,
-    prompt: prompt
-  }
-}
-
-export async function generateRPGDialogue(character, generateFn) {
-  const rpgDialoguePrompt = `\
-  ${lore["inputParsing"].prompt}
-  ${shuffleArray(lore["inputParsing"].examples).join("\n")}
-  Input:\n+a8e44f13${character}:`;
-
-  const resp = await generateFn(rpgDialoguePrompt, [
-    "\n",
-    `Input:\n+a8e44f13${character}:`,
-  ]);
-
-  if (
-    resp?.startsWith(
-      `Input:\n+a8e44f13${character}:`
-    )
-  ) {
-    return resp
-      .replace(
-        `Input:\n+a8e44f13${character}:`,
-        ""
-      )
-      .trim();
-  } else {
-    return resp;
-  }
-}
-
-const questPrompt = `\
-Utopia: Stay for a day inside, while bothering others|Reward: 100xp.
-Dreamland: Try to escape dreamland, without destroying others' dreams|Reward: 200xp.
-Hellwhole: Save your loved ones, surviving the wrath of the demons|Reward: 5000xp
-Dark Forest: Survive the night in the dark forest|Reward: 1000xp.
-Devastated Building: Get outside, without getting hurt|Reward: 500xp.
-Tomb:Escape from the Dead|Reward: 10000xp.
-Space Station: Survive an attack by aliens, while trying to repair the station|Reward: 2000xp.
-Escape The Maze: Escape the maze, while avoiding the traps|Reward: 1500xp.
-The Island: Get off the island, without getting lost|Reward: 4000xp.
-The City: Survive a day in the city, without getting lost|Reward: 3000xp.
-The Mountain: Get to the top of the mountain, without getting lost|Reward: 6000xp.
-The Desert: Survive a day in the desert, without getting lost|Reward: 4000xp.
-The Jungle: Get through the jungle, without getting lost|Reward: 5000xp.
-The Ocean: Survive a day in the ocean, without getting lost|Reward: 3000xp.
-The North Pole: Survive a day at the North Pole, without getting lost|Reward: 7000xp.
-The South Pole: Survive a day at the South Pole, without getting lost|Reward: 8000xp.
-The Moon: Survive a day on the moon, without getting lost|Reward: 9000xp.
-The Sun: Survive a day on the sun, without getting burned|Reward: 10000xp.
-`;
-export async function generateAction(setting, generateFn) {
-  const _questPrompt = `\
-  ${questPrompt}
-  ${setting?.length > 0 ? setting : "Woodland"}:`;
-
-  const resp = await generateFn(_questPrompt, [
-    "\n",
-    setting?.length > 0 ? setting : "Woodland",
-  ]);
-
-  if (resp?.startsWith(setting?.length > 0 ? setting : "Woodland:")) {
-    const data = resp
-      .replace(setting?.length > 0 ? setting : "Woodland:", "")
-      .trim();
-    const [quest, reward] = data.split("|");
-    return {
-      location: setting?.length > 0 ? setting : "Woodland",
-      quest: quest?.trim(),
-      reward: reward?.trim(),
-    };
-  } else {
-    const data = resp
-      .replace(setting?.length > 0 ? setting : "Woodland:", "")
-      .trim();
-    const [quest, reward] = data.split("|");
-    return {
-      location: setting?.length > 0 ? setting : "Woodland",
-      quest: quest?.trim(),
-      reward: reward?.trim(),
-    };
-  }
-}
-
-// ****************** RUNTIME API **********************
-export async function generateLore(
-  {
-    settings,
-    characters,
-    messages = [],
-    objects,
-    dstCharacter = null,
-    localCharacter,
-  },
-  generateFn
-) {
-  const prompt = makeLorePrompt({
-    settings,
-    characters,
-    messages,
-    objects,
-    dstCharacter,
-  });
-  const stop = makeLoreStop(localCharacter, 0);
-  let response = await generateFn(prompt, stop);
-  response = postProcessResponse(response, characters, dstCharacter);
-  return response;
-}
-
-export async function generateLocationComment(
-  { name, description, dstCharacter = null },
-  generateFn
-) {
-  const sceneCommentPrompt = `\
-${lore.setting.prompt}
-${shuffleArray(lore.setting.examples, 8).join("\n")}
-Location: "${name}" ${description}
-Quote: "`;
-
-  const resp = await generateFn(sceneCommentPrompt, [`"`, '\n']);
-  console.log('resp is', resp);
-  return {
-    name,
-    description,
-    // trim the beginning white space from the response
-    comment: resp.replaceAll('"', '').trim().trimStart(),
-    prompt: sceneCommentPrompt
-  };
-
-  // const prompt = makeCommentPrompt({
-  //   settings,
-  //   dstCharacter,
-  //   name,
-  // });
-  // const stop = makeCommentStop();
-  // let response = await generateFn(prompt, stop);
-  // response = parseCommentResponse(response);
-  // return response;
-}
-
-export async function generateSelectTargetComment(
-  { name, description },
-  generateFn
-) {
-  const prompt = makeSelectTargetPrompt({
-    name,
-    description,
-  });
-  const stop = makeSelectTargetStop();
-  let response = await generateFn(prompt, stop);
-  response = parseSelectTargetResponse(response);
-  return response;
-}
-
-export async function generateSelectCharacter({ name, description }, generateFn) {
-  const prompt = makeSelectCharacterPrompt({
-    name,
-    description,
-  });
-  const stop = makeSelectCharacterStop();
-  let response = await generateFn(prompt, stop);
-  const response2 = parseSelectCharacterResponse(response);
-  if (response2) response2.prompt = prompt
-  return response2;
-}
-
-export async function generateBattleIntroduction({ name, description }, generateFn) {
-  const prompt = makeBattleIntroductionPrompt({
-    name,
-    description,
-  });
-  const stop = makeBattleIntroductionStop();
-  let response = await generateFn(prompt, stop);
-  const response2 = parseBattleIntroductionResponse(response);
-  if (response2) response2.prompt = prompt;
-  return response2 || { value: null, emote: null, done: null, prompt };
-}
-
-export async function generateChatMessage({ messages, nextCharacter }, generateFn) {
-  const prompt = makeChatPrompt({
-    messages,
-    nextCharacter,
-  });
-  const stop = makeChatStop();
-  let response = await generateFn(prompt, stop);
-  const response2 = parseChatResponse(response);
-  if(response2) response2.prompt = prompt;
-  return response2;
-}
-
-export async function generateDialogueOptions(
-  { messages, nextCharacter },
-  generateFn
-) {
-  const prompt = makeOptionsPrompt({
-    messages,
-    nextCharacter,
-  });
-  const stop = makeOptionsStop();
-  let response = await generateFn(prompt, stop);
-  const response2 = parseOptionsResponse(response);
-  return response2;
-}
-
-export async function generateCharacterIntroPrompt({ name, description }, generateFn) {
-  const prompt = makeCharacterIntroPrompt({
-    name,
-    description,
-  });
-  const stop = makeCharacterIntroStop();
-  let response = await generateFn(prompt, stop);
-  const response2 = parseCharacterIntroResponse(response);
-  if (response2) response2.prompt = prompt;
-  return response2 || { message: '<error>', prompt, onselect: '<error>' };
-}
-
-// Generate a quest task outcome
-export async function generateActionTask() {
-  return console.log('not implemented')
 }

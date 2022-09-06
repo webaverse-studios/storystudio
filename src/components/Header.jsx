@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import "../styles/App.css";
-import { views } from "../utils/constants";
+import { views, briefViews } from "../utils/constants";
 import { BrowserRouter as Router, Route, NavLink } from "react-router-dom";
 
 const Header = () => {
   const editMode = new URLSearchParams(window.location.search).get("edit");
+  const showUI = window.location.search.includes("showui");
 
   return (
     <div className="header">
@@ -18,7 +19,7 @@ const Header = () => {
           {_darkMode ? "Light Mode" : "Dark Mode"}
         </button>*/}
         {/* for each key in views (an object) create a button that calls setCurrentView with the view's value, and is active if the currentView is current button */}
-        {Object.keys(views).map((key, index) => {
+        {Object.keys(showUI ? views : briefViews).map((key, index) => {
           if ((editMode === "false" || !editMode) && key === "base")
             return null;
           return (

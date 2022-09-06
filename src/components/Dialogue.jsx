@@ -203,7 +203,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
         makeGenerateFn()
       );
       res = res.comment;
-    } else if (type === "loreExposition") {
+    } else if (type === "exposition") {
       const setting =
         entities["setting"]?.length > 0
           ? entities["setting"][
@@ -218,7 +218,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
             ]
           : { name: "Test" };
 
-      res = await baseData.module.generateLoreExposition(
+      res = await baseData.module.generateExposition(
         {
           name: character.name,
           setting: `${setting.name}\n${setting.description}`,
@@ -457,7 +457,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
               handleChange(data, selector);
             }}
           >
-            {(type === "loreExposition"
+            {(type === "exposition"
               ? [
                   ...entities["character"],
                   ...entities["object"],

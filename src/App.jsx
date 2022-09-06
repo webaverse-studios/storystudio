@@ -67,16 +67,24 @@ function App() {
                   <EntityListBox type={"loreFiles"} header={"Lorefiles"} />
                 }
               />
-
               <Route
-                path="Dialogue"
-                element={
-                  <React.Fragment>
-                    <DialogueSelector />
-                    <DialogueListBox />
-                  </React.Fragment>
-                }
-              />
+              path="/Dialogue"
+              element={
+                <React.Fragment>
+                  <DialogueSelector />
+                  <DialogueListBox />
+                </React.Fragment>
+              }
+            />
+            <Route
+              path="/"
+              element={
+                <React.Fragment>
+                  <DialogueSelector />
+                  <DialogueListBox />
+                </React.Fragment>
+              }
+            />
             </Routes>
           </Router>
           <ErrorModal />

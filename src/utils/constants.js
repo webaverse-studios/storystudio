@@ -10,6 +10,11 @@ export const views = {
   loreFiles: "Lorefiles",
 };
 
+export const briefViews = {
+      setup: "Setup",
+      dialogue: "Dialogue"
+    };
+
 export const exampleLoreFiles = [
   `\
   WEBAVERSE_LORE_FILE
@@ -437,7 +442,7 @@ export const dialogueTypes = [
   "mobComment",
   "loadingComment",
   "banter",
-  "loreExposition",
+  "exposition",
   "rpgDialogue",
   "reactions",
   "cutscenes",
@@ -523,7 +528,7 @@ export const defaultDialogue = {
       },
     },
   ],
-  loreExposition: [
+  exposition: [
     {
       input: {
         target: "Silver Sword",

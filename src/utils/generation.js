@@ -172,7 +172,7 @@ export async function makeDialogue(type, openErrorModal) {
         }
       }
 
-    case "loreExposition":
+    case "exposition":
       return {
         input: {
           target: "New Object"
@@ -368,10 +368,10 @@ export async function generate(type, data, baseData, openErrorModal) {
       }
       return { description: resp };
 
-    case "loreExposition":
-      resp = await module.generateLoreExposition(makeGenerateFn());
+    case "exposition":
+      resp = await module.generateExposition(makeGenerateFn());
       if (!resp || resp?.length <= 0) {
-        return generate("loreExposition", data, baseData, openErrorModal);
+        return generate("exposition", data, baseData, openErrorModal);
       }
       return { description: resp };
     case "rpgDialogue":
@@ -400,7 +400,7 @@ export async function generate(type, data, baseData, openErrorModal) {
       }
       return { description: resp };
 
-    case "actions":
+    case "quests":
       resp = await module.generateAction(
         getRandomEntity(data, "setting"),
         makeGenerateFn(),
