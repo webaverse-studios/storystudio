@@ -5,7 +5,7 @@ import MonacoEditor from "@monaco-editor/react";
 import { WithContext as ReactTags } from "react-tag-input";
 import { useEffect } from "react";
 import { delimiters } from "../utils/constants";
-import { makeGenerateFn } from "../utils/generation";
+import { makeGenerationFn } from "../utils/generation";
 
 //field check if image, set source the img, if name change, generate new image
 const Dialogue = ({ index, _key, type }) => {
@@ -158,6 +158,81 @@ const Dialogue = ({ index, _key, type }) => {
     handleChange(npcs, "input.npcs");
   };
 
+  const [currentPrompt, setCurrentPrompt] = useState({
+    objectComment: "",
+    npcComment: "",
+    mobComment: "",
+    loadingComment: "",
+    banter: "",
+    exposition: "",
+    rpgDialogue: "",
+    reactions: "",
+    cutscenes: "",
+    quests: "",
+  });
+  const getPrompt = async (type, input) => {
+    if (currentPrompt[type]?.length > 0) {
+      console.log("returning current prompt:", currentPrompt[type]);
+      return currentPrompt[type];
+    }
+
+    const temp = dialogue[currentDialogueType][_key].output?.prompt;
+    let prompt = "";
+    if (temp && temp?.length > 0 && temp !== "Prompt") {
+      const newData = { ...currentPrompt };
+      newData[type] = temp;
+      setCurrentPrompt(newData);
+      console.log("returning from temp");
+      return currentPrompt[type];
+    } else {
+      switch (type) {
+        case "objectComment":
+          prompt = await baseData.module.makeCommentPrompt(input);
+          break;
+        case "npcComment":
+          prompt = await baseData.module.makeCommentPrompt(input);
+          break;
+        case "mobComment":
+          prompt = await baseData.module.makeCommentPrompt(input);
+          break;
+        case "loadingComment":
+          prompt = await baseData.module.makeCommentPrompt(input);
+          break;
+        case "banter":
+          prompt = await baseData.module.makeBanterPrompt(input);
+          break;
+        case "exposition":
+          prompt = await baseData.module.makeExpositionPrompt(input);
+          console.log("lore exposition prompt:", prompt);
+          break;
+        case "rpgDialogue":
+          prompt = await baseData.module.makeRPGDialoguePrompt(input);
+          break;
+        case "reactions":
+          prompt = await baseData.module.makeReactionPrompt();
+          break;
+        case "cutscenes":
+          prompt = await baseData.module.makeCutscenePrompt(input);
+          break;
+        case "quests":
+          prompt = await baseData.module.makeQuestPrompt(input);
+          break;
+        default:
+          return "";
+      }
+    }
+
+    if (prompt?.length > 0) {
+      const newData = { ...currentPrompt };
+      newData[type] = prompt;
+      setCurrentPrompt(newData);
+    }
+
+    handleChange(currentPrompt[type], "output.prompt");
+    console.log("returning normal:", currentPrompt[type]);
+    return prompt;
+  };
+
   const generateOutputs = async (type) => {
     let selector = "";
     const inputs = dialogue[currentDialogueType][_key].input;
@@ -169,11 +244,20 @@ const Dialogue = ({ index, _key, type }) => {
       const obj = getObject(data);
       const description = obj ? obj.description : "";
 
+      const prompt = await getPrompt(type, {
+        name: data,
+        description,
+        type: "Object",
+      });
+      if (!prompt || prompt?.length <= 0) {
+        return;
+      }
+
+      const stop = baseData.module.makeCommentStop();
       res = await baseData.module.generateObjectComment(
-        { name: data, description },
-        makeGenerateFn()
+        makeGenerationFn(prompt, stop)
       );
-      handleChange(res.prompt, "output.prompt");
+
       handleChange(res.comment, "output.response");
       res = res.comment;
     } else if (type === "npcComment") {
@@ -181,13 +265,21 @@ const Dialogue = ({ index, _key, type }) => {
       const data = inputs.target;
       const obj = getNPC(data);
       const description = obj ? obj.description : "";
-      console.log(data);
 
+      const prompt = await getPrompt(type, {
+        name: data,
+        description,
+        type: "Character",
+      });
+      if (!prompt || prompt?.length <= 0) {
+        return;
+      }
+
+      const stop = baseData.module.makeCommentStop();
       res = await baseData.module.generateNPCComment(
-        { name: data, description },
-        makeGenerateFn()
+        makeGenerationFn(prompt, stop)
       );
-      handleChange(res.prompt, "output.prompt");
+
       handleChange(res.comment, "output.response");
       res = res.comment;
     } else if (type === "mobComment") {
@@ -196,11 +288,20 @@ const Dialogue = ({ index, _key, type }) => {
       const obj = getMob(data);
       const description = obj ? obj.description : "";
 
+      const prompt = await getPrompt(type, {
+        name: data,
+        description,
+        type: "Character",
+      });
+      if (!prompt || prompt?.length <= 0) {
+        return;
+      }
+
+      const stop = baseData.module.makeCommentStop();
       res = await baseData.module.generateMobComment(
-        { name: data, description },
-        makeGenerateFn()
+        makeGenerationFn(prompt, stop)
       );
-      handleChange(res.prompt, "output.prompt");
+
       handleChange(res.comment, "output.response");
       res = res.comment;
     } else if (type === "loadingComment") {
@@ -209,14 +310,20 @@ const Dialogue = ({ index, _key, type }) => {
       const obj = getSetting(data);
       const description = obj ? obj.description : "";
 
+      const prompt = await getPrompt(type, {
+        name: data,
+        description,
+        type: "Location",
+      });
+      if (!prompt || prompt?.length <= 0) {
+        return;
+      }
+
+      const stop = baseData.module.makeCommentStop();
       res = await baseData.module.generateLocationComment(
-        {
-          name: data,
-          description,
-        },
-        makeGenerateFn()
+        makeGenerationFn(prompt, stop)
       );
-      handleChange(res.prompt, "output.prompt");
+
       handleChange(res.comment, "output.response");
       res = res.comment;
     } else if (type === "exposition") {
@@ -229,15 +336,21 @@ const Dialogue = ({ index, _key, type }) => {
             ]
           : { name: "Test", Description: "Test" };
 
+      const _type = getTypeOfObject(data);
+      const prompt = await getPrompt(type, {
+        name: data,
+        location: `${location.name}\n${location.description}`,
+        type: _type,
+      });
+      if (!prompt || prompt?.length <= 0) {
+        return;
+      }
+
+      const stop = baseData.module.makeExpositionStop(type);
       res = await baseData.module.generateExposition(
-        {
-          name: data,
-          location: `${location.name}\n${location.description}`,
-          type: getTypeOfObject(data),
-        },
-        makeGenerateFn()
+        makeGenerationFn(prompt, stop)
       );
-      handleChange(res.prompt, "output.prompt");
+
       handleChange(res.unparsed, "output.response");
       res = res.parsed;
     } else if (type === "banter") {
@@ -262,14 +375,21 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const input = { location, characters, objects, messages };
+      const stop = baseData.module.makeBanterStop();
       console.log("input:", input);
       for (let i = 0; i < 3; i++) {
-        res = await baseData.module.generateBanter(input, makeGenerateFn());
+        const prompt = await getPrompt(type, input);
+        if (!prompt || prompt?.length <= 0) {
+          return;
+        }
+
+        res = await baseData.module.generateBanter(
+          makeGenerationFn(prompt, stop)
+        );
         const newMessages = res.parsed;
         messages.push(...newMessages);
       }
 
-      handleChange(res.prompt, "output.prompt");
       handleChange(JSON.stringify(res.unparsed), "output.response");
 
       cleanDialogueMessages(_key);
@@ -307,16 +427,21 @@ const Dialogue = ({ index, _key, type }) => {
         dstCharacter: getNPC(_npcs[0]),
       };
 
+      const stop = baseData.module.makeRPGDialogueStop();
       for (let i = 0; i < 6; i++) {
+        const prompt = await getPrompt(type, input);
+        if (!prompt || prompt?.length <= 0) {
+          console.log("invalid prompt:", prompt);
+          return;
+        }
+
         res = await baseData.module.generateRPGDialogue(
-          input,
-          makeGenerateFn()
+          makeGenerationFn(prompt, stop)
         );
         const message = res.parsed;
         messages.push(message);
       }
 
-      handleChange(res.prompt, "output.prompt");
       handleChange(JSON.stringify(res.unparsed), "output.response");
 
       cleanDialogueMessages(_key);
@@ -328,12 +453,16 @@ const Dialogue = ({ index, _key, type }) => {
       selector = "output.reaction";
       const data = inputs;
       const message = data.messages[0];
+      const prompt = await getPrompt(type, null);
+      if (!prompt || prompt?.length <= 0) {
+        return;
+      }
+
+      const stop = baseData.module.makeReactionStop(message.speaker);
       res = await baseData.module.generateReaction(
-        message.speaker,
-        makeGenerateFn()
+        makeGenerationFn(prompt, stop)
       );
 
-      handleChange(res.prompt, "output.prompt");
       handleChange(JSON.stringify(res.unparsed), "output.response");
       res = res.parsed;
     } else if (type === "cutscenes") {
@@ -367,8 +496,18 @@ const Dialogue = ({ index, _key, type }) => {
         messages,
       };
 
+      const stop = baseData.module.makeCutsceneStop();
+
       for (let i = 0; i < 3; i++) {
-        res = await baseData.module.generateCutscene(input, makeGenerateFn());
+        const prompt = await getPrompt(type, input);
+        if (!prompt || prompt?.length <= 0) {
+          console.log("invalid prompt:", prompt);
+          return;
+        }
+
+        res = await baseData.module.generateCutscene(
+          makeGenerationFn(prompt, stop)
+        );
         const newMessages = res.parsed;
         messages.push(newMessages[0]);
       }
@@ -382,18 +521,23 @@ const Dialogue = ({ index, _key, type }) => {
         addDialogueEntryWithData(_key, messages[i].name, messages[i].message);
       }
       return;
-    }
-
-    if (res?.length <= 0 || type === "cutscenes") {
+    } else if (type === "quests") {
       const data = inputs;
       const location = data.location;
 
       const input = { location: location };
-      res = await baseData.module.generateQuest(input, makeGenerateFn());
+      const prompt = await getPrompt(type, input);
+      if (!prompt || prompt?.length <= 0) {
+        console.log("invalid prompt:", prompt);
+        return;
+      }
+
+      const stop = baseData.module.makeQuestStop();
+      res = await baseData.module.generateQuest(makeGenerationFn(prompt, stop));
 
       handleChange(res.parsed.quest, "output.action");
       handleChange(res.parsed.reward, "output.reward");
-      handleChange(res.prompt, "output.prompt");
+
       handleChange(JSON.stringify(res.unparsed), "output.response");
       return;
     }
@@ -419,7 +563,15 @@ const Dialogue = ({ index, _key, type }) => {
           <label>
             {label === "prompt" ? "Prompt Preview" : "Prompt Output"}
           </label>
-          <textarea value={data} readOnly></textarea>
+          <textarea
+            value={label === "prompt" ? currentPrompt[type] : data}
+            readOnly={label === "response"}
+            onChange={(e) => {
+              const newData = { ...currentPrompt };
+              newData[type] = e.target.value;
+              setCurrentPrompt(newData);
+            }}
+          ></textarea>
         </div>
       );
     }

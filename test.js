@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import "localstorage-polyfill";
 global.localStorage; // now has your in memory localStorage
-import { openaiRequest } from "./src/utils/generation.js";
+import { makeGenerationFn, openaiRequest } from "./src/utils/generation.js";
 import fs from "fs";
 import {
   generateLocation,
@@ -46,6 +46,10 @@ import {
   makeObjectStop,
   makeExpositionStop,
   makeLocationStop,
+  makeReactionStop,
+  makeReactionPrompt,
+  makeQuestPrompt,
+  makeQuestStop,
 } from "./public/lore-model.js";
 
 const args = process.argv;
@@ -201,15 +205,15 @@ const run = async () => {
   // ********** OBJECT COMMENT **********
   async function generateObjectCommentTest() {
     const { name, description } = testData.objects[0];
+    const prompt = makeCommentPrompt({ name, description, type: "Object" });
 
     const output = await generateObjectComment(
-      { name, description },
-      makeGenerateFn()
+      makeGenerationFn(prompt, makeCommentStop())
     );
 
     writeData(
       testData.objects[0],
-      output.prompt,
+      prompt,
       output.comment,
       "object_comment",
       makeCommentStop()
@@ -226,12 +230,19 @@ const run = async () => {
   // ********** LOCATION COMMENT **********
   async function generateLocationCommentTest() {
     const input = testData.locations[0];
+    const prompt = makeCommentPrompt({
+      name: input.name,
+      description: input.description,
+      type: "Location",
+    });
 
-    const output = await generateLocationComment(input, makeGenerateFn());
+    const output = await generateLocationComment(
+      makeGenerationFn(prompt, makeCommentStop())
+    );
 
     writeData(
       input,
-      output.prompt,
+      prompt,
       output.comment,
       "location_comment",
       makeCommentStop()
@@ -280,8 +291,7 @@ const run = async () => {
     };
 
     const { prompt, parsed } = await generateExposition(
-      input,
-      makeGenerateFn()
+      makeGenerationFn(makeExpositionPrompt(input), makeExpositionStop())
     );
 
     writeData(
@@ -301,8 +311,7 @@ const run = async () => {
     };
 
     const { prompt, parsed } = await generateExposition(
-      input,
-      makeGenerateFn()
+      makeGenerationFn(makeExpositionPrompt(input), makeExpositionStop())
     );
 
     writeData(
@@ -321,8 +330,7 @@ const run = async () => {
     };
 
     const { prompt, parsed } = await generateExposition(
-      input,
-      makeGenerateFn()
+      makeGenerationFn(makeExpositionPrompt(input), makeExpositionStop())
     );
 
     writeData(
@@ -485,12 +493,15 @@ const run = async () => {
       objects: testData.objects,
       messages,
     };
-    const prompt = makeCutscenePrompt(input);
+    let prompt = makeCutscenePrompt(input);
 
     // iterate 3 times or until done
     for (let i = 0; i < 3; i++) {
+      prompt = makeCutscenePrompt(input);
       input.messages = messages;
-      const response = await generateCutscene(input, makeGenerateFn());
+      const response = await generateCutscene(
+        makeGenerateFn(prompt, makeCutsceneStop())
+      );
       console.log("response: ", response);
       const message = response.parsed[0];
       messages.push(message);
@@ -523,11 +534,14 @@ const run = async () => {
       objects: testData.objects,
       messages,
     };
-    const prompt = makeBanterPrompt(input);
+    let prompt = makeBanterPrompt(input);
 
     // iterate 3 times or until done
     for (let i = 0; i < 3; i++) {
-      const newMessages = await generateBanter(input, makeGenerateFn());
+      prompt = makeBanterPrompt(input);
+      const newMessages = await generateBanter(
+        makeGenerationFn(prompt, makeBanterStop())
+      );
       // push all newMessages to messages
       messages.push(...newMessages.parsed);
     }
@@ -561,9 +575,13 @@ const run = async () => {
       dstCharacter: testData.npcs[0],
     };
     let res = null;
+    let prompt = "";
     // iterate 3 times or until done
     for (let i = 0; i < 6; i++) {
-      res = await generateRPGDialogue(input, makeGenerateFn());
+      prompt = makeRPGDialoguePrompt(input);
+      res = await generateRPGDialogue(
+        makeGenerationFn(prompt, makeRPGDialogueStop())
+      );
       // push each message in response.messages to newMessages
       messages.push(res.parsed);
     }
@@ -576,7 +594,7 @@ const run = async () => {
       })
       .join("\n");
 
-    writeData(input, res.prompt, output, "rpg_dialogue", makeRPGDialogueStop());
+    writeData(input, prompt, output, "rpg_dialogue", makeRPGDialogueStop());
   }
 
   if (
@@ -590,17 +608,13 @@ const run = async () => {
 
   async function generateReactionTest() {
     console.log("Starting reaction test");
+    const prompt = makeReactionPrompt();
     const output = await generateReaction(
-      testData.messages[0],
-      makeGenerateFn()
+      makeGenerationFn(prompt, makeReactionStop(testData.party[0].name))
     );
 
     console.log("*********** reaction:");
     console.log(output);
-
-    const prompt = output.prompt;
-
-    delete output.prompt;
 
     writeData(testData.messages[0], prompt, output.parsed, "reaction");
   }
@@ -616,7 +630,10 @@ const run = async () => {
   // TODO
   async function generateQuestTest() {
     const input = { location: testData.locations[0] };
-    const output = await generateQuest(input, makeGenerateFn());
+    const prompt = makeQuestPrompt(input);
+    const output = await generateQuest(
+      makeGenerationFn(prompt, makeQuestStop())
+    );
 
     console.log("*********** generateQuest:");
     console.log(output);

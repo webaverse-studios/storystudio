@@ -326,10 +326,8 @@ export const parseReactionResponse = (resp) => {
   return { reaction: resp?.replace(/\s+/g, "") };
 };
 
-export async function generateReaction(name, generateFn) {
-  const prompt = makeReactionPrompt();
-  const stop = makeReactionStop(name);
-  const resp = await generateFn(prompt, stop);
+export async function generateReaction(generateFn) {
+  const resp = await generateFn();
   const parsed = parseReactionResponse(resp);
   return { parsed, unparsed: resp, prompt };
 }
@@ -454,16 +452,10 @@ export const parseBanterResponse = (resp) => {
   return messages;
 };
 
-export async function generateBanter(
-  { location = null, characters = [], objects = [], messages = [] },
-  generateFn
-) {
-  const input = { location, characters, objects, messages };
-  const prompt = makeBanterPrompt(input);
-  const stop = makeBanterStop();
-  const response = await generateFn(prompt, stop);
+export async function generateBanter(generateFn) {
+  const response = await generateFn();
   const parsed = parseBanterResponse(response);
-  return { prompt, parsed, unparsed: response };
+  return { parsed, unparsed: response };
 }
 
 // EXPOSITION
@@ -536,17 +528,11 @@ export const parseExpositionResponse = (resp) => {
   };
 };
 
-export async function generateExposition(
-  { name, location = null, type = "Object" },
-  generateFn
-) {
-  const input = { name, location, type };
-  const prompt = makeExpositionPrompt(input);
-  const stop = makeExpositionStop(type);
-  const response = await generateFn(prompt, stop);
+export async function generateExposition(generateFn) {
+  const response = await generateFn();
   const parsed = parseExpositionResponse(response);
 
-  return { prompt, parsed, unparsed: response };
+  return { parsed, unparsed: response };
 }
 
 // CUTSCENES
@@ -669,20 +655,8 @@ export const parseCutsceneResponse = (resp) => {
   return messages;
 };
 
-export async function generateCutscene(
-  {
-    location = null,
-    characters = [],
-    objects = [],
-    messages = [],
-    dstCharacter = null,
-  },
-  generateFn
-) {
-  const input = { location, characters, objects, messages, dstCharacter };
-  const prompt = makeCutscenePrompt(input);
-  const stop = makeCutsceneStop();
-  const response = await generateFn(prompt, stop);
+export async function generateCutscene(generateFn) {
+  const response = await generateFn();
   const parsed = parseCutsceneResponse(response);
   return { parsed, unparsed: response, prompt };
 }
@@ -856,20 +830,8 @@ export const parseRPGDialogueResponse = (resp) => {
   };
 };
 
-export async function generateRPGDialogue(
-  {
-    location = null,
-    characters = [],
-    objects = [],
-    messages = [],
-    dstCharacter = null,
-  },
-  generateFn
-) {
-  const input = { location, characters, objects, messages, dstCharacter };
-  const prompt = makeRPGDialoguePrompt(input);
-  const stop = makeRPGDialogueStop();
-  const output = await generateFn(prompt, stop);
+export async function generateRPGDialogue(generateFn) {
+  const output = await generateFn();
   const parsed = parseRPGDialogueResponse(output);
   return { parsed, unparsed: output, prompt };
 }
@@ -909,13 +871,10 @@ export const parseQuestResponse = (resp) => {
   };
 };
 
-export async function generateQuest({ location }, generateFn) {
-  const input = { location };
-  const prompt = makeQuestPrompt(input);
-  const stop = makeQuestStop();
-  const output = await generateFn(prompt, stop);
+export async function generateQuest(generateFn) {
+  const output = await generateFn();
   const parsed = parseQuestResponse(output);
-  return { parsed, unparsed: output, prompt };
+  return { parsed, unparsed: output };
 }
 
 // ****************** RUNTIME API **********************
@@ -1220,39 +1179,28 @@ export const makeCommentStop = () => [`"`, "\n"];
 
 export const parseCommentResponse = (response) => response.replace(/^ /, "");
 
-export async function generateObjectComment({ name, description }, generateFn) {
-  const input = { name, description, type: "Object" };
-  const prompt = makeCommentPrompt(input);
-  const res = await generateFn(prompt, makeCommentStop());
+export async function generateObjectComment(generateFn) {
+  const res = await generateFn();
   const parsed = parseCommentResponse(res);
-  return { comment: parsed, prompt };
+  return { comment: parsed };
 }
 
-export async function generateNPCComment({ name, description }, generateFn) {
-  const input = { name, description, type: "Character" };
-  const prompt = makeCommentPrompt(input);
-  const res = await generateFn(prompt, makeCommentStop());
+export async function generateNPCComment(generateFn) {
+  const res = await generateFn();
   const parsed = parseCommentResponse(res);
-  return { comment: parsed, prompt };
+  return { comment: parsed };
 }
 
-export async function generateMobComment({ name, description }, generateFn) {
-  const input = { name, description, type: "Character" };
-  const prompt = makeCommentPrompt(input);
-  const res = await generateFn(prompt, makeCommentStop());
+export async function generateMobComment(generateFn) {
+  const res = await generateFn();
   const parsed = parseCommentResponse(res);
-  return { comment: parsed, prompt };
+  return { comment: parsed };
 }
 
-export async function generateLocationComment(
-  { name, description },
-  generateFn
-) {
-  const input = { name, description, type: "Location" };
-  const prompt = makeCommentPrompt(input);
-  const res = await generateFn(prompt, makeCommentStop());
+export async function generateLocationComment(generateFn) {
+  const res = await generateFn();
   const parsed = parseCommentResponse(res);
-  return { comment: parsed, prompt };
+  return { comment: parsed };
 }
 
 // SELECT TARGET

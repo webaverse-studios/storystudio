@@ -590,28 +590,28 @@ export const defaultDialogue = {
       output: {
         transcript: [
           {
-            character: "Korben Dallas",
+            speaker: "Korben Dallas",
             message: "I've had enough, Sarah. It's time to do business.",
           },
           {
-            character: "Sarah Kerrigan",
+            speaker: "Sarah Kerrigan",
             message: "Yes, it is time. What business exactly?",
           },
           {
-            character: "Korben Dallas",
+            speaker: "Korben Dallas",
             message: "You know what I'm talking about.",
           },
           {
-            character: "Sarah Kerrigan",
+            speaker: "Sarah Kerrigan",
             message: "I have no idea, honestly.",
           },
           {
-            character: "Korben Dallas",
+            speaker: "Korben Dallas",
             message:
               "You abandoned our party to die. And everyone did. Even me. I wasted almost a week grinding to get back to my level.",
           },
           {
-            character: "Sarah Kerrigan",
+            speaker: "Sarah Kerrigan",
             message:
               "Oh, well, that's how it is. Now if you're here to challenge me, I'll gladly help you waste a few more weeks!",
           },
