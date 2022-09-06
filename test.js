@@ -35,6 +35,17 @@ import {
   makeRPGDialogueStop,
   makeChatPrompt,
   makeChatStop,
+  makeCommentPrompt,
+  makeLocationPrompt,
+  makeCharacterPrompt,
+  makeObjectPrompt,
+  makeCharacterIntroPrompt,
+  makeRPGDialoguePrompt,
+  makeCommentStop,
+  makeCharacterStop,
+  makeObjectStop,
+  makeExpositionStop,
+  makeLocationStop
 } from './public/lore-model.js'
 
 const args = process.argv;
@@ -391,17 +402,20 @@ const run = async () => {
   async function generateRPGDialogTest() {
     const messages = [];
     const input = { character: testData.party[0], location: testData.locations[0], characters: testData.party, objects: testData.objects, messages };
-    const prompt = makeRPGDialogPrompt(input);
+    const prompt = makeRPGDialoguePrompt(input);
     // iterate 3 times or until done
     for (let i = 0; i < 3; i++) {
       input.messages = messages;
       const response = await generateRPGDialogue(input, makeGenerateFn());
       // push each message in response.messages to newMessages
-      const message = response.messages[0];
+      const message = response[0];
+      console.log('response is: ', response);
       messages.push(message);
     }
 
-    const output = messages.map(m => { return m.character.name + ": " + m.message }).join('\n');
+    console.log('messages', messages);
+
+    const output = messages.map(m => { return m?.name + ": " + m?.message }).join('\n');
 
     writeData(input, prompt, output, 'rpg_dialogue', makeRPGDialogueStop());
   }
@@ -433,7 +447,8 @@ const run = async () => {
   // ********** QUEST **********
  // TODO
   async function generateQuestTest() {
-    const output = await generateQuest();
+    const input = { location: testData.locations[0] }
+    const output = await generateQuest(input, makeGenerateFn());
 
     console.log('*********** generateQuest:')
     console.log(output);
@@ -477,10 +492,11 @@ const run = async () => {
 
   async function generateChatMessageTest() {
     const outputs = []
-    const input = { messages: testData.messages, nextCharacter: testData.party[i] };
+    let input = { messages: testData.messages, nextCharacter: testData.party[0] };
     const prompt = makeChatPrompt(input);
     // iterate over testData.party.length
     for (let i = 0; i < testData.party.length; i++) {
+      input = { messages: testData.messages, nextCharacter: testData.party[i] };
       const { value, emote, done } = await generateChatMessage(input, makeGenerateFn());
       outputs.push(`${testData.party[i].name}: ${value} (emote = ${emote})`);
       if (done) {
