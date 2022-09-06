@@ -911,9 +911,11 @@ export const parseQuestResponse = (resp) => {
 
 export async function generateQuest({ location }, generateFn) {
   const input = { location };
-  return parseQuestResponse(
-    await generateFn(makeQuestPrompt(input), makeQuestStop())
-  );
+  const prompt = makeQuestPrompt(input);
+  const stop = makeQuestStop();
+  const output = await generateFn(prompt, stop);
+  const parsed = parseQuestResponse(output);
+  return { parsed, unparsed: output, prompt };
 }
 
 // ****************** RUNTIME API **********************

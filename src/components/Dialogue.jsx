@@ -386,6 +386,15 @@ const Dialogue = ({ index, _key, type }) => {
     }
 
     if (res?.length <= 0 || type === "cutscenes") {
+      const data = inputs;
+      const location = data.location;
+
+      const input = { location: location };
+      res = await module.generateQuest(input, makeGenerateFn());
+      handleChange(res.parsed.quest, "output.action");
+      handleChange(res.parsed.reward, "output.reward");
+      handleChange(res.prompt, "output.prompt");
+      handleChange(JSON.stringify(res.unparsed), "output.response");
       return;
     }
 

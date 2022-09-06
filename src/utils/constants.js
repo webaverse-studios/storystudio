@@ -611,19 +611,11 @@ export const defaultDialogue = {
         location: "New Location",
         characters: ["New Character"],
         npcs: ["New NPC"],
-        objects: ["New Object"],
-        task: {
-          npc: "New NPC",
-          task: "Survive the night",
-          metadata: {
-            reward: "1000",
-            location: "New Location",
-          },
-        },
       },
       output: {
         speaker: "New Character",
         action: "picks up New Object",
+        reward: "100xp",
       },
     },
   ],
