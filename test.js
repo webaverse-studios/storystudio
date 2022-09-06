@@ -371,13 +371,12 @@ const run = async () => {
 
     // iterate 3 times or until done
     for (let i = 0; i < 3; i++) {
-      input.messages = messages;
-      const response = await generateBanter(input, makeGenerateFn());
-      const message = response.messages[0];
-      messages.push(message);
+      const newMessages = await generateBanter(input, makeGenerateFn());
+      // push all newMessages to messages
+      messages.push(...newMessages);
     }
 
-    const output = messages.map(m => { return m.character.name + ": " + m.message }).join('\n');
+    const output = messages.map(m => { return m.name + ": " + m.message }).join('\n');
 
     writeData(input, prompt, output, 'banter', makeBanterStop());
   }
@@ -473,7 +472,7 @@ const run = async () => {
     writeData('', prompt, output, 'lore', makeLoreStop());
   }
 
-  promises.push(generateLoreTest);
+  // promises.push(generateLoreTest);
 
   async function generateChatMessageTest() {
     const outputs = []

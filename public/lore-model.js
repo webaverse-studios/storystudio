@@ -435,77 +435,44 @@ export async function generateReaction(name, generateFn) {
 
 // BANTER
 
-export const makeBanterPrompt = ({ location = null, characters = [], objects = [], messages = [], dstCharacter = null }) => {
-  let lastCharacter = null;
-
-  if (!dstCharacter) {
-    dstCharacter = characters[Math.floor(Math.random() * characters.length)]
-  }
-
-   // set lastCharacter to the last character in the transcript
-   if (messages && messages.length > 0) {
-    lastCharacter = messages[messages.length - 1].character;
-  } else {
-    lastCharacter = dstCharacter;
-  }
-
+export const makeBanterPrompt = ({ location = null, characters = [], objects = [], messages = [] }) => {
   return `\
-# Available Actions
-attack
-defend
-move to
-follow
-pick up
-drop
-emote
-stop
-none
+# Objects
 
-# Characters
+Name: Sword of Gothika
+Description: A rare and legendary sword.
 
-Name: Axel
-Description: The main hero of the story. Well, someone has to be the hero.
-
-Name: Miranda
-Description: A very trusting person.
-
-Name: Zaphod
-Description: A very untrustworthy character.
+(TASK) Using the Sword of Gothika as context, write a transcript of light banter between the Jade64, Eris22 and Maxx, who are players in an MMORPG.
 
 # Transcript
 
-axel: We arere looking for Lara. You know where we can find her?
-miranda: I can find anything, you just keep feeding me tokens and coffee.
-zaphod: Anything you need, you just let me know.
-miranda: Thanks. How do you guys know each other again? 
-zaphod: Best friends. From waaay back in the day.
-
+>> Jade64: Anyone wanna buy a legendary SoG?
+>> Eris22: SoG? What's that?
+>> Maxx: Sword of Gothika, very dank.
+>> Eris22: Ohhhhh sick, how much?
+>> Jade64: 6 shards or 50k SILK
+>> Eris: Errr yeah, I have like 4k SILK.
 """
-# Characters
-
-Name: eric
-Description: A very boring guy. Bored the pants off a thousand people at once, once.
-
-Name: millie
-Description: A very interesting person. She is a bit of a mystery.
-
 # Objects
 
 Name: Computer
 Description: A very old computer. A real piece of crap, but I guess it works..
 
+# Characters
+
+"Eric" A very boring guy. Bored the pants off a thousand people at once, once.
+"Millie" A very interesting person. She is a bit of a mystery.
+
+(TASK) Using Computer as context, write a transcript of light banter between the Eric and Millie, who are players in an MMORPG.
+
 # Transcript 
 
-millie: Hey Eric, can I ask you something?
-\/action millie moves to eric
-eric: Sure, what is it?
-millie: Do you ever wonder why we are here?
-eric: Is that a way to tee up a convo about the drop tomorrow?
-\/action millie emotes joy
-millie: It might not be!
-eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
-\/action eric moves to computer
-
+>> Millie: Hey Eric, can I ask you something?
+>> Eric: Sure, what is it?
+>> Millie: Do you ever wonder why we are here?
+>> Eric: Is that a way to tee up a convo about the drop tomorrow?
+>> Millie: It might not be!
+>> Eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
 """
 
 ${location && `# Location\n\n${location.name}\n${location.description}`}
@@ -521,17 +488,17 @@ ${objects.slice(0, 2)
       .join("\n\n") + (objects.length > 0 && "\n")
     }\
 
+(TASK) Using ${objects && objects.length > 0 && objects.map(o => o.name + ', ')} ${location && 'and ' +location.name} as context, write a transcript of light banter between the characters.
+
 # Transcript
 
-${messages ? (messages.map((m) => m.character.name + ': ' + m.message).join("\n")) : ''}\
-${(!messages || messages.length === 0) && dstCharacter.name + ':'}`;
-}
+${messages ? (messages.map((m) => '>> ' + m.name + ': ' + m.message).join("\n")) + '\n>>' : '>>'}`}
 
 export const makeBanterStop = () => ["\n\n", 'done=true', 'done = true'];
 
 export const parseBanterResponse = (resp) => {
   // TODO: parse the character speaking
-  const outMessages = [];
+  const messages = [];
 
   resp = resp
     .trim()
@@ -542,18 +509,34 @@ export const parseBanterResponse = (resp) => {
     .replaceAll("\t", "") // remove tabs
     .split("\n");
 
-  outMessages.push({
-    character: 'TODO',
-    message: resp.shift().replaceAll('TODO-CHARACTERNAME'+ ':', '').trim().trimStart()
-  });
+  const responseArray = [...resp];
+  while(responseArray.length > 0){
+    try {
+    const fullMessage = responseArray.shift().replaceAll('>> ', '').replaceAll('>', '').trim();
+    // if fullMessage contains a '<' or https, continue
+    if (fullMessage.includes('<') || fullMessage.includes('https')) {
+      continue;
+    }
+    const splitMessage = fullMessage.split(':');
+    if(splitMessage.length !== 2) {
+      console.log('invalid message format');
+      continue;
+    }
 
-  return {
-    messages: outMessages
+    // split name by spaces and get the last one
+    const name = splitMessage[0].trim().trimStart().split(' ').pop();
+    const message = splitMessage[1].trim().trimStart();
+    if(name && messages) messages.push({ name, message});
+    } catch (error) {
+      console.warn('Could not format message', error);
+    }
   }
+
+  return messages
 }
 
-export async function generateBanter({ location = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
-  const input = { location, characters, objects, messages, dstCharacter };
+export async function generateBanter({ location = null, characters = [], objects = [], messages = []}, generateFn) {
+  const input = { location, characters, objects, messages };
   return parseBanterResponse(await generateFn(makeBanterPrompt(input), makeBanterStop()));
 }
 
@@ -590,11 +573,7 @@ export async function generateExposition({ name, location = null, type = 'Object
 
 // CUTSCENES
 
-export const makeCutscenePrompt = ({ location = null, characters = [], objects = [], messages = [], dstCharacter = null }) => {
-  if (!dstCharacter) {
-    dstCharacter = characters[Math.floor(Math.random() * characters.length)]
-  }
-
+export const makeCutscenePrompt = ({ location = null, characters = [], objects = [], messages = [] }) => {
   let lastCharacter = null;
 
   // set lastCharacter to the last character in the transcript
