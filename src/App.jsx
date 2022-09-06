@@ -21,7 +21,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 export const views = {
   setup: "Setup",
   base: "Base",
-  settings: "Settings",
+  locations: "Locations",
   characters: "Characters",
   npcs: "NPCs",
   objects: "Objects",
@@ -40,8 +40,8 @@ function App() {
               <Route path="Setup" element={<Setup />} />
               <Route path="Base" element={<LoreBase />} />
               <Route
-                path="Settings"
-                element={<EntityListBox type={"setting"} header={"Settings"} />}
+                path="Locations"
+                element={<EntityListBox type={"location"} header={"Locations"} />}
               />
               <Route
                 path="Characters"

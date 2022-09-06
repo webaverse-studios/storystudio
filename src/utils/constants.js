@@ -1,7 +1,7 @@
 export const views = {
   setup: "Setup",
   base: "Base",
-  settings: "Settings",
+  locations: "Locations",
   characters: "Characters",
   npcs: "NPCs",
   mobs: "Mobs",
@@ -19,7 +19,7 @@ export const exampleLoreFiles = [
   `\
   WEBAVERSE_LORE_FILE
   
-  # Setting
+  # Location
   
   Scillia's treehouse. It's more of a floating island but they call it a tree house.
   Inside the treehouse lives a monster, the Lisk, which is an advanced AI from far up the Street.
@@ -87,7 +87,7 @@ export const exampleLoreFiles = [
   `\
   WEBAVERSE_LORE_FILE
   
-  # Setting
+  # Location
   
   Outside of the Citadel, an enormous castle that stretches up to the clouds.
   The citadel contains the 
@@ -144,7 +144,7 @@ export const exampleLoreFiles = [
   `\
   WEBAVERSE_LORE_FILE
   
-  # Setting
+  # Location
   
   At the gate of the Great Filter. The Great filter is massive wall separating Zone 7 from Zone 8. There is a force field blocking entry.
   The gate has towers manned by gate guards, with a guard captain. The guards require a keycard for access through the Filter. A keycard allows one person to pass through the Filter one time.
@@ -234,7 +234,7 @@ export const exampleLoreFiles = [
   `\
   WEBAVERSE_LORE_FILE
   
-  # Setting
+  # Location
   
   A dark cave. It is in a dark part of the forest, where there is a chance of mobs. It contains mostly silkworms and silk, but it is also a place where a lot of low-level players get killed, making it a good place to grab dropped loot.
   
@@ -308,7 +308,7 @@ export const exampleLoreFiles = [
   `\
   WEBAVERSE_LORE_FILE
   
-  # Setting
+  # Location
   
   Codex's treehouse. It is an apartment at the top of Nihon city in Zone 0. It has a nice balcony overlooking the city, which has a view of the mountains (inspired by Mount Fuji) during the day, and a brilliant neon skyline (inspired by the design of Collision Chaos from Sonic CD).
   Inside of the treehouse is a cozy living area with a very  big TV and lots of plants. There are two hammocks and three beanbag chairs. There is a big kitchen. The bedroom is on the second floor and has a nice view of the city. There is a big bed with a canopy and a large desk with some design books.
@@ -374,7 +374,7 @@ export const exampleLoreFiles = [
   `\
   WEBAVERSE_LORE_FILE
   
-  # Setting
+  # Location
   
   A dark forest. The trees are thick, old and wrinkly, with spidery fingers. There are weird mushrooms growing all over the place. The scent of spores fills the air. The ground is made of crumbly, moist wood. The moon is full and luminous, but not much light gets through the leaves.
   
@@ -449,7 +449,7 @@ export const dialogueTypes = [
   "actions",
 ];
 
-export const entityTypes = ["setting", "character", "npc", "mob", "object"];
+export const entityTypes = ["location", "character", "npc", "mob", "object"];
 
 export const defaultDialogue = {
   objectComment: [
@@ -497,7 +497,7 @@ export const defaultDialogue = {
   banter: [
     {
       input: {
-        setting: "The Safehouse",
+        location: "The Safehouse",
         characters: ["Korben Dallas", "Leeloo Dallas"],
         npcs: ["Sarah Kerrigan"],
         objects: ["Silver Sword"],
@@ -542,7 +542,7 @@ export const defaultDialogue = {
   rpgDialogue: [
     {
       input: {
-        setting: "The Safehouse",
+        location: "The Safehouse",
         characters: ["Korben Dallas", "Leeloo Dallas"],
         npcs: ["Sarah Kerrigan"],
         objects: ["Silver Sword"],
@@ -568,7 +568,7 @@ export const defaultDialogue = {
   cutscenes: [
     {
       input: {
-        setting: "The Safehouse",
+        location: "The Safehouse",
         characters: ["Korben Dallas", "Leeloo Dallas"],
         npcs: ["Sarah Kerrigan"],
         objects: ["Silver Sword"],
@@ -608,7 +608,7 @@ export const defaultDialogue = {
   actions: [
     {
       input: {
-        setting: "New Setting",
+        location: "New Location",
         characters: ["New Character"],
         npcs: ["New NPC"],
         objects: ["New Object"],
@@ -628,7 +628,7 @@ export const defaultDialogue = {
   reactions: [
     {
       input: {
-        setting: "New Setting",
+        location: "New Location",
         characters: ["New Character"],
         npcs: ["New NPC"],
         objects: ["New Object"],
@@ -650,9 +650,9 @@ export const defaultDialogue = {
 };
 
 export const defaultEntities = {
-  setting: [
+  location: [
     {
-      type: "setting",
+      type: "location",
       name: "The Safehouse",
       description:
         "The Safehouse is a good place to lay low for a while. It exists in a voidspace that nobody can enter without the proper permissions.",
@@ -913,7 +913,7 @@ Jake: "No, I haven't seen your cat. (react = headShake)"
 Amy: "Well, if you see her can you let me know?  (react = normal)" *END*`,
     ],
   },
-  setting: {
+  location: {
     prompt: `\ 
 Anime worlds, they are mostly fantastic, but sometimes they can be a little boring or horrifying, others though can be smelly or flowery. The prompt is the name of the location, while the response is a short phrase from the adventurer about it.`,
     examples: [
@@ -1328,7 +1328,7 @@ We need exciting and interesting RPG character dialogue. This plays when the cha
       `Bert: "Five generations of warriors breathe in me. Do you even know that many kinds?!"`,
       `Yune: "Can I get a heal up in here? Anybody?"`,
       `Hue: "Toss me that speed potion. Or five."`,
-      `Aurora: "I will make a setting of your demise. You will be known as the one who failed."`,
+      `Aurora: "I will make a location of your demise. You will be known as the one who failed."`,
       `June: "This thing will ever leave us alone! We have to kill it."`,
       `Zen: "The power of the mind is an awe to behold. Prepare to be amazed."`,
       `Dingus: "Just getting ready with my spells. We should make short work of this."`,

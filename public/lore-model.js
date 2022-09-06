@@ -48,7 +48,7 @@ export let lore = {
       'Jake: "What are you doing?  (react = surprised)"\nAmy: "I\'m looking for my cat. Have you seen her?  (react = normal)"\nOptions for Jake:[No, I haven\'t seen your cat. (react =  headShake)], [Yes, I saw your cat go into the treehouse. (react = headNod)] \nJake: "No, I haven\'t seen your cat. (react = headShake)"\nAmy: "Well, if you see her can you let me know?  (react = normal)" *END*',
     ],
   },
-  setting: {
+  location: {
     prompt:
       "Anime worlds, they are mostly fantastic, but sometimes they can be a little boring or horrifying, others though can be smelly or flowery. The prompt is the name of the location, while the response is a short phrase from the adventurer about it.",
     examples: [
@@ -198,7 +198,7 @@ We need exciting and interesting RPG character dialogue. This plays when the cha
       'Bert: "Five generations of warriors breathe in me. Do you even know that many kinds?!"',
       'Yune: "Can I get a heal up in here? Anybody?"',
       'Hue: "Toss me that speed potion. Or five."',
-      'Aurora: "I will make a setting of your demise. You will be known as the one who failed."',
+      'Aurora: "I will make a location of your demise. You will be known as the one who failed."',
       'June: "This thing will ever leave us alone! We have to kill it."',
       'Zen: "The power of the mind is an awe to behold. Prepare to be amazed."',
       'Dingus: "Just getting ready with my spells. We should make short work of this."',
@@ -306,22 +306,22 @@ Each character has an intro. These should be unique and funny.
 
 // NEW SETTING
 
-export const makeSettingPrompt = () => {
+export const makeLocationPrompt = () => {
   return `\
-  ${lore["setting"].prompt}
-  ${shuffleArray(lore["setting"].examples).join("\n")}
+  ${lore["location"].prompt}
+  ${shuffleArray(lore["location"].examples).join("\n")}
   Location:"`;
 }
 
-export const makeSettingStop = () => ['\nLocation:']
+export const makeLocationStop = () => ['\nLocation:']
 
 // TODO
-export const parseSettingResponse = (response) => {}
+export const parseLocationResponse = (response) => {}
 
-export async function generateSetting(generateFn) {
-  const prompt = makeSettingPrompt();
+export async function generateLocation(generateFn) {
+  const prompt = makeLocationPrompt();
 
-  const resp = await generateFn(prompt, makeSettingStop());
+  const resp = await generateFn(prompt, makeLocationStop());
 
   const lines = resp.split("\n").filter((el) => {
     return el !== "";
@@ -438,7 +438,7 @@ export async function generateReaction(name, generateFn) {
 
 // BANTER
 
-export const makeBanterPrompt = ({ setting = null, characters = [], objects = [], messages = [], dstCharacter = null }) => {
+export const makeBanterPrompt = ({ location = null, characters = [], objects = [], messages = [], dstCharacter = null }) => {
   return `\
 # Available Actions
 attack
@@ -498,7 +498,7 @@ eric: Millie, I am tending to serious business. The org needs me to break throug
 
 """
 
-${setting && `# Setting\n\n${setting.name}\n${setting.description}`}
+${location && `# Location\n\n${location.name}\n${location.description}`}
 
 ${characters.length > 0 && "# Characters\n\n"}\
 ${characters
@@ -522,14 +522,14 @@ export const makeBanterStop = () => ["\n\n", 'done=true', 'done = true'];
 // TODO
 export const parseBanterResponse = (response) => {}
 
-export async function generateBanter({ setting = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
+export async function generateBanter({ location = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
   if (!dstCharacter) {
     dstCharacter = characters[Math.floor(Math.random() * characters.length)]
   }
 
   let lastCharacter = null;
 
-  const prompt = makeBanterPrompt({ setting, characters, objects, messages, dstCharacter });
+  const prompt = makeBanterPrompt({ location, characters, objects, messages, dstCharacter });
 
   // set lastCharacter to the last character in the transcript
   if (messages && messages.length > 0) {
@@ -564,21 +564,21 @@ export async function generateBanter({ setting = null, characters = [], objects 
 
 // EXPOSITION
 
-export const makeExpositionPrompt = ({ name, setting = null, type = 'Object' }) => {
+export const makeExpositionPrompt = ({ name, location = null, type = 'Object' }) => {
   return `\
-${type !== 'setting' && (setting && (setting + '\n')) || ''}\
+${type !== 'location' && (location && (location + '\n')) || ''}\
 ${lore[type.toLowerCase()].prompt}
 ${shuffleArray(lore[type.toLowerCase()].examples).join("\n")}
 ${capitalizeFirstLetter(type)}: "${name}"`
 }
 
-export const makeExpositionStop = () => [`\n${type.toUpperCase()}:`, '\n\n'];
+export const makeExpositionStop = (type) => [`\n${type.toUpperCase()}:`, '\n\n'];
 
 // TODO
 export const parseExpositionResponse = (response) => {}
 
-export async function generateExposition({ name, setting = null, type = 'Object' }, generateFn) {
-  const prompt = makeExpositionPrompt({ name, setting, type });
+export async function generateExposition({ name, location = null, type = 'Object' }, generateFn) {
+  const prompt = makeExpositionPrompt({ name, location, type });
 
   const resp = await generateFn(prompt, makeExpositionStop());
 
@@ -599,7 +599,7 @@ export async function generateExposition({ name, setting = null, type = 'Object'
 
 // CUTSCENES
 
-export const makeCutscenePrompt = ({ setting = null, characters = [], objects = [], messages = [], dstCharacter = null }) => {
+export const makeCutscenePrompt = ({ location = null, characters = [], objects = [], messages = [], dstCharacter = null }) => {
   return `\
 # Available Actions
 attack
@@ -659,7 +659,7 @@ eric: Millie, I am tending to serious business. The org needs me to break throug
 
 """
 
-${setting && `# Setting\n\n${setting.name}\n${setting.description}`}
+${location && `# Location\n\n${location.name}\n${location.description}`}
 
 ${characters.length > 0 && "# Characters\n\n"}\
 ${characters
@@ -683,7 +683,7 @@ export const makeCutsceneStop = () => ["\n\n", 'done=true', 'done = true'];
 // TODO
 export const parseCutsceneResponse = (response) => {}
 
-export async function generateCutscene({ setting = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
+export async function generateCutscene({ location = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
   if (!dstCharacter) {
     dstCharacter = characters[Math.floor(Math.random() * characters.length)]
   }
@@ -691,7 +691,7 @@ export async function generateCutscene({ setting = null, characters = [], object
   console.log('messages', messages);
 
   let lastCharacter = null;
-  const prompt = makeCutscenePrompt({ setting, characters, objects, messages, dstCharacter });
+  const prompt = makeCutscenePrompt({ location, characters, objects, messages, dstCharacter });
 
 
   // set lastCharacter to the last character in the transcript
@@ -735,9 +735,9 @@ ${shuffleArray(lore["inputParsing"].examples).join("\n")}
 Input:\n+a8e44f13${character.name}:`
 }
 
-export const makeRPGDialogueStop = (character) => [
-  "\n",
-  `Input:\n+a8e44f13${character.name}:`,
+export const makeRPGDialogueStop = (/*character*/) => [
+  "\n"
+  // `Input:\n+a8e44f13${character.name}:`,
 ];
 
 //TODO
@@ -766,7 +766,7 @@ export async function generateRPGDialogue(character, generateFn) {
 
 // QUESTS
 
-export const makeQuestPrompt = ({ setting }) => {
+export const makeQuestPrompt = ({ location }) => {
   return `\
 Utopia: Stay for a day inside, while bothering others|Reward: 100xp
 Dreamland: Try to escape dreamland, without destroying others' dreams|Reward: 200xp
@@ -786,7 +786,7 @@ The North Pole: Survive a day at the North Pole, without getting lost|Reward: 70
 The South Pole: Survive a day at the South Pole, without getting lost|Reward: 8000xp
 The Moon: Survive a day on the moon, without getting lost|Reward: 9000xp
 The Sun: Survive a day on the sun, without getting burned|Reward: 10000xp
-${setting}:`
+${location}:`
 }
 
 export const makeQuestStop = () => ["\n"];
@@ -794,28 +794,28 @@ export const makeQuestStop = () => ["\n"];
 //TODO
 export const parseQuestResponse = (response) => {}
 
-export async function generateQuest({ setting }, generateFn) {
-  const prompt = makeQuestPrompt({ setting });
+export async function generateQuest({ location }, generateFn) {
+  const prompt = makeQuestPrompt({ location });
 
   const resp = await generateFn(prompt, makeQuestStop());
 
-  if (resp?.startsWith(setting)) {
+  if (resp?.startsWith(location)) {
     const data = resp
-      .replace(setting, "")
+      .replace(location, "")
       .trim();
     const [quest, reward] = data.split("|");
     return {
-      location: setting,
+      location: location,
       quest: quest.trim(),
       reward: reward.trim(),
     };
   } else {
     const data = resp
-      .replace(setting, "")
+      .replace(location, "")
       .trim();
     const [quest, reward] = data.split("|");
     return {
-      location: setting,
+      location: location,
       quest: quest.trim(),
       reward: reward.trim(),
       prompt
@@ -828,7 +828,7 @@ export async function generateQuest({ setting }, generateFn) {
 // LORE
 
 export const makeLorePrompt = ({
-  settings,
+  locations,
   characters,
   messages,
   objects,
@@ -837,8 +837,8 @@ export const makeLorePrompt = ({
 ${lore.overview.prompt}
 ${shuffleArray(lore.overview.examples).join(`\n`)}
 
-# Setting
-${settings}
+# Location
+${locations}
 
 ## Characters
 ${characters
@@ -994,7 +994,7 @@ export const parseLoreResponses = (response) =>
 
 export async function generateLore(
   {
-    settings,
+    locations,
     characters,
     messages = [],
     objects,
@@ -1004,7 +1004,7 @@ export async function generateLore(
   generateFn
 ) {
   const prompt = makeLorePrompt({
-    settings,
+    locations,
     characters,
     messages,
     objects,
@@ -1054,7 +1054,7 @@ export async function generateLocationComment(
   generateFn
 ) {
 
-  const prompt = makeCommentPrompt({ name, description, type: 'Setting' });
+  const prompt = makeCommentPrompt({ name, description, type: 'Location' });
 
   const resp = await generateFn(prompt, makeCommentStop());
   return {
@@ -1260,7 +1260,7 @@ export const parseCharacterIntroResponse = (response) => {
   }
 };
 
-export async function generateCharacterIntroPrompt({ name, description }, generateFn) {
+export async function generateCharacterIntro({ name, description }, generateFn) {
   const prompt = makeCharacterIntroPrompt({
     name,
     description,

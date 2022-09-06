@@ -1,4 +1,4 @@
-export const makeLoreFilePrompt = ({ type, setting, character, npc, mob, object }) => {
+export const makeLoreFilePrompt = ({ type, location, character, npc, mob, object }) => {
     return `\
     ${header}
     
@@ -28,9 +28,9 @@ export const makeLoreFilePrompt = ({ type, setting, character, npc, mob, object 
     
     """
     
-    # Setting
+    # Location
     
-    ${`${setting.name}\n${setting.description}`}
+    ${`${location.name}\n${location.description}`}
     
     ${party.length > 0 && "# Party Characters\n\n"}\
     ${party
@@ -67,13 +67,13 @@ export const makeLoreFilePrompt = ({ type, setting, character, npc, mob, object 
   }
   
   export async function generateLoreFile(
-    { type, setting, character, npc, mob, object },
+    { type, location, character, npc, mob, object },
     generateFn
   ) {
   
     // TODO: This should generate a lore file based on the type of thing we're generating....
   
-    // decide on what is happening in this setting
+    // decide on what is happening in this location
     const encounterTypes = {
       quest: { npcs: 1, mobs: 0, objects: 1, party: 2 },
       // { type: 'battle', npcs: {min: 0, max: 2}, mobs: {min: 1, max: 3}, objects: {min: 0, max: 2}, party: {min: 1, max: 4}},
@@ -110,7 +110,7 @@ export const makeLoreFilePrompt = ({ type, setting, character, npc, mob, object 
     // combine npcs and party into a single array called characters
     const characters = [...npcs, ...party];
   
-    let prompt = makeLoreFilePrompt({ type, setting, character, npc, mob, object });
+    let prompt = makeLoreFilePrompt({ type, location, character, npc, mob, object });
   
     // generate a random int between 3 and 8
     const numberOfMessages = Math.floor(Math.random() * (12 - 3 + 1)) + 3;
@@ -231,9 +231,9 @@ export const makeLoreFilePrompt = ({ type, setting, character, npc, mob, object 
     const loreFileOutput = `\
   WEBAVERSE_LORE_FILE
   
-  # Setting
+  # Location
   
-  ${`${setting.name}\n${setting.description}\n\n`}\
+  ${`${location.name}\n${location.description}\n\n`}\
   ${characters.length > 0 && "\n# Characters" + "\n\n"}\
   ${characters
         .map(

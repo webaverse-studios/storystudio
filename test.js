@@ -5,7 +5,7 @@ global.localStorage // now has your in memory localStorage
 import { openaiRequest } from "./src/utils/generation.js";
 import fs from "fs";
 import {
-  generateSetting,
+  generateLocation,
   generateCharacter,
   generateObject,
   generateLore,
@@ -20,8 +20,21 @@ import {
   generateSelectCharacter,
   generateChatMessage,
   generateDialogueOptions,
-  generateCharacterIntroPrompt,
+  generateCharacterIntro,
   generateBattleIntroduction,
+  makeBattleIntroductionPrompt,
+  makeCutscenePrompt,
+  makeBanterPrompt,
+  makeExpositionPrompt,
+  makeSelectCharacterPrompt,
+  makeSelectCharacterStop,
+  makeCharacterIntroStop,
+  makeBattleIntroductionStop,
+  makeCutsceneStop,
+  makeBanterStop,
+  makeRPGDialogueStop,
+  makeChatPrompt,
+  makeChatStop,
 } from './public/lore-model.js'
 
 const args = process.argv;
@@ -31,23 +44,9 @@ const args = process.argv;
 const test = (!args[2]?.includes('sk-') && args[2]) || (!args[3]?.includes('sk-') && args[3]) || 'all';
 
 
-// get openai key from process.env or args[0]
-function getOpenAIKey() {
-  const key = process?.env?.OPENAI_KEY || (args[2]?.includes('sk-') && args[2]) || (args[3]?.includes('sk-') && args[3]);
-  if (!key || key.length <= 0) {
-    return console.error("No openai key found");
-  }
-  return key;
-}
-
-function makeGenerateFn() {
-  return async (prompt, stop) => {
-    return await openaiRequest(getOpenAIKey(), prompt, stop);
-  }
-}
-
+// TODO refactor this to come from constants
 const testData = {
-  settings: [{
+  locations: [{
     name: "Scillia's Treehouse",
     description: `\
 It's more of a floating island but they call it a tree house. Inside the treehouse lives a monster, the Lisk, which is an advanced AI from far up the Street.`}],
@@ -145,51 +144,32 @@ It's more of a floating island but they call it a tree house. Inside the treehou
   messages: []
 }
 
+// get openai key from process.env or args[0]
+function getOpenAIKey() {
+  const key = process?.env?.OPENAI_KEY || (args[2]?.includes('sk-') && args[2]) || (args[3]?.includes('sk-') && args[3]);
+  if (!key || key.length <= 0) {
+    return console.error("No openai key found");
+  }
+  return key;
+}
+
+function makeGenerateFn() {
+  return async (prompt, stop) => {
+    return await openaiRequest(getOpenAIKey(), prompt, stop);
+  }
+}
+
 const run = async () => {
-  // check if test_outputs folder exists, if not create it
-  const testOutputs = `./test_outputs`;
-  if (!fs.existsSync(testOutputs)) {
-    fs.mkdirSync(testOutputs);
-  }
-
-  function writeData(inputs, prompt, output, name) {
-    const outputFile = `${testOutputs}/${name}.txt`;
-
-    const write = `\
-${inputs ? `\
-******** INPUT DATA ********
-${JSON.stringify(inputs, null, 2)}
-` : ''}
-${prompt ? `\
-******** PROMPT ********
-${prompt}
-` : ''}
-
-******** OUTPUT DATA ********
-${output}
-`
-
-    fs.writeFileSync(outputFile, write);
-    console.log(`Wrote ${outputFile}`);
-  }
-
   const promises = [];
 
   // ********** OBJECT COMMENT **********
   async function generateObjectCommentTest() {
-    /* Logging the console. */
-    console.log('Starting object comment test');
     const { name, description } = testData.objects[0];
+    const prompt = makeCommentPrompt({name, description, type: 'object'});
+
     const output = await generateObjectComment({ name, description }, makeGenerateFn());
 
-    console.log('*********** generateObjectComment:')
-    console.log(output);
-
-    const prompt = output.prompt;
-
-    delete output.prompt;
-
-    writeData(testData.objects[0], prompt, output.value, 'object_comment');
+    writeData(testData.objects[0], prompt, output.value, 'object_comment', makeCommentStop());
   }
 
   if (test.toLowerCase().includes('all') || test.toLowerCase().includes('objectcomment')) {
@@ -198,18 +178,12 @@ ${output}
 
   // ********** LOCATION COMMENT **********
   async function generateLocationCommentTest() {
-    const output = await generateLocationComment(
-      {
-        name: testData.settings[0].name,
-        description: testData.settings[0].description
-      },
-      makeGenerateFn());
-      
-    writeData({
-      name: testData.settings[0].name,
-      description: testData.settings[0].description,
-      dstCharacter: testData.party[0]
-    }, output.prompt, output.value, 'location_comment');
+    const input = testData.locations[0];
+    const prompt = makeCommentPrompt({...input, type: 'location'});
+
+    const output = await generateLocationComment(input, makeGenerateFn());
+
+    writeData(input, prompt, output.value, 'location_comment', makeCommentStop());
   }
 
   if (test.toLowerCase().includes('all') || test.toLowerCase().includes('location')) {
@@ -218,13 +192,13 @@ ${output}
 
   // ********** SELECT CHARACTER **********
   async function generateSelectCharacterTest() {
-    const { name, description } = testData.party[1];
-    const output = await generateSelectCharacter({ name, description }, makeGenerateFn());
+    const input = testData.party[1];
 
-    console.log('*********** generateSelectCharacter:')
-    console.log(output);
+    const prompt = makeSelectCharacterPrompt(input);
 
-    writeData({ name, description }, output.prompt, output.value, 'select_character');
+    const output = await generateSelectCharacter(input, makeGenerateFn());
+
+    writeData(input, prompt, output.value, 'select_character', makeSelectCharacterStop());
   }
 
   if (test.toLowerCase().includes('all') || test.toLowerCase().includes('selectcharacter')) {
@@ -234,69 +208,69 @@ ${output}
   // ********** LORE EXPOSITION **********
 
   async function generateExpositionObjectTest() {
-    let { name, description, comment, prompt } = await generateExposition(
-      {
-        name: testData.objects[0].name,
-        setting: `${testData.settings[0].name}\n${testData.settings[0].description}`,
-        type: 'object'
-      }, makeGenerateFn());
-    
-    writeData({ name }, prompt, description + (comment ? ('\nQuote: '+comment) : ''), 'exposition_object');
+    const input = {
+      name: testData.objects[0].name,
+      location: testData.locations[0].name+'\n'+testData.locations[0].description,
+      type: 'object'
+    };
+    const prompt = makeExpositionPrompt(input);
+    const { name, description, comment } = await generateExposition(input, makeGenerateFn());
+
+    writeData({ name }, prompt, description + (comment ? ('\nQuote: ' + comment) : ''), 'exposition_object', makeExpositionStop(input.type));
   }
 
   async function generateExpositionCharacterTest() {
-    let { name, description, comment, prompt } = await generateExposition(
-      {
-        name: testData.party[0].name,
-        setting: `${testData.settings[0].name}\n${testData.settings[0].description}`,
-        type: 'character'
-      }, makeGenerateFn());
-    
-    writeData({ name }, prompt, description + (comment ? ('\nQuote: '+comment) : ''), 'exposition_character');
+    const input = {
+      name: testData.party[0].name,
+      location: `${testData.locations[0].name}\n${testData.locations[0].description}`,
+      type: 'character'
+    }
+    const prompt = makeExpositionPrompt(input);
+
+    let { name, description, comment } = await generateExposition(input, makeGenerateFn());
+
+    writeData({ name }, prompt, description + (comment ? ('\nQuote: ' + comment) : ''), 'exposition_character', makeExpositionStop(input.type));
   }
 
-  async function generateExpositionSettingTest() {
-    let { name, description, comment, prompt } = await generateExposition(
-      {
-        name: testData.settings[0].name,
-        type: 'setting'
-      }, makeGenerateFn());
-    
-    writeData({ name }, prompt, description + (comment ? ('\nQuote: '+comment) : ''), 'exposition_setting');
+  async function generateExpositionLocationTest() {
+    const input = {
+      name: testData.locations[0].name,
+      type: 'location'
+    };
+    const prompt = makeExpositionPrompt(input);
+    let { name, description, comment } = await generateExposition(input, makeGenerateFn());
+
+    writeData({ name }, prompt, description + (comment ? ('\nQuote: ' + comment) : ''), 'exposition_location', makeExpositionStop(input.type));
   }
 
   if (test.toLowerCase().includes('all') || test.toLowerCase().includes('exposition')) {
     promises.push(generateExpositionObjectTest);
     promises.push(generateExpositionCharacterTest);
-    promises.push(generateExpositionSettingTest);
+    promises.push(generateExpositionLocationTest);
   }
 
   // ********** GENERATE NEW SCENE **********
 
-  async function generateSettingTest() {
-    const { name, description, comment, prompt } = await generateSetting(makeGenerateFn());
-    const formattedOutput =`Location: "${name}" ${description}\nQuote: "${comment}"`;
+  async function generateLocationTest() {
+    const prompt = makeLocationPrompt();
+    const { name, description, comment } = await generateLocation(makeGenerateFn());
+    const formattedOutput = `Location: "${name}" ${description}\nQuote: "${comment}"`;
 
-    console.log('*********** generateSetting:')
-    console.log(formattedOutput);
-
-    writeData('', prompt, formattedOutput, 'setting');
+    writeData('', prompt, formattedOutput, 'location', makeLocationStop());
   }
 
-  if (test.toLowerCase().includes('all') || (test.toLowerCase().includes('setting') && !test.toLowerCase().includes('cutscene'))) {
-    promises.push(generateSettingTest);
+  if (test.toLowerCase().includes('all') || (test.toLowerCase().includes('location') && !test.toLowerCase().includes('cutscene'))) {
+    promises.push(generateLocationTest);
   }
 
-    // ********** GENERATE NEW CHARACTER **********
+  // ********** GENERATE NEW CHARACTER **********
 
   async function generateCharacterTest() {
-    const { name, description, prompt, comment } = await generateCharacter(makeGenerateFn());
-    const formattedOutput =`Character: "${name}" ${description}\nQuote: "${comment}"`
+    const prompt = makeCharacterPrompt();
+    const { name, description, comment } = await generateCharacter(makeGenerateFn());
+    const formattedOutput = `Character: "${name}" ${description}\nQuote: "${comment}"`
 
-    console.log('*********** generateCharacter:')
-    console.log(formattedOutput);
-
-    writeData('', prompt, formattedOutput, 'character');
+    writeData('', prompt, formattedOutput, 'character', makeCharacterStop());
   }
 
   if (test.toLowerCase().includes('all') || (test.toLowerCase().includes('character') && !test.toLowerCase().includes('comment'))) {
@@ -306,13 +280,14 @@ ${output}
   // ********** GENERATE NEW OBJECT **********
 
   async function generateObjectTest() {
-    const { name, description, comment, prompt } = await generateObject(makeGenerateFn());
-    const formattedOutput =`Object: "${name}" ${description}\nQuote: "${comment}"`;
+    const prompt = makeObjectPrompt();
+    const { name, description, comment } = await generateObject(makeGenerateFn());
+    const formattedOutput = `Object: "${name}" ${description}\nQuote: "${comment}"`;
 
-    console.log('*********** generateSetting:')
+    console.log('*********** generateLocation:')
     console.log(formattedOutput);
 
-    writeData('', prompt, formattedOutput, 'object');
+    writeData('', prompt, formattedOutput, 'object', makeObjectStop());
   }
 
   if (test.toLowerCase().includes('all') || (test.toLowerCase().includes('object') && !test.toLowerCase().includes('objectcomment'))) {
@@ -321,40 +296,42 @@ ${output}
 
   // ********** CHARACTER SELECTION INTRO **********
 
-  async function generateCharacterIntroPromptTest() {
+  async function generateCharacterIntroTest() {
     const { name, description } = testData.party[0];
-    const {message, onselect, prompt} = await generateCharacterIntroPrompt({ name, description }, makeGenerateFn());
+    const prompt = makeCharacterIntroPrompt({ name, description });
+    const { message, onselect } = await generateCharacterIntro({ name, description }, makeGenerateFn());
 
     //
     const output = `${name} (${description}): ${message}\n(onselect: ${onselect})`
 
-    console.log('*********** generateCharacterIntroPrompt:')
+    console.log('*********** generateCharacterIntro:')
     console.log(prompt);
     console.log(output);
 
-    writeData({ name, description }, prompt, output, 'character_intro_prompt');
+    writeData({ name, description }, prompt, output, 'character_intro_prompt', makeCharacterIntroStop());
   }
 
   if (test.toLowerCase().includes('all') || test.toLowerCase().includes('intro')) {
-    promises.push(generateCharacterIntroPromptTest);
+    promises.push(generateCharacterIntroTest);
   }
 
-    // ********** CHARACTER BATTLE INTRO **********
+  // ********** CHARACTER BATTLE INTRO **********
 
-    async function generateBattleIntroductionTest() {
-      const { name, description } = testData.party[0];
-      const {value, prompt} = await generateBattleIntroduction({ name, description }, makeGenerateFn());
-  
-      const output = `${name}: "${value}"`
-      console.log('prompt: ', prompt);
-      console.log('output: ', output);
-  
-      writeData({ name, description }, prompt, output, 'battle_introduction');
-    }
-  
-    if (test.toLowerCase().includes('all') || test.toLowerCase().includes('battle')) {
-      promises.push(generateBattleIntroductionTest);
-    }
+  async function generateBattleIntroductionTest() {
+    const { name, description } = testData.party[0];
+    const prompt = makeBattleIntroductionPrompt({ name });
+    const { value } = await generateBattleIntroduction({ name, description }, makeGenerateFn());
+
+    const output = `${name}: "${value}"`
+    console.log('prompt: ', prompt);
+    console.log('output: ', output);
+
+    writeData({ name, description }, prompt, output, 'battle_introduction', makeBattleIntroductionStop());
+  }
+
+  if (test.toLowerCase().includes('all') || test.toLowerCase().includes('battle')) {
+    promises.push(generateBattleIntroductionTest);
+  }
 
   // ********** CUTSCENE **********
 
@@ -364,22 +341,20 @@ ${output}
 
   async function generateCutsceneTest() {
     const messages = [];
-    let prompt;
-    const input = { setting: testData.settings[0], npcs: testData.npcs, mobs: testData.mobs, characters: testData.party, objects: testData.objects, messages };
+    const input = { location: testData.locations[0], npcs: testData.npcs, mobs: testData.mobs, characters: testData.party, objects: testData.objects, messages };
+    const prompt = makeCutscenePrompt(input)
 
     // iterate 3 times or until done
     for (let i = 0; i < 3; i++) {
       input.messages = messages;
       const response = await generateCutscene(input, makeGenerateFn());
-      // push each message in response.messages to newMessages
-      prompt = response.prompt;
       const message = response.messages[0];
       messages.push(message);
     }
 
-    const output = messages.map(m => {return m.character.name + ": " + m.message}).join('\n');
+    const output = messages.map(m => { return m.character.name + ": " + m.message }).join('\n');
 
-    writeData(input, prompt, output, 'cutscene');
+    writeData(input, prompt, output, 'cutscene', makeCutsceneStop());
   }
 
   if (test.toLowerCase().includes('all') || test.toLowerCase().includes('cutscene')) {
@@ -391,60 +366,60 @@ ${output}
   // TODO: Make recursive to generate multiple until done = true or doneFactor = 1
   async function generatePartyBanterTest() {
     const messages = [];
-    let prompt;
-    const input = { setting: testData.settings[0], characters: testData.party, objects: testData.objects, messages };
+    const input = { location: testData.locations[0], characters: testData.party, objects: testData.objects, messages };
+    const prompt = makeBanterPrompt(input);
 
     // iterate 3 times or until done
     for (let i = 0; i < 3; i++) {
       input.messages = messages;
       const response = await generateBanter(input, makeGenerateFn());
+      const message = response.messages[0];
+      messages.push(message);
+    }
+
+    const output = messages.map(m => { return m.character.name + ": " + m.message }).join('\n');
+
+    writeData(input, prompt, output, 'banter', makeBanterStop());
+  }
+
+  if (test.toLowerCase().includes('all') || test.toLowerCase().includes('banter')) {
+    promises.push(generatePartyBanterTest);
+  }
+
+    // ********** RPG DIALOGUE **********
+
+  async function generateRPGDialogTest() {
+    const messages = [];
+    let prompt;
+    const input = { location: testData.locations[0], characters: testData.party, objects: testData.objects, messages };
+
+    // iterate 3 times or until done
+    for (let i = 0; i < 3; i++) {
+      input.messages = messages;
+      const response = await generateRPGDialogue(input, makeGenerateFn());
       // push each message in response.messages to newMessages
       prompt = response.prompt;
       const message = response.messages[0];
       messages.push(message);
     }
 
-    const output = messages.map(m => {return m.character.name + ": " + m.message}).join('\n');
+    const output = messages.map(m => { return m.character.name + ": " + m.message }).join('\n');
 
-    writeData(input, prompt, output, 'banter');
+    writeData(input, prompt, output, 'rpg_dialogue', makeRPGDialogueStop());
   }
-  
-    if (test.toLowerCase().includes('all') || test.toLowerCase().includes('banter')) {
-      promises.push(generatePartyBanterTest);
-    }
 
-    async function generateRPGDialogTest() {
-      const messages = [];
-      let prompt;
-      const input = { setting: testData.settings[0], characters: testData.party, objects: testData.objects, messages };
-  
-      // iterate 3 times or until done
-      for (let i = 0; i < 3; i++) {
-        input.messages = messages;
-        const response = await generateRPGDialogue(input, makeGenerateFn());
-        // push each message in response.messages to newMessages
-        prompt = response.prompt;
-        const message = response.messages[0];
-        messages.push(message);
-      }
-  
-      const output = messages.map(m => {return m.character.name + ": " + m.message}).join('\n');
-  
-      writeData(input, prompt, output, 'rpg_dialogue');
-    }
+  async function generateRPGDialogTest() {
+    const output = await generateRPGDialogue();
 
-    async function generateRPGDialogTest() {
-      const output = await generateRPGDialogue();
-  
-      console.log('*********** generateRPGDialogue:')
-      console.log(output);
-    }
-  
-    if (test.toLowerCase().includes('all') || test.toLowerCase().includes('rpg')) {
-      promises.push(generateRPGDialogTest);
-    }
+    console.log('*********** generateRPGDialogue:')
+    console.log(output);
+  }
 
+  if (test.toLowerCase().includes('all') || test.toLowerCase().includes('rpg')) {
+    promises.push(generateRPGDialogTest);
+  }
 
+  // ********** REACTIONS **********
 
   async function generateReactionTest() {
     console.log('Starting reaction test');
@@ -464,6 +439,8 @@ ${output}
     promises.push(generateReactionTest);
   }
 
+  // ********** QUEST **********
+ // TODO
   async function generateQuestTest() {
     const output = await generateQuest();
 
@@ -479,33 +456,50 @@ ${output}
     promises.push(generateQuestTest);
   }
 
-  // async function generateLoreTest() {
+  // ********** LORE GENERATION **********
 
-  //   const output = await generateLore(makeGenerateFn());
+  // TODO: This is the regular lore engine test
+  async function generateLoreTest() {
 
-  //   console.log('*********** generateLore:')
-  //   console.log(output);
+    const
+    // {
+    //   locations,
+    //   characters,
+    //   messages = [],
+    //   objects,
+    //   dstCharacter = null,
+    //   localCharacter,
+    // }
+     input = testData;
 
-  //   writeData('', output, 'lore');
-  // }
+    const prompt = makeLorePrompt(input);
 
-  // promises.push(generateLoreTest);
+    const output = await generateLore(input, makeGenerateFn());
+
+    console.log('*********** generateLore:')
+    console.log(output);
+
+    writeData('', prompt, output, 'lore', makeLoreStop());
+  }
+
+  promises.push(generateLoreTest);
 
   async function generateChatMessageTest() {
     const outputs = []
-    let prompt;
+    const input = { messages: testData.messages, nextCharacter: testData.party[i] };
+    const prompt = makeChatPrompt(input);
     // iterate over testData.party.length
     for (let i = 0; i < testData.party.length; i++) {
-    const {value, emote, done, prompt} = await generateChatMessage({ messages: testData.messages, nextCharacter: testData.party[i] }, makeGenerateFn());
-    outputs.push(`${testData.party[i].name}: ${value} (emote = ${emote})`);
-      if(done){
+      const { value, emote, done } = await generateChatMessage(input, makeGenerateFn());
+      outputs.push(`${testData.party[i].name}: ${value} (emote = ${emote})`);
+      if (done) {
         break;
       }
-  }
+    }
     console.log('*********** generateChatMessage:')
     console.log(JSON.stringify(outputs));
 
-    writeData({ messages: testData.messages, nextCharacter: testData.party[0] }, prompt, outputs.join('\n'), 'chat_message');
+    writeData({ messages: testData.messages, nextCharacter: testData.party[0] }, prompt, outputs.join('\n'), 'chat_message', makeChatStop());
   }
 
   if (test.toLowerCase().includes('all') || test.toLowerCase().includes('chat')) {
@@ -514,20 +508,50 @@ ${output}
 
   async function generateDialogueOptionsTest() {
 
-    const output = await generateDialogueOptions({ messages: testData.messages, nextCharacter: testData.party[0] }, makeGenerateFn());
+    const input = { messages: testData.messages, nextCharacter: testData.party[0] };
+    const output = await generateDialogueOptions(input, makeGenerateFn());
 
     console.log('*********** generateDialogueOptions:')
     console.log(output);
 
-    writeData({ messages: testData.messages, nextCharacter: testData.party[0] }, output, 'dialogue_options');
+    writeData({ messages: testData.messages, nextCharacter: testData.party[0] }, output, 'dialogue_options', makeRPGDialogueStop());
   }
 
-  // promises.push(generateDialogueOptionsTest);
+  if (test.toLowerCase().includes('all') || test.toLowerCase().includes('options')) {
+    promises.push(generateDialogueOptionsTest);
+  }
 
-  const results = await Promise.all(promises.map(p => p()));
+  await Promise.all(promises.map(p => p()));
   console.log('All tests complete');
 };
 
-
-
 run();
+
+function writeData(inputs, prompt, output, name, stop) {
+  const testOutputs = `./test_outputs`;
+  if (!fs.existsSync(testOutputs)) {
+    fs.mkdirSync(testOutputs);
+  }
+  const outputFile = `${testOutputs}/${name}.txt`;
+
+  const write = `\
+${inputs ? `\
+******** INPUT DATA ********
+${JSON.stringify(inputs, null, 2)}
+` : ''}
+${stop ? `\
+******** STOP CODE ********
+${JSON.stringify(stop, null, 2)}
+` : ''}
+${prompt ? `\
+******** PROMPT ********
+${prompt}
+` : ''}
+
+******** OUTPUT DATA ********
+${output}
+`
+
+  fs.writeFileSync(outputFile, write);
+  console.log(`Wrote ${outputFile}`);
+}

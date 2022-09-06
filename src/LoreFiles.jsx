@@ -79,7 +79,7 @@ function LoreFiles() {
     console.log("loreFiles is", loreFiles);
     if (index !== undefined) {
       newData[index] = entity;
-      console.log("setting loreFiles to", newData);
+      console.log("location loreFiles to", newData);
     } else {
       const entityIndex = newData.findIndex((e) => e.id === entity.id);
       newData[entityIndex] = entity;

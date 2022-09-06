@@ -38,7 +38,7 @@ const getRandomEntity = (data, type) => {
 
   const index = Math.floor(Math.random() * data[type].length);
   const name = data[type][index].name;
-  if (type === "setting") {
+  if (type === "location") {
     return name;
   } else if (name.startsWith('"')) {
     const si = name.indexOf('"', 1);
@@ -56,11 +56,11 @@ const getRandomEntity = (data, type) => {
 
 export async function makeEmpty(type, openErrorModal) {
   switch (type) {
-    case "setting":
+    case "location":
       return {
         type: type,
-        name: "New Setting",
-        description: "This is a description of a new setting"
+        name: "New Location",
+        description: "This is a description of a new location"
       }
     case "character":
       return {
@@ -101,7 +101,7 @@ export async function makeEmpty(type, openErrorModal) {
       }
     case "loreFiles":
       return
-      `# Setting
+      `# Location
 
 # Characters
 
@@ -148,16 +148,16 @@ export async function makeDialogue(type, openErrorModal) {
     case "loadingComment":
       return {
         input: {
-          target: "New Setting",
+          target: "New Location",
         },
         output: {
-          comment: "This is a comment about the setting that is loading",
+          comment: "This is a comment about the location that is loading",
         }
       }
     case "banter":
       return {
         input: {
-          setting: "New Setting",
+          location: "New Location",
           characters: ["New Character"],
           npcs: ["New NPC"],
           objects: ["New Object"]
@@ -184,7 +184,7 @@ export async function makeDialogue(type, openErrorModal) {
     case "rpgDialogue":
       return {
         input: {
-          setting: "New Setting",
+          location: "New Location",
           characters: ["New Character"],
           npcs: ["New NPC"],
           objects: ["New Object"]
@@ -205,7 +205,7 @@ export async function makeDialogue(type, openErrorModal) {
     case "cutscenes":
       return {
         input: {
-          setting: "New Setting",
+          location: "New Location",
           characters: ["New Character"],
           npcs: ["New NPC"],
           objects: ["New Object"]
@@ -226,7 +226,7 @@ export async function makeDialogue(type, openErrorModal) {
     case "actions":
       return {
         input: {
-          setting: "New Setting",
+          location: "New Location",
           characters: ["New Character"],
           npcs: ["New NPC"],
           objects: ["New Object"],
@@ -244,7 +244,7 @@ export async function makeDialogue(type, openErrorModal) {
     case "reactions":
       return {
         input: {
-          setting: "New Setting",
+          location: "New Location",
           characters: ["New Character"],
           npcs: ["New NPC"],
           objects: ["New Object"],
@@ -294,9 +294,9 @@ export async function generate(type, data, baseData, openErrorModal) {
   let resp = undefined;
   const module = baseData.module || defaultModule;
   switch (type) {
-    case "setting":
+    case "location":
       console.log("baseData:", baseData);
-      resp = await module.generateSetting(makeGenerateFn());
+      resp = await module.generateLocation(makeGenerateFn());
       res.name = resp.name;
       res.description = resp.description;
       break;
@@ -329,7 +329,7 @@ export async function generate(type, data, baseData, openErrorModal) {
       const header =
         exampleLoreFiles[Math.floor(Math.random() * exampleLoreFiles.length)];
       newData.header = header;
-      newData.setting = data.setting[0];
+      newData.location = data.location[0];
       resp = await module.generateLoreFile(newData, makeGenerateFn());
       console.log("resp is", resp);
       return resp;
@@ -353,7 +353,7 @@ export async function generate(type, data, baseData, openErrorModal) {
       return resp;
     case "loadingComment":
       resp = await module.generateLoadingComment(
-        getRandomEntity(data, "setting"),
+        getRandomEntity(data, "location"),
         makeGenerateFn(),
       );
       return resp;
@@ -402,7 +402,7 @@ export async function generate(type, data, baseData, openErrorModal) {
 
     case "quests":
       resp = await module.generateAction(
-        getRandomEntity(data, "setting"),
+        getRandomEntity(data, "location"),
         makeGenerateFn(),
       );
       console.log("ACTION:", resp);

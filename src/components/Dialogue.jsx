@@ -21,7 +21,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     getObject,
     getCharacter,
     getNPC,
-    getSetting,
+    getLocation,
     getMob,
     baseData,
     getTypeOfObject,
@@ -188,7 +188,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
       );
       res = res.value;
     } else if (type === "loadingComment") {
-      const obj = getSetting(data);
+      const obj = getLocation(data);
       const description = obj ? obj.description : "";
 
       res = await baseData.module.generateLocationComment(
@@ -204,10 +204,10 @@ const Dialogue = ({ index, _key, type, editJson }) => {
       );
       res = res.comment;
     } else if (type === "exposition") {
-      const setting =
-        entities["setting"]?.length > 0
-          ? entities["setting"][
-              Math.floor(Math.random() * entities["setting"].length)
+      const location =
+        entities["location"]?.length > 0
+          ? entities["location"][
+              Math.floor(Math.random() * entities["location"].length)
             ]
           : { name: "Test", Description: "Test" };
 
@@ -221,7 +221,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
       res = await baseData.module.generateExposition(
         {
           name: character.name,
-          setting: `${setting.name}\n${setting.description}`,
+          location: `${location.name}\n${location.description}`,
           type: getTypeOfObject(data),
         },
         makeGenerateFn()
@@ -244,13 +244,13 @@ const Dialogue = ({ index, _key, type, editJson }) => {
       );
     } else if (type === "cutscenes") {
       const _input = {
-        setting: dialogue[currentDialogueType][_key].input.setting,
+        location: dialogue[currentDialogueType][_key].input.location,
         chars: dialogue[currentDialogueType][_key].input.characters,
         npcs: dialogue[currentDialogueType][_key].input.npcs,
         objects: dialogue[currentDialogueType][_key].input.objects,
       };
 
-      _input.setting = getSetting(_input.setting);
+      _input.location = getLocation(_input.location);
       for (let i = 0; i < _input.chars.length; i++) {
         _input.chars[i] = getCharacter(_input.chars[i]);
       }
@@ -261,7 +261,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
         _input.objects[i] = getObject(_input.objects[i]);
       }
       const input = {
-        setting: _input.setting,
+        location: _input.location,
         characters: _input.chars.concat(_input.npcs),
         objects: _input.objects,
       };
@@ -461,11 +461,11 @@ const Dialogue = ({ index, _key, type, editJson }) => {
               ? [
                   ...entities["character"],
                   ...entities["object"],
-                  ...entities["setting"],
+                  ...entities["location"],
                   ...entities["npc"],
                 ]
               : entities[
-                  type.replace("loading", "setting").replace("Comment", "")
+                  type.replace("loading", "location").replace("Comment", "")
                 ]
             ).map((item, index) => {
               return (
@@ -545,7 +545,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
           )}
         </div>
       );
-    } else if (label === "setting") {
+    } else if (label === "location") {
       output = (
         <select
           value={data}

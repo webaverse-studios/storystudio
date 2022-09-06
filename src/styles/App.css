@@ -313,7 +313,7 @@
 }
 
 /* create a media query for the mobile view */
-/* setting_wrapped should be 100% width */
+/* location_wrapped should be 100% width */
 @media (max-width: 1200px) {
   .base {
     width: calc(100% - 1em);
@@ -343,7 +343,7 @@
     right:1em;
     top:1em;
   }
-  .setting_wrapped {
+  .location_wrapped {
     width: 100% !important;
   }
   .character_wrapped {
@@ -379,9 +379,6 @@
     margin: .5em;
   }
 
-  .context-group-button {
-    padding-left: 0.25em;
-  }
   .baseButton {
     border-top: 1px solid #000000 !important;
     width: 50%;

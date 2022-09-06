@@ -35,7 +35,7 @@ const EntityListBox = ({ header, type }) => {
           type === "character" ||
           type === "npc" ||
           type === "mob" ||
-          type === "setting" ||
+          type === "location" ||
           type === "object" ? (
             <button onClick={_import}>Import</button>
           ) : null}

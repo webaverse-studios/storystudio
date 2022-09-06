@@ -28,7 +28,7 @@ const EntityListBox = ({
         type === "character" ||
         type === "npc" ||
         type === "mob" ||
-        type === "setting" ||
+        type === "location" ||
         type === "object" ? (
           <button onClick={handleImport}>Import </button>
         ) : null}

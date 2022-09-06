@@ -26,8 +26,8 @@ const DialogueSelector = () => {
                   : " context-group-button-inactive")
               }
             >
-              {type}|
-              {dialogue[type] && dialogue[type].length}
+              {type}
+              {/*|{dialogue[type] && dialogue[type].length}(*/}
             </button>
           );
         })}
