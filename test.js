@@ -401,18 +401,30 @@ const run = async () => {
 
   async function generateRPGDialogTest() {
     const messages = [];
-    const input = { character: testData.party[0], location: testData.locations[0], characters: testData.party, objects: testData.objects, messages, dstCharacter: testData.npcs[0] };
-    const prompt = makeRPGDialoguePrompt(input);
+    const input = { location: testData.locations[0], characters: testData.party, objects: testData.objects, messages, dstCharacter: testData.npcs[0] };
+    const prompt =   (input);
     // iterate 3 times or until done
-    for (let i = 0; i < 6; i++) {
-      const message = await generateRPGDialogue(input, makeGenerateFn());
-      // push each message in response.messages to newMessages
-      messages.push(message);
-    }
 
+    let end = false;
+    while(!end && messages.length < 5) {
+      const newMessages = await generateRPGDialogue(input, makeGenerateFn());
+      // for each message in newMessages, check done -- if done, set done to true and break
+      // otherwise push to messages
+      for (let i = 0; i < newMessages.length; i++) {
+        if (newMessages[i].end) {
+          end = true;
+          break;
+        }
+        messages.push(newMessages[i]);
+      }
+    }
+    let output = messages.map(m => { return (m.type === 'options' ? 'OPTIONS: ' + m.options : m.name + ": " + m.message) }).join('\n');
     console.log('messages', messages);
 
-    const output = messages.map(m => { return m.name + ": " + m.message }).join('\n');
+    // if the last message done is true, append *END* to the output
+    if (messages[messages.length - 1].done) {
+      output += '\n*END*';
+    }
 
     writeData(input, prompt, output, 'rpg_dialogue', makeRPGDialogueStop());
   }

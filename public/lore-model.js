@@ -346,7 +346,7 @@ export const makeBanterPrompt = ({
 # Objects
 "Sword of Gothika" A rare and legendary sword.
 
-(TASK) Using the Sword of Gothika as context, write some light banter between the Jade64, Eris22 and Maxx, who are players in an MMORPG. Add (done) when a character no longer wants to engage in banter.
+(TASK) Using the Sword of Gothika as context, write some light banter between the Jade64, Eris22 and Maxx, who are players in an MMORPG. Add *END* when a character no longer wants to engage in banter.
 
 # Transcript
 >> Jade64: Anyone wanna buy a legendary SoG?
@@ -354,7 +354,7 @@ export const makeBanterPrompt = ({
 >> Maxx: Sword of Gothika, very dank.
 >> Eris22: Ohhhhh sick, how much?
 >> Jade64: 6 shards or 50k SILK
->> Eris: Errr yeah, I have like 4k SILK. (done)
+>> Eris: Errr yeah, I have like 4k SILK. *END*
 """
 # Objects
 "Computer" A very old computer. A real piece of crap, but I guess it works..
@@ -363,7 +363,7 @@ export const makeBanterPrompt = ({
 "Eric" A very boring guy. Bored the pants off a thousand people at once, once.
 "Millie" A very interesting person. She is a bit of a mystery.
 
-(TASK) Using Computer as context, write a transcript of light banter between the Eric and Millie, who are players in an MMORPG. Add (done) at the end of the sentence when a character no longer wants to engage in banter.
+(TASK) Using Computer as context, write a transcript of light banter between the Eric and Millie, who are players in an MMORPG. Add *END* at the end of the sentence when a character no longer wants to engage in banter.
 
 # Transcript 
 >> Millie: Hey Eric, can I ask you something?
@@ -371,7 +371,7 @@ export const makeBanterPrompt = ({
 >> Millie: Do you ever wonder why we are here?
 >> Eric: Is that a way to tee up a convo about the drop tomorrow?
 >> Millie: It might not be!
->> Eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone. (done)
+>> Eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone. *END*
 """
 ${location && `# Location\n"${location.name}" ${location.description}`}
 
@@ -421,7 +421,7 @@ export const parseBanterResponse = (resp) => {
     try {
       const fullMessage = responseArray
         .shift()
-        .replaceAll(">> ", "")
+        .replaceAll(">>", "")
         .replaceAll(">", "")
         .trim();
       // if fullMessage contains a '<' or https, continue
@@ -438,10 +438,10 @@ export const parseBanterResponse = (resp) => {
       const name = splitMessage[0].trim().split(" ").pop();
       const message = splitMessage[1].trim();
       if (name && messages)
-        messages.push({ name, message, done: message.includes("(done)") });
+        messages.push({ name, message, done: message.includes("*END*") });
 
-      // check for (done)
-      if (message.includes("(done)")) {
+      // check for *END*
+      if (message.includes("*END*")) {
         break;
       }
     } catch (error) {
@@ -555,14 +555,14 @@ export const makeCutscenePrompt = ({
 # Objects
 "Sword of Gothika" A rare and legendary sword.
 
-(TASK) Using the Sword of Gothika as context, write a video game cutscene conversation between the Jade64, Eris22 and Maxx, who are players in an MMORPG. Add (done) at the end of the sentence when a character no longer wants to engage in banter.
+(TASK) Using the Sword of Gothika as context, write a video game cutscene conversation between the Jade64, Eris22 and Maxx, who are players in an MMORPG. Add *END* at the end of the sentence when a character no longer wants to engage in banter.
 
 # Transcript
 >> Jade64: Alright Maxx. I've come for the sword.
 >> Maxx: You really think you have what it takes to wield the legendary Sword of Gothika?
 >> Jade64: No. But my friend Eris does!
 >> Eris22: That's right Maxx. I'm here to claim the sword and power level my little bro.
->> Maxx: How cute. now prepare to die! (done)
+>> Maxx: How cute. now prepare to die! *END*
 """
 # Objects
 "Computer" A very old computer. A real piece of crap, but I guess it works..
@@ -571,7 +571,7 @@ export const makeCutscenePrompt = ({
 "Eric" A very boring guy. Bored the pants off a thousand people at once, once.
 "Millie" A very interesting person. She is a bit of a mystery.
 
-(TASK) Using Computer as context, write a short cutscene between the Eric and Millie, who are players in an MMORPG. Add (done) at the end of the sentence when the cutscene is over.
+(TASK) Using Computer as context, write a short cutscene between the Eric and Millie, who are players in an MMORPG. Add *END* at the end of the sentence when the cutscene is over.
 
 # Transcript 
 >> Millie: Hey Eric, can I ask you something?
@@ -579,7 +579,7 @@ export const makeCutscenePrompt = ({
 >> Millie: Do you ever wonder why we are here?
 >> Eric: Is that a way to tee up a convo about the drop tomorrow?
 >> Millie: It might not be!
->> Eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone. (done)
+>> Eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone. *END*
 """
 
 ${location && `# Location\n"${location.name}" ${location.description}`}
@@ -626,7 +626,7 @@ export const parseCutsceneResponse = (resp) => {
     try {
       const fullMessage = responseArray
         .shift()
-        .replaceAll(">> ", "")
+        .replaceAll(">>", "")
         .replaceAll(">", "")
         .trim();
       // if fullMessage contains a '<' or https, continue
@@ -643,10 +643,10 @@ export const parseCutsceneResponse = (resp) => {
       const name = splitMessage[0].trim().split(" ").pop();
       const message = splitMessage[1].trim();
       if (name && messages)
-        messages.push({ name, message, done: message.includes("(done)") });
+        messages.push({ name, message, done: message.includes("*END*") });
 
-      // check for (done)
-      if (message.includes("(done)")) {
+      // check for *END*
+      if (message.includes("*END*")) {
         break;
       }
     } catch (error) {
@@ -682,9 +682,35 @@ export const makeRPGDialoguePrompt = ({
   objects = [],
   messages = [],
 }) => {
-  console.log('messages', messages);
-
+  console.log('messages are')
+  console.log(messages)
   return `\
+# Transcript 
+>> Alyx: Just the person I needed. You busy?
+>> (OPTIONS): [Yes I am, sorry!] [I've always got time for you!]
+"""
+# Transcript
+>> Drake: I can pay you tomorrow!
+>> Shopkeeper: Come back when you have money! *END*
+"""
+# Transcript
+>> Guard: You can't pass.
+>> Drake: Come on. What's the price?
+>> Guard: No price. Don't try asking again. This me me being nice. *END*
+"""
+# Transcript
+>> Korben: I've always got time for you, Alyx!
+>> Alyx: Great! Do you ever wonder why we are here?
+>> (OPTIONS): [Yes] [No] [Is that a way to tee up a convo about the drop tomorrow?]
+"""
+# Transcript
+>> Korben: Is that a way to tee up a convo about the drop tomorrow?
+>> Alyx: In a roundabout way, yes. Listen, if I ask you for a favor, but you can't ask what it's for, will you do it?
+>> (OPTIONS): [Yes, I trust you] [No, I'm not comfortable with that]
+"""
+>> Korben: Yes, I trust you.
+>> Alyx: Great. That's all I needed to know right now. *END*
+"""
 # Objects
 "Sword of Gothika" A rare and legendary sword.
 
@@ -693,37 +719,35 @@ export const makeRPGDialoguePrompt = ({
 "Eris22" Pro player, power leveler for hire. She's a bit of a jerk-- unless you're paying her.
 "Maxx" Orc Berserker. Badass NPC Boss, every hunter has to kill him at least once.
 
-(TASK) Using the Sword of Gothika as context, write a video game cutscene conversation between the Jade64, Eris22 and Maxx, who are players in an MMORPG. Add (done) at the end of the sentence when a character no longer wants to engage in banter.
-
+(TASK) Using the Sword of Gothika as context, write a fun RPG conversation between the Jade64, Eris22 and Maxx, who are players in an MMORPG. The dialogue should be 2-8 (>2 and < 8) lines. Add *END* when the dialog is over.
 # Transcript
 >> Jade64: Alright Maxx. I've come for the sword.
 >> Maxx: You really think you have what it takes to wield the legendary Sword of Gothika?
+>> (OPTIONS): [Yes] [No. But my friend Eris does!]
 >> Jade64: No. But my friend Eris does!
 >> Eris22: That's right Maxx. I'm here to claim the sword and power level my little bro.
->> Maxx: How cute. now prepare to die! (done)
+>> Maxx: How cute. now prepare to die! *END*
 """
-# Objects
-"Computer" A very old computer. A real piece of crap, but I guess it works..
+# Characters
+"Zaphod" Conceited ass. President of the world.
+"Trillian" Supergenius and last human woman from Earth still living.
 
+(TASK) Write a short RPG style dialogue conversation between the Zaphod and Trillian. The dialogue should be 2-8 (>2 and < 8) lines. Add *END* at the end when the dialog is over. Add *END* when the dialog is over.
+# Transcript
+>> Zaphod: Hey Tril, love that new outfit.
+>> Trillian: Nope. No time for your shenanigans. Out of my face! *END*
+"""
 # Characters
 "Eric" Hacker. Gunner. Good with anything that has a keyboard or a trigger.
 "Millie" She is a bit of a mystery. Works for the org, but no one knows what she does.
 
-(TASK) Using Computer as context, write a short cutscene between the Eric and Millie, who are players in an MMORPG. Add (done) at the end of the sentence when the cutscene is over.
+# Transcript
+>> Eric: For real?
+>> Millie: Yeah.
+>> Eric: You're just going to leave me hanging?
+>> Millie: Yep. Gotta run. Bye! *END*
 
-# Transcript 
->> Millie: Just the person I needed. You busy?
->> Eric: [Yes, I am, sorry!] [>I've always got time for you, Millie!]
->> Millie: Great! Do you ever wonder why we are here?
->> Eric: [Yes] [No] [>Is that a way to tee up a convo about the drop tomorrow?]
->> Millie: In a roundabout way, yes. Listen, if I ask you for a favor, but you can't ask what it's for, will you do it?
->> Eric: [>Yes, I trust you] [I'm sorry Millie, I'm not comfortable with that]
->> Millie: Great. That's all I needed to know right now.
->> Eric: What? You're just going to leave me hanging?
->> Millie: You promised you wouldn't ask!
->> Eric: Dang. Yeah. Okay, I won't ask about it. (done)
 """
-
 ${location && `# Location\n"${location.name}" ${location.description}`}
 
 ${objects.length > 0 && "# Nearby Objects\n"}\
@@ -736,106 +760,63 @@ ${
 ${characters.length > 0 && "# Characters\n"}\
 ${
   characters.map((c) => `"${c.name}" ${c.description}`).join("\n\n") +
-  (characters.length > 0 && "\n\n")
+  (characters.length > 0 && "\n")
 }
-
 # Target Character
 "${dstCharacter.name}" ${dstCharacter.description}
 
-(TASK) Using ${
-    objects && objects.length > 0 && objects.map((o) => o.name).join(", ")
-  } ${
-    location && "and " + location.name
-  } as context, write a video game RPG cutscene between the characters${dstCharacter && " and " + dstCharacter.name}.
+(TASK) Using ${objects && objects.length > 0 && objects.map((o) => o.name).join(", ")}${location ? " and " + location.name : ''}\
+ as context, write a video game RPG cutscene between the characters${dstCharacter && " and " + dstCharacter.name}.
 
 # Transcript
-${(messages.map((m) => '>> ' + m.name + ': ' + m.message).join("\n")) + (messages.length > 0 ? '\n' : '') + '>>'}`
+${(messages.map((m) => '>> ' + m.type === 'options' ? ('(OPTIONS): ' + m.options.map(o => `[${o}]`).join(' ')) : m.name + ': ' + m.message).join("\n")) + (messages.length > 0 ? '\n' : '') + '>>'}`
 }
 
-// export const makeRPGDialoguePrompt = ({ character }) => {
-//   return `\
-// # Examples of How to Parse Inputs
-// >> Scillia: Hi Drake! Whats up?
-// >> Drake: I am doing good. How about you? (react = normal, action = follow, object = none, target = scillia)
-
-// >> Hyacinth: What mischief are you upto today?
-// >> Anon: None. I have been good all day. (react = headNod, action = none, object = none, target = none)
-
-// >> Scillia: Why did you break that expensive artifact? Now I will have to pay up for the damage.
-// >> Drake: I am really sorry about it. (react = embarrassed, action = none, object = none, target = none)
-
-// >> Anon: We finally won the battle Juniper!
-// >> Juniper: Hurray! We did it. (react = victory, action = none, object = none, target = none)
-
-// >> Scillia: I am tired. How far is the dungeon, Hyacinth?
-// >> Hyacinth: Just a bit further, dont worry. (react = normal, action = none, object = none, target = none)
-
-// >> Drake: Hyacinth, are you going to visit the Church today?
-// >> Hyacinth: No, I will not go today. (react = headShake, action = none, object = none, target = none)
-
-// >> Drake: Hyacinth, are you going to visit the Church today?
-// >> Hyacinth: Yes. I will go now. (react = headNod, action = moveto, object = none, target = church)
-
-// >> Drake: Hyacinth, we are being attacked. Be prepared.
-// >> Hyacinth: I will get my sword. I am ready. (react = alert, action = pick up, object = none, target = sword)
-
-// >> Anon: Are you funny?
-// >> Hyacinth: I like to think so! I try to find the humor in everything, even if it's dark or bitter. (react = normal, action = none, object = none, target = none)
-
-// >> Anon: Juniper, here I brought you everything you need to win this competition.
-// >> Juniper: Wow! That is all I needed. Thank you so much. (react = surprised, action = none, object = none, target = none)
-
-// >> Scillia: Can we visit the dungeons now?
-// >> Hyacinth: No, we cannot go there at night. (react = headShake, action = none, object = none, target = none)
-
-// >> Anon: Let us go to the Hovercraft together, Drake!
-// >> Drake: That's a great idea! (react = victory, action = none, object = none, target = none)
-
-// >> Anon: Thats a cool sword.
-// >> Juniper: Thanks. It's made of titanium and it's sharp, dual-edged. Perfect for slicing, stabbing, and jabbing my enemies. (react = normal, action = pick up, object = none, target = sword)
-
-// >> Hyacinth: Today I lost one of my closest firend in the battle.
-// >> Anon: I am so sorry to hear it. (react = sad, action = none, object = none, target = none)
-
-// >> Hyacinth: Your actions have caused a lot of trouble to others.
-// >> Scillia: But I did not do it. (react = angry, action = none, object = none, target = none)
-
-// >> Drake: Hyacinth, when was the last time you were here?
-// >> Hyacinth: I haven't been back since my father's funeral. (react = sad, action = none, object = none, target = none)
-
-// >> Scillia: Hey Hyacinth, as soon as we open the barrier, we rush to the site and attack.
-// >> Hyacinth: I am ready. Signal me as soon as the barrier opens. (react = alert, action = follow, object = none, target = none)
-
-// >> Anon: Hyacinth want to go on an adventure together??
-// >> Hyacinth: Sure, lets go! (react = headNod, action = none, object = none, target = none)
-
-// >> Anon: Would you tell me more about Ironford?
-// >> Drake: The city of Ironford was built in the center of a giant forest and is truly a modest marvel. Its allure is matched by the backdrop of lush forests which have helped shape the city to what it is today. (react = headNod, action = none, object = none, target = none)
-
-// >> Anon: The monsters have captures the people of the village.
-// >> Hyacinth: I will find and kill each of those monsters myself. (react = angry, action = move to, object = none, target = monster)
-
-// >> Scillia: Hey Hyacinth, what is your favorite book?
-// >> Hyacinth: My favorite book is The Lord of the Rings. I love the story and the world that J.R.R. Tolkien created. (react = normal, action = none, object = none, target = none)
-
-// >> ${character.name}: `;
-// };
-
-export const makeRPGDialogueStop = () => [
-  "\n",
-];
+export const makeRPGDialogueStop = () => ['\n\n', '"""', '# Transcript'];
 
 export const parseRPGDialogueResponse = (resp) => {
   // first, split by line, and remove ">> ", then remove any > or <
-  console.log('resp is ', resp);
-  const line = resp.trim();
-  const split = line.split(":");
-  const name = split[0].trim();
-  const message = split[1].trim();
-  return {
-    name,
-    message
-  };
+  // filter out any line after the first that doesn't start with a >>
+  resp = resp.split('\n');
+  const lines = ['>> ' + resp.shift(), ...resp];
+  // for each line, process as a message and add to the returned messages
+  const messages = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const split = line.split(":");
+    if (split.length < 2) {
+      continue;
+    }
+
+    if(split[0].length > 30 || split[1].length > 200) {
+      continue;
+    }
+
+    // if split[0] doesn't start with a >, then continue
+    if (split[0].includes("#") || split[1].includes('>>')) {
+      continue;
+    }
+
+    split[0] = split[0].replace('>> ', '').trim()
+
+    const name = split[0].trim();
+    const message = split[1].trim();
+    const end = line.includes("*END*");
+    if(name.includes('OPTIONS')) {
+      type = 'options';
+      // split the message into an array of options, which are plaintext between []
+      // example: [that doesn't bother you?] [It's the bite I'm worried about]
+      const options = message.split('[').map((o) => o.replace(']', '').trim()).filter((o) => o.length > 0);
+      console.log('options are', options);
+      messages.push ({ type, options, end });
+      if(end) break;
+    } else {
+      let type = 'message';
+      messages.push ({ type, name, message, end });
+      if(end) break;
+    }
+  }
+  return messages;
 };
 
 export async function generateRPGDialogue({ location = null, characters = [], objects = [],  messages = [], dstCharacter = null}, generateFn) {
