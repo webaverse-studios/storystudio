@@ -479,7 +479,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
       );
     }
     // render outputs as an input field
-    else if (label === "message" || label === "action" || label === "comment") {
+    else if (label === "message" || label === "action" || label === "comment" || label === "reward" || label === "task") {
       output = (
         <div>
           <input
@@ -545,7 +545,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
           )}
         </div>
       );
-    } else if (label === "location") {
+    } else if (label === "location" || label === "npc") {
       output = (
         <select
           value={data}

@@ -1,3 +1,5 @@
+import { parse } from "path";
+
 // LORE_HEADER_START
 export let lore = {
   overview: {
@@ -316,13 +318,7 @@ export const makeLocationPrompt = () => {
 export const makeLocationStop = () => ['\nLocation:']
 
 // TODO
-export const parseLocationResponse = (response) => {}
-
-export async function generateLocation(generateFn) {
-  const prompt = makeLocationPrompt();
-
-  const resp = await generateFn(prompt, makeLocationStop());
-
+export const parseLocationResponse = (resp) => {
   const lines = resp.split("\n").filter((el) => {
     return el !== "";
   });
@@ -332,12 +328,16 @@ export async function generateLocation(generateFn) {
   const name = location[0].replace('"', '').trim().trimStart();
   const description = location[1].trim().trimStart();
 
+
   return {
     name,
     description,
-    comment,
-    prompt
+    comment
   };
+}
+
+export async function generateLocation(generateFn) {
+  return parseLocationResponse(await generateFn(makeLocationPrompt(), makeLocationStop()));
 }
 
 // NEW CHARACTER
@@ -351,11 +351,7 @@ export const makeCharacterPrompt = () => {
 
 export const makeCharacterStop = () => ['\nCharacter:']
 
-export async function generateCharacter(generateFn) {
-  const prompt = makeCharacterPrompt();
-
-  const resp = await generateFn(prompt, makeCharacterStop());
-
+export const parseCharacterResponse = (resp) => {
   const lines = resp.split("\n").filter((el) => {
     return el !== "";
   });
@@ -371,9 +367,12 @@ export async function generateCharacter(generateFn) {
     name,
     description,
     comment,
-    inventory,
-    prompt
+    inventory
   };
+}
+
+export async function generateCharacter(generateFn) {
+  return parseCharacterResponse(await generateFn(makeCharacterPrompt(), makeCharacterStop()))
 }
 
 // NEW OBJECT
@@ -385,11 +384,9 @@ export const makeObjectPrompt = () => {
   Object: "`
 }
 
-export async function generateObject(generateFn) {
-  const prompt = makeObjectPrompt();
+export const makeObjectStop = () => ['\nObject:']
 
-  const resp = await generateFn(prompt, ['\nObject:', '\n\n']);
-
+export const parseObjectResponse = (resp) => {
   const lines = resp.split("\n").filter((el) => {
     return el !== "";
   });
@@ -403,9 +400,12 @@ export async function generateObject(generateFn) {
   return {
     name,
     description,
-    comment,
-    prompt
+    comment
   };
+}
+
+export async function generateObject(generateFn) {
+  return parseObjectResponse(await generateFn(makeObjectPrompt(), makeObjectStop()))
 }
 
 // REACTIONS
@@ -419,14 +419,7 @@ export const makeReactionPrompt = () => {
 
 export const makeReactionStop = (name) =>  ["\n", name + ':']
 
-// TODO
-export const parseReactionResponse = (response) => {}
-
-export async function generateReaction(name, generateFn) {
-  const prompt = makeReactionPrompt();
-
-  const resp = await generateFn(prompt, makeReactionStop(name));
-
+export const parseReactionResponse = (resp) => {
   let _resp = "";
   if (resp.startsWith(name ? name : "prompt:")) {
     _resp = resp.replace(name ? name : "prompt:", "").trim();
@@ -436,9 +429,26 @@ export async function generateReaction(name, generateFn) {
   return { reaction: _resp?.replace(/\s+/g, ""), prompt: prompt }
 }
 
+export async function generateReaction(name, generateFn) {
+  return parseReactionResponse(await generateFn(makeReactionPrompt(), makeReactionStop(name)));
+}
+
 // BANTER
 
 export const makeBanterPrompt = ({ location = null, characters = [], objects = [], messages = [], dstCharacter = null }) => {
+  let lastCharacter = null;
+
+  if (!dstCharacter) {
+    dstCharacter = characters[Math.floor(Math.random() * characters.length)]
+  }
+
+   // set lastCharacter to the last character in the transcript
+   if (messages && messages.length > 0) {
+    lastCharacter = messages[messages.length - 1].character;
+  } else {
+    lastCharacter = dstCharacter;
+  }
+
   return `\
 # Available Actions
 attack
@@ -519,30 +529,11 @@ ${(!messages || messages.length === 0) && dstCharacter.name + ':'}`;
 
 export const makeBanterStop = () => ["\n\n", 'done=true', 'done = true'];
 
-// TODO
-export const parseBanterResponse = (response) => {}
-
-export async function generateBanter({ location = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
-  if (!dstCharacter) {
-    dstCharacter = characters[Math.floor(Math.random() * characters.length)]
-  }
-
-  let lastCharacter = null;
-
-  const prompt = makeBanterPrompt({ location, characters, objects, messages, dstCharacter });
-
-  // set lastCharacter to the last character in the transcript
-  if (messages && messages.length > 0) {
-    lastCharacter = messages[messages.length - 1].character;
-  } else {
-    lastCharacter = dstCharacter;
-  }
-
+export const parseBanterResponse = (resp) => {
+  // TODO: parse the character speaking
   const outMessages = [];
 
-  let loreResp = await generateFn(prompt, makeBanterStop());
-
-  loreResp = loreResp
+  resp = resp
     .trim()
     .trimStart()
     .replace(/^\n+/, "") // remove leading newlines
@@ -552,14 +543,18 @@ export async function generateBanter({ location = null, characters = [], objects
     .split("\n");
 
   outMessages.push({
-    character: lastCharacter ?? dstCharacter,
-    message: loreResp.shift().replaceAll((lastCharacter ?? dstCharacter).name + ':', '').trim().trimStart()
+    character: 'TODO',
+    message: resp.shift().replaceAll('TODO-CHARACTERNAME'+ ':', '').trim().trimStart()
   });
 
   return {
-    messages: outMessages,
-    prompt
+    messages: outMessages
   }
+}
+
+export async function generateBanter({ location = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
+  const input = { location, characters, objects, messages, dstCharacter };
+  return parseBanterResponse(await generateFn(makeBanterPrompt(input), makeBanterStop()));
 }
 
 // EXPOSITION
@@ -574,14 +569,7 @@ ${capitalizeFirstLetter(type)}: "${name}"`
 
 export const makeExpositionStop = (type) => [`\n${type.toUpperCase()}:`, '\n\n'];
 
-// TODO
-export const parseExpositionResponse = (response) => {}
-
-export async function generateExposition({ name, location = null, type = 'Object' }, generateFn) {
-  const prompt = makeExpositionPrompt({ name, location, type });
-
-  const resp = await generateFn(prompt, makeExpositionStop());
-
+export const parseExpositionResponse = (resp) => {
   const lines = resp.split("\n").filter((el) => {
     return el !== "";
   });
@@ -590,16 +578,32 @@ export async function generateExposition({ name, location = null, type = 'Object
   const comment = lines[1] && lines[1].replaceAll("Quote: ", "").replaceAll('"', '').trim().trimStart();
 
   return {
-    name,
     description,
-    comment,
-    prompt
+    comment
   };
+}
+
+export async function generateExposition({ name, location = null, type = 'Object' }, generateFn) {
+  const input = { name, location, type };
+  return parseExpositionResponse(await generateFn(makeExpositionPrompt(input), makeExpositionStop()));
 }
 
 // CUTSCENES
 
 export const makeCutscenePrompt = ({ location = null, characters = [], objects = [], messages = [], dstCharacter = null }) => {
+  if (!dstCharacter) {
+    dstCharacter = characters[Math.floor(Math.random() * characters.length)]
+  }
+
+  let lastCharacter = null;
+
+  // set lastCharacter to the last character in the transcript
+  if (messages && messages.length > 0) {
+    lastCharacter = messages[messages.length - 1].character;
+  } else {
+    lastCharacter = dstCharacter;
+  }
+
   return `\
 # Available Actions
 attack
@@ -680,50 +684,31 @@ ${(!messages || messages.length === 0) && dstCharacter.name + ':'}`;
 
 export const makeCutsceneStop = () => ["\n\n", 'done=true', 'done = true'];
 
-// TODO
-export const parseCutsceneResponse = (response) => {}
+export const parseCutsceneResponse = (resp) => {
+  const messages = [];
 
-export async function generateCutscene({ location = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
-  if (!dstCharacter) {
-    dstCharacter = characters[Math.floor(Math.random() * characters.length)]
-  }
+  resp = resp
+  .trim()
+  .trimStart()
+  .replace(/^\n+/, "") // remove leading newlines
+  .replace(/\n+$/, "") // remove trailing newlines
+  .replaceAll('"', "") // remove quotes
+  .replaceAll("\t", "") // remove tabs
+  .split("\n");
 
-  console.log('messages', messages);
-
-  let lastCharacter = null;
-  const prompt = makeCutscenePrompt({ location, characters, objects, messages, dstCharacter });
-
-
-  // set lastCharacter to the last character in the transcript
-  if (messages && messages.length > 0) {
-    lastCharacter = messages[messages.length - 1].character;
-  } else {
-    lastCharacter = dstCharacter;
-  }
-
-  const outMessages = [];
-
-  let loreResp = await generateFn(prompt, makeCutsceneStop());
-  console.log('lastCharacter ?? dstCharacter', lastCharacter ?? dstCharacter);
-
-  loreResp = loreResp
-    .trim()
-    .trimStart()
-    .replace(/^\n+/, "") // remove leading newlines
-    .replace(/\n+$/, "") // remove trailing newlines
-    .replaceAll('"', "") // remove quotes
-    .replaceAll("\t", "") // remove tabs
-    .split("\n");
-
-  outMessages.push({
-    character: lastCharacter ?? dstCharacter,
-    message: loreResp.shift().replaceAll((lastCharacter ?? dstCharacter).name + ':', '').trim().trimStart()
+  messages.push({
+    character: 'TODO',
+    message: resp.shift().replaceAll('TODO-CHARACTERNAME' + ':', '').trim().trimStart()
   });
 
   return {
-    messages: outMessages,
-    prompt
+    messages
   }
+}
+
+export async function generateCutscene({ location = null, characters = [], objects = [], messages = [], dstCharacter = null }, generateFn) {
+  const input = { location, characters, objects, messages, dstCharacter };
+  return parseCutsceneResponse(await generateFn(makeCutscenePrompt(input), makeCutsceneStop()));
 }
 
 // RPG DIALOGUE
@@ -740,28 +725,26 @@ export const makeRPGDialogueStop = (/*character*/) => [
   // `Input:\n+a8e44f13${character.name}:`,
 ];
 
-//TODO
-export const parseRPGDialogueResponse = (response) => {}
-
-export async function generateRPGDialogue(character, generateFn) {
-  const rpgDialoguePrompt = makeRPGDialoguePrompt
-
-  const resp = await generateFn(rpgDialoguePrompt, makeRPGDialogueStop(character));
-
-  if (
-    resp?.startsWith(
-      `Input:\n+a8e44f13${character.name}:`
-    )
-  ) {
-    return resp
-      .replace(
-        `Input:\n+a8e44f13${character.name}:`,
-        ""
-      )
-      .trim();
-  } else {
+export const parseRPGDialogueResponse = (resp) => {
+  // if (
+  //   resp.startsWith(
+  //     `Input:\n+a8e44f13${character.name}:`
+  //   )
+  // ) {
+  //   return resp
+  //     .replace(
+  //       `Input:\n+a8e44f13${character.name}:`,
+  //       ""
+  //     )
+  //     .trim();
+  // } else {
     return resp;
-  }
+  // }
+}
+
+export async function generateRPGDialogue({character}, generateFn) {
+  const input = {character};
+  return parseRPGDialogueResponse(await generateFn(makeRPGDialoguePrompt(input), makeRPGDialogueStop(character)));
 }
 
 // QUESTS
@@ -791,15 +774,8 @@ ${location}:`
 
 export const makeQuestStop = () => ["\n"];
 
-//TODO
-export const parseQuestResponse = (response) => {}
-
-export async function generateQuest({ location }, generateFn) {
-  const prompt = makeQuestPrompt({ location });
-
-  const resp = await generateFn(prompt, makeQuestStop());
-
-  if (resp?.startsWith(location)) {
+export const parseQuestResponse = (resp) => {
+  if (resp.startsWith(location)) {
     const data = resp
       .replace(location, "")
       .trim();
@@ -817,10 +793,14 @@ export async function generateQuest({ location }, generateFn) {
     return {
       location: location,
       quest: quest.trim(),
-      reward: reward.trim(),
-      prompt
+      reward: reward.trim()
     };
   }
+}
+
+export async function generateQuest({ location }, generateFn) {
+  const input = { location };
+  return parseQuestResponse(await generateFn(makeQuestPrompt(input), makeQuestStop()))  
 }
 
 // ****************** RUNTIME API **********************
@@ -1036,34 +1016,13 @@ export const makeCommentStop = () => [`"`, '\n'];
 export const parseCommentResponse = (response) => response.replace(/^ /, "");
 
 export async function generateObjectComment({ name, description }, generateFn) {
-  const prompt = makeCommentPrompt({ name, description, type: 'Object' });
-
-  
-  const resp = await generateFn(prompt, makeCommentStop());
-
-  return {
-    name,
-    description,
-    value: resp.trim(),
-    prompt
-  };
+  const input = { name, description, type: 'Object' };
+  return parseCommentResponse(await generateFn(makeCommentPrompt(input), makeCommentStop()));
 }
 
-export async function generateLocationComment(
-  { name, description },
-  generateFn
-) {
-
-  const prompt = makeCommentPrompt({ name, description, type: 'Location' });
-
-  const resp = await generateFn(prompt, makeCommentStop());
-  return {
-    name,
-    description,
-    // trim the beginning white space from the response
-    comment: resp.replaceAll('"', '').trim().trimStart(),
-    prompt
-  };
+export async function generateLocationComment({ name, description }, generateFn) {
+  const input = { name, description, type: 'Location' };
+  return parseCommentResponse(await generateFn(makeCommentPrompt(input), makeCommentStop()));
 }
 
 // SELECT TARGET
@@ -1083,18 +1042,9 @@ export const parseSelectTargetResponse = (response) => {
   return match ? match[1] : "";
 };
 
-export async function generateSelectTargetComment(
-  { name, description },
-  generateFn
-) {
-  const prompt = makeSelectTargetPrompt({
-    name,
-    description,
-  });
-  const stop = makeSelectTargetStop();
-  let response = await generateFn(prompt, stop);
-  response = parseSelectTargetResponse(response);
-  return response;
+export async function generateSelectTargetComment({ name, description }, generateFn) {
+  const input = { name, description };
+  return parseSelectTargetResponse(await generateFn(makeSelectTargetPrompt(input), makeSelectTargetStop()));
 }
 
 // SELECT CHARACTER
@@ -1120,28 +1070,15 @@ export const parseSelectCharacterResponse = (response) => {
 };
 
 export async function generateSelectCharacter({ name, description }, generateFn) {
-  const prompt = makeSelectCharacterPrompt({
-    name,
-    description,
-  });
-  const stop = makeSelectCharacterStop();
-  let response = await generateFn(prompt, stop);
-  const response2 = parseSelectCharacterResponse(response);
-  if (response2) response2.prompt = prompt
-  return response2;
+  const input = { name, description };
+  return parseSelectCharacterResponse(await generateFn(makeSelectCharacterPrompt(input), makeSelectCharacterStop()));
 }
 
 // BATTLE INTRODUCTION
 
 export async function generateBattleIntroduction({ name }, generateFn) {
-  const prompt = makeBattleIntroductionPrompt({
-    name
-  });
-  const stop = makeBattleIntroductionStop();
-  let response = await generateFn(prompt, stop);
-  const response2 = parseBattleIntroductionResponse(response);
-  if (response2) response2.prompt = prompt;
-  return response2 || { value: null, emote: null, done: null, prompt };
+  const input = { name };
+  return parseBattleIntroductionResponse(await generateFn(makeBattleIntroductionPrompt(input), makeBattleIntroductionStop()));
 }
 
 export const makeBattleIntroductionPrompt = ({ name }) => {
@@ -1155,10 +1092,6 @@ export const makeBattleIntroductionStop = () => `"`;
 
 export const parseBattleIntroductionResponse = (response) => {
   const match = response.match(/\s*([^\n]*)/);
-  // explain how the match in the above regex works
-  // 1. match any number of spaces
-  // 2. match any number of characters that are not a newline
-  // 3. match the end of the string
   return { value: match && match[1] };
 }
 
@@ -1222,15 +1155,8 @@ export const parseChatResponse = (response) => {
 };
 
 export async function generateChatMessage({ messages, nextCharacter }, generateFn) {
-  const prompt = makeChatPrompt({
-    messages,
-    nextCharacter,
-  });
-  const stop = makeChatStop();
-  let response = await generateFn(prompt, stop);
-  const response2 = parseChatResponse(response);
-  if (response2) response2.prompt = prompt;
-  return response2;
+  const input = { messages, nextCharacter };
+  return parseChatResponse(await generateFn(makeChatPrompt(input), makeChatStop()));
 }
 
 // CHARACTER INTRODUCTION
@@ -1261,15 +1187,9 @@ export const parseCharacterIntroResponse = (response) => {
 };
 
 export async function generateCharacterIntro({ name, description }, generateFn) {
-  const prompt = makeCharacterIntroPrompt({
-    name,
-    description,
-  });
-  const stop = makeCharacterIntroStop();
-  let response = await generateFn(prompt, stop);
-  const response2 = parseCharacterIntroResponse(response);
-  if (response2) response2.prompt = prompt;
-  return response2 || { message: '<error>', prompt, onselect: '<error>' };
+  const input = { name, description };
+  return parseCharacterIntroResponse(await generateFn(makeCharacterIntroPrompt(input), makeCharacterIntroStop()))
+    || { message: '<error>', prompt, onselect: '<error>' };
 }
 
 // DIALOGUE OPTIONS
@@ -1323,18 +1243,9 @@ export const parseOptionsResponse = (response) => {
   };
 };
 
-export async function generateDialogueOptions(
-  { messages, nextCharacter },
-  generateFn
-) {
-  const prompt = makeOptionsPrompt({
-    messages,
-    nextCharacter,
-  });
-  const stop = makeOptionsStop();
-  let response = await generateFn(prompt, stop);
-  const response2 = parseOptionsResponse(response);
-  return response2;
+export async function generateDialogueOptions({ messages, nextCharacter }, generateFn) {
+  const input = { messages, nextCharacter };
+  return parseOptionsResponse(await generateFn(makeOptionsPrompt(input), makeOptionsStop()));
 }
 
 // ****************** UTILITY FUNCTIONS ******************

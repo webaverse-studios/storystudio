@@ -446,7 +446,7 @@ export const dialogueTypes = [
   "rpgDialogue",
   "reactions",
   "cutscenes",
-  "actions",
+  "quests",
 ];
 
 export const entityTypes = ["location", "character", "npc", "mob", "object"];
@@ -605,19 +605,22 @@ export const defaultDialogue = {
       },
     },
   ],
-  actions: [
+  quests: [
     {
       input: {
         location: "New Location",
         characters: ["New Character"],
         npcs: ["New NPC"],
         objects: ["New Object"],
-        messages: [
+        task:
           {
-            speaker: "New NPC",
-            action: "You should pick up the object",
+            npc: "New NPC",
+            task: "Survive the night",
+            metadata: {
+                  reward: "1000",
+                  location: "New Location"
+            }
           },
-        ],
       },
       output: {
         speaker: "New Character",

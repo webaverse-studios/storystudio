@@ -390,15 +390,13 @@ const run = async () => {
 
   async function generateRPGDialogTest() {
     const messages = [];
-    let prompt;
-    const input = { location: testData.locations[0], characters: testData.party, objects: testData.objects, messages };
-
+    const input = { character: testData.party[0], location: testData.locations[0], characters: testData.party, objects: testData.objects, messages };
+    const prompt = makeRPGDialogPrompt(input);
     // iterate 3 times or until done
     for (let i = 0; i < 3; i++) {
       input.messages = messages;
       const response = await generateRPGDialogue(input, makeGenerateFn());
       // push each message in response.messages to newMessages
-      prompt = response.prompt;
       const message = response.messages[0];
       messages.push(message);
     }
@@ -406,13 +404,6 @@ const run = async () => {
     const output = messages.map(m => { return m.character.name + ": " + m.message }).join('\n');
 
     writeData(input, prompt, output, 'rpg_dialogue', makeRPGDialogueStop());
-  }
-
-  async function generateRPGDialogTest() {
-    const output = await generateRPGDialogue();
-
-    console.log('*********** generateRPGDialogue:')
-    console.log(output);
   }
 
   if (test.toLowerCase().includes('all') || test.toLowerCase().includes('rpg')) {
