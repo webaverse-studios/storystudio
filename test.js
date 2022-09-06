@@ -411,18 +411,18 @@ const run = async () => {
       // for each message in newMessages, check done -- if done, set done to true and break
       // otherwise push to messages
       for (let i = 0; i < newMessages.length; i++) {
+        messages.push(newMessages[i]);
         if (newMessages[i].end) {
           end = true;
           break;
         }
-        messages.push(newMessages[i]);
       }
     }
     let output = messages.map(m => { return (m.type === 'options' ? 'OPTIONS: ' + m.options : m.name + ": " + m.message) }).join('\n');
     console.log('messages', messages);
 
     // if the last message done is true, append *END* to the output
-    if (messages[messages.length - 1].done) {
+    if (messages.length > 0 && messages[messages.length - 1].end) {
       output += '\n*END*';
     }
 

@@ -762,9 +762,9 @@ export const availableVoices = [
 export const defaultOpenAIParams = {
   model: "davinci",
   top_p: 1,
-  frequency_penalty: 1,
-  presence_penalty: 1,
-  temperature: 1,
+  frequency_penalty: .1,
+  presence_penalty: .1,
+  temperature: .85,
   max_tokens: 256,
   best_of: 1,
 };

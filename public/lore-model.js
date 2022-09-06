@@ -772,13 +772,14 @@ ${
 ${(messages.map((m) => '>> ' + m.type === 'options' ? ('(OPTIONS): ' + m.options.map(o => `[${o}]`).join(' ')) : m.name + ': ' + m.message).join("\n")) + (messages.length > 0 ? '\n' : '') + '>>'}`
 }
 
-export const makeRPGDialogueStop = () => ['\n\n', '"""', '# Transcript'];
+export const makeRPGDialogueStop = () => ['END*'];
 
 export const parseRPGDialogueResponse = (resp) => {
   // first, split by line, and remove ">> ", then remove any > or <
   // filter out any line after the first that doesn't start with a >>
+  console.log('resp is', resp)
   resp = resp.split('\n');
-  const lines = ['>> ' + resp.shift(), ...resp];
+  const lines = [...resp];
   // for each line, process as a message and add to the returned messages
   const messages = [];
   for (let i = 0; i < lines.length; i++) {
@@ -797,22 +798,23 @@ export const parseRPGDialogueResponse = (resp) => {
       continue;
     }
 
-    split[0] = split[0].replace('>> ', '').trim()
+    split[0] = split[0].replaceAll('>', '').trim()
 
     const name = split[0].trim();
     const message = split[1].trim();
-    const end = line.includes("*END*");
+    // set end to true if any of the last 5 characters in line is a *
+    const end = line.includes('*');
     if(name.includes('OPTIONS')) {
-      type = 'options';
+      const type = 'options';
       // split the message into an array of options, which are plaintext between []
       // example: [that doesn't bother you?] [It's the bite I'm worried about]
-      const options = message.split('[').map((o) => o.replace(']', '').trim()).filter((o) => o.length > 0);
+      const options = message.split('[').map((o) => o.split(']')[0].trim()).filter((o) => o.length > 0);
       console.log('options are', options);
       messages.push ({ type, options, end });
-      if(end) break;
+      break;
     } else {
-      let type = 'message';
-      messages.push ({ type, name, message, end });
+      const type = 'message';
+      messages.push ({ type, name, message: message.split('*')[0].trim(), end });
       if(end) break;
     }
   }
