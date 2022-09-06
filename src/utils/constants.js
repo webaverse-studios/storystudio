@@ -11,9 +11,9 @@ export const views = {
 };
 
 export const briefViews = {
-      setup: "Setup",
-      dialogue: "Dialogue"
-    };
+  setup: "Setup",
+  dialogue: "Dialogue",
+};
 
 export const exampleLoreFiles = [
   `\
@@ -612,15 +612,14 @@ export const defaultDialogue = {
         characters: ["New Character"],
         npcs: ["New NPC"],
         objects: ["New Object"],
-        task:
-          {
-            npc: "New NPC",
-            task: "Survive the night",
-            metadata: {
-                  reward: "1000",
-                  location: "New Location"
-            }
+        task: {
+          npc: "New NPC",
+          task: "Survive the night",
+          metadata: {
+            reward: "1000",
+            location: "New Location",
           },
+        },
       },
       output: {
         speaker: "New Character",
@@ -634,7 +633,6 @@ export const defaultDialogue = {
         location: "New Location",
         characters: ["New Character"],
         npcs: ["New NPC"],
-        objects: ["New Object"],
         messages: [
           {
             speaker: "New NPC",
@@ -643,10 +641,7 @@ export const defaultDialogue = {
         ],
       },
       output: {
-        transcript: {
-          speaker: "New Character",
-          reaction: "surprise",
-        },
+        reaction: "New reaction",
       },
     },
   ],

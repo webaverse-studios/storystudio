@@ -278,11 +278,7 @@ const Dialogue = ({ index, _key, type }) => {
         addDialogueEntryWithData(_key, messages[i].name, messages[i].message);
       }
       return;
-    } else if (
-      type === "rpgDialogue" ||
-      type === "reactions" ||
-      type === "actions"
-    ) {
+    } else if (type === "rpgDialogue") {
       const messages = [];
       const data = inputs;
       const location = getSetting(data.location);
@@ -313,7 +309,10 @@ const Dialogue = ({ index, _key, type }) => {
       };
 
       for (let i = 0; i < 6; i++) {
-        res = await baseData.module.generateRPGDialogue(input, makeGenerateFn());
+        res = await baseData.module.generateRPGDialogue(
+          input,
+          makeGenerateFn()
+        );
         const message = res.parsed;
         messages.push(message);
       }
@@ -326,6 +325,18 @@ const Dialogue = ({ index, _key, type }) => {
         addDialogueEntryWithData(_key, messages[i].name, messages[i].message);
       }
       return;
+    } else if (type === "reactions") {
+      selector = "output.reaction";
+      const data = inputs;
+      const message = data.messages[0];
+      res = await baseData.module.generateReaction(
+        message.speaker,
+        makeGenerateFn()
+      );
+
+      handleChange(res.prompt, "output.prompt");
+      handleChange(JSON.stringify(res.unparsed), "output.response");
+      res = res.parsed;
     } else if (type === "cutscenes") {
       const messages = [];
       const data = inputs;
@@ -584,7 +595,8 @@ const Dialogue = ({ index, _key, type }) => {
       label === "action" ||
       label === "comment" ||
       label === "reward" ||
-      label === "task"
+      label === "task" ||
+      label === "reaction"
     ) {
       output = (
         <div>

@@ -560,7 +560,7 @@ const run = async () => {
       messages,
       dstCharacter: testData.npcs[0],
     };
-    let res = null
+    let res = null;
     // iterate 3 times or until done
     for (let i = 0; i < 6; i++) {
       res = await generateRPGDialogue(input, makeGenerateFn());
@@ -602,7 +602,7 @@ const run = async () => {
 
     delete output.prompt;
 
-    writeData(testData.messages[0], prompt, output.reaction, "reaction");
+    writeData(testData.messages[0], prompt, output.parsed, "reaction");
   }
 
   if (

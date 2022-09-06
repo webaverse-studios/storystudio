@@ -327,9 +327,11 @@ export const parseReactionResponse = (resp) => {
 };
 
 export async function generateReaction(name, generateFn) {
-  return parseReactionResponse(
-    await generateFn(makeReactionPrompt(), makeReactionStop(name))
-  );
+  const prompt = makeReactionPrompt();
+  const stop = makeReactionStop(name);
+  const resp = await generateFn(prompt, stop);
+  const parsed = parseReactionResponse(resp);
+  return { parsed, unparsed: resp, prompt };
 }
 
 // BANTER
