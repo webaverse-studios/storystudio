@@ -513,7 +513,7 @@ export function ApplicationContextProvider(props) {
     let d = null;
     try {
       console.log(baseData);
-      d = await generate(type, data, baseData, openErrorModal, lore);
+      d = await generate(type, entities, baseData, openErrorModal);
     } catch (e) {
       // openErrorModal("Error generating entity", e);
       console.log("error", e);
@@ -523,6 +523,8 @@ export function ApplicationContextProvider(props) {
       }
       return;
     }
+    console.log("generated dialogue", d);
+    return;
     if (!d) {
       // openErrorModal("could not generate entity");
       setGenerating(false);
@@ -550,6 +552,7 @@ export function ApplicationContextProvider(props) {
   };
 
   const editDialogueCallback = (d, selector, key, index) => {
+    console.log(selector);
     // selector is a '.' separated string of the path to the value inside dialogue
     // e.g. 'input.text' would be the text of the input of the dialogue
     let newData = { ...dialogue };

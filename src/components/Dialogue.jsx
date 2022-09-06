@@ -8,7 +8,7 @@ import { delimiters } from "../utils/constants";
 import { makeGenerateFn } from "../utils/generation";
 
 //field check if image, set source the img, if name change, generate new image
-const Dialogue = ({ index, _key, type, editJson }) => {
+const Dialogue = ({ index, _key, type }) => {
   const {
     editDialogueCallback,
     deleteDialogueCallback,
@@ -21,13 +21,14 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     getObject,
     getCharacter,
     getNPC,
-    getLocation,
+    getSetting,
     getMob,
     baseData,
     getTypeOfObject,
     addDialogueEntryWithData,
   } = useContext(ApplicationContext);
 
+  const [editJson, setEditJson] = useState(true);
   const [lastSelector, setLastSelector] = useState(null);
   const [lastCursor, setLastCursor] = useState(null);
   const [tagsCharacters, setTagsCharacters] = useState([]);
@@ -156,52 +157,67 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     handleChange(npcs, "input.npcs");
   };
 
-  const generate = async (selector, type, needsData, data) => {
-    console.log("generate:", selector, type);
+  const generateOutputs = async (type) => {
+    let selector = "";
+    const module = await import("../../public/lore-model");
+    const inputs = dialogue[currentDialogueType][_key].input;
     let res = "";
 
     if (type === "objectComment") {
+      selector = "output.comment";
+      const data = inputs.target;
       const obj = getObject(data);
       const description = obj ? obj.description : "";
 
-      res = await baseData.module.generateObjectComment(
+      res = await module.generateObjectComment(
         { name: data, description },
         makeGenerateFn()
       );
-      res = res.value;
+      handleChange(res.prompt, "output.prompt");
+      handleChange(res.comment, "output.response");
+      res = res.comment;
     } else if (type === "npcComment") {
+      selector = "output.comment";
+      const data = inputs.target;
       const obj = getNPC(data);
       const description = obj ? obj.description : "";
+      console.log(data);
 
-      res = await baseData.module.generateObjectComment(
+      res = await module.generateNPCComment(
         { name: data, description },
         makeGenerateFn()
       );
-      res = res.value;
+      handleChange(res.prompt, "output.prompt");
+      handleChange(res.comment, "output.response");
+      res = res.comment;
     } else if (type === "mobComment") {
+      selector = "output.comment";
+      const data = inputs.target;
       const obj = getMob(data);
       const description = obj ? obj.description : "";
 
-      res = await baseData.module.generateObjectComment(
+      res = await module.generateMobComment(
         { name: data, description },
         makeGenerateFn()
       );
-      res = res.value;
+      handleChange(res.prompt, "output.prompt");
+      handleChange(res.comment, "output.response");
+      res = res.comment;
     } else if (type === "loadingComment") {
-      const obj = getLocation(data);
+      selector = "output.comment";
+      const data = inputs.target;
+      const obj = getSetting(data);
       const description = obj ? obj.description : "";
 
-      res = await baseData.module.generateLocationComment(
+      res = await module.generateLocationComment(
         {
           name: data,
           description,
-          dstCharacter:
-            entities["character"]?.length > 0
-              ? entities["character"][0].name
-              : "user",
         },
         makeGenerateFn()
       );
+      handleChange(res.prompt, "output.prompt");
+      handleChange(res.comment, "output.response");
       res = res.comment;
     } else if (type === "exposition") {
       const location =
@@ -250,7 +266,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
         objects: dialogue[currentDialogueType][_key].input.objects,
       };
 
-      _input.location = getLocation(_input.location);
+      _input.location = getSetting(_input.location);
       for (let i = 0; i < _input.chars.length; i++) {
         _input.chars[i] = getCharacter(_input.chars[i]);
       }
@@ -281,10 +297,7 @@ const Dialogue = ({ index, _key, type, editJson }) => {
       return;
     }
 
-    handleChange(
-      needsData ? { speaker: data["speaker"], message: res } : res,
-      selector
-    );
+    handleChange(res, selector);
   };
   function handleChange(data, selector) {
     //console.log("data, selector", data, selector);
@@ -297,8 +310,18 @@ const Dialogue = ({ index, _key, type, editJson }) => {
     label = "",
     selector = "",
   }) {
-    console.log("DATA:", data);
     const { entities } = useContext(ApplicationContext);
+
+    if (label === "prompt" || label === "response") {
+      return (
+        <div>
+          <label>
+            {label === "prompt" ? "Prompt Preview" : "Prompt Output"}
+          </label>
+          <textarea value={data} readOnly></textarea>
+        </div>
+      );
+    }
 
     if (label === "characters" || label === "objects" || label === "npcs") {
       return (
@@ -419,11 +442,6 @@ const Dialogue = ({ index, _key, type, editJson }) => {
                   Delete
                 </button>
               )}
-              {type !== "cutscenes" && (
-                <button onClick={() => generate(selector, type, true, data)}>
-                  Generate
-                </button>
-              )}
             </div>
           );
         } else {
@@ -501,20 +519,6 @@ const Dialogue = ({ index, _key, type, editJson }) => {
             }}
             autoFocus={lastSelector === selector}
           />
-          {type !== "cutscenes" && (
-            <button
-              onClick={() => {
-                generate(
-                  selector,
-                  type,
-                  false,
-                  dialogue[currentDialogueType][_key].input.target
-                );
-              }}
-            >
-              Generate
-            </button>
-          )}
         </div>
       );
     } else if (label === "speaker") {
@@ -583,6 +587,31 @@ const Dialogue = ({ index, _key, type, editJson }) => {
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
+  const saveAsMD = () => {
+    console.log(dialogue[currentDialogueType][_key]);
+    let md = "#Inputs\n\n";
+    const inputs = Object.keys(dialogue[currentDialogueType][_key].input);
+    for (const inp of inputs) {
+      md += `##${inp}\n`;
+      md += `* ${dialogue[currentDialogueType][_key].input[inp]}\n\n`;
+    }
+    md += "#Outputs\n\n";
+    const outputs = Object.keys(dialogue[currentDialogueType][_key].output);
+    for (const out of outputs) {
+      md += `##${out}\n`;
+      md += `${dialogue[currentDialogueType][_key].output[out]}\n\n`;
+    }
+
+    const element = document.createElement("a");
+    const file = new Blob([md], { type: "application/text" });
+    element.href = URL.createObjectURL(file);
+    element.download =
+      currentDialogueType + "_" + _key + "_" + Date.now() + ".md";
+    document.body.appendChild(element);
+    element.click();
+    element.remove();
+  };
+
   return (
     <div className={"entity"}>
       {!shouldDelete && (
@@ -612,21 +641,31 @@ const Dialogue = ({ index, _key, type, editJson }) => {
       {typeof dialogue[currentDialogueType][_key] === "object" && (
         <React.Fragment>
           {!editJson ? (
-            <MonacoEditor
-              width="100%"
-              height="90vh"
-              language="json"
-              theme="light"
-              onMount={(editor) => {
-                setTimeout(function () {
-                  editor.getAction("editor.action.formatDocument").run();
-                }, 100);
-              }}
-              value={JSON.stringify(dialogue[currentDialogueType][_key])}
-              onChange={(value) => {
-                editDialogueJson(JSON.parse(value), _key);
-              }}
-            />
+            <div>
+              <MonacoEditor
+                width="100%"
+                height="90vh"
+                language="json"
+                theme="light"
+                onMount={(editor) => {
+                  setTimeout(function () {
+                    editor.getAction("editor.action.formatDocument").run();
+                  }, 100);
+                }}
+                value={JSON.stringify(dialogue[currentDialogueType][_key])}
+                onChange={(value) => {
+                  editDialogueJson(JSON.parse(value), _key);
+                }}
+              />
+
+              <button
+                onClick={() => {
+                  setEditJson(!editJson);
+                }}
+              >
+                {editJson ? "JSON" : "Text"}
+              </button>
+            </div>
           ) : (
             <div>
               {DisplayJSONAsEditableForm({
@@ -634,6 +673,9 @@ const Dialogue = ({ index, _key, type, editJson }) => {
                 allData: dialogue,
                 type,
               })}
+
+              <br />
+              <br />
               {(type === "rpgDialogue" ||
                 type === "banter" ||
                 type === "cutscenes") && (
@@ -645,15 +687,21 @@ const Dialogue = ({ index, _key, type, editJson }) => {
                   Add Message
                 </button>
               )}
-              {type === "cutscenes" && (
-                <button
-                  onClick={() => {
-                    generate("", type, false, null);
-                  }}
-                >
-                  Generate
-                </button>
-              )}
+              <button
+                onClick={() => {
+                  generateOutputs(type);
+                }}
+              >
+                Generate
+              </button>
+              <button onClick={saveAsMD}>Save MD</button>
+              <button
+                onClick={() => {
+                  setEditJson(!editJson);
+                }}
+              >
+                {editJson ? "JSON" : "Text"}
+              </button>
             </div>
           )}
         </React.Fragment>
