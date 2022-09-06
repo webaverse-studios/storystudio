@@ -348,11 +348,12 @@ const run = async () => {
     for (let i = 0; i < 3; i++) {
       input.messages = messages;
       const response = await generateCutscene(input, makeGenerateFn());
-      const message = response.messages[0];
+      console.log('response: ', response);
+      const message = response[0];
       messages.push(message);
     }
 
-    const output = messages.map(m => { return m.character.name + ": " + m.message }).join('\n');
+    const output = messages.map(m => { return m.name + ": " + m.message + ' (done='+m.done+')' }).join('\n');
 
     writeData(input, prompt, output, 'cutscene', makeCutsceneStop());
   }

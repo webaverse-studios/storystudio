@@ -450,68 +450,57 @@ export async function generateReaction(name, generateFn) {
 export const makeBanterPrompt = ({ location = null, characters = [], objects = [], messages = [] }) => {
   return `\
 # Objects
+"Sword of Gothika" A rare and legendary sword.
 
-Name: Sword of Gothika
-Description: A rare and legendary sword.
-
-(TASK) Using the Sword of Gothika as context, write a transcript of light banter between the Jade64, Eris22 and Maxx, who are players in an MMORPG.
+(TASK) Using the Sword of Gothika as context, write some light banter between the Jade64, Eris22 and Maxx, who are players in an MMORPG. Add (done) when a character no longer wants to engage in banter.
 
 # Transcript
-
 >> Jade64: Anyone wanna buy a legendary SoG?
 >> Eris22: SoG? What's that?
 >> Maxx: Sword of Gothika, very dank.
 >> Eris22: Ohhhhh sick, how much?
 >> Jade64: 6 shards or 50k SILK
->> Eris: Errr yeah, I have like 4k SILK.
+>> Eris: Errr yeah, I have like 4k SILK. (done)
 """
 # Objects
-
-Name: Computer
-Description: A very old computer. A real piece of crap, but I guess it works..
+"Computer" A very old computer. A real piece of crap, but I guess it works..
 
 # Characters
-
 "Eric" A very boring guy. Bored the pants off a thousand people at once, once.
 "Millie" A very interesting person. She is a bit of a mystery.
 
-(TASK) Using Computer as context, write a transcript of light banter between the Eric and Millie, who are players in an MMORPG.
+(TASK) Using Computer as context, write a transcript of light banter between the Eric and Millie, who are players in an MMORPG. Add (done) at the end of the sentence when a character no longer wants to engage in banter.
 
 # Transcript 
-
 >> Millie: Hey Eric, can I ask you something?
 >> Eric: Sure, what is it?
 >> Millie: Do you ever wonder why we are here?
 >> Eric: Is that a way to tee up a convo about the drop tomorrow?
 >> Millie: It might not be!
->> Eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
+>> Eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone. (done)
 """
+${location && `# Location\n"${location.name}" ${location.description}`}
 
-${location && `# Location\n\n${location.name}\n${location.description}`}
+${objects.length > 0 && "# Objects\n\n"}\
+${objects
+      .slice(0, 2)
+      .map((c) => `"${c.name}" ${c.description}`)
+      .join("\n\n") + (objects.length > 0 && "\n")
+    }\
 
-${characters.length > 0 && "# Characters\n\n"}\
-${
-  characters
-    .map((c) => `Character: ${c.name}\nDescription: ${c.description}`)
-    .join("\n\n") + (characters.length > 0 && "\n\n")
-}\
-${objects.length > 0 && "# Nearby Objects\n\n"}\
-${
-  objects
-    .slice(0, 2)
-    .map((c) => `Object: ${c.name}\nDescription: ${c.description}`)
-    .join("\n\n") + (objects.length > 0 && "\n")
-}\
-
-(TASK) Using ${objects && objects.length > 0 && objects.map(o => o.name + ', ')} ${location && 'and ' +location.name} as context, write a transcript of light banter between the characters.
+${characters.length > 0 && "# Characters\n"}\
+${characters.map((c) => `"${c.name}" ${c.description}`)
+      .join("\n") + (characters.length > 0 && "\n")
+    }\
+(TASK) Using ${objects && objects.length > 0 && objects.map(o => o.name).join(', ')} ${location && 'and ' + location.name} as context, write a transcript of light banter between the characters.
 
 # Transcript
-${messages ? (messages.map((m) => '>> ' + m.name + ': ' + m.message).join("\n")) + '\n>>' : '>>'}`}
+${messages ? (messages.map((m) => '>> ' + m.name + ': ' + m.message).join("\n")) + '\n>>' : '>>'}`
+}
 
 export const makeBanterStop = () => ["\n\n", "done=true", "done = true"];
 
 export const parseBanterResponse = (resp) => {
-  // TODO: parse the character speaking
   const messages = [];
 
   resp = resp
@@ -524,23 +513,28 @@ export const parseBanterResponse = (resp) => {
     .split("\n");
 
   const responseArray = [...resp];
-  while(responseArray.length > 0){
+  while (responseArray.length > 0) {
     try {
-    const fullMessage = responseArray.shift().replaceAll('>> ', '').replaceAll('>', '').trim();
-    // if fullMessage contains a '<' or https, continue
-    if (fullMessage.includes('<') || fullMessage.includes('https')) {
-      continue;
-    }
-    const splitMessage = fullMessage.split(':');
-    if(splitMessage.length !== 2) {
-      console.log('invalid message format');
-      continue;
-    }
+      const fullMessage = responseArray.shift().replaceAll('>> ', '').replaceAll('>', '').trim();
+      // if fullMessage contains a '<' or https, continue
+      if (fullMessage.includes('<') || fullMessage.includes('https')) {
+        continue;
+      }
+      const splitMessage = fullMessage.split(':');
+      if (splitMessage.length !== 2) {
+        console.log('invalid message format');
+        continue;
+      }
 
-    // split name by spaces and get the last one
-    const name = splitMessage[0].trim().trimStart().split(' ').pop();
-    const message = splitMessage[1].trim().trimStart();
-    if(name && messages) messages.push({ name, message});
+      // split name by spaces and get the last one
+      const name = splitMessage[0].trim().trimStart().split(' ').pop();
+      const message = splitMessage[1].trim().trimStart();
+      if (name && messages) messages.push({ name, message, done: message.includes('(done)') });
+
+      // check for (done)
+      if (message.includes('(done)')) {
+        break;
+      }
     } catch (error) {
       console.warn('Could not format message', error);
     }
@@ -549,7 +543,7 @@ export const parseBanterResponse = (resp) => {
   return messages
 }
 
-export async function generateBanter({ location = null, characters = [], objects = [], messages = []}, generateFn) {
+export async function generateBanter({ location = null, characters = [], objects = [], messages = [] }, generateFn) {
   const input = { location, characters, objects, messages };
   return parseBanterResponse(await generateFn(makeBanterPrompt(input), makeBanterStop()));
 }
@@ -602,99 +596,56 @@ export async function generateExposition(
 // CUTSCENES
 
 export const makeCutscenePrompt = ({ location = null, characters = [], objects = [], messages = [] }) => {
-  let lastCharacter = null;
-
-  // set lastCharacter to the last character in the transcript
-  if (messages && messages.length > 0) {
-    lastCharacter = messages[messages.length - 1].character;
-  } else {
-    lastCharacter = dstCharacter;
-  }
-
   return `\
-# Available Actions
-attack
-defend
-move to
-follow
-pick up
-drop
-emote
-stop
-none
+# Objects
+"Sword of Gothika" A rare and legendary sword.
 
-# Characters
-
-Name: Axel
-Description: The main hero of the story. Well, someone has to be the hero.
-
-Name: Miranda
-Description: A very trusting person.
-
-Name: Zaphod
-Description: A very untrustworthy character.
+(TASK) Using the Sword of Gothika as context, write a video game cutscene conversation between the Jade64, Eris22 and Maxx, who are players in an MMORPG. Add (done) at the end of the sentence when a character no longer wants to engage in banter.
 
 # Transcript
-
-axel: We arere looking for Lara. You know where we can find her?
-miranda: I can find anything, you just keep feeding me tokens and coffee.
-zaphod: Anything you need, you just let me know.
-miranda: Thanks. How do you guys know each other again? 
-zaphod: Best friends. From waaay back in the day.
-
+>> Jade64: Alright Maxx. I've come for the sword.
+>> Maxx: You really think you have what it takes to wield the legendary Sword of Gothika?
+>> Jade64: No. But my friend Eris does!
+>> Eris22: That's right Maxx. I'm here to claim the sword and power level my little bro.
+>> Maxx: How cute. now prepare to die! (done)
 """
-# Characters
-
-Name: eric
-Description: A very boring guy. Bored the pants off a thousand people at once, once.
-
-Name: millie
-Description: A very interesting person. She is a bit of a mystery.
-
 # Objects
+"Computer" A very old computer. A real piece of crap, but I guess it works..
 
-Name: Computer
-Description: A very old computer. A real piece of crap, but I guess it works..
+# Characters
+"Eric" A very boring guy. Bored the pants off a thousand people at once, once.
+"Millie" A very interesting person. She is a bit of a mystery.
+
+(TASK) Using Computer as context, write a short cutscene between the Eric and Millie, who are players in an MMORPG. Add (done) at the end of the sentence when the cutscene is over.
 
 # Transcript 
-
-millie: Hey Eric, can I ask you something?
-\/action millie moves to eric
-eric: Sure, what is it?
-millie: Do you ever wonder why we are here?
-eric: Is that a way to tee up a convo about the drop tomorrow?
-\/action millie emotes joy
-millie: It might not be!
-eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone.
-\/action eric moves to computer
-
+>> Millie: Hey Eric, can I ask you something?
+>> Eric: Sure, what is it?
+>> Millie: Do you ever wonder why we are here?
+>> Eric: Is that a way to tee up a convo about the drop tomorrow?
+>> Millie: It might not be!
+>> Eric: Millie, I am tending to serious business. The org needs me to break through this firewall by tonight. Leave me alone. (done)
 """
 
-${location && `# Location\n\n${location.name}\n${location.description}`}
+${location && `# Location\n"${location.name}" ${location.description}`}
 
-${characters.length > 0 && "# Characters\n\n"}\
-${
-  characters
-    .map((c) => `Character: ${c.name}\nDescription: ${c.description}`)
-    .join("\n\n") + (characters.length > 0 && "\n\n")
-}\
-${objects.length > 0 && "# Nearby Objects\n\n"}\
-${
-  objects
-    .slice(0, 2)
-    .map((c) => `Object: ${c.name}\nDescription: ${c.description}`)
-    .join("\n\n") + (objects.length > 0 && "\n")
-}\
+${objects.length > 0 && "# Nearby Objects\n"}\
+${objects
+      .slice(0, 2)
+      .map((c) => `"${c.name}" ${c.description}`)
+      .join("\n\n") + (objects.length > 0 && "\n")
+    }\
+${characters.length > 0 && "# Characters\n"}\
+${characters
+      .map((c) => `"${c.name}" ${c.description}`)
+      .join("\n\n") + (characters.length > 0 && "\n\n")
+    }
+
+(TASK) Using ${objects && objects.length > 0 && objects.map(o => o.name).join(', ')} ${location && 'and ' + location.name} as context, write a video game RPG cutscene between the characters.
 
 # Transcript
-
-${
-  messages
-    ? messages.map((m) => m.character.name + ": " + m.message).join("\n")
-    : ""
-}\
-${(!messages || messages.length === 0) && dstCharacter.name + ":"}`;
-};
+${messages ? (messages.map((m) => '>> ' + m.name + ': ' + m.message).join("\n")) + '\n>>' : '>>'}`
+}
 
 export const makeCutsceneStop = () => ["\n\n", "done=true", "done = true"];
 
@@ -710,18 +661,35 @@ export const parseCutsceneResponse = (resp) => {
     .replaceAll("\t", "") // remove tabs
     .split("\n");
 
-  messages.push({
-    character: "TODO",
-    message: resp
-      .shift()
-      .replaceAll("TODO-CHARACTERNAME" + ":", "")
-      .trim()
-      .trimStart(),
-  });
+  const responseArray = [...resp];
+  while (responseArray.length > 0) {
+    try {
+      const fullMessage = responseArray.shift().replaceAll('>> ', '').replaceAll('>', '').trim();
+      // if fullMessage contains a '<' or https, continue
+      if (fullMessage.includes('<') || fullMessage.includes('https')) {
+        continue;
+      }
+      const splitMessage = fullMessage.split(':');
+      if (splitMessage.length !== 2) {
+        console.log('invalid message format');
+        continue;
+      }
 
-  return {
-    messages,
-  };
+      // split name by spaces and get the last one
+      const name = splitMessage[0].trim().trimStart().split(' ').pop();
+      const message = splitMessage[1].trim().trimStart();
+      if (name && messages) messages.push({ name, message, done: message.includes('(done)') });
+
+      // check for (done)
+      if (message.includes('(done)')) {
+        break;
+      }
+    } catch (error) {
+      console.warn('Could not format message', error);
+    }
+  }
+
+  return messages
 };
 
 export async function generateCutscene(
@@ -854,13 +822,13 @@ ${locations}
 
 ## Characters
 ${characters
-  .map((c, i) => {
-    return `Id: ${thingHash(c, i)}
+    .map((c, i) => {
+      return `Id: ${thingHash(c, i)}
     Name: ${c.name}
     Description: ${c.description || c.description}
 `;
-  })
-  .join("\n\n")}
+    })
+    .join("\n\n")}
 
 # Objects
 ${objects.map((o, i) => thingHash(o, i)).join("\n")}
@@ -876,20 +844,19 @@ ${shuffleArray(lore.inputParsing.examples).join(`\n`)}
 
 ${messages.length > 0 ? "Input:\n" : ""}
 ${messages
-  .map((m) => {
-    const characterIndex = characters.indexOf(m.character);
-    // const suffix = `[emote=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
-    // return `+${thingHash(m.character, characterIndex)}: ${m.message} ${suffix}`;
-    const suffix = `react=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
-    console.log("m.character", m);
-    return `+${thingHash(m.character, characterIndex)}: ${m.message}`;
-  })
-  .join("\n")}
-+${
-  dstCharacter
+    .map((m) => {
+      const characterIndex = characters.indexOf(m.character);
+      // const suffix = `[emote=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
+      // return `+${thingHash(m.character, characterIndex)}: ${m.message} ${suffix}`;
+      const suffix = `react=${m.emote},action=${m.action},object=${m.object},target=${m.target}]`;
+      console.log("m.character", m);
+      return `+${thingHash(m.character, characterIndex)}: ${m.message}`;
+    })
+    .join("\n")}
++${dstCharacter
     ? `${thingHash(dstCharacter, characters.indexOf(dstCharacter))}:`
     : ""
-}
+  }
 Output:`;
 
 export const parseLoreResponse = (response) => {
@@ -1067,9 +1034,8 @@ export const makeSelectTargetPrompt = ({ name, description }) => {
   return `\
 ${lore.object.prompt}
 ${shuffleArray(lore.object.examples).join(`\n`)}
-prompt: ${_cleanName(name)}${
-    description ? ` ${description}` : ""
-  }\nresponse: "`;
+prompt: ${_cleanName(name)}${description ? ` ${description}` : ""
+    }\nresponse: "`;
 };
 
 export const makeSelectTargetStop = () => `"`;
@@ -1164,12 +1130,11 @@ export const makeChatPrompt = ({
   ${shuffleArray(lore.actions.examples).join(`\n`)}
 
 ${messages
-  .map((message) => {
-    return `${message.name}: "${message.text} (react = ${
-      message.emote ? message.emote : "normal"
-    })"`;
-  })
-  .join("\n")}
+      .map((message) => {
+        return `${message.name}: "${message.text} (react = ${message.emote ? message.emote : "normal"
+          })"`;
+      })
+      .join("\n")}
 ${nextCharacter.name}: "`;
 };
 
@@ -1275,12 +1240,11 @@ ${lore.actions.prompt}
 ${lore.actions.examples.join("\n")}
 
 ${messages
-  .map((message) => {
-    return `${message.name}: "${message.text} (react = ${
-      message.emote ? message.emote : "normal"
-    })"`;
-  })
-  .join("\n")}
+      .map((message) => {
+        return `${message.name}: "${message.text} (react = ${message.emote ? message.emote : "normal"
+          })"`;
+      })
+      .join("\n")}
 Options for ${nextCharacter.name}: [`;
 };
 
