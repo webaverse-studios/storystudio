@@ -460,6 +460,8 @@ export const defaultDialogue = {
       output: {
         comment:
           "That's a pretty cool sword. It looks exactly one I lost a long time ago.",
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -471,6 +473,8 @@ export const defaultDialogue = {
       output: {
         comment:
           "She scares the crap out of me. But she's usually pretty nice.",
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -481,6 +485,8 @@ export const defaultDialogue = {
       },
       output: {
         comment: "I could probably take on four or five goblins at once.",
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -491,6 +497,8 @@ export const defaultDialogue = {
       },
       output: {
         comment: "The Safehouse is a good place to lay low for a while.",
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -525,6 +533,8 @@ export const defaultDialogue = {
             message: "No, you should stay with Leeloo.",
           },
         ],
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -536,6 +546,8 @@ export const defaultDialogue = {
       output: {
         comment:
           "The Silver Sword is a legendary sword that was forged by the dwarves of the mountain range. It is said that the sword was forged from the tears of the gods themselves.",
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -562,6 +574,8 @@ export const defaultDialogue = {
             message: "You got it. One pizza, coming right up.",
           },
         ],
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -602,6 +616,8 @@ export const defaultDialogue = {
               "Oh, well, that's how it is. Now if you're here to challenge me, I'll gladly help you waste a few more weeks!",
           },
         ],
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
@@ -617,6 +633,8 @@ export const defaultDialogue = {
         action: "picks up New Object",
         reward: "100xp",
       },
+      prompt: "Prompt",
+      response: "Response",
     },
   ],
   reactions: [
@@ -634,6 +652,8 @@ export const defaultDialogue = {
       },
       output: {
         reaction: "New reaction",
+        prompt: "Prompt",
+        response: "Response",
       },
     },
   ],
