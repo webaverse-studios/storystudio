@@ -960,7 +960,12 @@ const Dialogue = ({ index, _key, type }) => {
                 theme="light"
                 onMount={(editor) => {
                   setTimeout(function () {
-                    editor.getAction("editor.action.formatDocument").run();
+                    const formatAcction = editor.getAction(
+                      "editor.action.formatDocument"
+                    );
+                    if (formatAcction) {
+                      formatAcction.run();
+                    }
                   }, 100);
                 }}
                 value={JSON.stringify(dialogue[currentDialogueType][_key])}
