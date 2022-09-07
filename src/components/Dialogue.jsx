@@ -6,6 +6,7 @@ import { WithContext as ReactTags } from "react-tag-input";
 import { useEffect } from "react";
 import { delimiters } from "../utils/constants";
 import { makeGenerationFn } from "../utils/generation";
+import { isIterable } from "../utils/utils";
 
 //field check if image, set source the img, if name change, generate new image
 const Dialogue = ({ index, _key, type }) => {
@@ -170,6 +171,16 @@ const Dialogue = ({ index, _key, type }) => {
     cutscenes: "",
     quests: "",
   });
+
+  useEffect(() => {
+    const temp = dialogue[currentDialogueType][_key].output?.prompt;
+    if (temp && temp?.length > 0 && temp !== "Prompt") {
+      const newData = { ...currentPrompt };
+      newData[type] = temp;
+      setCurrentPrompt(newData);
+    }
+  }, [currentDialogueType]);
+
   const getPrompt = async (type, input) => {
     if (currentPrompt[type]?.length > 0) {
       return currentPrompt[type];
@@ -181,7 +192,7 @@ const Dialogue = ({ index, _key, type }) => {
       const newData = { ...currentPrompt };
       newData[type] = temp;
       setCurrentPrompt(newData);
-      return currentPrompt[type];
+      return temp;
     } else {
       switch (type) {
         case "objectComment":
@@ -221,13 +232,13 @@ const Dialogue = ({ index, _key, type }) => {
     }
 
     if (prompt?.length > 0) {
+      console.log("DDDDD 0");
       const newData = { ...currentPrompt };
       newData[type] = prompt;
       setCurrentPrompt(newData);
     }
 
-    handleChange(currentPrompt[type], "output.prompt");
-    console.log("returning normal:", currentPrompt[type]);
+    handleChange(prompt, "output.prompt");
     return prompt;
   };
 
@@ -841,7 +852,10 @@ const Dialogue = ({ index, _key, type }) => {
     const outputs = Object.keys(dialogue[currentDialogueType][_key].output);
     for (const out of outputs) {
       md += `## ${out}\n`;
-      if (typeof dialogue[currentDialogueType][_key].output[out] === "object") {
+      if (
+        typeof dialogue[currentDialogueType][_key].output[out] === "object" &&
+        isIterable(dialogue[currentDialogueType][_key].output[out])
+      ) {
         for (const obj of dialogue[currentDialogueType][_key].output[out]) {
           md += `* ${obj.speaker}: ${obj.message}\n`;
         }
