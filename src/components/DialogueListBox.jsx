@@ -17,7 +17,7 @@ const DialogueListBox = ({
     dialogue,
     currentDialogueType,
   } = useContext(ApplicationContext);
-  console.log("dialogue", dialogue);
+  console.log("render dialogue", dialogue);
   return (
     <div className={"sectionWrapper " + header + "_wrapped"}>
       <div className={"sectionHeader " + currentDialogueType + "_header"}>

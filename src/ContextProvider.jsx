@@ -52,17 +52,22 @@ export function ApplicationContextProvider(props) {
     entities.current = value;
   };
 
+
+  const dialogue = useRef(
+    localStorage.getItem("dialogue")
+      ? decompressObject(localStorage.getItem("dialogue"))
+      : defaultDialogue
+  );
+
+  const setDialogue = (value) => {
+    dialogue.current = value;
+  };
+
   let openAiCommitTimer = null;
   let loreFilesCommitTimer = null;
   let entitiesCommitTimer = null;
   let dialogueCommitTimer = null;
   let loreDataCommitTimer = null;
-
-  const [dialogue, setDialogue] = useState(
-    localStorage.getItem("dialogue")
-      ? decompressObject(localStorage.getItem("dialogue"))
-      : defaultDialogue
-  );
 
   const [currentDialogueType, setCurrentDialogueType] = useState(
     localStorage.getItem("dialogueType")
@@ -166,9 +171,9 @@ export function ApplicationContextProvider(props) {
       clearTimeout(dialogueCommitTimer);
     }
     entitiesCommitTimer = setTimeout(() => {
-      localStorage.setItem("dialogue", compressObject(dialogue));
+      localStorage.setItem("dialogue", compressObject(dialogue.current));
     }, 500);
-  }, [dialogue]);
+  }, [dialogue.current]);
 
   useEffect(() => {
     if (loreDataCommitTimer) {
@@ -485,7 +490,7 @@ export function ApplicationContextProvider(props) {
   const addDialogueCallback = async (type) => {
     const d = await makeDialogue(type, openErrorModal);
 
-    const newDialogueData = { ...dialogue };
+    const newDialogueData = { ...dialogue.current };
     if (!newDialogueData[type]) {
       newDialogueData[type] = [];
     }
@@ -579,7 +584,7 @@ export function ApplicationContextProvider(props) {
   };
 
   const deleteDialogueCallback = (d, index) => {
-    const newDialogueData = { ...dialogue };
+    const newDialogueData = { ...dialogue.current };
     newDialogueData[currentDialogueType] = dialogue[currentDialogueType].filter(
       (e, i) => i !== index
     );
@@ -590,7 +595,7 @@ export function ApplicationContextProvider(props) {
   const editDialogueCallback = (d, selector, key, index) => {
     // selector is a '.' separated string of the path to the value inside dialogue
     // e.g. 'input.text' would be the text of the input of the dialogue
-    let newData = { ...dialogue };
+    let newData = { ...dialogue.current };
     //console.log("d", d);
     //console.log("selector", selector);
 
@@ -619,7 +624,7 @@ export function ApplicationContextProvider(props) {
     //console.log("newData is", newData);
   };
   const removeEntryFromDialogue = (selector, index) => {
-    const newData = { ...dialogue };
+    const newData = { ...dialogue.current };
     const selectorArray = selector.split(".");
     const _index = parseInt(selectorArray[selectorArray.length - 2]);
     newData[currentDialogueType][index]["output"]["transcript"].splice(
@@ -629,7 +634,7 @@ export function ApplicationContextProvider(props) {
     setDialogue(newData);
   };
   const addDialogueEntry = (_key) => {
-    const newData = { ...dialogue };
+    const newData = { ...dialogue.current };
     newData[currentDialogueType][_key].output.transcript.unshift({
       speaker: "",
       message: "",
@@ -637,12 +642,12 @@ export function ApplicationContextProvider(props) {
     setDialogue(newData);
   };
   const cleanDialogueMessages = (_key) => {
-    const newData = { ...dialogue };
+    const newData = { ...dialogue.current };
     newData[currentDialogueType][_key].output.transcript = [];
     setDialogue(newData);
   };
   const addDialogueEntryWithData = (_key, speaker, message) => {
-    const newData = { ...dialogue };
+    const newData = { ...dialogue.current };
     console.log("adding to new data:", speaker, "|", message);
     newData[currentDialogueType][_key].output.transcript.unshift({
       speaker: speaker,
@@ -651,13 +656,13 @@ export function ApplicationContextProvider(props) {
     setDialogue(newData);
   };
   const setDialogEntries = (_key, transcript) => {
-    const newData = { ...dialogue };
+    const newData = { ...dialogue.current };
     newData[currentDialogueType][_key].output.transcript = transcript;
     setDialogue(newData);
   };
 
   const editDialogueJson = (d, index) => {
-    let newData = { ...dialogue };
+    let newData = { ...dialogue.current };
     newData[currentDialogueType][index] = d;
     setDialogue(newData);
   };
@@ -789,7 +794,7 @@ export function ApplicationContextProvider(props) {
     errorDialogData,
     openAIParams,
     setOpenAIParams,
-    dialogue,
+    dialogue:dialogue.current,
     setDialogue,
     currentDialogueType,
     setCurrentDialogueType,

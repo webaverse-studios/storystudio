@@ -35,24 +35,28 @@ const Dialogue = ({ index, _key, type }) => {
   const [tagsCharacters, setTagsCharacters] = useState([]);
   const [tagObjects, setTagObjects] = useState([]);
   const [tagNPCs, setTagNPCs] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const [dialogueData, setDialogData] = useState({...dialogue[currentDialogueType][_key]});
+
 
   useEffect(() => {
     const newTagsCharacters = (
-      dialogue[currentDialogueType][_key].input.characters ?? []
+      dialogueData.input.characters ?? []
     ).map((character) => {
       return { id: character, text: character };
     });
     setTagsCharacters(newTagsCharacters);
 
     const newTagsObjects = (
-      dialogue[currentDialogueType][_key].input.objects ?? []
+      dialogueData.input.objects ?? []
     ).map((obj) => {
       return { id: obj, text: obj };
     });
     setTagObjects(newTagsObjects);
 
     const newTagsNPCs = (
-      dialogue[currentDialogueType][_key].input.npcs ?? []
+      dialogueData.input.npcs ?? []
     ).map((npc) => {
       return { id: npc, text: npc };
     });
@@ -175,7 +179,7 @@ const Dialogue = ({ index, _key, type }) => {
       return currentPrompt[type];
     }
 
-    const temp = dialogue[currentDialogueType][_key].output?.prompt;
+    const temp = dialogueData.output?.prompt;
     let prompt = "";
     if (temp && temp?.length > 0 && temp !== "Prompt") {
       const newData = { ...currentPrompt };
@@ -234,7 +238,7 @@ const Dialogue = ({ index, _key, type }) => {
   const generateOutputs = async (type) => {
     const module = await import("../../public/lore-model");
     let selector = "";
-    const inputs = dialogue[currentDialogueType][_key].input;
+    const inputs = dialogueData.input;
     let res = "";
 
     if (type === "objectComment") {
@@ -530,10 +534,17 @@ const Dialogue = ({ index, _key, type }) => {
       return;
     }
 
+    // console.log('Diallogue data recieved is ',res);
+    // setDialogData(res);
+
     handleChange(res, selector);
   };
   function handleChange(data, selector) {
-    //console.log("data, selector", data, selector);
+
+    const newDialogueData = {...dialogueData};
+    const selectorArray = selector.split(".");
+    newDialogueData[selectorArray[selectorArray.length - 1]] = data;
+    setDialogData(newDialogueData);
     editDialogueCallback(data, selector, _key, index);
   }
   function DisplayJSONAsEditableForm({
@@ -646,8 +657,8 @@ const Dialogue = ({ index, _key, type }) => {
                 }}
               >
                 {[
-                  ...dialogue[currentDialogueType][_key].input.characters,
-                  ...dialogue[currentDialogueType][_key].input.npcs,
+                  ...dialogueData.input.characters,
+                  ...dialogueData.input.npcs,
                 ].map((item, index) => {
                   return (
                     <option key={index} value={item}>
@@ -775,8 +786,8 @@ const Dialogue = ({ index, _key, type }) => {
             }}
           >
             {[
-              ...dialogue[currentDialogueType][_key].input.characters,
-              ...dialogue[currentDialogueType][_key].input.npcs,
+              ...dialogueData.input.characters,
+              ...dialogueData.input.npcs,
             ].map((item, index) => {
               return (
                 <option key={index} value={item}>
@@ -830,24 +841,24 @@ const Dialogue = ({ index, _key, type }) => {
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
   const saveAsMD = () => {
-    console.log(dialogue[currentDialogueType][_key]);
+    console.log(dialogueData);
     let md = "# Inputs\n\n";
-    const inputs = Object.keys(dialogue[currentDialogueType][_key].input);
+    const inputs = Object.keys(dialogueData.input);
     for (const inp of inputs) {
       md += `## ${inp}\n`;
-      md += `* ${dialogue[currentDialogueType][_key].input[inp]}\n\n`;
+      md += `* ${dialogueData.input[inp]}\n\n`;
     }
     md += "# Outputs\n\n";
-    const outputs = Object.keys(dialogue[currentDialogueType][_key].output);
+    const outputs = Object.keys(dialogueData.output);
     for (const out of outputs) {
       md += `## ${out}\n`;
-      if (typeof dialogue[currentDialogueType][_key].output[out] === "object") {
-        for (const obj of dialogue[currentDialogueType][_key].output[out]) {
+      if (typeof dialogueData.output[out] === "object") {
+        for (const obj of dialogueData.output[out]) {
           md += `* ${obj.speaker}: ${obj.message}\n`;
         }
         md += "\n";
       } else {
-        md += `${dialogue[currentDialogueType][_key].output[out]}\n\n`;
+        md += `${dialogueData.output[out]}\n\n`;
       }
     }
 
@@ -862,106 +873,108 @@ const Dialogue = ({ index, _key, type }) => {
   };
 
   return (
-    <div className={"entity"}>
-      {!shouldDelete && (
-        <span className="entityDelete">
-          <button onClick={() => setShouldDelete(true)}>
-            <ClearIcon />
-          </button>
-        </span>
-      )}
-      {shouldDelete && (
-        <span className="entityDelete">
-          <button onClick={() => setShouldDelete(false)}>
-            <ClearIcon />
-          </button>
-          <button
-            onClick={() =>
-              deleteDialogueCallback(
-                dialogue[currentDialogueType][_key],
-                index
-              ) | setShouldDelete(false)
-            }
-          >
-            <DeleteForever />
-          </button>
-        </span>
-      )}
-      {typeof dialogue[currentDialogueType][_key] === "object" && (
-        <React.Fragment>
-          {!editJson ? (
-            <div>
-              <MonacoEditor
-                width="100%"
-                height="90vh"
-                language="json"
-                theme="light"
-                onMount={(editor) => {
-                  setTimeout(function () {
-                    editor.getAction("editor.action.formatDocument").run();
-                  }, 100);
-                }}
-                value={JSON.stringify(dialogue[currentDialogueType][_key])}
-                onChange={(value) => {
-                  editDialogueJson(JSON.parse(value), _key);
-                }}
-              />
+    loading ?
+    <div> LOADING... </div> :
+      <div className={"entity"}>
+        {!shouldDelete && (
+          <span className="entityDelete">
+            <button onClick={() => setShouldDelete(true)}>
+              <ClearIcon />
+            </button>
+          </span>
+        )}
+        {shouldDelete && (
+          <span className="entityDelete">
+            <button onClick={() => setShouldDelete(false)}>
+              <ClearIcon />
+            </button>
+            <button
+              onClick={() =>
+                deleteDialogueCallback(
+                  dialogueData,
+                  index
+                ) | setShouldDelete(false)
+              }
+            >
+              <DeleteForever />
+            </button>
+          </span>
+        )}
+        {typeof dialogueData === "object" && (
+          <React.Fragment>
+            {!editJson ? (
+              <div>
+                <MonacoEditor
+                  width="100%"
+                  height="90vh"
+                  language="json"
+                  theme="light"
+                  onMount={(editor) => {
+                    setTimeout(function () {
+                      editor.getAction("editor.action.formatDocument").run();
+                    }, 100);
+                  }}
+                  value={JSON.stringify(dialogueData)}
+                  onChange={(value) => {
+                    editDialogueJson(JSON.parse(value), _key);
+                  }}
+                />
 
-              <button
-                onClick={() => {
-                  setEditJson(!editJson);
-                }}
-              >
-                {editJson ? "JSON" : "Text"}
-              </button>
-            </div>
-          ) : (
-            <div>
-              {DisplayJSONAsEditableForm({
-                data: dialogue[currentDialogueType][_key],
-                allData: dialogue,
-                type,
-              })}
-
-              <br />
-              <br />
-              {(type === "rpgDialogue" ||
-                type === "banter" ||
-                type === "cutscenes") && (
                 <button
                   onClick={() => {
-                    addDialogueEntry(_key);
+                    setEditJson(!editJson);
                   }}
                 >
-                  Add Message
+                  {editJson ? "JSON" : "Text"}
                 </button>
-              )}
-              <button
-                onClick={() => {
-                  generateOutputs(type);
-                }}
-              >
-                Generate
-              </button>
-              <button onClick={saveAsMD}>Save MD</button>
-              <button
-                onClick={() => {
-                  setEditJson(!editJson);
-                }}
-              >
-                {editJson ? "JSON" : "Text"}
-              </button>
-            </div>
-          )}
-        </React.Fragment>
-      )}
-      {/*<button onClick={() => moveDialogueCallback(data, true)}>
-        <ArrowUpwardIcon />
-      </button>
-      <button onClick={() => moveDialogueCallback(data, false)}>
-        <ArrowDownwardIcon />
-          </button>*/}
-    </div>
+              </div>
+            ) : (
+              <div>
+                {DisplayJSONAsEditableForm({
+                  data: dialogueData,
+                  allData: dialogue,
+                  type,
+                })}
+
+                <br />
+                <br />
+                {(type === "rpgDialogue" ||
+                  type === "banter" ||
+                  type === "cutscenes") && (
+                  <button
+                    onClick={() => {
+                      addDialogueEntry(_key);
+                    }}
+                  >
+                    Add Message
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    generateOutputs(type);
+                  }}
+                >
+                  Generate
+                </button>
+                <button onClick={saveAsMD}>Save MD</button>
+                <button
+                  onClick={() => {
+                    setEditJson(!editJson);
+                  }}
+                >
+                  {editJson ? "JSON" : "Text"}
+                </button>
+              </div>
+            )}
+          </React.Fragment>
+        )}
+        {/*<button onClick={() => moveDialogueCallback(data, true)}>
+          <ArrowUpwardIcon />
+        </button>
+        <button onClick={() => moveDialogueCallback(data, false)}>
+          <ArrowDownwardIcon />
+            </button>*/}
+      </div>
   );
 };
 
