@@ -119,136 +119,185 @@ export async function makeDialogue(type, openErrorModal) {
     case "objectComment":
       return {
         input: {
-          target: "New Object",
+          target: "Silver Sword",
         },
         output: {
-          comment: "This is a comment about a new object",
+          comment:
+            "That's a pretty cool sword. It looks exactly one I lost a long time ago.",
+          prompt: "Prompt",
+          response: "Response",
         },
       };
     case "npcComment":
       return {
         input: {
-          target: "New NPC",
+          target: "Sarah Kerrigan",
         },
         output: {
-          comment: "This is a comment about an NPC",
+          comment:
+            "She scares the crap out of me. But she's usually pretty nice.",
+          prompt: "Prompt",
+          response: "Response",
         },
       };
     case "mobComment":
       return {
         input: {
-          target: "New Mob",
+          target: "Goblin",
         },
         output: {
-          comment: "This is a comment about a Mob",
+          comment: "I could probably take on four or five goblins at once.",
+          prompt: "Prompt",
+          response: "Response",
         },
       };
     case "loadingComment":
       return {
         input: {
-          target: "New Location",
+          target: "The Safehouse",
         },
         output: {
-          comment: "This is a comment about the location that is loading",
+          comment: "The Safehouse is a good place to lay low for a while.",
+          prompt: "Prompt",
+          response: "Response",
         },
       };
     case "banter":
       return {
         input: {
-          location: "New Location",
-          characters: ["New Character"],
-          npcs: ["New NPC"],
-          objects: ["New Object"],
+          location: "The Safehouse",
+          characters: ["Korben Dallas", "Leeloo Dallas"],
+          npcs: ["Sarah Kerrigan"],
+          objects: ["Silver Sword"],
         },
         output: {
           transcript: [
             {
-              speaker: "New Character",
-              message: "This is a message.",
+              speaker: "Korben Dallas",
+              message: "I'm going to go get some food.",
+            },
+            {
+              speaker: "Leeloo Dallas",
+              message: "I'll come with you.",
+            },
+            {
+              speaker: "Korben Dallas",
+              message: "No, you stay here. I'll be back in a few minutes.",
+            },
+            {
+              speaker: "Sarah Kerrigan",
+              message: "Can I come?",
+            },
+            {
+              speaker: "Korben Dallas",
+              message: "No, you should stay with Leeloo.",
             },
           ],
+          prompt: "Prompt",
+          response: "Response",
         },
       };
-
     case "exposition":
       return {
         input: {
-          target: "New Object",
+          target: "Silver Sword",
         },
         output: {
-          comment: "This is some historical information about the object.",
+          comment:
+            "The Silver Sword is a legendary sword that was forged by the dwarves of the mountain range. It is said that the sword was forged from the tears of the gods themselves.",
+          prompt: "Prompt",
+          response: "Response",
         },
       };
     case "rpgDialogue":
       return {
         input: {
-          location: "New Location",
-          characters: ["New Character"],
-          npcs: ["New NPC"],
-          objects: ["New Object"],
+          location: "The Safehouse",
+          characters: ["Korben Dallas", "Leeloo Dallas"],
+          npcs: ["Sarah Kerrigan"],
+          objects: ["Silver Sword"],
         },
         output: {
           transcript: [
             {
-              speaker: "New NPC",
-              message:
-                "Which door do you choose? [The Red Door] [The Blue Door]",
+              speaker: "Korben Dallas",
+              message: "What do you want to eat? [Pizza] [Burgers] [Salad]",
             },
             {
-              speaker: "New Character",
-              message: "[The Blue Door]*",
+              speaker: "Leeloo Dallas",
+              message: "Pizza.",
+            },
+            {
+              speaker: "Korben Dallas",
+              message: "You got it. One pizza, coming right up.",
             },
           ],
+          prompt: "Prompt",
+          response: "Response",
         },
       };
     case "cutscenes":
       return {
         input: {
-          location: "New Location",
-          characters: ["New Character"],
-          npcs: ["New NPC"],
-          objects: ["New Object"],
+          location: "The Safehouse",
+          characters: ["Korben Dallas", "Leeloo Dallas"],
+          npcs: ["Sarah Kerrigan"],
+          objects: ["Silver Sword"],
         },
         output: {
           transcript: [
             {
-              speaker: "New NPC",
-              message: "Let's do something in this cutscene.",
+              speaker: "Korben Dallas",
+              message: "I've had enough, Sarah. It's time to do business.",
             },
             {
-              speaker: "New Character",
-              message: "Yes, let's.*",
+              speaker: "Sarah Kerrigan",
+              message: "Yes, it is time. What business exactly?",
+            },
+            {
+              speaker: "Korben Dallas",
+              message: "You know what I'm talking about.",
+            },
+            {
+              speaker: "Sarah Kerrigan",
+              message: "I have no idea, honestly.",
+            },
+            {
+              speaker: "Korben Dallas",
+              message:
+                "You abandoned our party to die. And everyone did. Even me. I wasted almost a week grinding to get back to my level.",
+            },
+            {
+              speaker: "Sarah Kerrigan",
+              message:
+                "Oh, well, that's how it is. Now if you're here to challenge me, I'll gladly help you waste a few more weeks!",
             },
           ],
+          prompt: "Prompt",
+          response: "Response",
         },
       };
-    case "actions":
+    case "quests":
       return {
         input: {
-          location: "New Location",
+          location: "The Safehouse",
           characters: ["New Character"],
           npcs: ["New NPC"],
-          objects: ["New Object"],
-          messages: [
-            {
-              speaker: "New NPC",
-              action: "You should pick up the object",
-            },
-          ],
         },
         output: {
           speaker: "New Character",
           action: "picks up New Object",
+          reward: "100xp",
+          prompt: "Prompt",
+          response: "Response",
         },
       };
-
     case "reactions":
       return {
         input: {
           location: "New Location",
           characters: ["New Character"],
           npcs: ["New NPC"],
-          objects: ["New Object"],
           messages: [
             {
               speaker: "New NPC",
@@ -257,10 +306,9 @@ export async function makeDialogue(type, openErrorModal) {
           ],
         },
         output: {
-          transcript: {
-            speaker: "New Character",
-            reaction: "surprise",
-          },
+          reaction: "New reaction",
+          prompt: "Prompt",
+          response: "Response",
         },
       };
     default:
