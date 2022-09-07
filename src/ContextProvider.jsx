@@ -30,32 +30,33 @@ function getOpenAIKey() {
 }
 
 if (!localStorage.getItem("entities")) {
-    localStorage.setItem("entities", compressObject(defaultEntities));
-  }
+  localStorage.setItem("entities", compressObject(defaultEntities));
+}
 
-  if (!localStorage.getItem("dialogue")) {
-    localStorage.setItem("dialogue", compressObject(defaultDialogue));
-  }
+if (!localStorage.getItem("dialogue")) {
+  localStorage.setItem("dialogue", compressObject(defaultDialogue));
+}
 
-  if (!localStorage.getItem("loreData")) {
-    localStorage.setItem("loreData", compressObject(lore));
-  }
+if (!localStorage.getItem("loreData")) {
+  localStorage.setItem("loreData", compressObject(lore));
+}
 /******/
 
-
 export function ApplicationContextProvider(props) {
+  const entities = useRef(
+    localStorage.getItem("entities")
+      ? decompressObject(localStorage.getItem("entities"))
+      : defaultEntities
+  );
+  const setEntities = (value) => {
+    entities.current = value;
+  };
 
-    const entities = useRef(localStorage.getItem("entities") ? decompressObject(localStorage.getItem("entities")) : defaultEntities);
-    const setEntities = (value) => {
-        entities.current = value;
-    }
-
-    let openAiCommitTimer = null;
-    let loreFilesCommitTimer = null;
-    let entitiesCommitTimer = null;
-    let dialogueCommitTimer = null;
-    let loreDataCommitTimer = null;
-
+  let openAiCommitTimer = null;
+  let loreFilesCommitTimer = null;
+  let entitiesCommitTimer = null;
+  let dialogueCommitTimer = null;
+  let loreDataCommitTimer = null;
 
   const [dialogue, setDialogue] = useState(
     localStorage.getItem("dialogue")
@@ -84,12 +85,11 @@ export function ApplicationContextProvider(props) {
   const [loreHeader, setLoreHeader] = useState("");
 
   const [baseData, setBaseData] = useState({
-          base: null,
-          url: "./lore-model.js", // "https://webaverse.github.io/lore/lore-model.js",
-          type: "url",
-          module: {},
-        }
-  );
+    base: null,
+    url: "./lore-model.js", // "https://webaverse.github.io/lore/lore-model.js",
+    type: "url",
+    module: {},
+  });
 
   const [errorDialogData, setErrorDialogData] = useState({
     on: false,
@@ -134,60 +134,49 @@ export function ApplicationContextProvider(props) {
     }
 
     setOpenAIParams(data);
-  
 
-    if(openAiCommitTimer){
+    if (openAiCommitTimer) {
       clearTimeout(openAiCommitTimer);
     }
     openAiCommitTimer = setTimeout(() => {
-      localStorage.setItem("openAIParams", JSON.stringify(data));      
+      localStorage.setItem("openAIParams", JSON.stringify(data));
     }, 500);
-
-
   };
 
   useEffect(() => {
-    if(loreFilesCommitTimer){
+    if (loreFilesCommitTimer) {
       clearTimeout(loreFilesCommitTimer);
     }
     loreFilesCommitTimer = setTimeout(() => {
       localStorage.setItem("loreFiles", compressObject(loreFiles));
     }, 500);
-
   }, [loreFiles]);
 
   useEffect(() => {
-
-    if(entitiesCommitTimer){
+    if (entitiesCommitTimer) {
       clearTimeout(entitiesCommitTimer);
     }
     entitiesCommitTimer = setTimeout(() => {
       localStorage.setItem("entities", compressObject(entities.current));
     }, 500);
-
   }, [entities.current]);
 
   useEffect(() => {
-
-    if(dialogueCommitTimer){
+    if (dialogueCommitTimer) {
       clearTimeout(dialogueCommitTimer);
     }
     entitiesCommitTimer = setTimeout(() => {
       localStorage.setItem("dialogue", compressObject(dialogue));
     }, 500);
-
-
   }, [dialogue]);
 
   useEffect(() => {
-
-    if(loreDataCommitTimer){
+    if (loreDataCommitTimer) {
       clearTimeout(loreDataCommitTimer);
     }
     loreDataCommitTimer = setTimeout(() => {
       localStorage.setItem("loreData", compressObject(loreData));
     }, 500);
-
   }, [loreData]);
 
   const handleImport = (type, data) => {
@@ -349,7 +338,11 @@ export function ApplicationContextProvider(props) {
 
   const handleExport = (type) => {
     const json = JSON.stringify(
-      type === "entities" ? entities.current : type === "lore" ? loreData : loreFiles
+      type === "entities"
+        ? entities.current
+        : type === "lore"
+        ? loreData
+        : loreFiles
     );
 
     const element = document.createElement("a");
@@ -372,10 +365,10 @@ export function ApplicationContextProvider(props) {
 
       entity.id = makeId(5);
 
-    const newEntityData = { ...entities.current };
-    if (!newEntityData[entityType]) {
-      newEntityData[entityType] = [];
-    }
+      const newEntityData = { ...entities.current };
+      if (!newEntityData[entityType]) {
+        newEntityData[entityType] = [];
+      }
 
       newEntityData[entityType].unshift(entity);
 
@@ -437,10 +430,10 @@ export function ApplicationContextProvider(props) {
       if (!entity.id && typeof entity === "object") {
         entity.id = makeId(5);
       }
-    const newEntityData = { ...entities.current };
-    if (!newEntityData[entityType]) {
-      newEntityData[entityType] = [];
-    }
+      const newEntityData = { ...entities.current };
+      if (!newEntityData[entityType]) {
+        newEntityData[entityType] = [];
+      }
 
       newEntityData[entityType].unshift(entity);
 
@@ -450,15 +443,13 @@ export function ApplicationContextProvider(props) {
   };
 
   const deleteEntityCallback = (entity, index, type) => {
-
     if (type === "loreFiles") {
       const newLoreFiles = [...loreFiles];
       newLoreFiles.splice(index, 1);
       setLoreFiles(newLoreFiles);
     } else {
-
-    const newData = { ...entities.current };
-    newData[type].splice(index, 1);
+      const newData = { ...entities.current };
+      newData[type].splice(index, 1);
 
       setEntities(newData);
     }
@@ -476,7 +467,7 @@ export function ApplicationContextProvider(props) {
       );
       setLoreFiles(newLoreFiles);
     } else {
-    let newData = { ...entities.current };
+      let newData = { ...entities.current };
 
       const entityIndex =
         typeof entity === "string" || !Object.keys(entity).includes("type")
@@ -719,7 +710,9 @@ export function ApplicationContextProvider(props) {
     const file = await getFile();
     const text = await file.text();
     const json = JSON.parse(text);
-    const index = entities.current[json.type].findIndex((e) => e.id === json.id);
+    const index = entities.current[json.type].findIndex(
+      (e) => e.id === json.id
+    );
     if (index !== -1) {
       return;
     }
@@ -755,23 +748,23 @@ export function ApplicationContextProvider(props) {
   };
 
   const getInventoryItems = () => {
-    return (entities["object"] ?? []).map((e) => e.name);
+    return (entities.current["object"] ?? []).map((e) => e.name);
   };
 
   const getObject = (name) => {
-    return entities["object"]?.find((e) => e.name === name);
+    return entities.current["object"]?.find((e) => e.name === name);
   };
   const getCharacter = (name) => {
-    return entities["character"]?.find((e) => e.name.includes(name));
+    return entities.current["character"]?.find((e) => e.name.includes(name));
   };
   const getNPC = (name) => {
-    return entities["npc"]?.find((e) => e.name === name);
+    return entities.current["npc"]?.find((e) => e.name === name);
   };
   const getSetting = (name) => {
-    return entities["setting"]?.find((e) => e.name === name);
+    return entities.current["setting"]?.find((e) => e.name === name);
   };
   const getMob = (name) => {
-    return entities["mob"]?.find((e) => e.name === name);
+    return entities.current["mob"]?.find((e) => e.name === name);
   };
 
   const getTypeOfObject = (name) => {
@@ -800,7 +793,7 @@ export function ApplicationContextProvider(props) {
     setDialogue,
     currentDialogueType,
     setCurrentDialogueType,
-    entities:entities.current,
+    entities: entities.current,
     setEntities,
     openErrorModal,
     closeErrorDialog,

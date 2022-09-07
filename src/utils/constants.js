@@ -624,7 +624,7 @@ export const defaultDialogue = {
   quests: [
     {
       input: {
-        location: "New Location",
+        location: "The Safehouse",
         characters: ["New Character"],
         npcs: ["New NPC"],
       },
@@ -632,9 +632,9 @@ export const defaultDialogue = {
         speaker: "New Character",
         action: "picks up New Object",
         reward: "100xp",
+        prompt: "Prompt",
+        response: "Response",
       },
-      prompt: "Prompt",
-      response: "Response",
     },
   ],
   reactions: [
@@ -769,9 +769,9 @@ export const availableVoices = [
 export const defaultOpenAIParams = {
   model: "davinci",
   top_p: 1,
-  frequency_penalty: .1,
-  presence_penalty: .1,
-  temperature: .85,
+  frequency_penalty: 0.1,
+  presence_penalty: 0.1,
+  temperature: 0.85,
   max_tokens: 256,
   best_of: 1,
 };

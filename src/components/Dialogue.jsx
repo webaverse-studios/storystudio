@@ -232,6 +232,7 @@ const Dialogue = ({ index, _key, type }) => {
   };
 
   const generateOutputs = async (type) => {
+    const module = await import("../../public/lore-model");
     let selector = "";
     const inputs = dialogue[currentDialogueType][_key].input;
     let res = "";
@@ -252,12 +253,10 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const stop = baseData.module.makeCommentStop();
-      res = await baseData.module.generateObjectComment({name: data, description},
-        makeGenerationFn(prompt, stop)
-      );
+      res = await makeGenerationFn(prompt, stop)();
+      res = baseData.module.parseCommentResponse(res);
 
-      handleChange(res.comment, "output.response");
-      res = res.comment;
+      handleChange(res, "output.response");
     } else if (type === "npcComment") {
       selector = "output.comment";
       const data = inputs.target;
@@ -274,15 +273,10 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const stop = baseData.module.makeCommentStop();
-      res = await baseData.module.generateNPCComment({
-        name: data,
-        description,
-      },
-        makeGenerationFn(prompt, stop)
-      );
+      res = await makeGenerationFn(prompt, stop)();
+      res = baseData.module.parseCommentResponse(res);
 
-      handleChange(res.comment, "output.response");
-      res = res.comment;
+      handleChange(res, "output.response");
     } else if (type === "mobComment") {
       selector = "output.comment";
       const data = inputs.target;
@@ -299,15 +293,10 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const stop = baseData.module.makeCommentStop();
-      res = await baseData.module.generateMobComment({
-        name: data,
-        description,
-      },
-        makeGenerationFn(prompt, stop)
-      );
+      res = await makeGenerationFn(prompt, stop)();
+      res = baseData.module.parseCommentResponse(res);
 
-      handleChange(res.comment, "output.response");
-      res = res.comment;
+      handleChange(res, "output.response");
     } else if (type === "loadingComment") {
       selector = "output.comment";
       const data = inputs.target;
@@ -324,13 +313,10 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const stop = baseData.module.makeCommentStop();
-      res = await baseData.module.generateLocationComment(
-        { name: data, description },
-        makeGenerationFn(prompt, stop)
-      );
+      res = await makeGenerationFn(prompt, stop)();
+      res = baseData.module.parseCommentResponse(res);
 
-      handleChange(res.comment, "output.response");
-      res = res.comment;
+      handleChange(res, "output.response");
     } else if (type === "exposition") {
       selector = "output.comment";
       const data = inputs.target;
@@ -352,15 +338,11 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const stop = baseData.module.makeExpositionStop(type);
-      res = await baseData.module.generateExposition({
-        name: data,
-        location: `${location.name}\n${location.description}`
-      },
-        makeGenerationFn(prompt, stop)
-      );
+      const unparsed = await makeGenerationFn(prompt, stop)();
+      res = baseData.module.parseExpositionResponse(unparsed);
 
-      handleChange(res.unparsed, "output.response");
-      res = res.parsed;
+      handleChange(unparsed, "output.response");
+      res = res;
     } else if (type === "banter") {
       const messages = [];
       const data = inputs;
@@ -372,7 +354,7 @@ const Dialogue = ({ index, _key, type }) => {
       const characters = [];
       const objects = [];
 
-      console.log('chars', chars);
+      console.log("chars", chars);
 
       for (let i = 0; i < chars.length; i++) {
         characters.push(getCharacter(chars[i]));
@@ -385,20 +367,22 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const input = { location, characters, objects, messages };
-      const stop = baseData.module.makeBanterStop();
+      console.log("first:", data);
       console.log("input:", input);
       const prompt = await getPrompt(type, input);
       if (!prompt || prompt?.length <= 0) {
         return;
       }
 
-      const newMessages = await baseData.module.generateBanter(
-        input,
-        makeGenerationFn(prompt, stop)
-      );
-      messages.push(...newMessages);
+      const stop = baseData.module.makeBanterStop();
+      let unparsed = "";
+      for (let i = 0; i < 3; i++) {
+        unparsed = await makeGenerationFn(prompt, stop)();
+        res = baseData.module.parseBanterResponse(unparsed);
+        messages.push(...res);
+      }
 
-      handleChange(JSON.stringify(res.unparsed), "output.response");
+      handleChange(JSON.stringify(unparsed), "output.response");
 
       cleanDialogueMessages(_key);
       for (let i = 0; i < messages.length; i++) {
@@ -435,17 +419,21 @@ const Dialogue = ({ index, _key, type }) => {
         dstCharacter: getNPC(_npcs[0]),
       };
 
-      const stop = baseData.module.makeRPGDialogueStop();
       const prompt = await getPrompt(type, input);
       if (!prompt || prompt?.length <= 0) {
         console.log("invalid prompt:", prompt);
         return;
       }
 
-      const message = await baseData.module.generateRPGDialogue(input, makeGenerationFn(prompt, stop));
-      messages.push(message);
+      const stop = baseData.module.makeRPGDialogueStop();
+      let unparsed = "";
+      for (let i = 0; i < 3; i++) {
+        unparsed = await makeGenerationFn(prompt, stop)();
+        const parsed = baseData.module.parseRPGDialogueResponse(unparsed);
+        messages.push(...parsed);
+      }
 
-      handleChange(JSON.stringify(res.unparsed), "output.response");
+      handleChange(JSON.stringify(unparsed), "output.response");
 
       cleanDialogueMessages(_key);
       for (let i = 0; i < messages.length; i++) {
@@ -462,12 +450,10 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const stop = baseData.module.makeReactionStop(message.speaker);
-      const reaction = await baseData.module.generateReaction(
-        input,
-        makeGenerationFn(prompt, stop)
-      );
+      const unparsed = await makeGenerationFn(prompt, stop)();
+      res = baseData.module.parseReactionResponse(unparsed);
 
-      handleChange(JSON.stringify(reaction), "output.response");
+      handleChange(JSON.stringify(unparsed), "output.response");
     } else if (type === "cutscenes") {
       const messages = [];
       const data = inputs;
@@ -500,6 +486,7 @@ const Dialogue = ({ index, _key, type }) => {
       };
 
       const stop = baseData.module.makeCutsceneStop();
+      let unparsed = "";
 
       for (let i = 0; i < 3; i++) {
         const prompt = await getPrompt(type, input);
@@ -508,15 +495,12 @@ const Dialogue = ({ index, _key, type }) => {
           return;
         }
 
-        const newMessages = await baseData.module.generateCutscene(
-          input,
-          makeGenerationFn(prompt, stop)
-        );
-        messages.push(...newMessages);
+        unparsed = await makeGenerationFn(prompt, stop)();
+        const parsed = baseData.module.parseCutsceneResponse(unparsed);
+        messages.push(...parsed);
       }
 
-      handleChange(prompt, "output.prompt");
-      handleChange(JSON.stringify(newMessages), "output.response");
+      handleChange(unparsed, "output.response");
 
       cleanDialogueMessages(_key);
       console.log("MESSAGES:", messages);
@@ -536,12 +520,13 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const stop = baseData.module.makeQuestStop();
-      res = await baseData.module.generateQuest(makeGenerationFn(prompt, stop));
+      const unparsed = await makeGenerationFn(prompt, stop)();
+      res = baseData.module.parseQuestResponse(unparsed);
 
-      handleChange(res.parsed.quest, "output.action");
-      handleChange(res.parsed.reward, "output.reward");
+      handleChange(res.quest, "output.action");
+      handleChange(res.reward, "output.reward");
 
-      handleChange(JSON.stringify(res.unparsed), "output.response");
+      handleChange(JSON.stringify(unparsed), "output.response");
       return;
     }
 
