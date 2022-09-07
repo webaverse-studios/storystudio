@@ -212,7 +212,6 @@ const Dialogue = ({ index, _key, type }) => {
           break;
         case "exposition":
           prompt = await baseData.module.makeExpositionPrompt(input);
-          console.log("lore exposition prompt:", prompt);
           break;
         case "rpgDialogue":
           prompt = await baseData.module.makeRPGDialoguePrompt(input);
@@ -363,8 +362,6 @@ const Dialogue = ({ index, _key, type }) => {
       const characters = [];
       const objects = [];
 
-      console.log("chars", chars);
-
       for (let i = 0; i < chars.length; i++) {
         characters.push(getCharacter(chars[i]));
       }
@@ -376,8 +373,6 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const input = { location, characters, objects, messages };
-      console.log("first:", data);
-      console.log("input:", input);
       const prompt = await getPrompt(type, input);
       if (!prompt || prompt?.length <= 0) {
         return;
@@ -395,6 +390,26 @@ const Dialogue = ({ index, _key, type }) => {
 
       cleanDialogueMessages(_key);
       for (let i = 0; i < messages.length; i++) {
+        let found = false;
+
+        for (let j = 0; j < chars.length; j++) {
+          if (
+            chars[j]?.toLowerCase()?.includes(messages[i].name?.toLowerCase())
+          ) {
+            messages[i].name = chars[j];
+            found = true;
+          }
+        }
+        if (!found) {
+          for (let j = 0; j < _npcs.length; j++) {
+            if (
+              _npcs[j]?.toLowerCase()?.includes(messages[i].name?.toLowerCase())
+            ) {
+              messages[i].name = _npcs[j];
+            }
+          }
+        }
+
         addDialogueEntryWithData(_key, messages[i].name, messages[i].message);
       }
       return;
@@ -446,6 +461,26 @@ const Dialogue = ({ index, _key, type }) => {
 
       cleanDialogueMessages(_key);
       for (let i = 0; i < messages.length; i++) {
+        let found = false;
+
+        for (let j = 0; j < chars.length; j++) {
+          if (
+            chars[j]?.toLowerCase()?.includes(messages[i].name?.toLowerCase())
+          ) {
+            messages[i].name = chars[j];
+            found = true;
+          }
+        }
+        if (!found) {
+          for (let j = 0; j < _npcs.length; j++) {
+            if (
+              _npcs[j]?.toLowerCase()?.includes(messages[i].name?.toLowerCase())
+            ) {
+              messages[i].name = _npcs[j];
+            }
+          }
+        }
+
         addDialogueEntryWithData(_key, messages[i].name, messages[i].message);
       }
       return;
@@ -512,8 +547,27 @@ const Dialogue = ({ index, _key, type }) => {
       handleChange(unparsed, "output.response");
 
       cleanDialogueMessages(_key);
-      console.log("MESSAGES:", messages);
       for (let i = 0; i < messages.length; i++) {
+        let found = false;
+
+        for (let j = 0; j < chars.length; j++) {
+          if (
+            chars[j]?.toLowerCase()?.includes(messages[i].name?.toLowerCase())
+          ) {
+            messages[i].name = chars[j];
+            found = true;
+          }
+        }
+        if (!found) {
+          for (let j = 0; j < _npcs.length; j++) {
+            if (
+              _npcs[j]?.toLowerCase()?.includes(messages[i].name?.toLowerCase())
+            ) {
+              messages[i].name = _npcs[j];
+            }
+          }
+        }
+
         addDialogueEntryWithData(_key, messages[i].name, messages[i].message);
       }
       return;
@@ -542,7 +596,6 @@ const Dialogue = ({ index, _key, type }) => {
     handleChange(res, selector);
   };
   function handleChange(data, selector) {
-    //console.log("data, selector", data, selector);
     editDialogueCallback(data, selector, _key, index);
   }
   function DisplayJSONAsEditableForm({
@@ -712,8 +765,6 @@ const Dialogue = ({ index, _key, type }) => {
         }
       }
     } else if (label === "target") {
-      //console.log("type is", type);
-      //console.log("*** data is", data);
       return (
         <div>
           <label style={{ margin: ".5em" }}>{label}</label>
@@ -839,7 +890,6 @@ const Dialogue = ({ index, _key, type }) => {
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
   const saveAsMD = () => {
-    console.log(dialogue[currentDialogueType][_key]);
     let md = "# Inputs\n\n";
     const inputs = Object.keys(dialogue[currentDialogueType][_key].input);
     for (const inp of inputs) {
