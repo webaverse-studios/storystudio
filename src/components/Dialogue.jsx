@@ -232,7 +232,6 @@ const Dialogue = ({ index, _key, type }) => {
     }
 
     if (prompt?.length > 0) {
-      console.log("DDDDD 0");
       const newData = { ...currentPrompt };
       newData[type] = prompt;
       setCurrentPrompt(newData);
@@ -243,7 +242,6 @@ const Dialogue = ({ index, _key, type }) => {
   };
 
   const generateOutputs = async (type) => {
-    const module = await import("../../public/lore-model");
     let selector = "";
     const inputs = dialogue[currentDialogueType][_key].input;
     let res = "";
