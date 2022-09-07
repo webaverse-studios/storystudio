@@ -248,7 +248,10 @@ const Dialogue = ({ index, _key, type }) => {
     if (type === "objectComment") {
       selector = "output.comment";
       const data = inputs.target;
-      const obj = getObject(data);
+      let obj = getObject(data);
+      if (!obj || obj === undefined) {
+        obj = { name: data, description: "" };
+      }
       const description = obj ? obj.description : "";
 
       const prompt = await getPrompt(type, {
@@ -268,7 +271,10 @@ const Dialogue = ({ index, _key, type }) => {
     } else if (type === "npcComment") {
       selector = "output.comment";
       const data = inputs.target;
-      const obj = getNPC(data);
+      let obj = getNPC(data);
+      if (!obj || obj === undefined) {
+        obj = { name: data, description: "" };
+      }
       const description = obj ? obj.description : "";
 
       const prompt = await getPrompt(type, {
@@ -288,7 +294,10 @@ const Dialogue = ({ index, _key, type }) => {
     } else if (type === "mobComment") {
       selector = "output.comment";
       const data = inputs.target;
-      const obj = getMob(data);
+      let obj = getMob(data);
+      if (!obj || obj === undefined) {
+        obj = { name: data, description: "" };
+      }
       const description = obj ? obj.description : "";
 
       const prompt = await getPrompt(type, {
@@ -308,7 +317,10 @@ const Dialogue = ({ index, _key, type }) => {
     } else if (type === "loadingComment") {
       selector = "output.comment";
       const data = inputs.target;
-      const obj = getSetting(data);
+      let obj = getSetting(data);
+      if (!obj || obj === undefined) {
+        obj = { name: data, description: "" };
+      }
       const description = obj ? obj.description : "";
 
       const prompt = await getPrompt(type, {
@@ -363,13 +375,28 @@ const Dialogue = ({ index, _key, type }) => {
       const objects = [];
 
       for (let i = 0; i < chars.length; i++) {
-        characters.push(getCharacter(chars[i]));
+        let _char = getCharacter(chars[i]);
+        if (!_char || _char === undefined) {
+          _char = { name: chars[i], description: "" };
+        }
+
+        characters.push(_char);
       }
       for (let i = 0; i < _npcs.length; i++) {
-        characters.push(getNPC(_npcs[i]));
+        let npc = getNPC(chars[i]);
+        if (!npc || npc === undefined) {
+          npc = { name: chars[i], description: "" };
+        }
+
+        characters.push(npc);
       }
       for (let i = 0; i < objs.length; i++) {
-        objects.push(getObject(objs[i]));
+        let obj = getObject(chars[i]);
+        if (!obj || obj === undefined) {
+          obj = { name: chars[i], description: "" };
+        }
+
+        objects.push(obj);
       }
 
       const input = { location, characters, objects, messages };
@@ -425,13 +452,28 @@ const Dialogue = ({ index, _key, type }) => {
       const objects = [];
 
       for (let i = 0; i < chars.length; i++) {
-        characters.push(getCharacter(chars[i]));
+        let _char = getCharacter(chars[i]);
+        if (!_char || _char === undefined) {
+          _char = { name: chars[i], description: "" };
+        }
+
+        characters.push(_char);
       }
       for (let i = 0; i < _npcs.length; i++) {
-        characters.push(getNPC(_npcs[i]));
+        let npc = getNPC(chars[i]);
+        if (!npc || npc === undefined) {
+          npc = { name: chars[i], description: "" };
+        }
+
+        characters.push(npc);
       }
       for (let i = 0; i < objs.length; i++) {
-        objects.push(getObject(objs[i]));
+        let obj = getObject(chars[i]);
+        if (!obj || obj === undefined) {
+          obj = { name: chars[i], description: "" };
+        }
+
+        objects.push(obj);
       }
 
       const input = {
@@ -511,13 +553,28 @@ const Dialogue = ({ index, _key, type }) => {
       const objects = [];
 
       for (let i = 0; i < chars.length; i++) {
-        characters.push(getCharacter(chars[i]));
+        let _char = getCharacter(chars[i]);
+        if (!_char || _char === undefined) {
+          _char = { name: chars[i], description: "" };
+        }
+
+        characters.push(_char);
       }
       for (let i = 0; i < _npcs.length; i++) {
-        npcs.push(getNPC(_npcs[i]));
+        let npc = getNPC(chars[i]);
+        if (!npc || npc === undefined) {
+          npc = { name: chars[i], description: "" };
+        }
+
+        npcs.push(npc);
       }
       for (let i = 0; i < objs.length; i++) {
-        objects.push(getObject(objs[i]));
+        let obj = getObject(chars[i]);
+        if (!obj || obj === undefined) {
+          obj = { name: chars[i], description: "" };
+        }
+
+        objects.push(obj);
       }
 
       const input = {
