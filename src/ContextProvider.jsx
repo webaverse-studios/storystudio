@@ -579,7 +579,8 @@ export function ApplicationContextProvider(props) {
   const editDialogueCallback = (d, selector, key, index) => {
     // selector is a '.' separated string of the path to the value inside dialogue
     // e.g. 'input.text' would be the text of the input of the dialogue
-    let newData = { ...dialogue };
+    let newData = { ...dialogue.current };
+
     // split the selector into an array
     const selectorArray = selector.split(".");
 
@@ -617,7 +618,8 @@ export function ApplicationContextProvider(props) {
     setDialogue(newData);
   };
   const addDialogueEntryWithData = (_key, speaker, message) => {
-    const newData = { ...dialogue };
+    const newData = { ...dialogue.current };
+    console.log("adding to new data:", speaker, "|", message);
     newData[currentDialogueType][_key].output.transcript.unshift({
       speaker: speaker,
       message,
