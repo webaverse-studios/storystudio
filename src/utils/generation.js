@@ -7,7 +7,6 @@ import {
   exampleLoreFiles,
 } from "./constants.js";
 import { makeId } from "./utils.js";
-import * as defaultModule from "../../public/lore-model.js";
 
 export const generateImage = async (text) => {
   const resp = await axios.get(stable_diffusion_url, {
@@ -343,7 +342,11 @@ export async function generate(type, data, baseData, openErrorModal) {
     img: "",
   };
   let resp = undefined;
-  const module = baseData.module || defaultModule;
+  const module = baseData.module;
+  if (!module || module === undefined) {
+    return res;
+  }
+
   switch (type) {
     case "location":
       console.log("baseData:", baseData);
