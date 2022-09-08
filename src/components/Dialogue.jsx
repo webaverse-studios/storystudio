@@ -6,6 +6,7 @@ import { WithContext as ReactTags } from "react-tag-input";
 import { useEffect } from "react";
 import { delimiters } from "../utils/constants";
 import { makeGenerationFn } from "../utils/generation";
+import { isIterable } from "../utils/utils";
 
 //field check if image, set source the img, if name change, generate new image
 const Dialogue = ({ index, _key, type }) => {
@@ -37,27 +38,24 @@ const Dialogue = ({ index, _key, type }) => {
   const [tagNPCs, setTagNPCs] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const [dialogueData, setDialogData] = useState({...dialogue[currentDialogueType][_key]});
-
+  const [dialogueData, setDialogData] = useState({
+    ...dialogue[currentDialogueType][_key],
+  });
 
   useEffect(() => {
-    const newTagsCharacters = (
-      dialogueData.input.characters ?? []
-    ).map((character) => {
-      return { id: character, text: character };
-    });
+    const newTagsCharacters = (dialogueData.input.characters ?? []).map(
+      (character) => {
+        return { id: character, text: character };
+      }
+    );
     setTagsCharacters(newTagsCharacters);
 
-    const newTagsObjects = (
-      dialogueData.input.objects ?? []
-    ).map((obj) => {
+    const newTagsObjects = (dialogueData.input.objects ?? []).map((obj) => {
       return { id: obj, text: obj };
     });
     setTagObjects(newTagsObjects);
 
-    const newTagsNPCs = (
-      dialogueData.input.npcs ?? []
-    ).map((npc) => {
+    const newTagsNPCs = (dialogueData.input.npcs ?? []).map((npc) => {
       return { id: npc, text: npc };
     });
     setTagNPCs(newTagsNPCs);
@@ -174,6 +172,16 @@ const Dialogue = ({ index, _key, type }) => {
     cutscenes: "",
     quests: "",
   });
+
+  useEffect(() => {
+    const temp = dialogue[currentDialogueType][_key].output?.prompt;
+    if (temp && temp?.length > 0 && temp !== "Prompt") {
+      const newData = { ...currentPrompt };
+      newData[type] = temp;
+      setCurrentPrompt(newData);
+    }
+  }, [currentDialogueType]);
+
   const getPrompt = async (type, input) => {
     if (currentPrompt[type]?.length > 0) {
       return currentPrompt[type];
@@ -185,7 +193,7 @@ const Dialogue = ({ index, _key, type }) => {
       const newData = { ...currentPrompt };
       newData[type] = temp;
       setCurrentPrompt(newData);
-      return currentPrompt[type];
+      return temp;
     } else {
       switch (type) {
         case "objectComment":
@@ -205,7 +213,6 @@ const Dialogue = ({ index, _key, type }) => {
           break;
         case "exposition":
           prompt = await baseData.module.makeExpositionPrompt(input);
-          console.log("lore exposition prompt:", prompt);
           break;
         case "rpgDialogue":
           prompt = await baseData.module.makeRPGDialoguePrompt(input);
@@ -230,13 +237,11 @@ const Dialogue = ({ index, _key, type }) => {
       setCurrentPrompt(newData);
     }
 
-    handleChange(currentPrompt[type], "output.prompt");
-    console.log("returning normal:", currentPrompt[type]);
+    handleChange(prompt, "output.prompt");
     return prompt;
   };
 
   const generateOutputs = async (type) => {
-    const module = await import("../../public/lore-model");
     let selector = "";
     const inputs = dialogueData.input;
     let res = "";
@@ -244,7 +249,10 @@ const Dialogue = ({ index, _key, type }) => {
     if (type === "objectComment") {
       selector = "output.comment";
       const data = inputs.target;
-      const obj = getObject(data);
+      let obj = getObject(data);
+      if (!obj || obj === undefined) {
+        obj = { name: data, description: "" };
+      }
       const description = obj ? obj.description : "";
 
       const prompt = await getPrompt(type, {
@@ -264,7 +272,10 @@ const Dialogue = ({ index, _key, type }) => {
     } else if (type === "npcComment") {
       selector = "output.comment";
       const data = inputs.target;
-      const obj = getNPC(data);
+      let obj = getNPC(data);
+      if (!obj || obj === undefined) {
+        obj = { name: data, description: "" };
+      }
       const description = obj ? obj.description : "";
 
       const prompt = await getPrompt(type, {
@@ -284,7 +295,10 @@ const Dialogue = ({ index, _key, type }) => {
     } else if (type === "mobComment") {
       selector = "output.comment";
       const data = inputs.target;
-      const obj = getMob(data);
+      let obj = getMob(data);
+      if (!obj || obj === undefined) {
+        obj = { name: data, description: "" };
+      }
       const description = obj ? obj.description : "";
 
       const prompt = await getPrompt(type, {
@@ -304,7 +318,10 @@ const Dialogue = ({ index, _key, type }) => {
     } else if (type === "loadingComment") {
       selector = "output.comment";
       const data = inputs.target;
-      const obj = getSetting(data);
+      let obj = getSetting(data);
+      if (!obj || obj === undefined) {
+        obj = { name: data, description: "" };
+      }
       const description = obj ? obj.description : "";
 
       const prompt = await getPrompt(type, {
@@ -358,21 +375,32 @@ const Dialogue = ({ index, _key, type }) => {
       const characters = [];
       const objects = [];
 
-      console.log("chars", chars);
-
       for (let i = 0; i < chars.length; i++) {
-        characters.push(getCharacter(chars[i]));
+        let _char = getCharacter(chars[i]);
+        if (!_char || _char === undefined) {
+          _char = { name: chars[i], description: "" };
+        }
+
+        characters.push(_char);
       }
       for (let i = 0; i < _npcs.length; i++) {
-        characters.push(getNPC(_npcs[i]));
+        let npc = getNPC(chars[i]);
+        if (!npc || npc === undefined) {
+          npc = { name: chars[i], description: "" };
+        }
+
+        characters.push(npc);
       }
       for (let i = 0; i < objs.length; i++) {
-        objects.push(getObject(objs[i]));
+        let obj = getObject(chars[i]);
+        if (!obj || obj === undefined) {
+          obj = { name: chars[i], description: "" };
+        }
+
+        objects.push(obj);
       }
 
       const input = { location, characters, objects, messages };
-      console.log("first:", data);
-      console.log("input:", input);
       const prompt = await getPrompt(type, input);
       if (!prompt || prompt?.length <= 0) {
         return;
@@ -390,6 +418,26 @@ const Dialogue = ({ index, _key, type }) => {
 
       cleanDialogueMessages(_key);
       for (let i = 0; i < messages.length; i++) {
+        let found = false;
+
+        for (let j = 0; j < chars.length; j++) {
+          if (
+            chars[j]?.toLowerCase()?.includes(messages[i].name?.toLowerCase())
+          ) {
+            messages[i].name = chars[j];
+            found = true;
+          }
+        }
+        if (!found) {
+          for (let j = 0; j < _npcs.length; j++) {
+            if (
+              _npcs[j]?.toLowerCase()?.includes(messages[i].name?.toLowerCase())
+            ) {
+              messages[i].name = _npcs[j];
+            }
+          }
+        }
+
         addDialogueEntryWithData(_key, messages[i].name, messages[i].message);
       }
       return;
@@ -405,13 +453,28 @@ const Dialogue = ({ index, _key, type }) => {
       const objects = [];
 
       for (let i = 0; i < chars.length; i++) {
-        characters.push(getCharacter(chars[i]));
+        let _char = getCharacter(chars[i]);
+        if (!_char || _char === undefined) {
+          _char = { name: chars[i], description: "" };
+        }
+
+        characters.push(_char);
       }
       for (let i = 0; i < _npcs.length; i++) {
-        characters.push(getNPC(_npcs[i]));
+        let npc = getNPC(chars[i]);
+        if (!npc || npc === undefined) {
+          npc = { name: chars[i], description: "" };
+        }
+
+        characters.push(npc);
       }
       for (let i = 0; i < objs.length; i++) {
-        objects.push(getObject(objs[i]));
+        let obj = getObject(chars[i]);
+        if (!obj || obj === undefined) {
+          obj = { name: chars[i], description: "" };
+        }
+
+        objects.push(obj);
       }
 
       const input = {
@@ -441,6 +504,26 @@ const Dialogue = ({ index, _key, type }) => {
 
       cleanDialogueMessages(_key);
       for (let i = 0; i < messages.length; i++) {
+        let found = false;
+
+        for (let j = 0; j < chars.length; j++) {
+          if (
+            chars[j]?.toLowerCase()?.includes(messages[i].name?.toLowerCase())
+          ) {
+            messages[i].name = chars[j];
+            found = true;
+          }
+        }
+        if (!found) {
+          for (let j = 0; j < _npcs.length; j++) {
+            if (
+              _npcs[j]?.toLowerCase()?.includes(messages[i].name?.toLowerCase())
+            ) {
+              messages[i].name = _npcs[j];
+            }
+          }
+        }
+
         addDialogueEntryWithData(_key, messages[i].name, messages[i].message);
       }
       return;
@@ -471,13 +554,28 @@ const Dialogue = ({ index, _key, type }) => {
       const objects = [];
 
       for (let i = 0; i < chars.length; i++) {
-        characters.push(getCharacter(chars[i]));
+        let _char = getCharacter(chars[i]);
+        if (!_char || _char === undefined) {
+          _char = { name: chars[i], description: "" };
+        }
+
+        characters.push(_char);
       }
       for (let i = 0; i < _npcs.length; i++) {
-        npcs.push(getNPC(_npcs[i]));
+        let npc = getNPC(chars[i]);
+        if (!npc || npc === undefined) {
+          npc = { name: chars[i], description: "" };
+        }
+
+        npcs.push(npc);
       }
       for (let i = 0; i < objs.length; i++) {
-        objects.push(getObject(objs[i]));
+        let obj = getObject(chars[i]);
+        if (!obj || obj === undefined) {
+          obj = { name: chars[i], description: "" };
+        }
+
+        objects.push(obj);
       }
 
       const input = {
@@ -507,8 +605,27 @@ const Dialogue = ({ index, _key, type }) => {
       handleChange(unparsed, "output.response");
 
       cleanDialogueMessages(_key);
-      console.log("MESSAGES:", messages);
       for (let i = 0; i < messages.length; i++) {
+        let found = false;
+
+        for (let j = 0; j < chars.length; j++) {
+          if (
+            chars[j]?.toLowerCase()?.includes(messages[i].name?.toLowerCase())
+          ) {
+            messages[i].name = chars[j];
+            found = true;
+          }
+        }
+        if (!found) {
+          for (let j = 0; j < _npcs.length; j++) {
+            if (
+              _npcs[j]?.toLowerCase()?.includes(messages[i].name?.toLowerCase())
+            ) {
+              messages[i].name = _npcs[j];
+            }
+          }
+        }
+
         addDialogueEntryWithData(_key, messages[i].name, messages[i].message);
       }
       return;
@@ -540,8 +657,7 @@ const Dialogue = ({ index, _key, type }) => {
     handleChange(res, selector);
   };
   function handleChange(data, selector) {
-
-    const newDialogueData = {...dialogueData};
+    const newDialogueData = { ...dialogueData };
     const selectorArray = selector.split(".");
     newDialogueData[selectorArray[selectorArray.length - 1]] = data;
     setDialogData(newDialogueData);
@@ -714,8 +830,6 @@ const Dialogue = ({ index, _key, type }) => {
         }
       }
     } else if (label === "target") {
-      //console.log("type is", type);
-      //console.log("*** data is", data);
       return (
         <div>
           <label style={{ margin: ".5em" }}>{label}</label>
@@ -785,16 +899,15 @@ const Dialogue = ({ index, _key, type }) => {
               handleChange(data, selector);
             }}
           >
-            {[
-              ...dialogueData.input.characters,
-              ...dialogueData.input.npcs,
-            ].map((item, index) => {
-              return (
-                <option key={index} value={item}>
-                  {item}
-                </option>
-              );
-            })}
+            {[...dialogueData.input.characters, ...dialogueData.input.npcs].map(
+              (item, index) => {
+                return (
+                  <option key={index} value={item}>
+                    {item}
+                  </option>
+                );
+              }
+            )}
           </select>
           {(type === "rpgDialogue" ||
             type === "banter" ||
@@ -841,7 +954,6 @@ const Dialogue = ({ index, _key, type }) => {
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
   const saveAsMD = () => {
-    console.log(dialogueData);
     let md = "# Inputs\n\n";
     const inputs = Object.keys(dialogueData.input);
     for (const inp of inputs) {
@@ -852,8 +964,11 @@ const Dialogue = ({ index, _key, type }) => {
     const outputs = Object.keys(dialogueData.output);
     for (const out of outputs) {
       md += `## ${out}\n`;
-      if (typeof dialogueData.output[out] === "object") {
-        for (const obj of dialogueData.output[out]) {
+      if (
+        typeof dialogue[currentDialogueType][_key].output[out] === "object" &&
+        isIterable(dialogue[currentDialogueType][_key].output[out])
+      ) {
+        for (const obj of dialogue[currentDialogueType][_key].output[out]) {
           md += `* ${obj.speaker}: ${obj.message}\n`;
         }
         md += "\n";
@@ -872,109 +987,107 @@ const Dialogue = ({ index, _key, type }) => {
     element.remove();
   };
 
-  return (
-    loading ?
-    <div> LOADING... </div> :
-      <div className={"entity"}>
-        {!shouldDelete && (
-          <span className="entityDelete">
-            <button onClick={() => setShouldDelete(true)}>
-              <ClearIcon />
-            </button>
-          </span>
-        )}
-        {shouldDelete && (
-          <span className="entityDelete">
-            <button onClick={() => setShouldDelete(false)}>
-              <ClearIcon />
-            </button>
-            <button
-              onClick={() =>
-                deleteDialogueCallback(
-                  dialogueData,
-                  index
-                ) | setShouldDelete(false)
-              }
-            >
-              <DeleteForever />
-            </button>
-          </span>
-        )}
-        {typeof dialogueData === "object" && (
-          <React.Fragment>
-            {!editJson ? (
-              <div>
-                <MonacoEditor
-                  width="100%"
-                  height="90vh"
-                  language="json"
-                  theme="light"
-                  onMount={(editor) => {
-                    setTimeout(function () {
-                      editor.getAction("editor.action.formatDocument").run();
-                    }, 100);
-                  }}
-                  value={JSON.stringify(dialogueData)}
-                  onChange={(value) => {
-                    editDialogueJson(JSON.parse(value), _key);
-                  }}
-                />
+  return loading ? (
+    <div> LOADING... </div>
+  ) : (
+    <div className={"entity"}>
+      {!shouldDelete && (
+        <span className="entityDelete">
+          <button onClick={() => setShouldDelete(true)}>
+            <ClearIcon />
+          </button>
+        </span>
+      )}
+      {shouldDelete && (
+        <span className="entityDelete">
+          <button onClick={() => setShouldDelete(false)}>
+            <ClearIcon />
+          </button>
+          <button
+            onClick={() =>
+              deleteDialogueCallback(dialogueData, index) |
+              setShouldDelete(false)
+            }
+          >
+            <DeleteForever />
+          </button>
+        </span>
+      )}
+      {typeof dialogueData === "object" && (
+        <React.Fragment>
+          {!editJson ? (
+            <div>
+              <MonacoEditor
+                width="100%"
+                height="90vh"
+                language="json"
+                theme="light"
+                onMount={(editor) => {
+                  setTimeout(function () {
+                    editor.getAction("editor.action.formatDocument").run();
+                  }, 100);
+                }}
+                value={JSON.stringify(dialogueData)}
+                onChange={(value) => {
+                  editDialogueJson(JSON.parse(value), _key);
+                }}
+              />
 
-                <button
-                  onClick={() => {
-                    setEditJson(!editJson);
-                  }}
-                >
-                  {editJson ? "JSON" : "Text"}
-                </button>
-              </div>
-            ) : (
-              <div>
-                {DisplayJSONAsEditableForm({
-                  data: dialogueData,
-                  allData: dialogue,
-                  type,
-                })}
+              <button
+                onClick={() => {
+                  setEditJson(!editJson);
+                }}
+              >
+                {editJson ? "JSON" : "Text"}
+              </button>
+            </div>
+          ) : (
+            <div>
+              {DisplayJSONAsEditableForm({
+                data: dialogueData,
+                allData: dialogue,
+                type,
+              })}
 
-                <br />
-                <br />
-                {(type === "rpgDialogue" ||
-                  type === "banter" ||
-                  type === "cutscenes") && (
-                  <button
-                    onClick={() => {
-                      addDialogueEntry(_key);
-                    }}
-                  >
-                    Add Message
-                  </button>
-                )}
+              <br />
+              <br />
+              {(type === "rpgDialogue" ||
+                type === "banter" ||
+                type === "cutscenes") && (
                 <button
                   onClick={() => {
-                    generateOutputs(type);
+                    addDialogueEntry(_key);
                   }}
                 >
-                  Generate
+                  Add Message
                 </button>
-                <button onClick={saveAsMD}>Save MD</button>
-                <button
-                  onClick={() => {
-                    setEditJson(!editJson);
-                  }}
-                >
-                  {editJson ? "JSON" : "Text"}
-                </button>
-              </div>
-            )}
-          </React.Fragment>
-        )}
-        {/*<button onClick={() => moveDialogueCallback(data, true)}>
+              )}
+              <button
+                onClick={() => {
+                  generateOutputs(type);
+                }}
+              >
+                Generate
+              </button>
+              <button onClick={saveAsMD}>Save MD</button>
+              <button
+                onClick={() => {
+                  setEditJson(!editJson);
+                }}
+              >
+                {editJson ? "JSON" : "Text"}
+              </button>
+            </div>
+          )}
+        </React.Fragment>
+      )}
+      {/*<button onClick={() => moveDialogueCallback(data, true)}>
           <ArrowUpwardIcon />
         </button>
         <button onClick={() => moveDialogueCallback(data, false)}>
           <ArrowDownwardIcon />
             </button>*/}
-      </div>
+    </div>
   );
 };
 

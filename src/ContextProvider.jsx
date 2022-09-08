@@ -220,11 +220,11 @@ export function ApplicationContextProvider(props) {
         if (content.includes(murmurHashImportString)) {
           content = content.replace(murmurHashImportString, murmurhash3String);
           displayContent = content;
-          console.log("replace content is", content);
         } else {
           const headerStartIndex = lines.findIndex((line) =>
             line.includes("LORE_HEADER_START")
           );
+
           const headerEndIndex = lines.findIndex((line) =>
             line.includes("LORE_HEADER_END")
           );
@@ -256,7 +256,6 @@ export function ApplicationContextProvider(props) {
           const json = firstLine.replace("export let lore = ", "");
           const obj = JSON.parse(json);
           setLoreData(obj);
-          console.log("updated lore data");
         }
 
         setBaseData({
@@ -288,7 +287,6 @@ export function ApplicationContextProvider(props) {
       if (content.includes(murmurHashImportString)) {
         content = content.replace(murmurHashImportString, murmurhash3String);
         displayContent = content;
-        console.log("replace content is", content);
       } else {
         const headerStartIndex = lines.findIndex((line) =>
           line.includes("LORE_HEADER_START")
@@ -388,8 +386,6 @@ export function ApplicationContextProvider(props) {
     second = false
   ) => {
     setGenerating(true);
-    //console.log("calling baseData", baseData);
-    // generate new using openai callback
     if (entityType === "loreFiles") {
       const entity = await generate(
         entityType,
@@ -410,7 +406,6 @@ export function ApplicationContextProvider(props) {
     } else {
       let entity = null;
       try {
-        console.log(baseData);
         entity = await generate(
           entityType,
           data,
@@ -464,12 +459,6 @@ export function ApplicationContextProvider(props) {
     if (typeof entity === "string") {
       const newLoreFiles = [...loreFiles];
       newLoreFiles[index] = entity;
-      console.log(
-        "editing lore file, index:",
-        index,
-        "data are the same:",
-        entity === loreFiles[index]
-      );
       setLoreFiles(newLoreFiles);
     } else {
       let newData = { ...entities.current };
@@ -536,7 +525,6 @@ export function ApplicationContextProvider(props) {
     const file = new Blob([json], { type: "application/json" });
     element.href = URL.createObjectURL(file);
     element.download = "project_" + new Date().getTime() + ".json";
-    console.log("download name:", element.download);
     document.body.appendChild(element);
     element.click();
     element.remove();
@@ -549,11 +537,8 @@ export function ApplicationContextProvider(props) {
     second = false
   ) => {
     setGenerating(true);
-    //console.log("calling baseData", baseData);
-    // generate new using openai callback
     let d = null;
     try {
-      console.log(baseData);
       d = await generate(type, entities, baseData, openErrorModal);
     } catch (e) {
       // openErrorModal("Error generating entity", e);
@@ -564,7 +549,6 @@ export function ApplicationContextProvider(props) {
       }
       return;
     }
-    console.log("generated dialogue", d);
     return;
     if (!d) {
       // openErrorModal("could not generate entity");
@@ -595,33 +579,19 @@ export function ApplicationContextProvider(props) {
   const editDialogueCallback = (d, selector, key, index) => {
     // selector is a '.' separated string of the path to the value inside dialogue
     // e.g. 'input.text' would be the text of the input of the dialogue
-    let newData = { ...dialogue.current };
-    //console.log("d", d);
-    //console.log("selector", selector);
-
+    let newData = { ...dialogue };
     // split the selector into an array
     const selectorArray = selector.split(".");
-    //console.log("key is", key);
 
-    //console.log("index is", index);
     // drill down into the dialogue object using the selector array
     let current = newData[currentDialogueType][index];
-    /*console.log(
-      "newData[currentDialogueType] is",
-      newData[currentDialogueType]
-    );*/
-    //console.log("index is", index);
-    //console.log("oldData is", newData);
+
     for (let i = 0; i < selectorArray.length - 1; i++) {
-      //console.log("selectorArray[i] is", selectorArray[i]);
       current = current[selectorArray[i]];
     }
 
-    //console.log("current is", current);
-
     current[selectorArray[selectorArray.length - 1]] = d;
     setDialogue(newData);
-    //console.log("newData is", newData);
   };
   const removeEntryFromDialogue = (selector, index) => {
     const newData = { ...dialogue.current };
@@ -647,8 +617,7 @@ export function ApplicationContextProvider(props) {
     setDialogue(newData);
   };
   const addDialogueEntryWithData = (_key, speaker, message) => {
-    const newData = { ...dialogue.current };
-    console.log("adding to new data:", speaker, "|", message);
+    const newData = { ...dialogue };
     newData[currentDialogueType][_key].output.transcript.unshift({
       speaker: speaker,
       message,
@@ -711,7 +680,6 @@ export function ApplicationContextProvider(props) {
   };
 
   const importEntityList = async () => {
-    console.log("import");
     const file = await getFile();
     const text = await file.text();
     const json = JSON.parse(text);
@@ -732,10 +700,8 @@ export function ApplicationContextProvider(props) {
 
   const addLore = async (type, setGenerating) => {
     setGenerating(true);
-    console.log("lore is", lore);
     const newLore = { ...lore };
     const newLoreData = { ...newLore[type] };
-    console.log("newLoreData are", newLoreData);
     const newLoreExamples = [...newLoreData.examples];
     newLoreExamples.unshift("new " + type);
     newLoreData.examples = newLoreExamples;
