@@ -657,7 +657,7 @@ const Dialogue = ({ index, _key, type }) => {
     handleChange(res, selector);
   };
   function handleChange(data, selector) {
-    const newDialogueData = { ...dialogueData };
+    const newDialogueData = {...dialogueData};
     const selectorArray = selector.split(".");
     newDialogueData[selectorArray[selectorArray.length - 1]] = data;
     setDialogData(newDialogueData);
