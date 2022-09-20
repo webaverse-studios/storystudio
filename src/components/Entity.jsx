@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { ClearIcon, DeleteForever } from "../styles/icons/icons";
-import {TextInput} from './EditableBox';
 
 import "../styles/App.css";
 import { ApplicationContext } from "../Context";
@@ -17,13 +16,13 @@ const Entity = ({
   moveEntityCallback,
   type,
 }) => {
-  const { getInventoryItems } = useContext(ApplicationContext);
+  const { getInventoryItems, loreFiles } = useContext(ApplicationContext);
 
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
   const updateEntity = (entities, field, data, index) => {
-    if (field && field?.length > 0) {
+    if (field) {
       if (field === "shortname") {
         return;
       }
@@ -49,7 +48,6 @@ const Entity = ({
       }
       editEntityCallback(newData, index);
     } else {
-      console.log("editing");
       editEntityCallback(data, index);
     }
   };
@@ -63,15 +61,18 @@ const Entity = ({
 
   const [tags, setTags] = React.useState([]);
   useEffect(() => {
-    if (data["inventory"] && data["inventory"]?.length > 0) {
-      setTags(
-        data["inventory"].split(", ").map((item) => {
-          return {
-            id: item,
-            text: item,
-          };
-        })
-      );
+    console.log(typeof data)
+    if (typeof data === "object" && data) {
+      if (data["inventory"] && data["inventory"]?.length > 0) {
+        setTags(
+          data["inventory"].split(", ").map((item) => {
+            return {
+              id: item,
+              text: item,
+            };
+          })
+        );
+      }
     }
   }, []);
   const handleDelete = (i) => {
@@ -95,8 +96,6 @@ const Entity = ({
   };
 
   const inventoryRender = (inventory, _key) => {
-    const _inv =
-      inventory && inventory?.length > 0 ? inventory.split(", ") : [];
     return (
       <div key={_key}>
         Inventory:
@@ -162,8 +161,6 @@ const Entity = ({
   //     return null;
   //   }
   // };
-
-  console.log("Re-render of entity")
 
   return (
     <div className={"entity"}>
@@ -249,13 +246,23 @@ const Entity = ({
             return (
               <div key={i} className={"entityField " + field}>
                 <label style={{ display: "inline" }}>{field}</label>
-                <TextInput 
+                {field === "description" ? (
+                  <textarea
                     value={data[field]}
-                    setText = {(text)=>{
-                      updateEntity(data, field, text, index)
+                    onChange={(e) =>
+                      updateEntity(data, field, e.target.value, index)
+                    }
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    value={data[field]}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      updateEntity(data, field, e.target.value, index);
                     }}
-                    field = {field}                  
-                    ></TextInput>
+                  />
+                )}
               </div>
             );
           })}
@@ -265,10 +272,10 @@ const Entity = ({
           <textarea
             key={index}
             type="text"
-            value={data[index]}
+            value={data ?? ""}
             onChange={(e) => {
               e.preventDefault();
-              updateEntity(data[index], null, e.target.value, index);
+              updateEntity(data, null, e.target.value, index);
             }}
           />
         </React.Fragment>
@@ -291,12 +298,12 @@ const Entity = ({
       <button onClick={() => moveEntityCallback(data, false)}>
         <ArrowDownwardIcon />
           </button>*/}
-      {type === "loreFiles" ? (
-        // type === "character" ||
-        // type === "npc" ||
-        // type === "mob" ||
-        // type === "location" ||
-        // type === "object"
+      {type === "loreFiles" ||
+      type === "character" ||
+      type === "npc" ||
+      type === "mob" ||
+      type === "location" ||
+      type === "object" ? (
         <button
           onClick={() => {
             console.log(type);
