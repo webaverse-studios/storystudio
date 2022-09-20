@@ -11,9 +11,9 @@ const Setup = () => {
     setOpenAIKey,
     getOpenAIKey,
     openAIParams,
-    setOpenAIParams,
     importProject,
     exportProject,
+    updateOpenAIParams,
   } = useContext(ApplicationContext);
 
   useEffect(() => {
@@ -70,11 +70,11 @@ const Setup = () => {
           defaultValue={openAIParams.model}
           onChange={(e) => {
             openAIParams.model = e.target.value;
-            setOpenAIParams(openAIParams);
+            updateOpenAIParams(openAIParams);
           }}
           onFocus={(e) => {
             openAIParams.model = e.target.value;
-            setOpenAIParams(openAIParams);
+            updateOpenAIParams(openAIParams);
           }}
         />
       </div>
@@ -87,7 +87,7 @@ const Setup = () => {
           defaultValue={openAIParams.top_p}
           onChange={(e) => {
             openAIParams.top_p = e.target.value;
-            setOpenAIParams(openAIParams);
+            updateOpenAIParams(openAIParams);
           }}
           onKeyPress={(event) => {
             if (!/[0-9-.]/.test(event.key)) {
@@ -96,7 +96,7 @@ const Setup = () => {
           }}
           onFocus={(e) => {
             openAIParams.top_p = e.target.value;
-            setOpenAIParams(openAIParams);
+            updateOpenAIParams(openAIParams);
           }}
         />
       </div>
@@ -109,7 +109,7 @@ const Setup = () => {
           defaultValue={openAIParams.frequency_penalty}
           onChange={(e) => {
             openAIParams.frequency_penalty = e.target.value;
-            setOpenAIParams(openAIParams);
+            updateOpenAIParams(openAIParams);
           }}
           onKeyPress={(event) => {
             if (!/[0-9-.]/.test(event.key)) {
@@ -118,7 +118,7 @@ const Setup = () => {
           }}
           onFocus={(e) => {
             openAIParams.frequency_penalty = e.target.value;
-            setOpenAIParams(openAIParams);
+            updateOpenAIParams(openAIParams);
           }}
         />
       </div>
@@ -131,7 +131,7 @@ const Setup = () => {
           defaultValue={openAIParams.presence_penalty}
           onChange={(e) => {
             openAIParams.presence_penalty = e.target.value;
-            setOpenAIParams(openAIParams);
+            updateOpenAIParams(openAIParams);
           }}
           onKeyPress={(event) => {
             if (!/[0-9-.]/.test(event.key)) {
@@ -140,7 +140,7 @@ const Setup = () => {
           }}
           onFocus={(e) => {
             openAIParams.presence_penalty = e.target.value;
-            setOpenAIParams(openAIParams);
+            updateOpenAIParams(openAIParams);
           }}
         />
       </div>
@@ -153,7 +153,7 @@ const Setup = () => {
           defaultValue={openAIParams.temperature}
           onChange={(e) => {
             openAIParams.temperature = e.target.value;
-            setOpenAIParams(openAIParams);
+            updateOpenAIParams(openAIParams);
           }}
           onKeyPress={(event) => {
             if (!/[0-9-.]/.test(event.key)) {
@@ -162,7 +162,7 @@ const Setup = () => {
           }}
           onFocus={(e) => {
             openAIParams.temperature = e.target.value;
-            setOpenAIParams(openAIParams);
+            updateOpenAIParams(openAIParams);
           }}
         />
       </div>
@@ -175,7 +175,7 @@ const Setup = () => {
           defaultValue={openAIParams.max_tokens}
           onChange={(e) => {
             openAIParams.max_tokens = e.target.value;
-            setOpenAIParams(openAIParams);
+            updateOpenAIParams(openAIParams);
           }}
           onKeyPress={(event) => {
             if (!/[0-9]/.test(event.key)) {
@@ -184,7 +184,7 @@ const Setup = () => {
           }}
           onFocus={(e) => {
             openAIParams.max_tokens = e.target.value;
-            setOpenAIParams(openAIParams);
+            updateOpenAIParams(openAIParams);
           }}
         />
       </div>
@@ -197,7 +197,7 @@ const Setup = () => {
           defaultValue={openAIParams.best_of}
           onChange={(e) => {
             openAIParams.best_of = e.target.value;
-            setOpenAIParams(openAIParams);
+            updateOpenAIParams(openAIParams);
           }}
           onKeyPress={(event) => {
             if (!/[0-9]/.test(event.key)) {
@@ -206,7 +206,7 @@ const Setup = () => {
           }}
           onFocus={(e) => {
             openAIParams.best_of = e.target.value;
-            setOpenAIParams(openAIParams);
+            updateOpenAIParams(openAIParams);
           }}
         />
       </div>

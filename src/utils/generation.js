@@ -97,8 +97,7 @@ export async function makeEmpty(type, openErrorModal) {
         },
       };
     case "loreFiles":
-      return;
-      `# Location
+      return `# Location
 
 # Characters
 
@@ -349,41 +348,51 @@ export async function generate(type, data, baseData, openErrorModal) {
 
   switch (type) {
     case "location":
-      console.log("baseData:", baseData);
       resp = await module.generateLocation(makeGenerateFn());
-      res.name = resp.name;
-      res.description = resp.description;
+      res.name = resp.description;
+      res.description = resp.comment;
       break;
     case "character":
       resp = await module.generateCharacter(makeGenerateFn());
-      res.name = resp.name;
-      res.description = resp.description;
+      res.name = resp.description;
+      res.description = resp.comment;
       res.inventory = resp.inventory;
       break;
     case "object":
       resp = await module.generateObject(makeGenerateFn());
-      res.name = resp.name;
-      res.description = resp.description;
+      res.name = resp.description;
+      res.description = resp.comment;
       break;
     case "npc":
       resp = await module.generateCharacter(makeGenerateFn());
-      res.name = resp.name;
-      res.description = resp.description;
+      res.name = resp.description;
+      res.description = resp.comment;
       res.inventory = resp.inventory;
       break;
     case "mob":
       resp = await module.generateCharacter(makeGenerateFn());
-      res.name = resp.name;
-      res.description = resp.description;
+      res.name = resp.description;
+      res.description = resp.comment;
       res.inventory = resp.inventory;
       break;
     case "loreFiles":
       const newData = { ...data };
+      console.log("newData:", newData);
       // select a start character from the array provided by data.characters
       const header =
         exampleLoreFiles[Math.floor(Math.random() * exampleLoreFiles.length)];
       newData.header = header;
       newData.location = data.location[0];
+      for (let i = 0; i < newData.character.length; i++) {
+        newData.character[i].bio = newData.character[i].description;
+      }
+      for (let i = 0; i < newData.npc.length; i++) {
+        newData.npc[i].bio = newData.npc[i].description;
+      }
+      for (let i = 0; i < newData.mob.length; i++) {
+        newData.mob[i].bio = newData.mob[i].description;
+      }
+
       resp = await module.generateLoreFile(newData, makeGenerateFn());
       console.log("resp is", resp);
       return resp;

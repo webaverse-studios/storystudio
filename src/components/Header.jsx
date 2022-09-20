@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, NavLink } from "react-router-dom";
 
 const Header = () => {
   const editMode = new URLSearchParams(window.location.search).get("edit");
-  const showUI = window.location.search.includes("showui");
+  const showUI = true// window.location.search.includes("showui");
 
   return (
     <div className="header">

@@ -43,20 +43,17 @@ if (!localStorage.getItem("loreData")) {
 /******/
 
 export function ApplicationContextProvider(props) {
-  const entities = useRef(
-    localStorage.getItem("entities")
-      ? decompressObject(localStorage.getItem("entities"))
-      : defaultEntities
-  );
-  const setEntities = (value) => {
-    entities.current = value;
-  };
-
   let openAiCommitTimer = null;
   let loreFilesCommitTimer = null;
   let entitiesCommitTimer = null;
   let dialogueCommitTimer = null;
   let loreDataCommitTimer = null;
+
+  const [entities, setEntities] = useState(
+    localStorage.getItem("entities")
+      ? decompressObject(localStorage.getItem("entities"))
+      : defaultEntities
+  );
 
   const [dialogue, setDialogue] = useState(
     localStorage.getItem("dialogue")
@@ -157,9 +154,9 @@ export function ApplicationContextProvider(props) {
       clearTimeout(entitiesCommitTimer);
     }
     entitiesCommitTimer = setTimeout(() => {
-      localStorage.setItem("entities", compressObject(entities.current));
+      localStorage.setItem("entities", compressObject(entities));
     }, 500);
-  }, [entities.current]);
+  }, [entities]);
 
   useEffect(() => {
     if (dialogueCommitTimer) {
@@ -180,7 +177,7 @@ export function ApplicationContextProvider(props) {
   }, [loreData]);
 
   const handleImport = (type, data) => {
-    const newData = { ...entities.current };
+    const newData = { ...entities };
 
     newData[type].unshift(data);
 
@@ -336,11 +333,7 @@ export function ApplicationContextProvider(props) {
 
   const handleExport = (type) => {
     const json = JSON.stringify(
-      type === "entities"
-        ? entities.current
-        : type === "lore"
-        ? loreData
-        : loreFiles
+      type === "entities" ? entities : type === "lore" ? loreData : loreFiles
     );
 
     const element = document.createElement("a");
@@ -363,7 +356,7 @@ export function ApplicationContextProvider(props) {
 
       entity.id = makeId(5);
 
-      const newEntityData = { ...entities.current };
+      const newEntityData = { ...entities };
       if (!newEntityData[entityType]) {
         newEntityData[entityType] = [];
       }
@@ -425,7 +418,7 @@ export function ApplicationContextProvider(props) {
       if (!entity.id && typeof entity === "object") {
         entity.id = makeId(5);
       }
-      const newEntityData = { ...entities.current };
+      const newEntityData = { ...entities };
       if (!newEntityData[entityType]) {
         newEntityData[entityType] = [];
       }
@@ -443,7 +436,7 @@ export function ApplicationContextProvider(props) {
       newLoreFiles.splice(index, 1);
       setLoreFiles(newLoreFiles);
     } else {
-      const newData = { ...entities.current };
+      const newData = { ...entities };
       newData[type].splice(index, 1);
 
       setEntities(newData);
@@ -456,7 +449,7 @@ export function ApplicationContextProvider(props) {
       newLoreFiles[index] = entity;
       setLoreFiles(newLoreFiles);
     } else {
-      let newData = { ...entities.current };
+      let newData = { ...entities };
 
       const entityIndex =
         typeof entity === "string" || !Object.keys(entity).includes("type")
@@ -485,7 +478,7 @@ export function ApplicationContextProvider(props) {
   };
 
   const exportLoreMD = async () => {
-    const data = [...entities.current["loreFiles"]];
+    const data = [...entities["loreFiles"]];
     const zip = new JSZip();
     for (let i = 0; i < data.length; i++) {
       zip.file(
@@ -506,14 +499,16 @@ export function ApplicationContextProvider(props) {
     const file = await getFile();
     const text = await file.text();
     const json = JSON.parse(text);
-    const { entities, dialogue } = json;
+    const { entities, dialogue, loreFiles } = json;
     setEntities(entities);
     setDialogue(dialogue);
+    setLoreFiles(loreFiles);
   };
   const exportProject = () => {
     const json = JSON.stringify({
-      etities: entities.current,
+      entities,
       dialogue,
+      loreFiles,
     });
 
     const element = document.createElement("a");
@@ -643,14 +638,14 @@ export function ApplicationContextProvider(props) {
       return;
     }
 
-    const index = entities.current[entity.type].findIndex(
+    const index = entities[entity.type].findIndex(
       (e) => e.name === entity.name
     );
     if (index === null || index === undefined || index <= -1) {
       return;
     }
 
-    const newData = { ...entities.current };
+    const newData = { ...entities };
     const newArray = [...newData[entity.type]];
     if (newArray?.length <= 1) {
       return;
@@ -658,7 +653,7 @@ export function ApplicationContextProvider(props) {
 
     if (index === 0 && up) {
       newArray.push(newArray.shift());
-    } else if (index === entities.current[entity.type].length - 1 && !up) {
+    } else if (index === entities[entity.type].length - 1 && !up) {
       newArray.unshift(newArray.pop());
     } else {
       const newIndex = up ? index - 1 : index + 1;
@@ -678,14 +673,12 @@ export function ApplicationContextProvider(props) {
     const file = await getFile();
     const text = await file.text();
     const json = JSON.parse(text);
-    const index = entities.current[json.type].findIndex(
-      (e) => e.id === json.id
-    );
+    const index = entities[json.type].findIndex((e) => e.id === json.id);
     if (index !== -1) {
       return;
     }
 
-    const newData = { ...entities.current };
+    const newData = { ...entities };
     if (!newData[json.type]) {
       newData[json.type] = [];
     }
@@ -714,23 +707,23 @@ export function ApplicationContextProvider(props) {
   };
 
   const getInventoryItems = () => {
-    return (entities.current["object"] ?? []).map((e) => e.name);
+    return (entities["object"] ?? []).map((e) => e.name);
   };
 
   const getObject = (name) => {
-    return entities.current["object"]?.find((e) => e.name === name);
+    return entities["object"]?.find((e) => e.name === name);
   };
   const getCharacter = (name) => {
-    return entities.current["character"]?.find((e) => e.name.includes(name));
+    return entities["character"]?.find((e) => e.name.includes(name));
   };
   const getNPC = (name) => {
-    return entities.current["npc"]?.find((e) => e.name === name);
+    return entities["npc"]?.find((e) => e.name === name);
   };
   const getSetting = (name) => {
-    return entities.current["setting"]?.find((e) => e.name === name);
+    return entities["setting"]?.find((e) => e.name === name);
   };
   const getMob = (name) => {
-    return entities.current["mob"]?.find((e) => e.name === name);
+    return entities["mob"]?.find((e) => e.name === name);
   };
 
   const getTypeOfObject = (name) => {
@@ -755,11 +748,12 @@ export function ApplicationContextProvider(props) {
     errorDialogData,
     openAIParams,
     setOpenAIParams,
+    updateOpenAIParams,
     dialogue,
     setDialogue,
     currentDialogueType,
     setCurrentDialogueType,
-    entities: entities.current,
+    entities: entities,
     setEntities,
     openErrorModal,
     closeErrorDialog,
