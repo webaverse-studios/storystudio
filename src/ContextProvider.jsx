@@ -83,7 +83,7 @@ export function ApplicationContextProvider(props) {
 
   const [baseData, setBaseData] = useState({
     base: null,
-    url: "https://raw.githubusercontent.com/webaverse/lore-engine/master/lore-model.js",
+    url: "https://webaverse-studios.github.io/lore-engine/master/lore-model.js",
     type: "url",
     module: {},
   });

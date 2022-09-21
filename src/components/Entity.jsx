@@ -5,7 +5,8 @@ import "../styles/App.css";
 import { ApplicationContext } from "../Context";
 import { WithContext as ReactTags } from "react-tag-input";
 import { useEffect } from "react";
-import { delimiters } from "../utils/constants";
+import { delimiters, availableVoices } from "../utils/constants";
+import { generateImage, generateVoice } from "../utils/generation";
 
 //field check if image, set source the img, if name change, generate new image
 const Entity = ({
@@ -63,7 +64,7 @@ const Entity = ({
   useEffect(() => {
     console.log(typeof data)
     if (typeof data === "object" && data) {
-      if (data["inventory"] && data["inventory"]?.length > 0) {
+      if (data["inventory"] && data["inventory"].length > 0) {
         setTags(
           data["inventory"].split(", ").map((item) => {
             return {
@@ -115,52 +116,52 @@ const Entity = ({
     );
   };
 
-  // const renderVoice = () => {
-  //   if (
-  //     data.type === "character" ||
-  //     data.type === "npc" ||
-  //     data.type === "mob"
-  //   ) {
-  //     return (
-  //       <div>
-  //         <select
-  //           value={data["voice"]}
-  //           onChange={(event) => {
-  //             updateEntity(data, "voice", event.target.value);
-  //           }}
-  //         >
-  //           {availableVoices.length > 0 &&
-  //             availableVoices.map((voice, idx) => (
-  //               <option value={voice.voice} key={idx}>
-  //                 {voice.name}
-  //               </option>
-  //             ))}
-  //         </select>
-  //         <button
-  //           onClick={async () => {
-  //             if (data["voice"]?.length <= 0) {
-  //               return;
-  //             }
+  const renderVoice = () => {
+    if (
+      data.type === "character" ||
+      data.type === "npc" ||
+      data.type === "mob"
+    ) {
+      return (
+        <div>
+          <select
+            value={data["voice"]}
+            onChange={(event) => {
+              updateEntity(data, "voice", event.target.value);
+            }}
+          >
+            {availableVoices.length > 0 &&
+              availableVoices.map((voice, idx) => (
+                <option value={voice.voice} key={idx}>
+                  {voice.name}
+                </option>
+              ))}
+          </select>
+          <button
+            onClick={async () => {
+              if (data["voice"] && data["voice"].length <= 0) {
+                return;
+              }
 
-  //             const voiceData = await generateVoice(
-  //               data["voice"],
-  //               data["description"]?.length > 0
-  //                 ? data["description"]
-  //                 : "Hello, how are you?"
-  //             );
-  //             const url = URL.createObjectURL(voiceData);
-  //             audioPlayer = new Audio(url);
-  //             audioPlayer.play();
-  //           }}
-  //         >
-  //           Test Voice
-  //         </button>
-  //       </div>
-  //     );
-  //   } else {
-  //     return null;
-  //   }
-  // };
+              const voiceData = await generateVoice(
+                data["voice"],
+                data["description"] && data["description"].length > 0
+                  ? data["description"]
+                  : "Hello, how are you?"
+              );
+              const url = URL.createObjectURL(voiceData);
+              audioPlayer = new Audio(url);
+              audioPlayer.play();
+            }}
+          >
+            Test Voice
+          </button>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
 
   return (
     <div className={"entity"}>
@@ -196,9 +197,9 @@ const Entity = ({
             ) {
               return inventoryRender(data["inventory"], i);
             }
-            // else if (field === "voice") {
-            //   return renderVoice();
-            // }
+            else if (field === "voice") {
+              return renderVoice();
+            }
             if (
               // TODO: remove these when they are properly handled
               field === "inventory" ||
@@ -212,36 +213,36 @@ const Entity = ({
             ) {
               return null;
             }
-            // else if (field === "image") {
-            //   return (
-            //     <div key={i}>
-            //       <button
-            //         onClick={async () => {
-            //           updateEntity(
-            //             data,
-            //             field,
-            //             await generateImage(
-            //               data["name"] + " " + data["description"]
-            //             ),
-            //             index
-            //           );
-            //         }}
-            //       >
-            //         {data[field]?.length > 0
-            //           ? "Regenerate Image"
-            //           : "Generate Image"}
-            //       </button>
-            //       {data[field]?.length > 0 ? (
-            //         <img
-            //           className="photo"
-            //           key={i}
-            //           src={`data:image/jpeg;base64,${data[field]}`}
-            //           alt={data["name"]}
-            //         />
-            //       ) : null}
-            //     </div>
-            //   );
-            // }
+            else if (field === "image") {
+              return (
+                <div key={i}>
+                  <button
+                    onClick={async () => {
+                      updateEntity(
+                        data,
+                        field,
+                        await generateImage(
+                          data["name"] + " " + data["description"]
+                        ),
+                        index
+                      );
+                    }}
+                  >
+                    {data[field] && data[field].length > 0
+                      ? "Regenerate Image"
+                      : "Generate Image"}
+                  </button>
+                  {data[field] && data[field].length > 0 ? (
+                    <img
+                      className="photo"
+                      key={i}
+                      src={`data:image/jpeg;base64,${data[field]}`}
+                      alt={data["name"]}
+                    />
+                  ) : null}
+                </div>
+              );
+            }
 
             return (
               <div key={i} className={"entityField " + field}>
