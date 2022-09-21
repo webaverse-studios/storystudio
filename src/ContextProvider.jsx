@@ -49,6 +49,7 @@ export function ApplicationContextProvider(props) {
   let dialogueCommitTimer = null;
   let loreDataCommitTimer = null;
 
+  const [openaiapiKey, openaisetApiKey] = useState(getOpenAIKey());
   const [voiceApi, setVoiceApi] = useState(
     localStorage.getItem("voiceApi") ? localStorage.getItem("voiceApi") : ""
   );
@@ -509,16 +510,32 @@ export function ApplicationContextProvider(props) {
     const file = await getFile();
     const text = await file.text();
     const json = JSON.parse(text);
-    const { entities, dialogue, loreFiles } = json;
+
+    const { entities, dialogue, loreFiles, settings } = json;
     setEntities(entities);
     setDialogue(dialogue);
     setLoreFiles(loreFiles);
+
+    const { voiceApi, imgApi, generateImages, openAIParams, openAIKey } =
+      settings;
+    updateVoiceApi(voiceApi);
+    updateImgApi(imgApi);
+    updateGenerateImages(generateImages);
+    updateOpenAIParams(openAIParams);
+    updateOpenAIAPiKey(openAIKey);
   };
   const exportProject = () => {
     const json = JSON.stringify({
       entities,
       dialogue,
       loreFiles,
+      settings: {
+        voiceApi,
+        imgApi,
+        generateImages,
+        openAIParams,
+        openAIKey: getOpenAIKey(),
+      },
     });
 
     const element = document.createElement("a");
@@ -788,6 +805,11 @@ export function ApplicationContextProvider(props) {
     localStorage.setItem("generateImage", value);
   };
 
+  const updateOpenAIAPiKey = (value) => {
+    setOpenAIKey(value);
+    openaisetApiKey(value);
+  };
+
   const provider = {
     getOpenAIKey: () => getOpenAIKey(),
     setOpenAIKey: (key) => setOpenAIKey(key),
@@ -846,6 +868,8 @@ export function ApplicationContextProvider(props) {
     updateImgApi,
     generateImages,
     updateGenerateImages,
+    updateOpenAIAPiKey,
+    openaiapiKey,
   };
 
   return (
