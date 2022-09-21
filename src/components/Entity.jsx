@@ -69,7 +69,7 @@ const Entity = ({
   const [tags, setTags] = React.useState([]);
   useEffect(() => {
     if (typeof data === "object" && data) {
-      if (data["inventory"] && data["inventory"]?.length > 0) {
+      if (data["inventory"] && data["inventory"].length > 0) {
         setTags(
           data["inventory"].split(", ").map((item) => {
             return {
@@ -246,7 +246,6 @@ const Entity = ({
                 </div>
               );
             }
-
             return (
               <div key={i} className={"entityField " + field}>
                 <label style={{ display: "inline" }}>{field}</label>

@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Route, NavLink } from "react-router-dom";
 
 const Header = () => {
   const editMode = new URLSearchParams(window.location.search).get("edit");
-  const showUI = true; //window.location.search.includes("showui");
 
   return (
     <div className="header">
@@ -15,11 +14,8 @@ const Header = () => {
       </div>
       <div className="headerright">
         <nav>
-          {/*<button onClick={_setDarkMode}>
-          {_darkMode ? "Light Mode" : "Dark Mode"}
-        </button>*/}
           {/* for each key in views (an object) create a button that calls setCurrentView with the view's value, and is active if the currentView is current button */}
-          {Object.keys(showUI ? views : briefViews).map((key, index) => {
+          {Object.keys(views).map((key, index) => {
             if ((editMode === "false" || !editMode) && key === "base")
               return null;
             return (
