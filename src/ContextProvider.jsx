@@ -49,6 +49,16 @@ export function ApplicationContextProvider(props) {
   let dialogueCommitTimer = null;
   let loreDataCommitTimer = null;
 
+  const [voiceApi, setVoiceApi] = useState(
+    localStorage.getItem("voiceApi") ? localStorage.getItem("voiceApi") : ""
+  );
+  const [imgApi, setImgApi] = useState(
+    localStorage.getItem("imgApi") ? localStorage.getItem("imgApi") : ""
+  );
+  const [generateImages, setGenerateImages] = useState(
+    localStorage.getItem("generateImages") === "true"
+  );
+
   const [entities, setEntities] = useState(
     localStorage.getItem("entities")
       ? decompressObject(localStorage.getItem("entities"))
@@ -638,35 +648,58 @@ export function ApplicationContextProvider(props) {
       return;
     }
 
-    const index = entities[entity.type].findIndex(
-      (e) => e.name === entity.name
-    );
-    if (index === null || index === undefined || index <= -1) {
-      return;
-    }
-
-    const newData = { ...entities };
-    const newArray = [...newData[entity.type]];
-    if (newArray?.length <= 1) {
-      return;
-    }
-
-    if (index === 0 && up) {
-      newArray.push(newArray.shift());
-    } else if (index === entities[entity.type].length - 1 && !up) {
-      newArray.unshift(newArray.pop());
-    } else {
-      const newIndex = up ? index - 1 : index + 1;
-      if (newIndex > newArray.length - 1 || newIndex < 0) {
+    if (typeof entity === "string") {
+      const index = loreFiles.findIndex((e) => e === entity);
+      if (index === -1) {
         return;
       }
-      const temp = newArray[index];
-      newArray[index] = newArray[newIndex];
-      newArray[newIndex] = temp;
-    }
 
-    newData[entity.type] = newArray;
-    setEntities(newData);
+      const newLoreFiles = [...loreFiles];
+      if (index === 0 && up) {
+        newLoreFiles.push(newLoreFiles.shift());
+      } else if (index === loreFiles.length - 1 && !up) {
+        newLoreFiles.unshift(newLoreFiles.pop());
+      } else {
+        const newIndex = up ? index - 1 : index + 1;
+        if (newIndex > newLoreFiles.length - 1 || newIndex < 0) {
+          return;
+        }
+        const temp = newLoreFiles[newIndex];
+        newLoreFiles[newIndex] = newLoreFiles[index];
+        newLoreFiles[index] = temp;
+      }
+      setLoreFiles(newLoreFiles);
+    } else {
+      const index = entities[entity.type].findIndex(
+        (e) => e.name === entity.name
+      );
+      if (index === null || index === undefined || index <= -1) {
+        return;
+      }
+
+      const newData = { ...entities };
+      const newArray = [...newData[entity.type]];
+      if (newArray?.length <= 1) {
+        return;
+      }
+
+      if (index === 0 && up) {
+        newArray.push(newArray.shift());
+      } else if (index === entities[entity.type].length - 1 && !up) {
+        newArray.unshift(newArray.pop());
+      } else {
+        const newIndex = up ? index - 1 : index + 1;
+        if (newIndex > newArray.length - 1 || newIndex < 0) {
+          return;
+        }
+        const temp = newArray[index];
+        newArray[index] = newArray[newIndex];
+        newArray[newIndex] = temp;
+      }
+
+      newData[entity.type] = newArray;
+      setEntities(newData);
+    }
   };
 
   const importEntityList = async () => {
@@ -742,6 +775,19 @@ export function ApplicationContextProvider(props) {
     return "character";
   };
 
+  const updateVoiceApi = (value) => {
+    setVoiceApi(value);
+    localStorage.setItem("voiceApi", value);
+  };
+  const updateImgApi = (value) => {
+    setImgApi(value);
+    localStorage.setItem("imgApi", value);
+  };
+  const updateGenerateImages = (value) => {
+    setGenerateImages(value);
+    localStorage.setItem("generateImage", value);
+  };
+
   const provider = {
     getOpenAIKey: () => getOpenAIKey(),
     setOpenAIKey: (key) => setOpenAIKey(key),
@@ -794,6 +840,12 @@ export function ApplicationContextProvider(props) {
     getTypeOfObject,
     setDialogEntries,
     cleanDialogueMessages,
+    voiceApi,
+    imgApi,
+    updateVoiceApi,
+    updateImgApi,
+    generateImages,
+    updateGenerateImages,
   };
 
   return (

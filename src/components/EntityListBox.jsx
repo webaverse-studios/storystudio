@@ -11,7 +11,7 @@ const EntityListBox = ({ header, type }) => {
     generateEntityCallback,
     editEntityCallback,
     deleteEntityCallback,
-    moveEntityCallback,
+    moveEntity,
     handleImport,
     exportLoreMD,
     loreFiles,
@@ -75,9 +75,7 @@ const EntityListBox = ({ header, type }) => {
                       type
                     )
                   }
-                  moveEntityCallback={(entity, up) =>
-                    moveEntityCallback(entity, up)
-                  }
+                  moveEntityCallback={(entity, up) => moveEntity(entity, up)}
                   index={index}
                   type={type}
                 />

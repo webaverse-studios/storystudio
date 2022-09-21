@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./styles/App.css";
-import { Visibility, VisibilityOff } from './styles/icons/icons';
+import { Visibility, VisibilityOff } from "./styles/icons/icons";
 import { ApplicationContext } from "./Context";
 
 const Setup = () => {
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
-  const [generateImages, setGenerateImages] = useState(false);
-
   const {
     setOpenAIKey,
     getOpenAIKey,
@@ -14,18 +12,13 @@ const Setup = () => {
     importProject,
     exportProject,
     updateOpenAIParams,
+    voiceApi,
+    imgApi,
+    updateVoiceApi,
+    updateImgApi,
+    generateImages,
+    updateGenerateImages,
   } = useContext(ApplicationContext);
-
-  useEffect(() => {
-    const gi = localStorage.getItem("generateImages");
-    if (gi) {
-      setGenerateImages(gi === "true");
-    }
-  }, []);
-  const updateGenerateImages = (value) => {
-    setGenerateImages(value);
-    localStorage.setItem("generateImages", !generateImages);
-  };
 
   return (
     <div className="view">
@@ -211,17 +204,47 @@ const Setup = () => {
         />
       </div>
       <br />
-      {/*<div className={"openai"}>
-          <span className={"baseLabel"}>Generate Images:</span>
-          <input
-            className={"baseInput"}
-            type="checkbox"
-            defaultChecked={generateImages}
-            onChange={(e) => {
-              updateGenerateImages(e.target.checked);
-            }}
-          />
-          </div>*/}
+      <div className={"openai"}>
+        <span className={"baseLabel"}>Generate Images:</span>
+        <input
+          className={"baseInput"}
+          type="checkbox"
+          defaultChecked={generateImages}
+          onChange={(e) => {
+            updateGenerateImages(e.target.checked);
+          }}
+        />
+      </div>
+      <br />
+      <div className={"openai"}>
+        <span className={"baseLabel"}>Voice API:</span>
+        <input
+          className={"baseInput"}
+          type={"input"}
+          value={voiceApi}
+          onChange={(e) => {
+            updateVoiceApi(e.target.value);
+          }}
+          onFocus={(e) => {
+            updateVoiceApi(e.target.value);
+          }}
+        />
+      </div>
+      <br />{" "}
+      <div className={"openai"}>
+        <span className={"baseLabel"}>Image API:</span>
+        <input
+          className={"baseInput"}
+          type={"input"}
+          value={imgApi}
+          onChange={(e) => {
+            updateImgApi(e.target.value);
+          }}
+          onFocus={(e) => {
+            updateImgApi(e.target.value);
+          }}
+        />
+      </div>
       <br />
       <button onClick={importProject}>Import Project</button>
       <button onClick={exportProject}>Export Project</button>
