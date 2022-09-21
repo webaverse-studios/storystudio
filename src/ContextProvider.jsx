@@ -489,7 +489,7 @@ export function ApplicationContextProvider(props) {
   };
 
   const exportLoreMD = async () => {
-    const data = [...entities["loreFiles"]];
+    const data = [...loreFiles];
     const zip = new JSZip();
     for (let i = 0; i < data.length; i++) {
       zip.file(
