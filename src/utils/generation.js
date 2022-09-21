@@ -1,7 +1,11 @@
 import axios from "axios";
 import { Buffer } from "buffer";
-import { defaultOpenAIParams, exampleLoreFiles } from "./constants.js";
-import { makeId } from "./utils.js";
+import {
+  availableVoices,
+  defaultOpenAIParams,
+  exampleLoreFiles,
+} from "./constants.js";
+import { getRandomObjectFromArray, makeId } from "./utils.js";
 
 export const generateImage = async (apiUrl, text) => {
   const resp = await axios.get(apiUrl, {
@@ -412,7 +416,14 @@ export async function generate(type, data, baseData, openErrorModal) {
   }
 
   if (type === "character" || type === "npc" || type === "mob") {
-    res.voice = "";
+    res.voice = getRandomObjectFromArray(availableVoices)?.voice;
+  }
+
+  if (
+    res.description[0] !== '"' &&
+    res.description[res.description.length - 1]
+  ) {
+    res.description = res.description.substring(0, res.description.length - 1);
   }
 
   if (res.name?.length > 0) {
