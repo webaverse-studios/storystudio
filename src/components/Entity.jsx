@@ -12,8 +12,8 @@ import { WithContext as ReactTags } from "react-tag-input";
 import { useEffect } from "react";
 import { availableVoices, delimiters } from "../utils/constants";
 import { generateImage, generateVoice } from "../utils/generation";
+import { deleteFile, uploadFile } from "../utils/storageUtils";
 
-//field check if image, set source the img, if name change, generate new image
 const Entity = ({
   index,
   data,
@@ -22,7 +22,7 @@ const Entity = ({
   moveEntityCallback,
   type,
 }) => {
-  const { getInventoryItems, voiceApi, imgApi, generateImages } =
+  const { getInventoryItems, voiceApi, imgApi, generateImages, web3Storage } =
     useContext(ApplicationContext);
 
   let audioPlayer = null;
@@ -53,6 +53,7 @@ const Entity = ({
       if (!field) {
         newData = data;
       }
+
       editEntityCallback(newData, index);
     } else {
       editEntityCallback(data, index);
@@ -169,6 +170,23 @@ const Entity = ({
     }
   };
 
+  const deleteImage = async () => {
+    if (data["image"]?.length === 59) {
+      await deleteFile(web3Storage, data["image"]);
+    }
+    updateEntity(data, "image", "", index);
+    updateEntity(data, "imageCid", "", index);
+  };
+
+  const saveImage = async () => {
+    if (!data["image"] || data["imageCid"]?.length === 59) {
+      return;
+    }
+
+    const cid = await uploadFile(web3Storage, data["image"]);
+    updateEntity(data, "imageCid", cid, index);
+  };
+
   return (
     <div className={"entity"}>
       {!shouldDelete && (
@@ -218,8 +236,20 @@ const Entity = ({
             } else if (field === "image" && generateImages) {
               return (
                 <div key={i}>
+                  {data[field]?.length > 0 && (
+                    <div>
+                      <button onClick={deleteImage}>Cancel</button>
+                      <button onClick={saveImage}>Save</button>
+                    </div>
+                  )}
                   <button
                     onClick={async () => {
+                      if (
+                        data["image"]?.length > 0 &&
+                        data["imageCid"]?.length > 0
+                      ) {
+                        await deleteImage();
+                      }
                       updateEntity(
                         data,
                         field,
@@ -309,7 +339,6 @@ const Entity = ({
       type === "object" ? (
         <button
           onClick={() => {
-            console.log(type);
             if (type === "loreFiles") {
               const element = document.createElement("a");
               const file = new Blob([data], { type: "application/text" });

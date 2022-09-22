@@ -342,7 +342,6 @@ export async function generate(type, data, baseData, openErrorModal) {
     shortname: "",
     description: "",
     inventory: [],
-    img: "",
   };
   let resp = undefined;
   const module = baseData.module;

@@ -5,6 +5,7 @@ import { ApplicationContext } from "./Context";
 
 const Setup = () => {
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
+  const [web3sKeyVisible, setWeb3sKeyVisible] = useState(false);
   const {
     openAIParams,
     importProject,
@@ -18,6 +19,8 @@ const Setup = () => {
     updateGenerateImages,
     updateOpenAIAPiKey,
     openaiapiKey,
+    web3SApiKey,
+    updateWeb3SApiKey,
   } = useContext(ApplicationContext);
 
   return (
@@ -258,6 +261,28 @@ const Setup = () => {
             updateImgApi(e.target.value);
           }}
         />
+      </div>
+      <br />
+      <div className={"openai"}>
+        <span className={"baseLabel"}>Web3 Storage API:</span>
+        <input
+          className={"baseInput"}
+          type={web3sKeyVisible ? "input" : "password"}
+          value={web3SApiKey}
+          onChange={(e) => {
+            updateWeb3SApiKey(e.target.value);
+          }}
+          onFocus={(e) => {
+            updateWeb3SApiKey(e.target.value);
+          }}
+        />
+        <button
+          className="entityVisibility"
+          value={web3sKeyVisible}
+          onClick={(e) => setWeb3sKeyVisible(!web3sKeyVisible)}
+        >
+          {apiKeyVisible ? <Visibility /> : <VisibilityOff />}
+        </button>
       </div>
       <br />
       <button onClick={importProject}>Import Project</button>
