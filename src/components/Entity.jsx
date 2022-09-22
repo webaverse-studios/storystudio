@@ -230,7 +230,8 @@ const Entity = ({
               field === "type" ||
               field === "id" ||
               field === "hash" ||
-              field === "nonce"
+              field === "nonce" ||
+              field === "imageCid"
             ) {
               return null;
             } else if (field === "image" && generateImages) {
