@@ -1,31 +1,24 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./styles/App.css";
-import { Visibility, VisibilityOff } from './styles/icons/icons';
+import { Visibility, VisibilityOff } from "./styles/icons/icons";
 import { ApplicationContext } from "./Context";
 
 const Setup = () => {
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
-  const [generateImages, setGenerateImages] = useState(false);
-
   const {
-    setOpenAIKey,
-    getOpenAIKey,
     openAIParams,
-    setOpenAIParams,
     importProject,
     exportProject,
+    updateOpenAIParams,
+    voiceApi,
+    imgApi,
+    updateVoiceApi,
+    updateImgApi,
+    generateImages,
+    updateGenerateImages,
+    updateOpenAIAPiKey,
+    openaiapiKey,
   } = useContext(ApplicationContext);
-
-  useEffect(() => {
-    const gi = localStorage.getItem("generateImages");
-    if (gi) {
-      setGenerateImages(gi === "true");
-    }
-  }, []);
-  const updateGenerateImages = (value) => {
-    setGenerateImages(value);
-    localStorage.setItem("generateImages", !generateImages);
-  };
 
   return (
     <div className="view">
@@ -47,11 +40,11 @@ const Setup = () => {
         <input
           className={"baseInput"}
           type={apiKeyVisible ? "input" : "password"}
-          defaultValue={getOpenAIKey()}
+          value={openaiapiKey}
           onChange={(e) => {
-            setOpenAIKey(e.target.value);
+            updateOpenAIAPiKey(e.target.value);
           }}
-          onFocus={(e) => setOpenAIKey(e.target.value)}
+          onFocus={(e) => updateOpenAIAPiKey(e.target.value)}
         />
         <button
           className="entityVisibility"
@@ -67,14 +60,16 @@ const Setup = () => {
         <input
           className={"baseInput"}
           type={"input"}
-          defaultValue={openAIParams.model}
+          value={openAIParams.model}
           onChange={(e) => {
-            openAIParams.model = e.target.value;
-            setOpenAIParams(openAIParams);
+            const params = { ...openAIParams };
+            params.model = e.target.value;
+            updateOpenAIParams(params);
           }}
           onFocus={(e) => {
-            openAIParams.model = e.target.value;
-            setOpenAIParams(openAIParams);
+            const params = { ...openAIParams };
+            params.model = e.target.value;
+            updateOpenAIParams(params);
           }}
         />
       </div>
@@ -84,10 +79,11 @@ const Setup = () => {
         <input
           className={"baseInput"}
           type={"input"}
-          defaultValue={openAIParams.top_p}
+          value={openAIParams.top_p}
           onChange={(e) => {
-            openAIParams.top_p = e.target.value;
-            setOpenAIParams(openAIParams);
+            const params = { ...openAIParams };
+            params.top_p = e.target.value;
+            updateOpenAIParams(params);
           }}
           onKeyPress={(event) => {
             if (!/[0-9-.]/.test(event.key)) {
@@ -95,8 +91,9 @@ const Setup = () => {
             }
           }}
           onFocus={(e) => {
-            openAIParams.top_p = e.target.value;
-            setOpenAIParams(openAIParams);
+            const params = { ...openAIParams };
+            params.top_p = e.target.value;
+            updateOpenAIParams(params);
           }}
         />
       </div>
@@ -106,10 +103,11 @@ const Setup = () => {
         <input
           className={"baseInput"}
           type={"input"}
-          defaultValue={openAIParams.frequency_penalty}
+          value={openAIParams.frequency_penalty}
           onChange={(e) => {
-            openAIParams.frequency_penalty = e.target.value;
-            setOpenAIParams(openAIParams);
+            const params = { ...openAIParams };
+            params.frequency_penalty = e.target.value;
+            updateOpenAIParams(params);
           }}
           onKeyPress={(event) => {
             if (!/[0-9-.]/.test(event.key)) {
@@ -117,8 +115,9 @@ const Setup = () => {
             }
           }}
           onFocus={(e) => {
-            openAIParams.frequency_penalty = e.target.value;
-            setOpenAIParams(openAIParams);
+            const params = { ...openAIParams };
+            params.frequency_penalty = e.target.value;
+            updateOpenAIParams(params);
           }}
         />
       </div>
@@ -128,10 +127,11 @@ const Setup = () => {
         <input
           className={"baseInput"}
           type={"input"}
-          defaultValue={openAIParams.presence_penalty}
+          value={openAIParams.presence_penalty}
           onChange={(e) => {
-            openAIParams.presence_penalty = e.target.value;
-            setOpenAIParams(openAIParams);
+            const params = { ...openAIParams };
+            params.presence_penalty = e.target.value;
+            updateOpenAIParams(params);
           }}
           onKeyPress={(event) => {
             if (!/[0-9-.]/.test(event.key)) {
@@ -139,8 +139,9 @@ const Setup = () => {
             }
           }}
           onFocus={(e) => {
-            openAIParams.presence_penalty = e.target.value;
-            setOpenAIParams(openAIParams);
+            const params = { ...openAIParams };
+            params.presence_penalty = e.target.value;
+            updateOpenAIParams(params);
           }}
         />
       </div>
@@ -150,10 +151,11 @@ const Setup = () => {
         <input
           className={"baseInput"}
           type={"input"}
-          defaultValue={openAIParams.temperature}
+          value={openAIParams.temperature}
           onChange={(e) => {
-            openAIParams.temperature = e.target.value;
-            setOpenAIParams(openAIParams);
+            const params = { ...openAIParams };
+            params.temperature = e.target.value;
+            updateOpenAIParams(params);
           }}
           onKeyPress={(event) => {
             if (!/[0-9-.]/.test(event.key)) {
@@ -161,8 +163,9 @@ const Setup = () => {
             }
           }}
           onFocus={(e) => {
-            openAIParams.temperature = e.target.value;
-            setOpenAIParams(openAIParams);
+            const params = { ...openAIParams };
+            params.temperature = e.target.value;
+            updateOpenAIParams(params);
           }}
         />
       </div>
@@ -172,10 +175,11 @@ const Setup = () => {
         <input
           className={"baseInput"}
           type={"input"}
-          defaultValue={openAIParams.max_tokens}
+          value={openAIParams.max_tokens}
           onChange={(e) => {
-            openAIParams.max_tokens = e.target.value;
-            setOpenAIParams(openAIParams);
+            const params = { ...openAIParams };
+            params.max_tokens = e.target.value;
+            updateOpenAIParams(params);
           }}
           onKeyPress={(event) => {
             if (!/[0-9]/.test(event.key)) {
@@ -183,8 +187,9 @@ const Setup = () => {
             }
           }}
           onFocus={(e) => {
-            openAIParams.max_tokens = e.target.value;
-            setOpenAIParams(openAIParams);
+            const params = { ...openAIParams };
+            params.max_tokens = e.target.value;
+            updateOpenAIParams(params);
           }}
         />
       </div>
@@ -194,10 +199,11 @@ const Setup = () => {
         <input
           className={"baseInput"}
           type={"input"}
-          defaultValue={openAIParams.best_of}
+          value={openAIParams.best_of}
           onChange={(e) => {
-            openAIParams.best_of = e.target.value;
-            setOpenAIParams(openAIParams);
+            const params = { ...openAIParams };
+            params.best_of = e.target.value;
+            updateOpenAIParams(params);
           }}
           onKeyPress={(event) => {
             if (!/[0-9]/.test(event.key)) {
@@ -205,23 +211,54 @@ const Setup = () => {
             }
           }}
           onFocus={(e) => {
-            openAIParams.best_of = e.target.value;
-            setOpenAIParams(openAIParams);
+            const params = { ...openAIParams };
+            params.best_of = e.target.value;
+            updateOpenAIParams(params);
           }}
         />
       </div>
       <br />
-      {/*<div className={"openai"}>
-          <span className={"baseLabel"}>Generate Images:</span>
-          <input
-            className={"baseInput"}
-            type="checkbox"
-            defaultChecked={generateImages}
-            onChange={(e) => {
-              updateGenerateImages(e.target.checked);
-            }}
-          />
-          </div>*/}
+      <div className={"openai"}>
+        <span className={"baseLabel"}>Generate Images:</span>
+        <input
+          className={"baseInput"}
+          type="checkbox"
+          checked={generateImages}
+          onChange={(e) => {
+            updateGenerateImages(e.target.checked);
+          }}
+        />
+      </div>
+      <br />
+      <div className={"openai"}>
+        <span className={"baseLabel"}>Voice API:</span>
+        <input
+          className={"baseInput"}
+          type={"input"}
+          value={voiceApi}
+          onChange={(e) => {
+            updateVoiceApi(e.target.value);
+          }}
+          onFocus={(e) => {
+            updateVoiceApi(e.target.value);
+          }}
+        />
+      </div>
+      <br />{" "}
+      <div className={"openai"}>
+        <span className={"baseLabel"}>Image API:</span>
+        <input
+          className={"baseInput"}
+          type={"input"}
+          value={imgApi}
+          onChange={(e) => {
+            updateImgApi(e.target.value);
+          }}
+          onFocus={(e) => {
+            updateImgApi(e.target.value);
+          }}
+        />
+      </div>
       <br />
       <button onClick={importProject}>Import Project</button>
       <button onClick={exportProject}>Export Project</button>

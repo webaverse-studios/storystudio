@@ -11,7 +11,7 @@ const EntityListBox = ({ header, type }) => {
     generateEntityCallback,
     editEntityCallback,
     deleteEntityCallback,
-    moveEntityCallback,
+    moveEntity,
     handleImport,
     exportLoreMD,
     loreFiles,
@@ -60,13 +60,11 @@ const EntityListBox = ({ header, type }) => {
             type === "loreFiles" ? loreFiles : entities[type] || entities
           ).map((key, index) => {
             return (
-              <div>
+              <div key={index}>
                 <Entity
-                  key={index}
-                  index={index}
                   data={
                     type === "loreFiles"
-                      ? loreFiles
+                      ? loreFiles[key]
                       : (entities[type] || entities)[key]
                   }
                   editEntityCallback={editEntityCallback}
@@ -77,9 +75,8 @@ const EntityListBox = ({ header, type }) => {
                       type
                     )
                   }
-                  moveEntityCallback={(entity, up) =>
-                    moveEntityCallback(entity, up)
-                  }
+                  moveEntityCallback={(entity, up) => moveEntity(entity, up)}
+                  index={index}
                   type={type}
                 />
               </div>

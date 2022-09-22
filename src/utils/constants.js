@@ -666,6 +666,7 @@ export const defaultEntities = {
       name: "The Safehouse",
       description:
         "The Safehouse is a good place to lay low for a while. It exists in a voidspace that nobody can enter without the proper permissions.",
+      image: "",
     },
   ],
   object: [
@@ -674,6 +675,7 @@ export const defaultEntities = {
       name: "Silver Sword",
       description:
         "This a sword made out of pure silver. It is very sharp and can cut through anything.",
+      image: "",
     },
   ],
   character: [
@@ -682,12 +684,16 @@ export const defaultEntities = {
       name: "Korben Dallas",
       description: "I am a meat popsicle.",
       inventory: [],
+      image: "",
+      voice: "",
     },
     {
       type: "character",
       name: "Leeloo Dallas",
       description: "Leeloo Multipass!",
       inventory: [],
+      image: "",
+      voice: "",
     },
   ],
   mob: [
@@ -697,12 +703,16 @@ export const defaultEntities = {
       description:
         "Standard goblin. Very ugly. Easily vanquished by most adventures.",
       inventory: [],
+      image: "",
+      voice: "",
     },
     {
       type: "mob",
       name: "Horse",
       description: "A majestic horse. Probably a unicorn.",
       inventory: [],
+      image: "",
+      voice: "",
     },
   ],
   npc: [
@@ -712,6 +722,8 @@ export const defaultEntities = {
       description:
         "Queen of Blades. Leader of the Swarm and executor of the Overmind.",
       inventory: [],
+      image: "",
+      voice: "",
     },
     {
       type: "npc",
@@ -719,6 +731,8 @@ export const defaultEntities = {
       description:
         "Raynor's been through hell. But he'll still come through in a pinch.",
       inventory: [],
+      image: "",
+      voice: "",
     },
   ],
 };

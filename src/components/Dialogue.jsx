@@ -218,7 +218,7 @@ const Dialogue = ({ index, _key, type }) => {
           prompt = await baseData.module.makeRPGDialoguePrompt(input);
           break;
         case "reactions":
-          prompt = await baseData.module.makeReactionPrompt();
+          prompt = await baseData.module.makeReactionPrompt(input?.name, input?.message);
           break;
         case "cutscenes":
           prompt = await baseData.module.makeCutscenePrompt(input);
@@ -380,6 +380,7 @@ const Dialogue = ({ index, _key, type }) => {
         if (!_char || _char === undefined) {
           _char = { name: chars[i], description: "" };
         }
+        _char.bio = _char.description;
 
         characters.push(_char);
       }
@@ -388,6 +389,7 @@ const Dialogue = ({ index, _key, type }) => {
         if (!npc || npc === undefined) {
           npc = { name: chars[i], description: "" };
         }
+        npc.bio = npc.description;
 
         characters.push(npc);
       }
@@ -457,6 +459,7 @@ const Dialogue = ({ index, _key, type }) => {
         if (!_char || _char === undefined) {
           _char = { name: chars[i], description: "" };
         }
+        _char.bio = _char.description;
 
         characters.push(_char);
       }
@@ -465,6 +468,7 @@ const Dialogue = ({ index, _key, type }) => {
         if (!npc || npc === undefined) {
           npc = { name: chars[i], description: "" };
         }
+        npc.bio = npc.description;
 
         characters.push(npc);
       }
@@ -476,6 +480,8 @@ const Dialogue = ({ index, _key, type }) => {
 
         objects.push(obj);
       }
+      const dstCharacter = getNPC(_npcs[0]);
+      dstCharacter.bio = dstCharacter.description;
 
       const input = {
         location,
@@ -483,7 +489,7 @@ const Dialogue = ({ index, _key, type }) => {
         characters,
         objects,
         messages,
-        dstCharacter: getNPC(_npcs[0]),
+        dstCharacter,
       };
 
       const prompt = await getPrompt(type, input);
@@ -531,7 +537,10 @@ const Dialogue = ({ index, _key, type }) => {
       selector = "output.reaction";
       const data = inputs;
       const message = data.messages[0];
-      const prompt = await getPrompt(type, null);
+      const prompt = await getPrompt(type, {
+        name: message?.speaker ? message?.speaker : "Scillia",
+        message: message?.message ? message?.message : "Hi there!",
+      });
       if (!prompt || prompt?.length <= 0) {
         return;
       }
@@ -558,6 +567,7 @@ const Dialogue = ({ index, _key, type }) => {
         if (!_char || _char === undefined) {
           _char = { name: chars[i], description: "" };
         }
+        _char.bio = _char.description;
 
         characters.push(_char);
       }
@@ -566,6 +576,7 @@ const Dialogue = ({ index, _key, type }) => {
         if (!npc || npc === undefined) {
           npc = { name: chars[i], description: "" };
         }
+        npc.bio = npc.description;
 
         npcs.push(npc);
       }

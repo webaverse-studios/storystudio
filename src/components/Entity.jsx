@@ -1,12 +1,17 @@
 import React, { useContext } from "react";
-import { ClearIcon, DeleteForever } from "../styles/icons/icons";
-import {TextInput} from './EditableBox';
+import {
+  ArrowDown,
+  ArrowUp,
+  ClearIcon,
+  DeleteForever,
+} from "../styles/icons/icons";
 
 import "../styles/App.css";
 import { ApplicationContext } from "../Context";
 import { WithContext as ReactTags } from "react-tag-input";
 import { useEffect } from "react";
-import { delimiters } from "../utils/constants";
+import { availableVoices, delimiters } from "../utils/constants";
+import { generateImage, generateVoice } from "../utils/generation";
 
 //field check if image, set source the img, if name change, generate new image
 const Entity = ({
@@ -17,13 +22,14 @@ const Entity = ({
   moveEntityCallback,
   type,
 }) => {
-  const { getInventoryItems } = useContext(ApplicationContext);
+  const { getInventoryItems, voiceApi, imgApi, generateImages } =
+    useContext(ApplicationContext);
 
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
   const updateEntity = (entities, field, data, index) => {
-    if (field && field?.length > 0) {
+    if (field) {
       if (field === "shortname") {
         return;
       }
@@ -49,7 +55,6 @@ const Entity = ({
       }
       editEntityCallback(newData, index);
     } else {
-      console.log("editing");
       editEntityCallback(data, index);
     }
   };
@@ -63,15 +68,17 @@ const Entity = ({
 
   const [tags, setTags] = React.useState([]);
   useEffect(() => {
-    if (data["inventory"] && data["inventory"]?.length > 0) {
-      setTags(
-        data["inventory"].split(", ").map((item) => {
-          return {
-            id: item,
-            text: item,
-          };
-        })
-      );
+    if (typeof data === "object" && data) {
+      if (data["inventory"] && data["inventory"].length > 0) {
+        setTags(
+          data["inventory"].split(", ").map((item) => {
+            return {
+              id: item,
+              text: item,
+            };
+          })
+        );
+      }
     }
   }, []);
   const handleDelete = (i) => {
@@ -95,8 +102,6 @@ const Entity = ({
   };
 
   const inventoryRender = (inventory, _key) => {
-    const _inv =
-      inventory && inventory?.length > 0 ? inventory.split(", ") : [];
     return (
       <div key={_key}>
         Inventory:
@@ -116,54 +121,53 @@ const Entity = ({
     );
   };
 
-  // const renderVoice = () => {
-  //   if (
-  //     data.type === "character" ||
-  //     data.type === "npc" ||
-  //     data.type === "mob"
-  //   ) {
-  //     return (
-  //       <div>
-  //         <select
-  //           value={data["voice"]}
-  //           onChange={(event) => {
-  //             updateEntity(data, "voice", event.target.value);
-  //           }}
-  //         >
-  //           {availableVoices.length > 0 &&
-  //             availableVoices.map((voice, idx) => (
-  //               <option value={voice.voice} key={idx}>
-  //                 {voice.name}
-  //               </option>
-  //             ))}
-  //         </select>
-  //         <button
-  //           onClick={async () => {
-  //             if (data["voice"]?.length <= 0) {
-  //               return;
-  //             }
+  const renderVoice = () => {
+    if (
+      data.type === "character" ||
+      data.type === "npc" ||
+      data.type === "mob"
+    ) {
+      return (
+        <div>
+          <select
+            value={data["voice"]}
+            onChange={(event) => {
+              updateEntity(data, "voice", event.target.value);
+            }}
+          >
+            {availableVoices.length > 0 &&
+              availableVoices.map((voice, idx) => (
+                <option value={voice.voice} key={idx}>
+                  {voice.name}
+                </option>
+              ))}
+          </select>
+          <button
+            onClick={async () => {
+              if (data["voice"]?.length <= 0) {
+                return;
+              }
 
-  //             const voiceData = await generateVoice(
-  //               data["voice"],
-  //               data["description"]?.length > 0
-  //                 ? data["description"]
-  //                 : "Hello, how are you?"
-  //             );
-  //             const url = URL.createObjectURL(voiceData);
-  //             audioPlayer = new Audio(url);
-  //             audioPlayer.play();
-  //           }}
-  //         >
-  //           Test Voice
-  //         </button>
-  //       </div>
-  //     );
-  //   } else {
-  //     return null;
-  //   }
-  // };
-
-  console.log("Re-render of entity")
+              const voiceData = await generateVoice(
+                voiceApi,
+                data["voice"],
+                data["description"]?.length > 0
+                  ? data["description"]
+                  : "Hello, how are you?"
+              );
+              const url = URL.createObjectURL(voiceData);
+              audioPlayer = new Audio(url);
+              audioPlayer.play();
+            }}
+          >
+            Test Voice
+          </button>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
 
   return (
     <div className={"entity"}>
@@ -198,64 +202,70 @@ const Entity = ({
                 data["type"] === "mob")
             ) {
               return inventoryRender(data["inventory"], i);
+            } else if (field === "voice") {
+              return renderVoice();
             }
-            // else if (field === "voice") {
-            //   return renderVoice();
-            // }
             if (
-              // TODO: remove these when they are properly handled
               field === "inventory" ||
-              field === "img" ||
-              field === "image" ||
               field === "shortname" ||
+              field === "img" ||
               field === "type" ||
               field === "id" ||
               field === "hash" ||
               field === "nonce"
             ) {
               return null;
+            } else if (field === "image" && generateImages) {
+              return (
+                <div key={i}>
+                  <button
+                    onClick={async () => {
+                      updateEntity(
+                        data,
+                        field,
+                        await generateImage(
+                          imgApi,
+                          data["name"] + " " + data["description"]
+                        ),
+                        index
+                      );
+                    }}
+                  >
+                    {data[field]?.length > 0
+                      ? "Regenerate Image"
+                      : "Generate Image"}
+                  </button>
+                  {data[field]?.length > 0 ? (
+                    <img
+                      className="photo"
+                      key={i}
+                      src={`data:image/jpeg;base64,${data[field]}`}
+                      alt={data["name"]}
+                    />
+                  ) : null}
+                </div>
+              );
             }
-            // else if (field === "image") {
-            //   return (
-            //     <div key={i}>
-            //       <button
-            //         onClick={async () => {
-            //           updateEntity(
-            //             data,
-            //             field,
-            //             await generateImage(
-            //               data["name"] + " " + data["description"]
-            //             ),
-            //             index
-            //           );
-            //         }}
-            //       >
-            //         {data[field]?.length > 0
-            //           ? "Regenerate Image"
-            //           : "Generate Image"}
-            //       </button>
-            //       {data[field]?.length > 0 ? (
-            //         <img
-            //           className="photo"
-            //           key={i}
-            //           src={`data:image/jpeg;base64,${data[field]}`}
-            //           alt={data["name"]}
-            //         />
-            //       ) : null}
-            //     </div>
-            //   );
-            // }
-
             return (
               <div key={i} className={"entityField " + field}>
                 <label style={{ display: "inline" }}>{field}</label>
-                <TextInput 
+                {field === "description" ? (
+                  <textarea
                     value={data[field]}
-                    setText = {(text)=>{
-                      updateEntity(data, field, text, index)
+                    onChange={(e) =>
+                      updateEntity(data, field, e.target.value, index)
+                    }
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    value={data[field]}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      updateEntity(data, field, e.target.value, index);
                     }}
-                    field = {field}                  
-                    ></TextInput>
+                  />
+                )}
               </div>
             );
           })}
@@ -265,10 +275,10 @@ const Entity = ({
           <textarea
             key={index}
             type="text"
-            value={data[index]}
+            value={data ?? ""}
             onChange={(e) => {
               e.preventDefault();
-              updateEntity(data[index], null, e.target.value, index);
+              updateEntity(data, null, e.target.value, index);
             }}
           />
         </React.Fragment>
@@ -285,18 +295,18 @@ const Entity = ({
           />
         </React.Fragment>
       )}
-      {/*<button onClick={() => moveEntityCallback(data, true)}>
-        <ArrowUpwardIcon />
+      <button onClick={() => moveEntityCallback(data, true)}>
+        <ArrowUp />
       </button>
       <button onClick={() => moveEntityCallback(data, false)}>
-        <ArrowDownwardIcon />
-          </button>*/}
-      {type === "loreFiles" ? (
-        // type === "character" ||
-        // type === "npc" ||
-        // type === "mob" ||
-        // type === "location" ||
-        // type === "object"
+        <ArrowDown />
+      </button>
+      {type === "loreFiles" ||
+      type === "character" ||
+      type === "npc" ||
+      type === "mob" ||
+      type === "location" ||
+      type === "object" ? (
         <button
           onClick={() => {
             console.log(type);

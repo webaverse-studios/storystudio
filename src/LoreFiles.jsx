@@ -9,10 +9,8 @@ import JSZip from "jszip";
 
 function LoreFiles() {
   const {
-    dataType,
     baseData,
     ingredients,
-    setEntities,
     loreFiles,
     setLoreFiles,
     exportHandler,
