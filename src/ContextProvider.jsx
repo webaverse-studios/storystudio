@@ -20,6 +20,8 @@ import {
 } from "./utils/utils";
 import { generate, makeEmpty, makeDialogue } from "./utils/generation";
 import JSZip from "jszip";
+import { Web3Storage } from "web3.storage";
+import { downloadFile, uploadFile } from "./utils/storageUtils";
 
 function setOpenAIKey(newKey) {
   localStorage.setItem("openai_key", newKey);
@@ -48,6 +50,26 @@ export function ApplicationContextProvider(props) {
   let entitiesCommitTimer = null;
   let dialogueCommitTimer = null;
   let loreDataCommitTimer = null;
+
+  const [openaiapiKey, openaisetApiKey] = useState(getOpenAIKey());
+  const [voiceApi, setVoiceApi] = useState(
+    localStorage.getItem("voiceApi") ? localStorage.getItem("voiceApi") : ""
+  );
+  const [imgApi, setImgApi] = useState(
+    localStorage.getItem("imgApi") ? localStorage.getItem("imgApi") : ""
+  );
+  const [generateImages, setGenerateImages] = useState(
+    localStorage.getItem("generateImages") === "true"
+  );
+  const [web3SApiKey, setWeb3SApiKey] = useState(
+    localStorage.getItem("web3SApiKey")
+      ? localStorage.getItem("web3SApiKey")
+      : ""
+  );
+
+  const [web3Storage, setWeb3Storage] = useState(
+    web3SApiKey ? new Web3Storage({ token: web3SApiKey }) : null
+  );
 
   const [entities, setEntities] = useState(
     localStorage.getItem("entities")
@@ -149,14 +171,38 @@ export function ApplicationContextProvider(props) {
     }, 500);
   }, [loreFiles]);
 
-  useEffect(() => {
-    if (entitiesCommitTimer) {
-      clearTimeout(entitiesCommitTimer);
+  const downloadEntities = async () => {
+    const newEntities = { ...entities };
+    const keys = Object.keys(newEntities);
+    for (let i = 0; i < keys.length; i++) {
+      for (let j = 0; j < newEntities[keys[i]].length; j++) {
+        console.log(newEntities[keys[i]][j].imageCid?.length)
+        if (newEntities[keys[i]][j].imageCid?.length === 59) {
+          newEntities[keys[i]][j].image = await downloadFile(
+            web3Storage,
+            newEntities[keys[i]][j].imageCid
+          );
+        }
+      }
     }
-    entitiesCommitTimer = setTimeout(() => {
-      localStorage.setItem("entities", compressObject(entities));
-    }, 500);
-  }, [entities]);
+    setEntities(newEntities);
+  };
+
+  useEffect(() => {
+    onbeforeunload = (event) => {
+      const newEntities = { ...entities };
+      const keys = Object.keys(newEntities);
+      for (let i = 0; i < keys.length; i++) {
+        for (let j = 0; j < newEntities[keys[i]].length; j++) {
+          if (newEntities[keys[i]][j].image?.length > 0) {
+            newEntities[keys[i]][j].image = "";
+          }
+        }
+      }
+      localStorage.setItem("entities", compressObject(newEntities));
+    };
+    downloadEntities();
+  }, []);
 
   useEffect(() => {
     if (dialogueCommitTimer) {
@@ -451,14 +497,11 @@ export function ApplicationContextProvider(props) {
     } else {
       let newData = { ...entities };
 
-      const entityIndex =
-        typeof entity === "string" || !Object.keys(entity).includes("type")
-          ? index
-          : newData[entity.type].findIndex((e) => e.id === entity.id);
+      const entityIndex = !Object.keys(entity).includes("type")
+        ? index
+        : newData[entity.type].findIndex((e) => e.id === entity.id);
 
-      newData[Object.keys(entity).includes("type") ? entity.type : "loreFiles"][
-        entityIndex
-      ] = entity;
+      newData[entity.type][entityIndex] = entity;
 
       setEntities(newData);
     }
@@ -478,7 +521,7 @@ export function ApplicationContextProvider(props) {
   };
 
   const exportLoreMD = async () => {
-    const data = [...entities["loreFiles"]];
+    const data = [...loreFiles];
     const zip = new JSZip();
     for (let i = 0; i < data.length; i++) {
       zip.file(
@@ -499,16 +542,51 @@ export function ApplicationContextProvider(props) {
     const file = await getFile();
     const text = await file.text();
     const json = JSON.parse(text);
-    const { entities, dialogue, loreFiles } = json;
+
+    const { entities, dialogue, loreFiles, settings } = json;
     setEntities(entities);
+    downloadEntities();
     setDialogue(dialogue);
     setLoreFiles(loreFiles);
+
+    const {
+      voiceApi,
+      imgApi,
+      generateImages,
+      openAIParams,
+      openAIKey,
+      web3SApiKey,
+    } = settings;
+    updateVoiceApi(voiceApi);
+    updateImgApi(imgApi);
+    updateGenerateImages(generateImages);
+    updateOpenAIParams(openAIParams);
+    updateOpenAIAPiKey(openAIKey);
+    updateWeb3SApiKey(web3SApiKey);
   };
   const exportProject = () => {
+    const newEntities = { ...entities };
+    const keys = Object.keys(newEntities);
+    for (let i = 0; i < keys.length; i++) {
+      for (let j = 0; j < newEntities[keys[i]].length; j++) {
+        if (newEntities[keys[i]][j].image?.length > 0) {
+          newEntities[keys[i]][j].image = "";
+        }
+      }
+    }
+
     const json = JSON.stringify({
-      entities,
+      entities: newEntities,
       dialogue,
       loreFiles,
+      settings: {
+        voiceApi,
+        imgApi,
+        generateImages,
+        openAIParams,
+        openAIKey: getOpenAIKey(),
+        web3SApiKey,
+      },
     });
 
     const element = document.createElement("a");
@@ -638,35 +716,58 @@ export function ApplicationContextProvider(props) {
       return;
     }
 
-    const index = entities[entity.type].findIndex(
-      (e) => e.name === entity.name
-    );
-    if (index === null || index === undefined || index <= -1) {
-      return;
-    }
-
-    const newData = { ...entities };
-    const newArray = [...newData[entity.type]];
-    if (newArray?.length <= 1) {
-      return;
-    }
-
-    if (index === 0 && up) {
-      newArray.push(newArray.shift());
-    } else if (index === entities[entity.type].length - 1 && !up) {
-      newArray.unshift(newArray.pop());
-    } else {
-      const newIndex = up ? index - 1 : index + 1;
-      if (newIndex > newArray.length - 1 || newIndex < 0) {
+    if (typeof entity === "string") {
+      const index = loreFiles.findIndex((e) => e === entity);
+      if (index === -1) {
         return;
       }
-      const temp = newArray[index];
-      newArray[index] = newArray[newIndex];
-      newArray[newIndex] = temp;
-    }
 
-    newData[entity.type] = newArray;
-    setEntities(newData);
+      const newLoreFiles = [...loreFiles];
+      if (index === 0 && up) {
+        newLoreFiles.push(newLoreFiles.shift());
+      } else if (index === loreFiles.length - 1 && !up) {
+        newLoreFiles.unshift(newLoreFiles.pop());
+      } else {
+        const newIndex = up ? index - 1 : index + 1;
+        if (newIndex > newLoreFiles.length - 1 || newIndex < 0) {
+          return;
+        }
+        const temp = newLoreFiles[newIndex];
+        newLoreFiles[newIndex] = newLoreFiles[index];
+        newLoreFiles[index] = temp;
+      }
+      setLoreFiles(newLoreFiles);
+    } else {
+      const index = entities[entity.type].findIndex(
+        (e) => e.name === entity.name
+      );
+      if (index === null || index === undefined || index <= -1) {
+        return;
+      }
+
+      const newData = { ...entities };
+      const newArray = [...newData[entity.type]];
+      if (newArray?.length <= 1) {
+        return;
+      }
+
+      if (index === 0 && up) {
+        newArray.push(newArray.shift());
+      } else if (index === entities[entity.type].length - 1 && !up) {
+        newArray.unshift(newArray.pop());
+      } else {
+        const newIndex = up ? index - 1 : index + 1;
+        if (newIndex > newArray.length - 1 || newIndex < 0) {
+          return;
+        }
+        const temp = newArray[index];
+        newArray[index] = newArray[newIndex];
+        newArray[newIndex] = temp;
+      }
+
+      newData[entity.type] = newArray;
+      setEntities(newData);
+    }
   };
 
   const importEntityList = async () => {
@@ -742,6 +843,32 @@ export function ApplicationContextProvider(props) {
     return "character";
   };
 
+  const updateVoiceApi = (value) => {
+    setVoiceApi(value);
+    localStorage.setItem("voiceApi", value);
+  };
+  const updateImgApi = (value) => {
+    setImgApi(value);
+    localStorage.setItem("imgApi", value);
+  };
+  const updateGenerateImages = (value) => {
+    setGenerateImages(value);
+    localStorage.setItem("generateImage", value);
+  };
+
+  const updateOpenAIAPiKey = (value) => {
+    setOpenAIKey(value);
+    openaisetApiKey(value);
+  };
+
+  const updateWeb3SApiKey = (value) => {
+    setWeb3SApiKey(value);
+    localStorage.setItem("web3SApiKey", value);
+    if (value) {
+      setWeb3Storage(new Web3Storage({ token: value }));
+    }
+  };
+
   const provider = {
     getOpenAIKey: () => getOpenAIKey(),
     setOpenAIKey: (key) => setOpenAIKey(key),
@@ -794,6 +921,17 @@ export function ApplicationContextProvider(props) {
     getTypeOfObject,
     setDialogEntries,
     cleanDialogueMessages,
+    voiceApi,
+    imgApi,
+    updateVoiceApi,
+    updateImgApi,
+    generateImages,
+    updateGenerateImages,
+    updateOpenAIAPiKey,
+    openaiapiKey,
+    web3Storage,
+    web3SApiKey,
+    updateWeb3SApiKey,
   };
 
   return (

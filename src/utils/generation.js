@@ -1,15 +1,14 @@
 import axios from "axios";
 import { Buffer } from "buffer";
 import {
+  availableVoices,
   defaultOpenAIParams,
-  stable_diffusion_url,
-  voice_url,
   exampleLoreFiles,
 } from "./constants.js";
-import { makeId } from "./utils.js";
+import { getRandomObjectFromArray, makeId } from "./utils.js";
 
-export const generateImage = async (text) => {
-  const resp = await axios.get(stable_diffusion_url, {
+export const generateImage = async (apiUrl, text) => {
+  const resp = await axios.get(apiUrl, {
     params: {
       s: text,
     },
@@ -19,7 +18,7 @@ export const generateImage = async (text) => {
   return base64String;
 };
 
-export const generateVoice = async (character, text) => {
+export const generateVoice = async (voice_url, character, text) => {
   const resp = await axios.get(voice_url, {
     params: {
       voice: character,
@@ -58,6 +57,7 @@ export async function makeEmpty(type, openErrorModal) {
         type: type,
         name: "New Location",
         description: "This is a description of a new location",
+        image: "",
       };
     case "character":
       return {
@@ -65,6 +65,8 @@ export async function makeEmpty(type, openErrorModal) {
         name: "New Character",
         description: "This is a description of a new character",
         inventory: [],
+        image: "",
+        voice: "",
       };
     case "object":
       return {
@@ -72,6 +74,8 @@ export async function makeEmpty(type, openErrorModal) {
         name: "New Object",
         description: "This is a description of a new object",
         inventory: [],
+        image: "",
+        voice: "",
       };
     case "npc":
       return {
@@ -79,6 +83,8 @@ export async function makeEmpty(type, openErrorModal) {
         name: "New NPC",
         description: "This is a description of a new NPC",
         inventory: [],
+        image: "",
+        voice: "",
       };
     case "mob":
       return {
@@ -86,6 +92,8 @@ export async function makeEmpty(type, openErrorModal) {
         name: "New mob",
         description: "This is a description of a new mob",
         inventory: [],
+        image: "",
+        voice: "",
       };
     case "objectComment":
       return {
@@ -334,7 +342,6 @@ export async function generate(type, data, baseData, openErrorModal) {
     shortname: "",
     description: "",
     inventory: [],
-    img: "",
   };
   let resp = undefined;
   const module = baseData.module;
@@ -392,86 +399,31 @@ export async function generate(type, data, baseData, openErrorModal) {
       resp = await module.generateLoreFile(newData, makeGenerateFn());
       console.log("resp is", resp);
       return resp;
-    case "objectComment":
-      resp = await module.generateObjectComment(
-        getRandomEntityFull(data, "object"),
-        makeGenerateFn()
-      );
-      return resp;
-    case "npcComment":
-      resp = await module.generateNPCComment(
-        getRandomEntityFull(data, "npc"),
-        makeGenerateFn()
-      );
-      return resp;
-    case "mobComment":
-      resp = await module.generateMobComment(
-        getRandomEntityFull(data, "mob"),
-        makeGenerateFn()
-      );
-      return resp;
-    case "loadingComment":
-      resp = await module.generateLoadingComment(
-        getRandomEntityFull(data, "location"),
-        makeGenerateFn()
-      );
-      return resp;
-    case "banter":
-      console.log("generating banter");
-      resp = await module.generateBanter(
-        getRandomEntity(data, "character"),
-        makeGenerateFn()
-      );
-      if (!resp || resp?.length <= 0) {
-        return generate("banter", data, baseData, openErrorModal);
-      }
-      return { description: resp };
-
-    case "exposition":
-      resp = await module.generateExposition(makeGenerateFn());
-      if (!resp || resp?.length <= 0) {
-        return generate("exposition", data, baseData, openErrorModal);
-      }
-      return { description: resp };
-    case "rpgDialogue":
-      resp = await module.generateRPGDialogue(
-        getRandomEntity(data, "character"),
-        makeGenerateFn()
-      );
-      if (!resp || resp?.length <= 0) {
-        return generate("rpgDialogue", data, baseData, openErrorModal);
-      }
-      return { description: resp };
-    case "reactions":
-      console.log(module);
-      resp = await module.generateReaction(
-        getRandomEntity(data, "character"),
-        makeGenerateFn()
-      );
-      if (!resp || resp?.length <= 0) {
-        return generate("reactions", data, baseData, openErrorModal);
-      }
-      return { description: resp };
-    case "cutscenes":
-      resp = await module.generateCutscenes(makeGenerateFn());
-      if (!resp || resp?.length <= 0) {
-        return generate("cutscenes", data, baseData, openErrorModal);
-      }
-      return { description: resp };
-
-    case "quests":
-      resp = await module.generateAction(
-        getRandomEntity(data, "location"),
-        makeGenerateFn()
-      );
-      console.log("ACTION:", resp);
-      return resp;
     default:
       openErrorModal("Unknown type " + type);
       return null;
   }
 
-  res.image = ""; //await generateImage(resp.name);
+  if (
+    type === "location" ||
+    type === "character" ||
+    type === "object" ||
+    type === "npc" ||
+    type === "mob"
+  ) {
+    res.image = "";
+  }
+
+  if (type === "character" || type === "npc" || type === "mob") {
+    res.voice = getRandomObjectFromArray(availableVoices)?.voice;
+  }
+
+  if (
+    res.description[0] !== '"' &&
+    res.description[res.description.length - 1]
+  ) {
+    res.description = res.description.substring(0, res.description.length - 1);
+  }
 
   if (res.name?.length > 0) {
     res.id = makeId(5);
@@ -554,7 +506,6 @@ export async function openaiRequest(key, prompt, stop) {
 
 export function makeGenerationFn(prompt, stop) {
   return async () => {
-    console.log("STOP:", stop);
     return await openaiRequest(
       localStorage.getItem("openai_key"),
       prompt,
@@ -565,7 +516,6 @@ export function makeGenerationFn(prompt, stop) {
 
 export function makeGenerateFn() {
   return async (prompt, stop) => {
-    console.log("STOP:", stop);
     return await openaiRequest(
       localStorage.getItem("openai_key"),
       prompt,

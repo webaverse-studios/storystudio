@@ -1,14 +1,19 @@
 import React, { useContext } from "react";
-import { ClearIcon, DeleteForever } from "../styles/icons/icons";
+import {
+  ArrowDown,
+  ArrowUp,
+  ClearIcon,
+  DeleteForever,
+} from "../styles/icons/icons";
 
 import "../styles/App.css";
 import { ApplicationContext } from "../Context";
 import { WithContext as ReactTags } from "react-tag-input";
 import { useEffect } from "react";
-import { delimiters, availableVoices } from "../utils/constants";
+import { availableVoices, delimiters } from "../utils/constants";
 import { generateImage, generateVoice } from "../utils/generation";
+import { deleteFile, uploadFile } from "../utils/storageUtils";
 
-//field check if image, set source the img, if name change, generate new image
 const Entity = ({
   index,
   data,
@@ -17,7 +22,8 @@ const Entity = ({
   moveEntityCallback,
   type,
 }) => {
-  const { getInventoryItems, loreFiles } = useContext(ApplicationContext);
+  const { getInventoryItems, voiceApi, imgApi, generateImages, web3Storage } =
+    useContext(ApplicationContext);
 
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
@@ -47,6 +53,7 @@ const Entity = ({
       if (!field) {
         newData = data;
       }
+
       editEntityCallback(newData, index);
     } else {
       editEntityCallback(data, index);
@@ -62,7 +69,6 @@ const Entity = ({
 
   const [tags, setTags] = React.useState([]);
   useEffect(() => {
-    console.log(typeof data)
     if (typeof data === "object" && data) {
       if (data["inventory"] && data["inventory"].length > 0) {
         setTags(
@@ -139,13 +145,14 @@ const Entity = ({
           </select>
           <button
             onClick={async () => {
-              if (data["voice"] && data["voice"].length <= 0) {
+              if (data["voice"]?.length <= 0) {
                 return;
               }
 
               const voiceData = await generateVoice(
+                voiceApi,
                 data["voice"],
-                data["description"] && data["description"].length > 0
+                data["description"]?.length > 0
                   ? data["description"]
                   : "Hello, how are you?"
               );
@@ -161,6 +168,23 @@ const Entity = ({
     } else {
       return null;
     }
+  };
+
+  const deleteImage = async () => {
+    if (data["image"]?.length === 59) {
+      await deleteFile(web3Storage, data["image"]);
+    }
+    updateEntity(data, "image", "", index);
+    updateEntity(data, "imageCid", "", index);
+  };
+
+  const saveImage = async () => {
+    if (!data["image"] || data["imageCid"]?.length === 59) {
+      return;
+    }
+
+    const cid = await uploadFile(web3Storage, data["image"]);
+    updateEntity(data, "imageCid", cid, index);
   };
 
   return (
@@ -196,43 +220,53 @@ const Entity = ({
                 data["type"] === "mob")
             ) {
               return inventoryRender(data["inventory"], i);
-            }
-            else if (field === "voice") {
+            } else if (field === "voice") {
               return renderVoice();
             }
             if (
-              // TODO: remove these when they are properly handled
               field === "inventory" ||
-              field === "img" ||
-              field === "image" ||
               field === "shortname" ||
+              field === "img" ||
               field === "type" ||
               field === "id" ||
               field === "hash" ||
-              field === "nonce"
+              field === "nonce" ||
+              field === "imageCid"
             ) {
               return null;
-            }
-            else if (field === "image") {
+            } else if (field === "image" && generateImages) {
               return (
                 <div key={i}>
+                  {data[field]?.length > 0 && (
+                    <div>
+                      <button onClick={deleteImage}>Cancel</button>
+                      <button onClick={saveImage}>Save</button>
+                    </div>
+                  )}
                   <button
                     onClick={async () => {
+                      if (
+                        data["image"]?.length > 0 &&
+                        data["imageCid"]?.length > 0
+                      ) {
+                        await deleteImage();
+                      }
                       updateEntity(
                         data,
                         field,
                         await generateImage(
+                          imgApi,
                           data["name"] + " " + data["description"]
                         ),
                         index
                       );
                     }}
                   >
-                    {data[field] && data[field].length > 0
+                    {data[field]?.length > 0
                       ? "Regenerate Image"
                       : "Generate Image"}
                   </button>
-                  {data[field] && data[field].length > 0 ? (
+                  {data[field]?.length > 0 ? (
                     <img
                       className="photo"
                       key={i}
@@ -243,7 +277,6 @@ const Entity = ({
                 </div>
               );
             }
-
             return (
               <div key={i} className={"entityField " + field}>
                 <label style={{ display: "inline" }}>{field}</label>
@@ -293,12 +326,12 @@ const Entity = ({
           />
         </React.Fragment>
       )}
-      {/*<button onClick={() => moveEntityCallback(data, true)}>
-        <ArrowUpwardIcon />
+      <button onClick={() => moveEntityCallback(data, true)}>
+        <ArrowUp />
       </button>
       <button onClick={() => moveEntityCallback(data, false)}>
-        <ArrowDownwardIcon />
-          </button>*/}
+        <ArrowDown />
+      </button>
       {type === "loreFiles" ||
       type === "character" ||
       type === "npc" ||
@@ -307,7 +340,6 @@ const Entity = ({
       type === "object" ? (
         <button
           onClick={() => {
-            console.log(type);
             if (type === "loreFiles") {
               const element = document.createElement("a");
               const file = new Blob([data], { type: "application/text" });

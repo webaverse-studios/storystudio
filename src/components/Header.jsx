@@ -13,23 +13,24 @@ const Header = () => {
         <h1>Story Studio</h1>
       </div>
       <div className="headerright">
-      <nav>
-        {/* for each key in views (an object) create a button that calls setCurrentView with the view's value, and is active if the currentView is current button */}
-        {Object.keys(views).map((key, index) => {
-          if ((editMode === "false" || !editMode) && key === "base")
-            return null;
-          return (
-            <NavLink to={views[key]}
-              key={key}
-              className={isActive =>
-                "viewButton " + (isActive ? "activeButton" : "")
-              }
-            >
-              {views[key]}
-            </NavLink>
+        <nav>
+          {/* for each key in views (an object) create a button that calls setCurrentView with the view's value, and is active if the currentView is current button */}
+          {Object.keys(views).map((key, index) => {
+            if ((editMode === "false" || !editMode) && key === "base")
+              return null;
+            return (
+              <NavLink
+                to={views[key]}
+                key={key}
+                className={(isActive) =>
+                  "viewButton " + (isActive ? "activeButton" : "")
+                }
+              >
+                {views[key]}
+              </NavLink>
             );
           })}
-          </nav>
+        </nav>
       </div>
     </div>
   );
