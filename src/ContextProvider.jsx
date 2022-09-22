@@ -53,13 +53,13 @@ export function ApplicationContextProvider(props) {
 
   const [openaiapiKey, openaisetApiKey] = useState(getOpenAIKey());
   const [voiceApi, setVoiceApi] = useState(
-    localStorage.getItem("voiceApi") ? localStorage.getItem("voiceApi") : ""
+    localStorage.getItem("voiceApi") ? localStorage.getItem("voiceApi") : "https://voice.webaverse.com/tts"
   );
   const [imgApi, setImgApi] = useState(
-    localStorage.getItem("imgApi") ? localStorage.getItem("imgApi") : ""
+    localStorage.getItem("imgApi") ? localStorage.getItem("imgApi") : "https://stable-diffusion.webaverse.com/image"
   );
   const [generateImages, setGenerateImages] = useState(
-    localStorage.getItem("generateImages") === "true"
+    localStorage.getItem("generateImages") ? localStorage.getItem("generateImages") === "true" : true
   );
   const [web3SApiKey, setWeb3SApiKey] = useState(
     localStorage.getItem("web3SApiKey")
