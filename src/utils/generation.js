@@ -1,10 +1,6 @@
 import axios from "axios";
 import { Buffer } from "buffer";
-import {
-  availableVoices,
-  defaultOpenAIParams,
-  exampleLoreFiles,
-} from "./constants.js";
+import { defaultOpenAIParams, exampleLoreFiles } from "./constants.js";
 import { getRandomObjectFromArray, makeId } from "./utils.js";
 
 export const generateImage = async (apiUrl, text) => {
@@ -58,6 +54,7 @@ export async function makeEmpty(type, openErrorModal) {
         name: "New Location",
         description: "This is a description of a new location",
         image: "",
+        id: makeId(5),
       };
     case "character":
       return {
@@ -67,6 +64,7 @@ export async function makeEmpty(type, openErrorModal) {
         inventory: [],
         image: "",
         voice: "",
+        id: makeId(5),
       };
     case "object":
       return {
@@ -76,6 +74,7 @@ export async function makeEmpty(type, openErrorModal) {
         inventory: [],
         image: "",
         voice: "",
+        id: makeId(5),
       };
     case "npc":
       return {
@@ -85,6 +84,7 @@ export async function makeEmpty(type, openErrorModal) {
         inventory: [],
         image: "",
         voice: "",
+        id: makeId(5),
       };
     case "mob":
       return {
@@ -94,6 +94,7 @@ export async function makeEmpty(type, openErrorModal) {
         inventory: [],
         image: "",
         voice: "",
+        id: makeId(5),
       };
     case "objectComment":
       return {
@@ -335,7 +336,13 @@ export async function makeDialogue(type, openErrorModal) {
   return res;
 }
 
-export async function generate(type, data, baseData, openErrorModal) {
+export async function generate(
+  type,
+  data,
+  baseData,
+  openErrorModal,
+  availableVoices
+) {
   const res = {
     type: type,
     name: "",

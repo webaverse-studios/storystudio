@@ -3,6 +3,7 @@ import { getFile } from "./components/getFile";
 import { ApplicationContext } from "./Context";
 import "./styles/App.css";
 import {
+  availableVoicesJson,
   defaultDialogue,
   defaultEntities,
   defaultOpenAIParams,
@@ -22,6 +23,7 @@ import { generate, makeEmpty, makeDialogue } from "./utils/generation";
 import JSZip from "jszip";
 import { Web3Storage } from "web3.storage";
 import { downloadFile, uploadFile } from "./utils/storageUtils";
+import axios from "axios";
 
 function setOpenAIKey(newKey) {
   localStorage.setItem("openai_key", newKey);
@@ -124,6 +126,8 @@ export function ApplicationContextProvider(props) {
   const [openAIParams, setOpenAIParams] = useState(
     localStorage.getItem("openAIParams") || defaultOpenAIParams
   );
+
+  const [availableVoices, setAvailableVoices] = useState([]);
 
   useEffect(() => {
     const oap = localStorage.getItem("openAIParams");
@@ -438,7 +442,7 @@ export function ApplicationContextProvider(props) {
         data,
         baseData,
         openErrorModal,
-        lore
+        availableVoices
       );
 
       if (!entity) {
@@ -457,7 +461,7 @@ export function ApplicationContextProvider(props) {
           data,
           baseData,
           openErrorModal,
-          lore
+          availableVoices
         );
       } catch (e) {
         // openErrorModal("Error generating entity", e);
@@ -629,7 +633,13 @@ export function ApplicationContextProvider(props) {
     setGenerating(true);
     let d = null;
     try {
-      d = await generate(type, entities, baseData, openErrorModal);
+      d = await generate(
+        type,
+        entities,
+        baseData,
+        openErrorModal,
+        availableVoices
+      );
     } catch (e) {
       // openErrorModal("Error generating entity", e);
       console.log("error", e);
@@ -895,6 +905,20 @@ export function ApplicationContextProvider(props) {
     }
   };
 
+  const loadAvailableVoices = async () => {
+    const file = await axios.get(availableVoicesJson);
+    console.log(file.data);
+
+    const newData = [];
+    for (let i = 0; i < file.data.length; i++) {
+      newData.push({ name: file.data[i].name, voice: file.data[i].drive_id });
+    }
+    setAvailableVoices(newData);
+  };
+  useEffect(() => {
+    loadAvailableVoices();
+  }, []);
+
   const provider = {
     getOpenAIKey: () => getOpenAIKey(),
     setOpenAIKey: (key) => setOpenAIKey(key),
@@ -958,6 +982,7 @@ export function ApplicationContextProvider(props) {
     web3Storage,
     web3SApiKey,
     updateWeb3SApiKey,
+    availableVoices,
   };
 
   return (

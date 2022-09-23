@@ -10,7 +10,7 @@ import "../styles/App.css";
 import { ApplicationContext } from "../Context";
 import { WithContext as ReactTags } from "react-tag-input";
 import { useEffect } from "react";
-import { availableVoices, delimiters } from "../utils/constants";
+import { delimiters } from "../utils/constants";
 import { generateImage, generateVoice } from "../utils/generation";
 import { deleteFile, uploadFile } from "../utils/storageUtils";
 import { useState } from "react";
@@ -23,8 +23,14 @@ const Entity = ({
   moveEntityCallback,
   type,
 }) => {
-  const { getInventoryItems, voiceApi, imgApi, generateImages, web3Storage } =
-    useContext(ApplicationContext);
+  const {
+    getInventoryItems,
+    voiceApi,
+    imgApi,
+    generateImages,
+    web3Storage,
+    availableVoices,
+  } = useContext(ApplicationContext);
 
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = useState(false);
