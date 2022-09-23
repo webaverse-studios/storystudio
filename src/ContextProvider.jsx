@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { getFile } from "./components/getFile";
 import { ApplicationContext } from "./Context";
 import "./styles/App.css";
