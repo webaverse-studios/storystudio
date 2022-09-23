@@ -15,7 +15,6 @@ async function getText(blob) {
 
 export async function uploadFile(w3s, data) {
   if (!w3s || !data) {
-    console.log("no data");
     return;
   }
 

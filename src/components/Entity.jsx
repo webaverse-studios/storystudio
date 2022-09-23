@@ -50,6 +50,11 @@ const Entity = ({
       //     "#" +
       //     data;
       // }
+
+      if (field === "image") {
+        newData["imageCid"] = "";
+      }
+
       if (!field) {
         newData = data;
       }
@@ -180,6 +185,7 @@ const Entity = ({
 
   const saveImage = async () => {
     if (!data["image"] || data["imageCid"]?.length === 59) {
+      console.log(data["imageCid"]?.length);
       return;
     }
 
@@ -245,9 +251,12 @@ const Entity = ({
                   )}
                   <button
                     onClick={async () => {
+                      console.log(
+                        data["image"].length > 0 || data["imageCid"].length > 0
+                      );
                       if (
-                        data["image"]?.length > 0 &&
-                        data["imageCid"]?.length > 0
+                        data["image"].length > 0 ||
+                        data["imageCid"].length > 0
                       ) {
                         await deleteImage();
                       }
@@ -267,12 +276,16 @@ const Entity = ({
                       : "Generate Image"}
                   </button>
                   {data[field]?.length > 0 ? (
-                    <img
-                      className="photo"
-                      key={i}
-                      src={`data:image/jpeg;base64,${data[field]}`}
-                      alt={data["name"]}
-                    />
+                    data["image"] === "loading..." ? (
+                      <label>Loading...</label>
+                    ) : (
+                      <img
+                        className="photo"
+                        key={i}
+                        src={`data:image/jpeg;base64,${data[field]}`}
+                        alt={data["name"]}
+                      />
+                    )
                   ) : null}
                 </div>
               );

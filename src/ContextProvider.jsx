@@ -53,13 +53,19 @@ export function ApplicationContextProvider(props) {
 
   const [openaiapiKey, openaisetApiKey] = useState(getOpenAIKey());
   const [voiceApi, setVoiceApi] = useState(
-    localStorage.getItem("voiceApi") ? localStorage.getItem("voiceApi") : "https://voice.webaverse.com/tts"
+    localStorage.getItem("voiceApi")
+      ? localStorage.getItem("voiceApi")
+      : "https://voice.webaverse.com/tts"
   );
   const [imgApi, setImgApi] = useState(
-    localStorage.getItem("imgApi") ? localStorage.getItem("imgApi") : "https://stable-diffusion.webaverse.com/image"
+    localStorage.getItem("imgApi")
+      ? localStorage.getItem("imgApi")
+      : "https://stable-diffusion.webaverse.com/image"
   );
   const [generateImages, setGenerateImages] = useState(
-    localStorage.getItem("generateImages") ? localStorage.getItem("generateImages") === "true" : true
+    localStorage.getItem("generateImages")
+      ? localStorage.getItem("generateImages") === "true"
+      : true
   );
   const [web3SApiKey, setWeb3SApiKey] = useState(
     localStorage.getItem("web3SApiKey")
@@ -176,12 +182,18 @@ export function ApplicationContextProvider(props) {
     const keys = Object.keys(newEntities);
     for (let i = 0; i < keys.length; i++) {
       for (let j = 0; j < newEntities[keys[i]].length; j++) {
-        console.log(newEntities[keys[i]][j].imageCid?.length)
+        console.log(newEntities[keys[i]][j].imageCid?.length);
         if (newEntities[keys[i]][j].imageCid?.length === 59) {
-          newEntities[keys[i]][j].image = await downloadFile(
-            web3Storage,
-            newEntities[keys[i]][j].imageCid
-          );
+          newEntities[keys[i]][j].image = "loading...";
+          try {
+            newEntities[keys[i]][j].image = await downloadFile(
+              web3Storage,
+              newEntities[keys[i]][j].imageCid
+            );
+          } catch (e) {
+            console.log(e);
+            newEntities[keys[i]][j].image = '';
+          }
         }
       }
     }
@@ -685,6 +697,10 @@ export function ApplicationContextProvider(props) {
     setDialogue(newData);
   };
   const addDialogueEntryWithData = (_key, speaker, message) => {
+    if (!speaker || !message) {
+      return;
+    }
+
     const newData = { ...dialogue };
     newData[currentDialogueType][_key].output.transcript.unshift({
       speaker: speaker,
