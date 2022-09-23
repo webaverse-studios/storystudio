@@ -36,25 +36,26 @@ const Dialogue = ({ index, _key, type }) => {
   const [tagsCharacters, setTagsCharacters] = useState([]);
   const [tagObjects, setTagObjects] = useState([]);
   const [tagNPCs, setTagNPCs] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const [dialogueData, setDialogData] = useState({
+    ...dialogue[currentDialogueType][_key],
+  });
 
   useEffect(() => {
-    const newTagsCharacters = (
-      dialogue[currentDialogueType][_key].input.characters ?? []
-    ).map((character) => {
-      return { id: character, text: character };
-    });
+    const newTagsCharacters = (dialogueData.input.characters ?? []).map(
+      (character) => {
+        return { id: character, text: character };
+      }
+    );
     setTagsCharacters(newTagsCharacters);
 
-    const newTagsObjects = (
-      dialogue[currentDialogueType][_key].input.objects ?? []
-    ).map((obj) => {
+    const newTagsObjects = (dialogueData.input.objects ?? []).map((obj) => {
       return { id: obj, text: obj };
     });
     setTagObjects(newTagsObjects);
 
-    const newTagsNPCs = (
-      dialogue[currentDialogueType][_key].input.npcs ?? []
-    ).map((npc) => {
+    const newTagsNPCs = (dialogueData.input.npcs ?? []).map((npc) => {
       return { id: npc, text: npc };
     });
     setTagNPCs(newTagsNPCs);
@@ -186,7 +187,7 @@ const Dialogue = ({ index, _key, type }) => {
       return currentPrompt[type];
     }
 
-    const temp = dialogue[currentDialogueType][_key].output?.prompt;
+    const temp = dialogueData.output?.prompt;
     let prompt = "";
     if (temp && temp?.length > 0 && temp !== "Prompt") {
       const newData = { ...currentPrompt };
@@ -242,7 +243,7 @@ const Dialogue = ({ index, _key, type }) => {
 
   const generateOutputs = async (type) => {
     let selector = "";
-    const inputs = dialogue[currentDialogueType][_key].input;
+    const inputs = dialogueData.input;
     let res = "";
 
     if (type === "objectComment") {
@@ -661,9 +662,16 @@ const Dialogue = ({ index, _key, type }) => {
       return;
     }
 
+    // console.log('Diallogue data recieved is ',res);
+    // setDialogData(res);
+
     handleChange(res, selector);
   };
   function handleChange(data, selector) {
+    const newDialogueData = {...dialogueData};
+    const selectorArray = selector.split(".");
+    newDialogueData[selectorArray[selectorArray.length - 1]] = data;
+    setDialogData(newDialogueData);
     editDialogueCallback(data, selector, _key, index);
   }
   function DisplayJSONAsEditableForm({
@@ -776,8 +784,8 @@ const Dialogue = ({ index, _key, type }) => {
                 }}
               >
                 {[
-                  ...dialogue[currentDialogueType][_key].input.characters,
-                  ...dialogue[currentDialogueType][_key].input.npcs,
+                  ...dialogueData.input.characters,
+                  ...dialogueData.input.npcs,
                 ].map((item, index) => {
                   return (
                     <option key={index} value={item}>
@@ -902,16 +910,15 @@ const Dialogue = ({ index, _key, type }) => {
               handleChange(data, selector);
             }}
           >
-            {[
-              ...dialogue[currentDialogueType][_key].input.characters,
-              ...dialogue[currentDialogueType][_key].input.npcs,
-            ].map((item, index) => {
-              return (
-                <option key={index} value={item}>
-                  {item}
-                </option>
-              );
-            })}
+            {[...dialogueData.input.characters, ...dialogueData.input.npcs].map(
+              (item, index) => {
+                return (
+                  <option key={index} value={item}>
+                    {item}
+                  </option>
+                );
+              }
+            )}
           </select>
           {(type === "rpgDialogue" ||
             type === "banter" ||
@@ -959,13 +966,13 @@ const Dialogue = ({ index, _key, type }) => {
 
   const saveAsMD = () => {
     let md = "# Inputs\n\n";
-    const inputs = Object.keys(dialogue[currentDialogueType][_key].input);
+    const inputs = Object.keys(dialogueData.input);
     for (const inp of inputs) {
       md += `## ${inp}\n`;
-      md += `* ${dialogue[currentDialogueType][_key].input[inp]}\n\n`;
+      md += `* ${dialogueData.input[inp]}\n\n`;
     }
     md += "# Outputs\n\n";
-    const outputs = Object.keys(dialogue[currentDialogueType][_key].output);
+    const outputs = Object.keys(dialogueData.output);
     for (const out of outputs) {
       md += `## ${out}\n`;
       if (
@@ -977,7 +984,7 @@ const Dialogue = ({ index, _key, type }) => {
         }
         md += "\n";
       } else {
-        md += `${dialogue[currentDialogueType][_key].output[out]}\n\n`;
+        md += `${dialogueData.output[out]}\n\n`;
       }
     }
 
@@ -991,7 +998,9 @@ const Dialogue = ({ index, _key, type }) => {
     element.remove();
   };
 
-  return (
+  return loading ? (
+    <div> LOADING... </div>
+  ) : (
     <div className={"entity"}>
       {!shouldDelete && (
         <span className="entityDelete">
@@ -1007,17 +1016,15 @@ const Dialogue = ({ index, _key, type }) => {
           </button>
           <button
             onClick={() =>
-              deleteDialogueCallback(
-                dialogue[currentDialogueType][_key],
-                index
-              ) | setShouldDelete(false)
+              deleteDialogueCallback(dialogueData, index) |
+              setShouldDelete(false)
             }
           >
             <DeleteForever />
           </button>
         </span>
       )}
-      {typeof dialogue[currentDialogueType][_key] === "object" && (
+      {typeof dialogueData === "object" && (
         <React.Fragment>
           {!editJson ? (
             <div>
@@ -1028,15 +1035,10 @@ const Dialogue = ({ index, _key, type }) => {
                 theme="light"
                 onMount={(editor) => {
                   setTimeout(function () {
-                    const formatAcction = editor.getAction(
-                      "editor.action.formatDocument"
-                    );
-                    if (formatAcction) {
-                      formatAcction.run();
-                    }
+                    editor.getAction("editor.action.formatDocument").run();
                   }, 100);
                 }}
-                value={JSON.stringify(dialogue[currentDialogueType][_key])}
+                value={JSON.stringify(dialogueData)}
                 onChange={(value) => {
                   editDialogueJson(JSON.parse(value), _key);
                 }}
@@ -1053,7 +1055,7 @@ const Dialogue = ({ index, _key, type }) => {
           ) : (
             <div>
               {DisplayJSONAsEditableForm({
-                data: dialogue[currentDialogueType][_key],
+                data: dialogueData,
                 allData: dialogue,
                 type,
               })}
@@ -1091,11 +1093,11 @@ const Dialogue = ({ index, _key, type }) => {
         </React.Fragment>
       )}
       {/*<button onClick={() => moveDialogueCallback(data, true)}>
-        <ArrowUpwardIcon />
-      </button>
-      <button onClick={() => moveDialogueCallback(data, false)}>
-        <ArrowDownwardIcon />
-          </button>*/}
+          <ArrowUpwardIcon />
+        </button>
+        <button onClick={() => moveDialogueCallback(data, false)}>
+          <ArrowDownwardIcon />
+            </button>*/}
     </div>
   );
 };
