@@ -54,7 +54,7 @@ const Entity = ({
       //     "#" +
       //     data;
       // }
-      
+
       if (!field) {
         newData = data;
       }
@@ -273,8 +273,8 @@ const Entity = ({
 
                       setGeneratingImage(true);
                       if (
-                        data["image"].length > 0 ||
-                        data["imageCid"].length > 0
+                        data["image"]?.length > 0 ||
+                        data["imageCid"]?.length > 0
                       ) {
                         await deleteImage();
                       }

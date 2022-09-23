@@ -192,7 +192,7 @@ export function ApplicationContextProvider(props) {
             );
           } catch (e) {
             console.log(e);
-            newEntities[keys[i]][j].image = '';
+            newEntities[keys[i]][j].image = "";
           }
         }
       }
@@ -511,8 +511,18 @@ export function ApplicationContextProvider(props) {
 
       const entityIndex = !Object.keys(entity).includes("type")
         ? index
-        : newData[entity.type].findIndex((e) => e.id === entity.id);
+        : entity.id
+        ? newData[entity.type].findIndex((e) => e.id === entity.id)
+        : newData[entity.type].findIndex((e) => e.name === entity.name);
 
+      console.log(
+        "index:",
+        index,
+        "entityIndex:",
+        entityIndex,
+        "entity.id:",
+        entity.id
+      );
       newData[entity.type][entityIndex] = entity;
 
       setEntities(newData);

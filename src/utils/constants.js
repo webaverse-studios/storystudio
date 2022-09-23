@@ -686,6 +686,7 @@ export const defaultEntities = {
       inventory: [],
       image: "",
       voice: "",
+      id: '1'
     },
     {
       type: "character",
@@ -694,6 +695,7 @@ export const defaultEntities = {
       inventory: [],
       image: "",
       voice: "",
+      id: '2'
     },
   ],
   mob: [
@@ -705,6 +707,7 @@ export const defaultEntities = {
       inventory: [],
       image: "",
       voice: "",
+      id: '1'
     },
     {
       type: "mob",
@@ -713,6 +716,7 @@ export const defaultEntities = {
       inventory: [],
       image: "",
       voice: "",
+      id: '2'
     },
   ],
   npc: [
@@ -724,6 +728,7 @@ export const defaultEntities = {
       inventory: [],
       image: "",
       voice: "",
+      id: '1'
     },
     {
       type: "npc",
@@ -733,6 +738,7 @@ export const defaultEntities = {
       inventory: [],
       image: "",
       voice: "",
+      id: '2'
     },
   ],
 };
