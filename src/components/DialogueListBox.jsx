@@ -7,6 +7,7 @@ const DialogueListBox = ({
   header = "dialogue",
   /* It's a string that is used to identify the type of dialogue. */
   type = "",
+  moveEntity
 }) => {
   const [generating, setGenerating] = React.useState(false);
 
@@ -17,6 +18,7 @@ const DialogueListBox = ({
     dialogue,
     currentDialogueType,
   } = useContext(ApplicationContext);
+
   console.log("dialogue", dialogue);
   return (
     <div className={"sectionWrapper " + header + "_wrapped"}>

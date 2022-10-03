@@ -770,6 +770,47 @@ export function ApplicationContextProvider(props) {
     }
   };
 
+  const moveDialogue = (d, up) => {
+    if (!d || d === undefined) {
+      return;
+    }
+
+    console.log('d is', d)
+
+    console.log('d.type is', d.type)
+    console.log('dialogue is', dialogue)
+
+      const index = dialogue[d.type].findIndex(
+        (e) => e.name === d.name
+      );
+      if (index === null || index === undefined || index <= -1) {
+        return;
+      }
+
+      const newData = { ...dialogue };
+      const newArray = [...newData[d.type]];
+      if (newArray?.length <= 1) {
+        return;
+      }
+
+      if (index === 0 && up) {
+        newArray.push(newArray.shift());
+      } else if (index === entities[d.type].length - 1 && !up) {
+        newArray.unshift(newArray.pop());
+      } else {
+        const newIndex = up ? index - 1 : index + 1;
+        if (newIndex > newArray.length - 1 || newIndex < 0) {
+          return;
+        }
+        const temp = newArray[index];
+        newArray[index] = newArray[newIndex];
+        newArray[newIndex] = temp;
+      }
+
+      newData[d.type] = newArray;
+      setDialogue(newData);
+  };
+
   const importEntityList = async () => {
     const file = await getFile();
     const text = await file.text();
@@ -932,6 +973,7 @@ export function ApplicationContextProvider(props) {
     web3Storage,
     web3SApiKey,
     updateWeb3SApiKey,
+    moveDialogue
   };
 
   return (

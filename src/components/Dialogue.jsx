@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import { ClearIcon, DeleteForever } from "../styles/icons/icons";
 import { ApplicationContext } from "../Context";
 import MonacoEditor from "@monaco-editor/react";
 import { WithContext as ReactTags } from "react-tag-input";
@@ -7,7 +6,12 @@ import { useEffect } from "react";
 import { delimiters } from "../utils/constants";
 import { makeGenerationFn } from "../utils/generation";
 import { isIterable } from "../utils/utils";
-
+import {
+  ArrowDown,
+  ArrowUp,
+  ClearIcon,
+  DeleteForever,
+} from "../styles/icons/icons";
 //field check if image, set source the img, if name change, generate new image
 const Dialogue = ({ index, _key, type }) => {
   const {
@@ -28,6 +32,7 @@ const Dialogue = ({ index, _key, type }) => {
     getTypeOfObject,
     addDialogueEntryWithData,
     cleanDialogueMessages,
+    moveDialogue
   } = useContext(ApplicationContext);
 
   const [editJson, setEditJson] = useState(true);
@@ -36,6 +41,7 @@ const Dialogue = ({ index, _key, type }) => {
   const [tagsCharacters, setTagsCharacters] = useState([]);
   const [tagObjects, setTagObjects] = useState([]);
   const [tagNPCs, setTagNPCs] = useState([]);
+  const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
     const newTagsCharacters = (
@@ -343,8 +349,8 @@ const Dialogue = ({ index, _key, type }) => {
       const location =
         entities["location"]?.length > 0
           ? entities["location"][
-              Math.floor(Math.random() * entities["location"].length)
-            ]
+          Math.floor(Math.random() * entities["location"].length)
+          ]
           : { name: "Test", Description: "Test" };
 
       const _type = getTypeOfObject(data);
@@ -675,67 +681,49 @@ const Dialogue = ({ index, _key, type }) => {
   }) {
     const { entities } = useContext(ApplicationContext);
 
-    if (label === "prompt" || label === "response") {
-      return (
-        <div>
-          <label>
-            {label === "prompt" ? "Prompt Preview" : "Prompt Output"}
-          </label>
-          <textarea
-            value={label === "prompt" ? currentPrompt[type] : data}
-            readOnly={label === "response"}
-            onChange={(e) => {
-              const newData = { ...currentPrompt };
-              newData[type] = e.target.value;
-              setCurrentPrompt(newData);
-            }}
-          ></textarea>
-        </div>
-      );
-    }
-
     if (label === "characters" || label === "objects" || label === "npcs") {
       return (
         <div>
           {label === "characters"
             ? "Characters"
             : label === "objects"
-            ? "Objects"
-            : "NPCs"}
+              ? "Objects"
+              : "NPCs"}
           :
           <br />
           <ReactTags
+            placeholder=""
             allowDragDrop={false}
             tags={
               label === "characters"
                 ? tagsCharacters
                 : label === "objects"
-                ? tagObjects
-                : tagNPCs
+                  ? tagObjects
+                  : tagNPCs
             }
             suggestions={
               label === "characters"
                 ? suggestionsCharacters
                 : label === "objects"
-                ? suggestionsObjects
-                : suggestionsNPCs
+                  ? suggestionsObjects
+                  : suggestionsNPCs
             }
             delimiters={delimiters}
             handleDelete={
               label === "characters"
                 ? handleDeleteCharacter
                 : label === "objects"
-                ? handleDeleteObject
-                : handleDeleteNPC
+                  ? handleDeleteObject
+                  : handleDeleteNPC
             }
             handleAddition={
               label === "characters"
                 ? handleAddCharacter
                 : label === "objects"
-                ? handleAddObject
-                : handleAddNPC
+                  ? handleAddObject
+                  : handleAddNPC
             }
-            inputFieldPosition="bottom"
+            inputFieldPosition="inline"
             autocomplete
           />
           <br />
@@ -747,7 +735,7 @@ const Dialogue = ({ index, _key, type }) => {
       if (Array.isArray(data)) {
         output = data.map((item, index) => {
           return (
-            <div style={{ marginLeft: "2em" }} key={index}>
+            <div style={{}} key={index}>
               <DisplayJSONAsEditableForm
                 key={index}
                 type={type}
@@ -787,8 +775,9 @@ const Dialogue = ({ index, _key, type }) => {
                 })}
               </select>
               :{" "}
-              <input
-                className="dialogueInput"
+              <textarea
+                rows={1}
+                className="dialogueInputText"
                 type="text"
                 value={data["message"]}
                 onChange={(e) => {
@@ -805,20 +794,21 @@ const Dialogue = ({ index, _key, type }) => {
               {(type === "rpgDialogue" ||
                 type === "banter" ||
                 type === "cutscenes") && (
-                <button
-                  onClick={() => {
-                    removeEntryFromDialogue(selector, index);
-                  }}
-                >
-                  Delete
-                </button>
-              )}
+                  <button
+                    className={"deleteDialogueMessage"}
+                    onClick={() => {
+                      removeEntryFromDialogue(selector, index);
+                    }}
+                  >
+                    Delete
+                  </button>
+                )}
             </div>
           );
         } else {
           output = Object.keys(data).map((key, index) => {
             return (
-              <div style={{ marginLeft: "2em" }} key={index}>
+              <div style={{}} key={index}>
                 <DisplayJSONAsEditableForm
                   key={index}
                   type={type}
@@ -847,14 +837,14 @@ const Dialogue = ({ index, _key, type }) => {
             {(
               (type === "exposition"
                 ? [
-                    ...entities["character"],
-                    ...entities["object"],
-                    ...entities["location"],
-                    ...entities["npc"],
-                  ]
+                  ...entities["character"],
+                  ...entities["object"],
+                  ...entities["location"],
+                  ...entities["npc"],
+                ]
                 : entities[
-                    type.replace("loading", "location").replace("Comment", "")
-                  ]) ?? []
+                type.replace("loading", "location").replace("Comment", "")
+                ]) ?? []
             ).map((item, index) => {
               return (
                 <option key={index} value={item.name}>
@@ -865,6 +855,8 @@ const Dialogue = ({ index, _key, type }) => {
           </select>
         </div>
       );
+    } else if (label === "prompt" || label === "response") {
+      return null;
     }
     // render outputs as an input field
     else if (
@@ -877,8 +869,9 @@ const Dialogue = ({ index, _key, type }) => {
     ) {
       output = (
         <div>
-          <input
-            className="dialogueInput"
+          <textarea
+            rows={1}
+            className="dialogueInputText"
             type="text"
             value={data}
             onChange={(e) => {
@@ -916,14 +909,14 @@ const Dialogue = ({ index, _key, type }) => {
           {(type === "rpgDialogue" ||
             type === "banter" ||
             type === "cutscenes") && (
-            <button
-              onClick={() => {
-                removeEntryFromDialogue(selector, index);
-              }}
-            >
-              Delete
-            </button>
-          )}
+              <button
+                onClick={() => {
+                  removeEntryFromDialogue(selector, index);
+                }}
+              >
+                Delete
+              </button>
+            )}
         </div>
       );
     } else if (label === "location" || label === "npc") {
@@ -947,9 +940,8 @@ const Dialogue = ({ index, _key, type }) => {
     }
 
     return (
-      <div style={{ margin: ".5em" }}>
-        {label}
-
+      <div className={label} style={{ margin: ".5em" }}>
+        {label !== "location" && label !== "speaker"  && label !== "transcript" && label !== "target" && label}
         {output}
       </div>
     );
@@ -993,34 +985,26 @@ const Dialogue = ({ index, _key, type }) => {
 
   return (
     <div className={"entity"}>
-      {!shouldDelete && (
-        <span className="entityDelete">
-          <button onClick={() => setShouldDelete(true)}>
-            <ClearIcon />
-          </button>
-        </span>
-      )}
-      {shouldDelete && (
-        <span className="entityDelete">
-          <button onClick={() => setShouldDelete(false)}>
-            <ClearIcon />
-          </button>
-          <button
-            onClick={() =>
-              deleteDialogueCallback(
-                dialogue[currentDialogueType][_key],
-                index
-              ) | setShouldDelete(false)
-            }
-          >
-            <DeleteForever />
-          </button>
-        </span>
-      )}
-      {typeof dialogue[currentDialogueType][_key] === "object" && (
+      <button
+        className={"showPrompt"}
+        onClick={() => {
+          setShowPrompt(!showPrompt);
+        }}
+      >
+        {showPrompt ? "Hide Prompt" : "Show Prompt"}
+      </button>
+      <div className={"entityUpDown"}>
+        <button onClick={() => { const data = dialogue[[currentDialogueType][_key]][index]; data.type = _key; moveDialogue(data, true); }}>
+          <ArrowUp />
+        </button>
+        <button onClick={() => { const data = dialogue[[currentDialogueType][_key]][index]; data.type = _key; moveDialogue(data, false); }}>
+          <ArrowDown />
+        </button>
+      </div>
+      {!showPrompt && typeof dialogue[currentDialogueType][_key] === "object" && (
         <React.Fragment>
           {!editJson ? (
-            <div>
+            <div className="dialogueBody">
               <MonacoEditor
                 width="100%"
                 height="90vh"
@@ -1051,34 +1035,36 @@ const Dialogue = ({ index, _key, type }) => {
               </button>
             </div>
           ) : (
-            <div>
-              {DisplayJSONAsEditableForm({
-                data: dialogue[currentDialogueType][_key],
-                allData: dialogue,
-                type,
-              })}
-
-              <br />
-              <br />
-              {(type === "rpgDialogue" ||
-                type === "banter" ||
-                type === "cutscenes") && (
-                <button
-                  onClick={() => {
-                    addDialogueEntry(_key);
-                  }}
-                >
-                  Add Message
-                </button>
-              )}
-              <button
-                onClick={() => {
-                  generateOutputs(type);
-                }}
-              >
-                Generate
-              </button>
-              <button onClick={saveAsMD}>Save MD</button>
+            <div className="dialogueBody">
+              <label>Input</label>
+              <div className="dialogueInput">
+                {DisplayJSONAsEditableForm({
+                  data: dialogue[currentDialogueType][_key].input,
+                  allData: dialogue,
+                  type,
+                })}
+              </div>
+              <label>Output</label>
+              <div className="dialogueOutput">
+                {DisplayJSONAsEditableForm({
+                  data: dialogue[currentDialogueType][_key].output,
+                  allData: dialogue,
+                  type,
+                })}
+                {(type === "rpgDialogue" ||
+                  type === "banter" ||
+                  type === "cutscenes") && (
+                    <button
+                      className={"addMessage"}
+                      onClick={() => {
+                        addDialogueEntry(_key);
+                      }}
+                    >
+                      Add Message
+                    </button>
+                  )}
+              </div>
+              {/* <button onClick={saveAsMD}>Save MD</button> 
               <button
                 onClick={() => {
                   setEditJson(!editJson);
@@ -1086,16 +1072,76 @@ const Dialogue = ({ index, _key, type }) => {
               >
                 {editJson ? "JSON" : "Text"}
               </button>
+              */}
             </div>
           )}
         </React.Fragment>
       )}
-      {/*<button onClick={() => moveDialogueCallback(data, true)}>
-        <ArrowUpwardIcon />
+      {showPrompt &&
+        <div className="dialogPromptView">
+          <div className="dialogPromptViewPreview">
+            <label>Prompt Preview</label>
+            <textarea
+              rows={1}
+              value={dialogue[currentDialogueType][_key]["output"]["prompt"]}
+              readOnly={false}
+              onChange={(e) => {
+                const newData = { ...currentPrompt };
+                newData[type] = e.target.value;
+                setCurrentPrompt(newData);
+              }}
+            />
+          </div>
+          <div className="dialogPromptViewResponse">
+            <label>Prompt Output</label>
+            <textarea
+              rows={1}
+              value={dialogue[currentDialogueType][_key]['output']["response"]}
+              readOnly={true}
+              onChange={(e) => {
+                const newData = { ...currentPrompt };
+                newData[type] = e.target.value;
+                setCurrentPrompt(newData);
+              }}
+            />
+          </div>
+        </div>
+      }
+      <div className={"entityDeleteWrapper"}>
+
+        {!shouldDelete && (
+          <span className="entityDelete">
+            <button onClick={() => setShouldDelete(true)}>
+              <ClearIcon />
+            </button>
+          </span>
+        )}
+        {shouldDelete && (
+          <span className="entityDelete">
+            <button onClick={() => setShouldDelete(false)}>
+              <ClearIcon />
+            </button>
+            <button
+              onClick={() =>
+                deleteDialogueCallback(
+                  dialogue[currentDialogueType][_key],
+                  index
+                ) | setShouldDelete(false)
+              }
+            >
+              <DeleteForever />
+            </button>
+          </span>
+        )}
+      </div>
+      <button
+        className={"generateButton"}
+        onClick={() => {
+          generateOutputs(type);
+        }}
+      >
+        Generate
       </button>
-      <button onClick={() => moveDialogueCallback(data, false)}>
-        <ArrowDownwardIcon />
-          </button>*/}
     </div>
   );
 };

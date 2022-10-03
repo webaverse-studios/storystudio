@@ -60,8 +60,8 @@ const EntityListBox = ({ header, type }) => {
             type === "loreFiles" ? loreFiles : entities[type] || entities
           ).map((key, index) => {
             return (
-              <div key={index}>
                 <Entity
+                  key={index}
                   data={
                     type === "loreFiles"
                       ? loreFiles[key]
@@ -79,7 +79,6 @@ const EntityListBox = ({ header, type }) => {
                   index={index}
                   type={type}
                 />
-              </div>
             );
           })}
       </div>

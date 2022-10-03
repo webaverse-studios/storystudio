@@ -61,8 +61,9 @@
 .section {
   background: none;
   margin: 1em;
+  margin-top: 2em;
   width: calc(100% - 2em);
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
   min-height: 25em;
 }
 
@@ -177,8 +178,8 @@
   line-height: 1em;
   text-align: left;
   padding: 1em;
-  width: calc(100% - 2em);
-  border-bottom: 1px #000000 solid;
+  width: calc(100vw - 6em);
+  margin: 1em;
 }
 
 .entity h1 {
@@ -226,11 +227,11 @@
   background: none;
   padding: 0;
   margin: 0;
+  word-break: break-word;
 }
 
 .entityField textarea {
   width: 100%;
-  height: 1em;
   display: inline-block;
   border: 0;
   background: none;
@@ -255,14 +256,11 @@
 
 .entity textarea {
   width: calc(100% - 3em);
-  height: 3em;
   display: inline-block;
-  border: solid 1px #ccc;
+  border-bottom: solid 1px #ccc;
   background: none;
   padding: .5em;
   margin: 0;
-  min-width: calc(100% - 3em);
-  max-width: calc(100% - 3em);
 }
 
 .entityField {
@@ -271,6 +269,7 @@
 
 .entity input {
   border-bottom: 1px solid #ccc;
+  word-break: break-word;
 }
 
 .lore .entity textarea {
@@ -278,13 +277,99 @@
 }
 
 .entityDelete {
-  float: right;
   display: inline;
+  width: 1em;
+}
+
+.entityDeleteWrapper {
+  float: right;
+  width: 1em;
+  height: 100%;
+  margin-left: 1em;
+  margin-right: 1em;
+  vertical-align: top;
+}
+
+.entity {
+  vertical-align: middle;
+  min-height: 12em;
+  border: 1px solid #000000;
+  max-width: calc(100vw - 2em);
+}
+
+.entityBody {
+  width: calc(100% - 2em - 12em - 4em - 1em);
+}
+
+.entityUpDown {
+  float: left;
+  width:2em;
+  margin-right: 1em;
+  vertical-align: middle;
+}
+
+.entityImage {
+  float: right;
+  width: 10em;
+  height: 10em;
+  border: 1px solid #000000;
+  margin: 0;
+  padding: 1em;
+  vertical-align: middle;
+}
+
+.entityBody {
+  display: inline-block;
 }
 
 .entityVisibility {
   float: right;
   display: inline;
+}
+
+.generateButton {
+  display: inline!important;
+}
+
+.showPrompt {
+  margin: .5em;
+  margin-left:auto;
+}
+
+.addMessage {
+  margin: 1em;
+}
+
+.dialogueBody {
+  width: calc(100% - 6em);
+  display: inline-block;
+  vertical-align: top;
+}
+
+.dialogueInput {
+  border:1px solid rgba(0, 0, 0, 0.2) !important;
+  margin-bottom: .5em;
+}
+
+.dialogueOutput {
+  width: 100%;
+  border:1px solid rgba(0, 0, 0, 0.2) !important;
+}
+
+
+.dialogPromptView {
+  display: inline-block;
+  width: calc(100% - 4em);
+  height: 100%;
+  vertical-align: top;
+}
+
+.entityDelete {
+  height: 100%;
+}
+
+.entityDelete button {
+  display: inline-block;
 }
 
 .context-group-button {
@@ -296,6 +381,38 @@
 .baseInput {
 }
 
+.ReactTags__selected {
+  display: inline-block;
+}
+
+.ReactTags__tagInput {
+  display: inline-block;
+}
+
+.ReactTags__remove {
+  display: inline!important;
+  margin: .5em;
+}
+
+.ReactTags__tagInputField {
+  border: none;
+  width: 10em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  margin: .25em;
+  padding: .25em;
+}
+
+/* remove all default styling for .ReactTags__tagInputField, which is an input element */
+.ReactTags__tagInputField:focus {
+  outline: none;
+}
+
+.tag-wrapper {
+  border:1px solid rgba(0, 0, 0, 0.2);
+  margin: .25em;
+  padding: .25em;
+}
+
 .viewButton {
   margin: .25em;
 }
@@ -305,11 +422,16 @@
   background-color: #000;
 }
 
-.dialogueInput {
-  width: 80% !important;
+.dialogueInputText {
+  width: calc(100% - 16em)!important;
   outline: none;
   box-shadow: none;
   border: 0;
+}
+
+.deleteDialogueMessage {
+  display: inline-block!important;
+  margin-left: .5em;
 }
 
 /* create a media query for the mobile view */
@@ -390,6 +512,7 @@
   .base input {
     width: 75%;
     border-right: none;
+    word-break: break-word;
   }
 
   .openai input {

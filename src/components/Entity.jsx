@@ -114,7 +114,7 @@ const Entity = ({
           delimiters={delimiters}
           handleDelete={handleDelete}
           handleAddition={handleAdd}
-          inputFieldPosition="bottom"
+          inputFieldPosition="inline"
           autocomplete
           allowDragDrop={false}
         />
@@ -189,30 +189,17 @@ const Entity = ({
 
   return (
     <div className={"entity"}>
-      {!shouldDelete && (
-        <span className="entityDelete">
-          <button onClick={() => setShouldDelete(true)}>
-            <ClearIcon />
-          </button>
-        </span>
-      )}
-      {shouldDelete && (
-        <span className="entityDelete">
-          <button onClick={() => setShouldDelete(false)}>
-            <ClearIcon />
-          </button>
-          <button
-            onClick={() =>
-              deleteEntityCallback(data, index) | setShouldDelete(false)
-            }
-          >
-            <DeleteForever />
-          </button>
-        </span>
-      )}
-      {typeof data === "object" && type !== "loreFiles" ? (
-        <React.Fragment>
-          {Object.keys(data || []).map((field, i) => {
+      <div className={"entityUpDown"}>
+        <button onClick={() => moveEntityCallback(data, true)}>
+          <ArrowUp />
+        </button>
+        <button onClick={() => moveEntityCallback(data, false)}>
+          <ArrowDown />
+        </button>
+      </div>
+      <div className={"entityBody"}>
+        {typeof data === "object" && type !== "loreFiles" ? (
+          Object.keys(data || []).map((field, i) => {
             if (
               field === "inventory" &&
               (data["type"] === "character" ||
@@ -231,57 +218,19 @@ const Entity = ({
               field === "id" ||
               field === "hash" ||
               field === "nonce" ||
-              field === "imageCid"
+              field === "imageCid" ||
+              field === "image"
             ) {
               return null;
-            } else if (field === "image" && generateImages) {
-              return (
-                <div key={i}>
-                  {data[field]?.length > 0 && (
-                    <div>
-                      <button onClick={deleteImage}>Cancel</button>
-                      <button onClick={saveImage}>Save</button>
-                    </div>
-                  )}
-                  <button
-                    onClick={async () => {
-                      if (
-                        data["image"]?.length > 0 &&
-                        data["imageCid"]?.length > 0
-                      ) {
-                        await deleteImage();
-                      }
-                      updateEntity(
-                        data,
-                        field,
-                        await generateImage(
-                          imgApi,
-                          data["name"] + " " + data["description"]
-                        ),
-                        index
-                      );
-                    }}
-                  >
-                    {data[field]?.length > 0
-                      ? "Regenerate Image"
-                      : "Generate Image"}
-                  </button>
-                  {data[field]?.length > 0 ? (
-                    <img
-                      className="photo"
-                      key={i}
-                      src={`data:image/jpeg;base64,${data[field]}`}
-                      alt={data["name"]}
-                    />
-                  ) : null}
-                </div>
-              );
             }
             return (
               <div key={i} className={"entityField " + field}>
-                <label style={{ display: "inline" }}>{field}</label>
+                {field !== "name" && field !== "description" &&
+                  <label style={{ display: "inline" }}>{field}</label>
+                }
                 {field === "description" ? (
                   <textarea
+                    rows={1}
                     value={data[field]}
                     onChange={(e) =>
                       updateEntity(data, field, e.target.value, index)
@@ -299,71 +248,134 @@ const Entity = ({
                 )}
               </div>
             );
-          })}
-        </React.Fragment>
-      ) : (
-        <React.Fragment>
-          <textarea
-            key={index}
-            type="text"
-            value={data ?? ""}
-            onChange={(e) => {
-              e.preventDefault();
-              updateEntity(data, null, e.target.value, index);
+          })
+        ) : (
+          <React.Fragment>
+            <textarea
+              rows={1}
+              key={index}
+              type="text"
+              value={data || ""}
+              onChange={(e) => {
+                e.preventDefault();
+                updateEntity(data, null, e.target.value, index);
+              }}
+            />
+          </React.Fragment>
+        )}
+        {typeof data === "string" && type !== "loreFiles" && (
+          <React.Fragment>
+            <textarea
+              rows={1}
+              type="text"
+              value={data}
+              onChange={(e) => {
+                e.preventDefault();
+                updateEntity(data, null, e.target.value, index);
+              }}
+            />
+          </React.Fragment>
+        )}
+
+        {type === "loreFiles"
+          // ||
+          //   type === "character" ||
+          //   type === "npc" ||
+          //   type === "mob" ||
+          //   type === "location" ||
+          //   type === "object"
+          ? (
+            <button
+              onClick={() => {
+                if (type === "loreFiles") {
+                  const element = document.createElement("a");
+                  const file = new Blob([data], { type: "application/text" });
+                  element.href = URL.createObjectURL(file);
+                  element.download = "lore" + index + "_" + Date.now() + ".md";
+                  document.body.appendChild(element);
+                  element.click();
+                  element.remove();
+                } else {
+                  const json = JSON.stringify(data);
+                  const element = document.createElement("a");
+                  const file = new Blob([json], { type: "application/json" });
+                  element.href = URL.createObjectURL(file);
+                  element.download =
+                    data["name"] + "_" + new Date().getTime() + ".json";
+                  document.body.appendChild(element);
+                  element.click();
+                  element.remove();
+                }
+              }}
+            >
+              {type === "loreFiles" ? "Export MD" : "Export"}
+            </button>
+          ) : null}
+      </div>
+      <div className={"entityDeleteWrapper"}>
+        {!shouldDelete && (
+          <span className="entityDelete">
+            <button onClick={() => setShouldDelete(true)}>
+              <ClearIcon />
+            </button>
+          </span>
+        )}
+        {shouldDelete && (
+          <span className="entityDelete">
+            <button onClick={() => setShouldDelete(false)}>
+              <ClearIcon />
+            </button>
+            <button
+              onClick={() =>
+                deleteEntityCallback(data, index) | setShouldDelete(false)
+              }
+            >
+              <DeleteForever />
+            </button>
+          </span>
+        )}
+      </div>
+      {generateImages &&
+        <div className="entityImage">
+          {data["image"]?.length > 0 && (
+            <div>
+              <button onClick={deleteImage}>Cancel</button>
+              <button onClick={saveImage}>Save</button>
+            </div>
+          )}
+          <button
+            onClick={async () => {
+              if (
+                data["image"] && data["image"].length > 0 &&
+                data["imageCid"] && data["imageCid"].length > 0
+              ) {
+                await deleteImage();
+              }
+              updateEntity(
+                data,
+                "image",
+                await generateImage(
+                  imgApi,
+                  data["name"] + " " + data["description"]
+                ),
+                index
+              );
             }}
-          />
-        </React.Fragment>
-      )}
-      {typeof data === "string" && type !== "loreFiles" && (
-        <React.Fragment>
-          <textarea
-            type="text"
-            value={data}
-            onChange={(e) => {
-              e.preventDefault();
-              updateEntity(data, null, e.target.value, index);
-            }}
-          />
-        </React.Fragment>
-      )}
-      <button onClick={() => moveEntityCallback(data, true)}>
-        <ArrowUp />
-      </button>
-      <button onClick={() => moveEntityCallback(data, false)}>
-        <ArrowDown />
-      </button>
-      {type === "loreFiles" ||
-      type === "character" ||
-      type === "npc" ||
-      type === "mob" ||
-      type === "location" ||
-      type === "object" ? (
-        <button
-          onClick={() => {
-            if (type === "loreFiles") {
-              const element = document.createElement("a");
-              const file = new Blob([data], { type: "application/text" });
-              element.href = URL.createObjectURL(file);
-              element.download = "lore" + index + "_" + Date.now() + ".md";
-              document.body.appendChild(element);
-              element.click();
-              element.remove();
-            } else {
-              const json = JSON.stringify(data);
-              const element = document.createElement("a");
-              const file = new Blob([json], { type: "application/json" });
-              element.href = URL.createObjectURL(file);
-              element.download =
-                data["name"] + "_" + new Date().getTime() + ".json";
-              document.body.appendChild(element);
-              element.click();
-              element.remove();
-            }
-          }}
-        >
-          {type === "loreFiles" ? "Export MD" : "Export"}
-        </button>
-      ) : null}
+          >
+            {data["image"] && data["image"].length > 0
+              ? "Regenerate Image"
+              : "Generate Image"}
+          </button>
+          {data["image"] && data["image"].length > 0 ? (
+            <img
+              className="photo"
+              key={i}
+              src={`data:image/jpeg;base64,${data["image"]}`}
+              alt={data["name"]}
+            />
+          ) : null}
+        </div>
+      }
     </div>
   );
 };
