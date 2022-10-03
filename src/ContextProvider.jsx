@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { getFile } from "./components/getFile";
 import { ApplicationContext } from "./Context";
 import "./styles/App.css";
 import {
+  availableVoicesJson,
   defaultDialogue,
   defaultEntities,
   defaultOpenAIParams,
@@ -22,6 +23,7 @@ import { generate, makeEmpty, makeDialogue } from "./utils/generation";
 import JSZip from "jszip";
 import { Web3Storage } from "web3.storage";
 import { downloadFile, uploadFile } from "./utils/storageUtils";
+import axios from "axios";
 
 function setOpenAIKey(newKey) {
   localStorage.setItem("openai_key", newKey);
@@ -53,13 +55,19 @@ export function ApplicationContextProvider(props) {
 
   const [openaiapiKey, openaisetApiKey] = useState(getOpenAIKey());
   const [voiceApi, setVoiceApi] = useState(
-    localStorage.getItem("voiceApi") ? localStorage.getItem("voiceApi") : "https://voice.webaverse.com/tts"
+    localStorage.getItem("voiceApi")
+      ? localStorage.getItem("voiceApi")
+      : "https://voice.webaverse.com/tts"
   );
   const [imgApi, setImgApi] = useState(
-    localStorage.getItem("imgApi") ? localStorage.getItem("imgApi") : "https://stable-diffusion.webaverse.com/image"
+    localStorage.getItem("imgApi")
+      ? localStorage.getItem("imgApi")
+      : "https://stable-diffusion.webaverse.com/image"
   );
   const [generateImages, setGenerateImages] = useState(
-    localStorage.getItem("generateImages") ? localStorage.getItem("generateImages") === "true" : true
+    localStorage.getItem("generateImages")
+      ? localStorage.getItem("generateImages") === "true"
+      : true
   );
   const [web3SApiKey, setWeb3SApiKey] = useState(
     localStorage.getItem("web3SApiKey")
@@ -119,6 +127,8 @@ export function ApplicationContextProvider(props) {
     localStorage.getItem("openAIParams") || defaultOpenAIParams
   );
 
+  const [availableVoices, setAvailableVoices] = useState([]);
+
   useEffect(() => {
     const oap = localStorage.getItem("openAIParams");
     if (oap && oap !== "[object Object]" && oap?.length > 0) {
@@ -176,12 +186,18 @@ export function ApplicationContextProvider(props) {
     const keys = Object.keys(newEntities);
     for (let i = 0; i < keys.length; i++) {
       for (let j = 0; j < newEntities[keys[i]].length; j++) {
-        console.log(newEntities[keys[i]][j].imageCid?.length)
+        console.log(newEntities[keys[i]][j].imageCid?.length);
         if (newEntities[keys[i]][j].imageCid?.length === 59) {
-          newEntities[keys[i]][j].image = await downloadFile(
-            web3Storage,
-            newEntities[keys[i]][j].imageCid
-          );
+          newEntities[keys[i]][j].image = "loading...";
+          try {
+            newEntities[keys[i]][j].image = await downloadFile(
+              web3Storage,
+              newEntities[keys[i]][j].imageCid
+            );
+          } catch (e) {
+            console.log(e);
+            newEntities[keys[i]][j].image = "";
+          }
         }
       }
     }
@@ -426,7 +442,7 @@ export function ApplicationContextProvider(props) {
         data,
         baseData,
         openErrorModal,
-        lore
+        availableVoices
       );
 
       if (!entity) {
@@ -445,7 +461,7 @@ export function ApplicationContextProvider(props) {
           data,
           baseData,
           openErrorModal,
-          lore
+          availableVoices
         );
       } catch (e) {
         // openErrorModal("Error generating entity", e);
@@ -499,8 +515,18 @@ export function ApplicationContextProvider(props) {
 
       const entityIndex = !Object.keys(entity).includes("type")
         ? index
-        : newData[entity.type].findIndex((e) => e.id === entity.id);
+        : entity.id
+        ? newData[entity.type].findIndex((e) => e.id === entity.id)
+        : newData[entity.type].findIndex((e) => e.name === entity.name);
 
+      console.log(
+        "index:",
+        index,
+        "entityIndex:",
+        entityIndex,
+        "entity.id:",
+        entity.id
+      );
       newData[entity.type][entityIndex] = entity;
 
       setEntities(newData);
@@ -607,7 +633,13 @@ export function ApplicationContextProvider(props) {
     setGenerating(true);
     let d = null;
     try {
-      d = await generate(type, entities, baseData, openErrorModal);
+      d = await generate(
+        type,
+        entities,
+        baseData,
+        openErrorModal,
+        availableVoices
+      );
     } catch (e) {
       // openErrorModal("Error generating entity", e);
       console.log("error", e);
@@ -685,6 +717,10 @@ export function ApplicationContextProvider(props) {
     setDialogue(newData);
   };
   const addDialogueEntryWithData = (_key, speaker, message) => {
+    if (!speaker || !message) {
+      return;
+    }
+
     const newData = { ...dialogue };
     newData[currentDialogueType][_key].output.transcript.unshift({
       speaker: speaker,
@@ -910,6 +946,20 @@ export function ApplicationContextProvider(props) {
     }
   };
 
+  const loadAvailableVoices = async () => {
+    const file = await axios.get(availableVoicesJson);
+    console.log(file.data);
+
+    const newData = [];
+    for (let i = 0; i < file.data.length; i++) {
+      newData.push({ name: file.data[i].name, voice: file.data[i].drive_id });
+    }
+    setAvailableVoices(newData);
+  };
+  useEffect(() => {
+    loadAvailableVoices();
+  }, []);
+
   const provider = {
     getOpenAIKey: () => getOpenAIKey(),
     setOpenAIKey: (key) => setOpenAIKey(key),
@@ -973,7 +1023,8 @@ export function ApplicationContextProvider(props) {
     web3Storage,
     web3SApiKey,
     updateWeb3SApiKey,
-    moveDialogue
+    moveDialogue,
+    availableVoices
   };
 
   return (

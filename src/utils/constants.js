@@ -667,6 +667,7 @@ export const defaultEntities = {
       description:
         "The Safehouse is a good place to lay low for a while. It exists in a voidspace that nobody can enter without the proper permissions.",
       image: "",
+      id: "1",
     },
   ],
   object: [
@@ -676,6 +677,7 @@ export const defaultEntities = {
       description:
         "This a sword made out of pure silver. It is very sharp and can cut through anything.",
       image: "",
+      id: "1",
     },
   ],
   character: [
@@ -686,6 +688,7 @@ export const defaultEntities = {
       inventory: [],
       image: "",
       voice: "",
+      id: "1",
     },
     {
       type: "character",
@@ -694,6 +697,7 @@ export const defaultEntities = {
       inventory: [],
       image: "",
       voice: "",
+      id: "2",
     },
   ],
   mob: [
@@ -705,6 +709,7 @@ export const defaultEntities = {
       inventory: [],
       image: "",
       voice: "",
+      id: "1",
     },
     {
       type: "mob",
@@ -713,6 +718,7 @@ export const defaultEntities = {
       inventory: [],
       image: "",
       voice: "",
+      id: "2",
     },
   ],
   npc: [
@@ -724,6 +730,7 @@ export const defaultEntities = {
       inventory: [],
       image: "",
       voice: "",
+      id: "1",
     },
     {
       type: "npc",
@@ -733,6 +740,7 @@ export const defaultEntities = {
       inventory: [],
       image: "",
       voice: "",
+      id: "2",
     },
   ],
 };
@@ -748,37 +756,8 @@ export const voice_url = `${
   isHttps ? "https" : "https"
 }://voice.webaverse.com/tts`;
 
-export const availableVoices = [
-  // TODO: Get these from github?
-  { name: "Rapunzel", voice: "1cKtPBGZ9YiD6PkyXxUiMSTbrYhQuqnWU" },
-  { name: "Cassandra", voice: "1wrUj76ngpAqBzD3-bel5C5A7vvh7DsxX" },
-  { name: "Apple Bloom", voice: "1Wm-7gqws0B3j8mtSQa77Tdk3RZwHEwT5" },
-  { name: "Applejack", voice: "1kpEjZ3YqMN3chKSXODOqayEm581rxj4r" },
-  { name: "Big McIntosh", voice: "1UzL5vo_ykmRdbi-5JOlsQzNKkoV4tJBP" },
-  { name: "Cadance", voice: "1w98tMJPfGhWvl797gImMfErPXDz_hA-6" },
-  { name: "Celestia", voice: "1whXXcnXu9XPcI60xIkTEofpaDYDOw5yB" },
-  { name: "Chrysalis", voice: "1bb5jKAcQcEQbx1feVwT1UmAEgocINh-E" },
-  { name: "Cozy Glow", voice: "1cUQQ_4KXTXbmH3MqwwyZu77SpMr20HAL" },
-  { name: "Discord", voice: "1Cg9Oc_K9UDe5WgVDAcaCSbbBoo-Npj1E" },
-  { name: "Fluttershy", voice: "1KgVnjrnxZTXgjnI56ilkq5G4UJCbbwZZ" },
-  { name: "Granny Smith", voice: "1FJuxLB6MhcHLtmEnOIxhN-yxJ85kmacu" },
-  { name: "Luna", voice: "1_ztAbe5YArCMwyyQ_G9lUiz74ym5xJKC" },
-  { name: "Maud Pie", voice: "132G6oD0HHPPn4t1H6IkYv18_F0UVLWgi" },
-  { name: "Mayor Mare", voice: "1UFQWJHzKFPumoxioopPbAzM9ydznnRX3" },
-  { name: "Pinkie Pie", voice: "1CdYZ2r52mtgJsFs88U0ZViMSnzpQ_HRp" },
-  { name: "Rainbow Dash", voice: "1k3EMXxLC0fLvfxzGbeP6B6plgu9hqCSx" },
-  { name: "Rarity", voice: "1QWBvQSso4guc1LRUD40WRJ8DY2CfqHGK" },
-  { name: "Scootaloo", voice: "1YkV1VtP1w5XOx3jYYarrCKSzXCB_FLCy" },
-  { name: "Shining Armor", voice: "1PUUS71w2ik0uuycNB30nXFze8C7O8OzY" },
-  { name: "Spike", voice: "1TKFdmFLttjjzByj2fZW8J70ZHjR-RTwc" },
-  { name: "Starlight Glimmer", voice: "1M1AMBq_xjwGTNzRUCXtSLIDJHbcSs3zR" },
-  { name: "Sunset Shimmer", voice: "1x1aJt06lBvzUWRlxJ9CEKcFHxQxZPpST" },
-  { name: "Sweetie Belle", voice: "1jLX0Py6j8uY93Fjf2l0HOZQYXiShfWUO" },
-  { name: "Tirek", voice: "1rcPDqgDeCIHGDdvfOo-fxfA1XeM4g3CB" },
-  { name: "Trixie", voice: "1a3CYt0-oTTSFjxtZvAVMpClTmQteYua5" },
-  { name: "Twilight Sparkle", voice: "1QnOliOAmerMUNuo2wXoH-YoainoSjZen" },
-  { name: "Zecora", voice: "1gL0hqqB7952Q1S185moQd_DRCFfIa3_g" },
-];
+export const availableVoicesJson =
+  "https://raw.githubusercontent.com/webaverse/tiktalknet/main/model_lists/all_models.json";
 
 export const defaultOpenAIParams = {
   model: "davinci",

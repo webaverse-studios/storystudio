@@ -10,9 +10,10 @@ import "../styles/App.css";
 import { ApplicationContext } from "../Context";
 import { WithContext as ReactTags } from "react-tag-input";
 import { useEffect } from "react";
-import { availableVoices, delimiters } from "../utils/constants";
+import { delimiters } from "../utils/constants";
 import { generateImage, generateVoice } from "../utils/generation";
 import { deleteFile, uploadFile } from "../utils/storageUtils";
+import { useState } from "react";
 
 const Entity = ({
   index,
@@ -22,11 +23,20 @@ const Entity = ({
   moveEntityCallback,
   type,
 }) => {
-  const { getInventoryItems, voiceApi, imgApi, generateImages, web3Storage } =
-    useContext(ApplicationContext);
+  const {
+    getInventoryItems,
+    voiceApi,
+    imgApi,
+    generateImages,
+    web3Storage,
+    availableVoices,
+  } = useContext(ApplicationContext);
 
   let audioPlayer = null;
-  const [shouldDelete, setShouldDelete] = React.useState(false);
+  const [shouldDelete, setShouldDelete] = useState(false);
+  const [generatingImage, setGeneratingImage] = useState(false);
+  const [savingImage, setSavingImage] = useState(false);
+  const [cancelingImage, setCancelingImage] = useState(false);
 
   const updateEntity = (entities, field, data, index) => {
     if (field) {
@@ -50,6 +60,7 @@ const Entity = ({
       //     "#" +
       //     data;
       // }
+
       if (!field) {
         newData = data;
       }
@@ -171,20 +182,33 @@ const Entity = ({
   };
 
   const deleteImage = async () => {
-    if (data["image"]?.length === 59) {
+    console.log("deleting image");
+    setCancelingImage(true);
+    if (data["image"]?.length === 59 && !cancelingImage) {
       await deleteFile(web3Storage, data["image"]);
     }
-    updateEntity(data, "image", "", index);
-    updateEntity(data, "imageCid", "", index);
+
+    let newData = { ...data };
+    newData["image"] = "";
+    newData["imageCid"] = "";
+    editEntityCallback(newData, index);
+    setCancelingImage(false);
+    console.log("deleted");
   };
 
   const saveImage = async () => {
+    if (savingImage) {
+      return;
+    }
+
     if (!data["image"] || data["imageCid"]?.length === 59) {
       return;
     }
 
+    setSavingImage(true);
     const cid = await uploadFile(web3Storage, data["image"]);
     updateEntity(data, "imageCid", cid, index);
+    setSavingImage(false);
   };
 
   return (
@@ -335,19 +359,29 @@ const Entity = ({
           </span>
         )}
       </div>
+
       {generateImages &&
         <div className="entityImage">
           {data["image"]?.length > 0 && (
             <div>
-              <button onClick={deleteImage}>Cancel</button>
-              <button onClick={saveImage}>Save</button>
+              <button onClick={deleteImage}>
+                {cancelingImage ? "Canceling..." : "Cancel"}
+              </button>
+              <button onClick={saveImage}>
+                {savingImage ? "Saving..." : "Save"}
+              </button>
             </div>
           )}
           <button
             onClick={async () => {
+              if (generatingImage) {
+                return;
+              }
+
+              setGeneratingImage(true);
               if (
-                data["image"] && data["image"].length > 0 &&
-                data["imageCid"] && data["imageCid"].length > 0
+                data["image"]?.length > 0 ||
+                data["imageCid"]?.length > 0
               ) {
                 await deleteImage();
               }
@@ -360,9 +394,12 @@ const Entity = ({
                 ),
                 index
               );
+              setGeneratingImage(false);
             }}
           >
-            {data["image"] && data["image"].length > 0
+            {generatingImage
+              ? "Generating..."
+              : data["image"]?.length > 0
               ? "Regenerate Image"
               : "Generate Image"}
           </button>
