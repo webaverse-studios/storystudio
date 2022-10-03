@@ -705,7 +705,7 @@ export function ApplicationContextProvider(props) {
   };
   const addDialogueEntry = (_key) => {
     const newData = { ...dialogue };
-    newData[currentDialogueType][_key].output.transcript.unshift({
+    newData[currentDialogueType][_key].output.transcript.push({
       speaker: "",
       message: "",
     });
@@ -722,7 +722,7 @@ export function ApplicationContextProvider(props) {
     }
 
     const newData = { ...dialogue };
-    newData[currentDialogueType][_key].output.transcript.unshift({
+    newData[currentDialogueType][_key].output.transcript.push({
       speaker: speaker,
       message,
     });
