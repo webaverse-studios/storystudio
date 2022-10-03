@@ -670,6 +670,7 @@ const Dialogue = ({ index, _key, type }) => {
     handleChange(res, selector);
   };
   function handleChange(data, selector) {
+    console.log(data, selector, dialogue[currentDialogueType][index])
     editDialogueCallback(data, selector, _key, index);
   }
   function DisplayJSONAsEditableForm({
@@ -994,10 +995,10 @@ const Dialogue = ({ index, _key, type }) => {
         {showPrompt ? "Hide Prompt" : "Show Prompt"}
       </button>
       <div className={"entityUpDown"}>
-        <button onClick={() => { const data = dialogue[[currentDialogueType][_key]][index]; data.type = _key; moveDialogue(data, true); }}>
+        <button onClick={() => { const data = dialogue[[currentDialogueType][_key]][index]; data.type = type; moveDialogue(data, true); }}>
           <ArrowUp />
         </button>
-        <button onClick={() => { const data = dialogue[[currentDialogueType][_key]][index]; data.type = _key; moveDialogue(data, false); }}>
+        <button onClick={() => { const data = dialogue[[currentDialogueType][_key]][index]; data.type = type; moveDialogue(data, false); }}>
           <ArrowDown />
         </button>
       </div>

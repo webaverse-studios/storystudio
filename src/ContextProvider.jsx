@@ -677,6 +677,23 @@ export function ApplicationContextProvider(props) {
   };
 
   const editDialogueCallback = (d, selector, key, index) => {
+    if (
+      selector.startsWith("transcript") ||
+      selector.startsWith("comment") ||
+      selector.startsWith("reaction") ||
+      selector.startsWith("action") ||
+      selector.startsWith("reward") ||
+      selector.startsWith("speaker")
+    ) {
+      if (!selector.startsWith("output.")) {
+        selector = "output." + selector;
+      }
+    } else {
+      if (!selector.startsWith("input.")) {
+        selector = "input." + selector;
+      }
+    }
+
     // selector is a '.' separated string of the path to the value inside dialogue
     // e.g. 'input.text' would be the text of the input of the dialogue
     let newData = { ...dialogue };
@@ -811,40 +828,38 @@ export function ApplicationContextProvider(props) {
       return;
     }
 
-    console.log('d is', d)
+    console.log("d is", d);
 
-    console.log('d.type is', d.type)
-    console.log('dialogue is', dialogue)
+    console.log("d.type is", d.type);
+    console.log("dialogue is", dialogue);
 
-      const index = dialogue[d.type].findIndex(
-        (e) => e.name === d.name
-      );
-      if (index === null || index === undefined || index <= -1) {
+    const index = dialogue[d.type].findIndex((e) => e.name === d.name);
+    if (index === null || index === undefined || index <= -1) {
+      return;
+    }
+
+    const newData = { ...dialogue };
+    const newArray = [...newData[d.type]];
+    if (newArray?.length <= 1) {
+      return;
+    }
+
+    if (index === 0 && up) {
+      newArray.push(newArray.shift());
+    } else if (index === newData[d.type].length - 1 && !up) {
+      newArray.unshift(newArray.pop());
+    } else {
+      const newIndex = up ? index - 1 : index + 1;
+      if (newIndex > newArray.length - 1 || newIndex < 0) {
         return;
       }
+      const temp = newArray[index];
+      newArray[index] = newArray[newIndex];
+      newArray[newIndex] = temp;
+    }
 
-      const newData = { ...dialogue };
-      const newArray = [...newData[d.type]];
-      if (newArray?.length <= 1) {
-        return;
-      }
-
-      if (index === 0 && up) {
-        newArray.push(newArray.shift());
-      } else if (index === entities[d.type].length - 1 && !up) {
-        newArray.unshift(newArray.pop());
-      } else {
-        const newIndex = up ? index - 1 : index + 1;
-        if (newIndex > newArray.length - 1 || newIndex < 0) {
-          return;
-        }
-        const temp = newArray[index];
-        newArray[index] = newArray[newIndex];
-        newArray[newIndex] = temp;
-      }
-
-      newData[d.type] = newArray;
-      setDialogue(newData);
+    newData[d.type] = newArray;
+    setDialogue(newData);
   };
 
   const importEntityList = async () => {
@@ -948,7 +963,6 @@ export function ApplicationContextProvider(props) {
 
   const loadAvailableVoices = async () => {
     const file = await axios.get(availableVoicesJson);
-    console.log(file.data);
 
     const newData = [];
     for (let i = 0; i < file.data.length; i++) {
@@ -963,7 +977,7 @@ export function ApplicationContextProvider(props) {
   const updateCurrentDialogueType = (d) => {
     setCurrentDialogueType(d);
     localStorage.setItem("dialogueType", d);
-  }
+  };
 
   const provider = {
     getOpenAIKey: () => getOpenAIKey(),
@@ -1029,7 +1043,7 @@ export function ApplicationContextProvider(props) {
     web3SApiKey,
     updateWeb3SApiKey,
     moveDialogue,
-    availableVoices
+    availableVoices,
   };
 
   return (
