@@ -93,7 +93,7 @@ export function ApplicationContextProvider(props) {
 
   const [currentDialogueType, setCurrentDialogueType] = useState(
     localStorage.getItem("dialogueType")
-      ? decompressObject(localStorage.getItem("dialogueType"))
+      ? localStorage.getItem("dialogueType")
       : dialogueTypes[0]
   );
 
@@ -960,6 +960,11 @@ export function ApplicationContextProvider(props) {
     loadAvailableVoices();
   }, []);
 
+  const updateCurrentDialogueType = (d) => {
+    setCurrentDialogueType(d);
+    localStorage.setItem("dialogueType", d);
+  }
+
   const provider = {
     getOpenAIKey: () => getOpenAIKey(),
     setOpenAIKey: (key) => setOpenAIKey(key),
@@ -970,7 +975,7 @@ export function ApplicationContextProvider(props) {
     dialogue,
     setDialogue,
     currentDialogueType,
-    setCurrentDialogueType,
+    setCurrentDialogueType: updateCurrentDialogueType,
     entities: entities,
     setEntities,
     openErrorModal,
