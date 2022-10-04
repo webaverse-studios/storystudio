@@ -249,9 +249,9 @@ const Entity = ({
             }
             return (
               <div key={i} className={"entityField " + field}>
-                {field !== "name" && field !== "description" &&
+                {field !== "name" && field !== "description" && (
                   <label style={{ display: "inline" }}>{field}</label>
-                }
+                )}
                 {field === "description" ? (
                   <textarea
                     rows={1}
@@ -276,7 +276,7 @@ const Entity = ({
         ) : (
           <React.Fragment>
             <textarea
-              rows={1}
+              rows={20}
               key={index}
               type="text"
               value={data || ""}
@@ -301,40 +301,39 @@ const Entity = ({
           </React.Fragment>
         )}
 
-        {type === "loreFiles"
+        {type === "loreFiles" ? (
           // ||
           //   type === "character" ||
           //   type === "npc" ||
           //   type === "mob" ||
           //   type === "location" ||
           //   type === "object"
-          ? (
-            <button
-              onClick={() => {
-                if (type === "loreFiles") {
-                  const element = document.createElement("a");
-                  const file = new Blob([data], { type: "application/text" });
-                  element.href = URL.createObjectURL(file);
-                  element.download = "lore" + index + "_" + Date.now() + ".md";
-                  document.body.appendChild(element);
-                  element.click();
-                  element.remove();
-                } else {
-                  const json = JSON.stringify(data);
-                  const element = document.createElement("a");
-                  const file = new Blob([json], { type: "application/json" });
-                  element.href = URL.createObjectURL(file);
-                  element.download =
-                    data["name"] + "_" + new Date().getTime() + ".json";
-                  document.body.appendChild(element);
-                  element.click();
-                  element.remove();
-                }
-              }}
-            >
-              {type === "loreFiles" ? "Export MD" : "Export"}
-            </button>
-          ) : null}
+          <button
+            onClick={() => {
+              if (type === "loreFiles") {
+                const element = document.createElement("a");
+                const file = new Blob([data], { type: "application/text" });
+                element.href = URL.createObjectURL(file);
+                element.download = "lore" + index + "_" + Date.now() + ".md";
+                document.body.appendChild(element);
+                element.click();
+                element.remove();
+              } else {
+                const json = JSON.stringify(data);
+                const element = document.createElement("a");
+                const file = new Blob([json], { type: "application/json" });
+                element.href = URL.createObjectURL(file);
+                element.download =
+                  data["name"] + "_" + new Date().getTime() + ".json";
+                document.body.appendChild(element);
+                element.click();
+                element.remove();
+              }
+            }}
+          >
+            {type === "loreFiles" ? "Export MD" : "Export"}
+          </button>
+        ) : null}
       </div>
       <div className={"entityDeleteWrapper"}>
         {!shouldDelete && (
@@ -360,7 +359,7 @@ const Entity = ({
         )}
       </div>
 
-      {generateImages &&
+      {generateImages && type !== "loreFiles" && (
         <div className="entityImage">
           {data["image"]?.length > 0 && (
             <div>
@@ -379,10 +378,7 @@ const Entity = ({
               }
 
               setGeneratingImage(true);
-              if (
-                data["image"]?.length > 0 ||
-                data["imageCid"]?.length > 0
-              ) {
+              if (data["image"]?.length > 0 || data["imageCid"]?.length > 0) {
                 await deleteImage();
               }
               updateEntity(
@@ -412,7 +408,7 @@ const Entity = ({
             />
           ) : null}
         </div>
-      }
+      )}
     </div>
   );
 };
