@@ -12,6 +12,8 @@ import {
   ClearIcon,
   DeleteForever,
 } from "../styles/icons/icons";
+import DisplayJSONAsEditableForm from "./DisplayJSONAsEditableForm";
+
 //field check if image, set source the img, if name change, generate new image
 const Dialogue = ({ index, _key, type }) => {
   const {
@@ -904,284 +906,6 @@ const Dialogue = ({ index, _key, type }) => {
   function handleChange(data, selector) {
     editDialogueCallback(data, selector, _key, index);
   }
-  function DisplayJSONAsEditableForm({
-    data,
-    allData,
-    type,
-    label = "",
-    selector = "",
-  }) {
-    const { entities } = useContext(ApplicationContext);
-
-    if (label === "characters" || label === "objects" || label === "npcs") {
-      return (
-        <div>
-          {label === "characters"
-            ? "Characters"
-            : label === "objects"
-            ? "Objects"
-            : "NPCs"}
-          :
-          <br />
-          <ReactTags
-            placeholder=""
-            allowDragDrop={false}
-            tags={
-              label === "characters"
-                ? tagsCharacters
-                : label === "objects"
-                ? tagObjects
-                : tagNPCs
-            }
-            suggestions={
-              label === "characters"
-                ? suggestionsCharacters
-                : label === "objects"
-                ? suggestionsObjects
-                : suggestionsNPCs
-            }
-            delimiters={delimiters}
-            handleDelete={
-              label === "characters"
-                ? handleDeleteCharacter
-                : label === "objects"
-                ? handleDeleteObject
-                : handleDeleteNPC
-            }
-            handleAddition={
-              label === "characters"
-                ? handleAddCharacter
-                : label === "objects"
-                ? handleAddObject
-                : handleAddNPC
-            }
-            inputFieldPosition="inline"
-            autocomplete
-          />
-          <br />
-        </div>
-      );
-    }
-    let output = null;
-    if (typeof data === "object") {
-      if (Array.isArray(data)) {
-        output = data.map((item, index) => {
-          return (
-            <div style={{}} key={index}>
-              <DisplayJSONAsEditableForm
-                key={index}
-                type={type}
-                data={item}
-                allData={allData}
-                selector={selector + (selector !== "" ? "." : "") + index}
-              />
-            </div>
-          );
-        });
-      } else {
-        if (
-          Object.keys(data).includes("speaker") &&
-          Object.keys(data).includes("message")
-        ) {
-          output = (
-            <div>
-              <select
-                value={data["speaker"]}
-                onChange={(e) => {
-                  data["speaker"] = e.target.value;
-                  handleChange(
-                    { speaker: data["speaker"], message: data["message"] },
-                    selector
-                  );
-                }}
-              >
-                {[
-                  ...dialogue[currentDialogueType][_key].input.characters,
-                  ...dialogue[currentDialogueType][_key].input.npcs,
-                ].map((item, index) => {
-                  return (
-                    <option key={index} value={item}>
-                      {item}
-                    </option>
-                  );
-                })}
-              </select>
-              :{" "}
-              <textarea
-                rows={1}
-                className="dialogueInputText"
-                type="text"
-                value={data["message"]}
-                onChange={(e) => {
-                  setLastSelector(selector);
-                  // get the position in the input field and call setLastCursor(position)
-                  setLastCursor(e.target.selectionStart);
-                  handleChange(
-                    { speaker: data["speaker"], message: e.target.value },
-                    selector
-                  );
-                }}
-                autoFocus={lastSelector === selector}
-              />
-              {(type === "rpgDialogue" ||
-                type === "banter" ||
-                type === "cutscenes") && (
-                <button
-                  className={"deleteDialogueMessage"}
-                  onClick={() => {
-                    removeEntryFromDialogue(selector, index);
-                  }}
-                >
-                  Delete
-                </button>
-              )}
-            </div>
-          );
-        } else {
-          output = Object.keys(data).map((key, index) => {
-            return (
-              <div style={{}} key={index}>
-                <DisplayJSONAsEditableForm
-                  key={index}
-                  type={type}
-                  label={key}
-                  data={data[key]}
-                  allData={allData}
-                  selector={selector + (selector !== "" ? "." : "") + key}
-                />
-              </div>
-            );
-          });
-        }
-      }
-    } else if (label === "target") {
-      return (
-        <div>
-          <label style={{ margin: ".5em" }}>{label}</label>
-          {/* render a select dropdown with all of the entities for the current type */}
-          <select
-            value={data}
-            onChange={(e) => {
-              data = e.target.value;
-              handleChange(data, selector);
-            }}
-          >
-            {(
-              (type === "exposition"
-                ? [
-                    ...entities["character"],
-                    ...entities["object"],
-                    ...entities["location"],
-                    ...entities["npc"],
-                  ]
-                : entities[
-                    type.replace("loading", "location").replace("Comment", "")
-                  ]) ?? []
-            ).map((item, index) => {
-              return (
-                <option key={index} value={item.name}>
-                  {item.name}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-      );
-    } else if (label === "prompt" || label === "response") {
-      return null;
-    }
-    // render outputs as an input field
-    else if (
-      label === "message" ||
-      label === "action" ||
-      label === "comment" ||
-      label === "reward" ||
-      label === "task" ||
-      label === "reaction"
-    ) {
-      output = (
-        <div>
-          <textarea
-            rows={1}
-            className="dialogueInputText"
-            type="text"
-            value={data}
-            onChange={(e) => {
-              setLastSelector(selector);
-              // get the position in the input field and call setLastCursor(position)
-              setLastCursor(e.target.selectionStart);
-              handleChange(e.target.value, selector);
-            }}
-            autoFocus={lastSelector === selector}
-          />
-        </div>
-      );
-    } else if (label === "speaker") {
-      output = (
-        // render a dropdown selection based on allData.input.characters
-        <div>
-          <select
-            value={data}
-            onChange={(e) => {
-              data = e.target.value;
-              handleChange(data, selector);
-            }}
-          >
-            {[
-              ...dialogue[currentDialogueType][_key].input.characters,
-              ...dialogue[currentDialogueType][_key].input.npcs,
-            ].map((item, index) => {
-              return (
-                <option key={index} value={item}>
-                  {item}
-                </option>
-              );
-            })}
-          </select>
-          {(type === "rpgDialogue" ||
-            type === "banter" ||
-            type === "cutscenes") && (
-            <button
-              onClick={() => {
-                removeEntryFromDialogue(selector, index);
-              }}
-            >
-              Delete
-            </button>
-          )}
-        </div>
-      );
-    } else if (label === "location" || label === "npc") {
-      output = (
-        <select
-          value={data}
-          onChange={(e) => {
-            data = e.target.value;
-            handleChange(data, selector);
-          }}
-        >
-          {entities[label].map((item, index) => {
-            return (
-              <option key={index} value={item.name}>
-                {item.name}
-              </option>
-            );
-          })}
-        </select>
-      );
-    }
-
-    return (
-      <div className={label} style={{ margin: ".5em" }}>
-        {label !== "location" &&
-          label !== "speaker" &&
-          label !== "transcript" &&
-          label !== "target" &&
-          label}
-        {output}
-      </div>
-    );
-  }
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);
 
@@ -1286,19 +1010,57 @@ const Dialogue = ({ index, _key, type }) => {
             <div className="dialogueBody">
               <label>Input</label>
               <div className="dialogueInput">
-                {DisplayJSONAsEditableForm({
-                  data: dialogue[currentDialogueType][_key].input,
-                  allData: dialogue,
-                  type,
-                })}
+                <DisplayJSONAsEditableForm
+                  data={dialogue[currentDialogueType][_key].input}
+                  allData={dialogue}
+                  type={type}
+                  _key={index}
+                  lastSelector={lastSelector}
+                  setLastSelector={setLastSelector}
+                  setLastCursor={setLastCursor}
+                  handleChange={handleChange}
+                  tags={{
+                    tagsCharacters,
+                    tagObjects,
+                    tagNPCs,
+                    suggestionsCharacters,
+                    suggestionsNPCs,
+                    suggestionsObjects,
+                    handleDeleteCharacter,
+                    handleDeleteNPC,
+                    handleDeleteObject,
+                    handleAddCharacter,
+                    handleAddNPC,
+                    handleAddObject,
+                  }}
+                />
               </div>
               <label>Output</label>
               <div className="dialogueOutput">
-                {DisplayJSONAsEditableForm({
-                  data: dialogue[currentDialogueType][_key].output,
-                  allData: dialogue,
-                  type,
-                })}
+                <DisplayJSONAsEditableForm
+                  data={dialogue[currentDialogueType][_key].output}
+                  allData={dialogue}
+                  type={type}
+                  _key={index}
+                  lastSelector={lastSelector}
+                  setLastSelector={setLastSelector}
+                  setLastCursor={setLastCursor}
+                  handleChange={handleChange}
+                  tags={{
+                    tagsCharacters,
+                    tagObjects,
+                    tagNPCs,
+                    suggestionsCharacters,
+                    suggestionsNPCs,
+                    suggestionsObjects,
+                    handleDeleteCharacter,
+                    handleDeleteNPC,
+                    handleDeleteObject,
+                    handleAddCharacter,
+                    handleAddNPC,
+                    handleAddObject,
+                  }}
+                />
                 {(type === "rpgDialogue" ||
                   type === "banter" ||
                   type === "cutscenes") && (
