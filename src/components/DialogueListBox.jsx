@@ -3,21 +3,9 @@ import "../styles/App.css";
 import Dialogue from "./Dialogue";
 import { ApplicationContext } from "../Context";
 
-const DialogueListBox = ({
-  header = "dialogue",
-  /* It's a string that is used to identify the type of dialogue. */
-  type = "",
-  moveEntity
-}) => {
-  const [generating, setGenerating] = React.useState(false);
-
-  const {
-    addDialogueCallback,
-    generateDialogueCallback,
-    entities,
-    dialogue,
-    currentDialogueType,
-  } = useContext(ApplicationContext);
+const DialogueListBox = ({ header = "dialogue" }) => {
+  const { addDialogueCallback, entities, dialogue, currentDialogueType } =
+    useContext(ApplicationContext);
 
   return (
     <div className={"sectionWrapper " + header + "_wrapped"}>

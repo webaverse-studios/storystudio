@@ -45,26 +45,26 @@ const Dialogue = ({ index, _key, type }) => {
 
   useEffect(() => {
     const newTagsCharacters = (
-      dialogue[currentDialogueType][_key].input.characters ?? []
+      dialogue[currentDialogueType][index].input.characters ?? []
     ).map((character) => {
       return { id: character, text: character };
     });
     setTagsCharacters(newTagsCharacters);
 
     const newTagsObjects = (
-      dialogue[currentDialogueType][_key].input.objects ?? []
+      dialogue[currentDialogueType][index].input.objects ?? []
     ).map((obj) => {
       return { id: obj, text: obj };
     });
     setTagObjects(newTagsObjects);
 
     const newTagsNPCs = (
-      dialogue[currentDialogueType][_key].input.npcs ?? []
+      dialogue[currentDialogueType][index].input.npcs ?? []
     ).map((npc) => {
       return { id: npc, text: npc };
     });
     setTagNPCs(newTagsNPCs);
-  }, [currentDialogueType]);
+  }, [currentDialogueType, dialogue]);
 
   let suggestionsCharacters = (entities["character"] ?? []).map((item) => {
     return {
@@ -902,7 +902,6 @@ const Dialogue = ({ index, _key, type }) => {
     }
   };
   function handleChange(data, selector) {
-    console.log(data, selector, dialogue[currentDialogueType][index]);
     editDialogueCallback(data, selector, _key, index);
   }
   function DisplayJSONAsEditableForm({
