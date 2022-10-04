@@ -243,7 +243,8 @@ const Entity = ({
               field === "hash" ||
               field === "nonce" ||
               field === "imageCid" ||
-              field === "image"
+              field === "image" ||
+              field === "bio"
             ) {
               return null;
             }
