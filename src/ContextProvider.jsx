@@ -677,20 +677,24 @@ export function ApplicationContextProvider(props) {
   };
 
   const editDialogueCallback = (d, selector, key, index) => {
-    if (
-      selector.startsWith("transcript") ||
-      selector.startsWith("comment") ||
-      selector.startsWith("reaction") ||
-      selector.startsWith("action") ||
-      selector.startsWith("reward") ||
-      selector.startsWith("speaker")
-    ) {
-      if (!selector.startsWith("output.")) {
-        selector = "output." + selector;
-      }
-    } else {
-      if (!selector.startsWith("input.")) {
-        selector = "input." + selector;
+    if (!selector.startsWith("output.") && !selector.startsWith("input.")) {
+      if (
+        selector.startsWith("transcript") ||
+        selector.startsWith("comment") ||
+        selector.startsWith("reaction") ||
+        selector.startsWith("action") ||
+        selector.startsWith("reward") ||
+        selector.startsWith("speaker") ||
+        selector.startsWith("prompt") ||
+        selector.startsWith("response")
+      ) {
+        if (!selector.startsWith("output.")) {
+          selector = "output." + selector;
+        }
+      } else {
+        if (!selector.startsWith("input.")) {
+          selector = "input." + selector;
+        }
       }
     }
 

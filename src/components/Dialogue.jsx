@@ -32,7 +32,7 @@ const Dialogue = ({ index, _key, type }) => {
     getTypeOfObject,
     addDialogueEntryWithData,
     cleanDialogueMessages,
-    moveDialogue
+    moveDialogue,
   } = useContext(ApplicationContext);
 
   const [editJson, setEditJson] = useState(true);
@@ -184,6 +184,11 @@ const Dialogue = ({ index, _key, type }) => {
       const newData = { ...currentPrompt };
       newData[type] = temp;
       setCurrentPrompt(newData);
+    } else {
+      const newData = { ...currentPrompt };
+      newData[type] = "";
+      setCurrentPrompt(newData);
+      generatePrompt(type);
     }
   }, [currentDialogueType]);
 
@@ -223,7 +228,10 @@ const Dialogue = ({ index, _key, type }) => {
           prompt = await baseData.module.makeRPGDialoguePrompt(input);
           break;
         case "reactions":
-          prompt = await baseData.module.makeReactionPrompt(input?.name, input?.message);
+          prompt = await baseData.module.makeReactionPrompt(
+            input?.name,
+            input?.message
+          );
           break;
         case "cutscenes":
           prompt = await baseData.module.makeCutscenePrompt(input);
@@ -349,8 +357,8 @@ const Dialogue = ({ index, _key, type }) => {
       const location =
         entities["location"]?.length > 0
           ? entities["location"][
-          Math.floor(Math.random() * entities["location"].length)
-          ]
+              Math.floor(Math.random() * entities["location"].length)
+            ]
           : { name: "Test", Description: "Test" };
 
       const _type = getTypeOfObject(data);
@@ -669,8 +677,232 @@ const Dialogue = ({ index, _key, type }) => {
 
     handleChange(res, selector);
   };
+  const generatePrompt = async (type) => {
+    const inputs = dialogue[currentDialogueType][_key].input;
+
+    if (type === "objectComment") {
+      const data = inputs.target;
+      let obj = getObject(data);
+      if (!obj || obj === undefined) {
+        obj = { name: data, description: "" };
+      }
+      const description = obj ? obj.description : "";
+
+      await getPrompt(type, {
+        name: data,
+        description,
+        type: "Object",
+      });
+    } else if (type === "npcComment") {
+      const data = inputs.target;
+      let obj = getNPC(data);
+      if (!obj || obj === undefined) {
+        obj = { name: data, description: "" };
+      }
+      const description = obj ? obj.description : "";
+
+      await getPrompt(type, {
+        name: data,
+        description,
+        type: "Character",
+      });
+    } else if (type === "mobComment") {
+      const data = inputs.target;
+      let obj = getMob(data);
+      if (!obj || obj === undefined) {
+        obj = { name: data, description: "" };
+      }
+      const description = obj ? obj.description : "";
+
+      await getPrompt(type, {
+        name: data,
+        description,
+        type: "Character",
+      });
+    } else if (type === "loadingComment") {
+      const data = inputs.target;
+      let obj = getSetting(data);
+      if (!obj || obj === undefined) {
+        obj = { name: data, description: "" };
+      }
+      const description = obj ? obj.description : "";
+
+      await getPrompt(type, {
+        name: data,
+        description,
+        type: "Location",
+      });
+    } else if (type === "exposition") {
+      const data = inputs.target;
+      const location =
+        entities["location"]?.length > 0
+          ? entities["location"][
+              Math.floor(Math.random() * entities["location"].length)
+            ]
+          : { name: "Test", Description: "Test" };
+
+      const _type = getTypeOfObject(data);
+      await getPrompt(type, {
+        name: data,
+        location: `${location.name}\n${location.description}`,
+        type: _type,
+      });
+    } else if (type === "banter") {
+      const messages = [];
+      const data = inputs;
+      const location = getSetting(data.location);
+      const chars = data.characters;
+      const _npcs = data.npcs;
+      const objs = data.objects;
+
+      const characters = [];
+      const objects = [];
+
+      for (let i = 0; i < chars.length; i++) {
+        let _char = getCharacter(chars[i]);
+        if (!_char || _char === undefined) {
+          _char = { name: chars[i], description: "" };
+        }
+        _char.bio = _char.description;
+
+        characters.push(_char);
+      }
+      for (let i = 0; i < _npcs.length; i++) {
+        let npc = getNPC(chars[i]);
+        if (!npc || npc === undefined) {
+          npc = { name: chars[i], description: "" };
+        }
+        npc.bio = npc.description;
+
+        characters.push(npc);
+      }
+      for (let i = 0; i < objs.length; i++) {
+        let obj = getObject(chars[i]);
+        if (!obj || obj === undefined) {
+          obj = { name: chars[i], description: "" };
+        }
+
+        objects.push(obj);
+      }
+
+      const input = { location, characters, objects, messages };
+      await getPrompt(type, input);
+    } else if (type === "rpgDialogue") {
+      const messages = [];
+      const data = inputs;
+      const location = getSetting(data.location);
+      const chars = data.characters;
+      const _npcs = data.npcs;
+      const objs = data.objects;
+
+      const characters = [];
+      const objects = [];
+
+      for (let i = 0; i < chars.length; i++) {
+        let _char = getCharacter(chars[i]);
+        if (!_char || _char === undefined) {
+          _char = { name: chars[i], description: "" };
+        }
+        _char.bio = _char.description;
+
+        characters.push(_char);
+      }
+      for (let i = 0; i < _npcs.length; i++) {
+        let npc = getNPC(chars[i]);
+        if (!npc || npc === undefined) {
+          npc = { name: chars[i], description: "" };
+        }
+        npc.bio = npc.description;
+
+        characters.push(npc);
+      }
+      for (let i = 0; i < objs.length; i++) {
+        let obj = getObject(chars[i]);
+        if (!obj || obj === undefined) {
+          obj = { name: chars[i], description: "" };
+        }
+
+        objects.push(obj);
+      }
+      const dstCharacter = getNPC(_npcs[0]);
+      dstCharacter.bio = dstCharacter.description;
+
+      const input = {
+        location,
+        character: characters[0],
+        characters,
+        objects,
+        messages,
+        dstCharacter,
+      };
+
+      await getPrompt(type, input);
+    } else if (type === "reactions") {
+      selector = "output.reaction";
+      const data = inputs;
+      const message = data.messages[0];
+      await getPrompt(type, {
+        name: message?.speaker ? message?.speaker : "Scillia",
+        message: message?.message ? message?.message : "Hi there!",
+      });
+    } else if (type === "cutscenes") {
+      const messages = [];
+      const data = inputs;
+      const location = getSetting(data.location);
+      const chars = data.characters;
+      const _npcs = data.npcs;
+      const objs = data.objects;
+
+      const characters = [];
+      const npcs = [];
+      const objects = [];
+
+      for (let i = 0; i < chars.length; i++) {
+        let _char = getCharacter(chars[i]);
+        if (!_char || _char === undefined) {
+          _char = { name: chars[i], description: "" };
+        }
+        _char.bio = _char.description;
+
+        characters.push(_char);
+      }
+      for (let i = 0; i < _npcs.length; i++) {
+        let npc = getNPC(chars[i]);
+        if (!npc || npc === undefined) {
+          npc = { name: chars[i], description: "" };
+        }
+        npc.bio = npc.description;
+
+        npcs.push(npc);
+      }
+      for (let i = 0; i < objs.length; i++) {
+        let obj = getObject(chars[i]);
+        if (!obj || obj === undefined) {
+          obj = { name: chars[i], description: "" };
+        }
+
+        objects.push(obj);
+      }
+
+      const input = {
+        location: location,
+        npcs: npcs,
+        mobs: [],
+        characters,
+        objects,
+        messages,
+      };
+      await getPrompt(type, input);
+    } else if (type === "quests") {
+      const data = inputs;
+      const location = data.location;
+
+      const input = { location: location };
+      await getPrompt(type, input);
+    }
+  };
   function handleChange(data, selector) {
-    console.log(data, selector, dialogue[currentDialogueType][index])
+    console.log(data, selector, dialogue[currentDialogueType][index]);
     editDialogueCallback(data, selector, _key, index);
   }
   function DisplayJSONAsEditableForm({
@@ -688,8 +920,8 @@ const Dialogue = ({ index, _key, type }) => {
           {label === "characters"
             ? "Characters"
             : label === "objects"
-              ? "Objects"
-              : "NPCs"}
+            ? "Objects"
+            : "NPCs"}
           :
           <br />
           <ReactTags
@@ -699,30 +931,30 @@ const Dialogue = ({ index, _key, type }) => {
               label === "characters"
                 ? tagsCharacters
                 : label === "objects"
-                  ? tagObjects
-                  : tagNPCs
+                ? tagObjects
+                : tagNPCs
             }
             suggestions={
               label === "characters"
                 ? suggestionsCharacters
                 : label === "objects"
-                  ? suggestionsObjects
-                  : suggestionsNPCs
+                ? suggestionsObjects
+                : suggestionsNPCs
             }
             delimiters={delimiters}
             handleDelete={
               label === "characters"
                 ? handleDeleteCharacter
                 : label === "objects"
-                  ? handleDeleteObject
-                  : handleDeleteNPC
+                ? handleDeleteObject
+                : handleDeleteNPC
             }
             handleAddition={
               label === "characters"
                 ? handleAddCharacter
                 : label === "objects"
-                  ? handleAddObject
-                  : handleAddNPC
+                ? handleAddObject
+                : handleAddNPC
             }
             inputFieldPosition="inline"
             autocomplete
@@ -795,15 +1027,15 @@ const Dialogue = ({ index, _key, type }) => {
               {(type === "rpgDialogue" ||
                 type === "banter" ||
                 type === "cutscenes") && (
-                  <button
-                    className={"deleteDialogueMessage"}
-                    onClick={() => {
-                      removeEntryFromDialogue(selector, index);
-                    }}
-                  >
-                    Delete
-                  </button>
-                )}
+                <button
+                  className={"deleteDialogueMessage"}
+                  onClick={() => {
+                    removeEntryFromDialogue(selector, index);
+                  }}
+                >
+                  Delete
+                </button>
+              )}
             </div>
           );
         } else {
@@ -838,14 +1070,14 @@ const Dialogue = ({ index, _key, type }) => {
             {(
               (type === "exposition"
                 ? [
-                  ...entities["character"],
-                  ...entities["object"],
-                  ...entities["location"],
-                  ...entities["npc"],
-                ]
+                    ...entities["character"],
+                    ...entities["object"],
+                    ...entities["location"],
+                    ...entities["npc"],
+                  ]
                 : entities[
-                type.replace("loading", "location").replace("Comment", "")
-                ]) ?? []
+                    type.replace("loading", "location").replace("Comment", "")
+                  ]) ?? []
             ).map((item, index) => {
               return (
                 <option key={index} value={item.name}>
@@ -910,14 +1142,14 @@ const Dialogue = ({ index, _key, type }) => {
           {(type === "rpgDialogue" ||
             type === "banter" ||
             type === "cutscenes") && (
-              <button
-                onClick={() => {
-                  removeEntryFromDialogue(selector, index);
-                }}
-              >
-                Delete
-              </button>
-            )}
+            <button
+              onClick={() => {
+                removeEntryFromDialogue(selector, index);
+              }}
+            >
+              Delete
+            </button>
+          )}
         </div>
       );
     } else if (label === "location" || label === "npc") {
@@ -942,7 +1174,11 @@ const Dialogue = ({ index, _key, type }) => {
 
     return (
       <div className={label} style={{ margin: ".5em" }}>
-        {label !== "location" && label !== "speaker"  && label !== "transcript" && label !== "target" && label}
+        {label !== "location" &&
+          label !== "speaker" &&
+          label !== "transcript" &&
+          label !== "target" &&
+          label}
         {output}
       </div>
     );
@@ -995,10 +1231,22 @@ const Dialogue = ({ index, _key, type }) => {
         {showPrompt ? "Hide Prompt" : "Show Prompt"}
       </button>
       <div className={"entityUpDown"}>
-        <button onClick={() => { const data = dialogue[[currentDialogueType][_key]][index]; data.type = type; moveDialogue(data, true); }}>
+        <button
+          onClick={() => {
+            const data = dialogue[[currentDialogueType][_key]][index];
+            data.type = type;
+            moveDialogue(data, true);
+          }}
+        >
           <ArrowUp />
         </button>
-        <button onClick={() => { const data = dialogue[[currentDialogueType][_key]][index]; data.type = type; moveDialogue(data, false); }}>
+        <button
+          onClick={() => {
+            const data = dialogue[[currentDialogueType][_key]][index];
+            data.type = type;
+            moveDialogue(data, false);
+          }}
+        >
           <ArrowDown />
         </button>
       </div>
@@ -1055,15 +1303,15 @@ const Dialogue = ({ index, _key, type }) => {
                 {(type === "rpgDialogue" ||
                   type === "banter" ||
                   type === "cutscenes") && (
-                    <button
-                      className={"addMessage"}
-                      onClick={() => {
-                        addDialogueEntry(_key);
-                      }}
-                    >
-                      Add Message
-                    </button>
-                  )}
+                  <button
+                    className={"addMessage"}
+                    onClick={() => {
+                      addDialogueEntry(_key);
+                    }}
+                  >
+                    Add Message
+                  </button>
+                )}
               </div>
               {/* <button onClick={saveAsMD}>Save MD</button> 
               <button
@@ -1078,7 +1326,7 @@ const Dialogue = ({ index, _key, type }) => {
           )}
         </React.Fragment>
       )}
-      {showPrompt &&
+      {showPrompt && (
         <div className="dialogPromptView">
           <div className="dialogPromptViewPreview">
             <label>Prompt Preview</label>
@@ -1097,7 +1345,7 @@ const Dialogue = ({ index, _key, type }) => {
             <label>Prompt Output</label>
             <textarea
               rows={1}
-              value={dialogue[currentDialogueType][_key]['output']["response"]}
+              value={dialogue[currentDialogueType][_key]["output"]["response"]}
               readOnly={true}
               onChange={(e) => {
                 const newData = { ...currentPrompt };
@@ -1107,9 +1355,8 @@ const Dialogue = ({ index, _key, type }) => {
             />
           </div>
         </div>
-      }
+      )}
       <div className={"entityDeleteWrapper"}>
-
         {!shouldDelete && (
           <span className="entityDelete">
             <button onClick={() => setShouldDelete(true)}>
