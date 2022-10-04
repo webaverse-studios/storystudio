@@ -115,7 +115,7 @@ const Entity = ({
 
   const inventoryRender = (inventory, _key) => {
     return (
-      <div key={_key}>
+      <div className="wrapper" key={_key}>
         Inventory:
         <br />
         <br />
@@ -140,7 +140,7 @@ const Entity = ({
       data.type === "mob"
     ) {
       return (
-        <div>
+        <div className="wrapper">
           <select
             value={data["voice"]}
             onChange={(event) => {

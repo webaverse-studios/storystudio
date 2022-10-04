@@ -95,7 +95,7 @@
   display: inline;
   margin-top: 0.5em;
   margin-left: 0.5em;
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
   float: right;
 }
 
@@ -110,7 +110,7 @@
 
 .importExportButtons {
   display: inline-block;
-  width:100%;
+  width: 100%;
 }
 
 .modeButton {
@@ -124,7 +124,7 @@
 }
 
 .view {
-  margin:1em;
+  margin: 1em;
 }
 
 .openai {
@@ -132,7 +132,7 @@
   border: 1px solid #000000;
   margin: 0.5em;
   margin-left: auto;
-  margin-right:auto;
+  margin-right: auto;
 }
 
 .openai input,
@@ -174,7 +174,7 @@
 }
 
 .entity {
-  font-size: .8em;
+  font-size: 0.8em;
   line-height: 1em;
   text-align: left;
   padding: 1em;
@@ -243,7 +243,7 @@
 
 .entityField label {
   width: calc(20% - 1em);
-  margin-right: .5em;
+  margin-right: 0.5em;
   font-weight: bold;
   display: inline-block;
 }
@@ -259,12 +259,12 @@
   display: inline-block;
   border-bottom: solid 1px #ccc;
   background: none;
-  padding: .5em;
+  padding: 0.5em;
   margin: 0;
 }
 
 .entityField {
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
 }
 
 .entity input {
@@ -303,7 +303,7 @@
 
 .entityUpDown {
   float: left;
-  width:2em;
+  width: 2em;
   margin-right: 1em;
   vertical-align: middle;
 }
@@ -328,12 +328,12 @@
 }
 
 .generateButton {
-  display: inline!important;
+  display: inline !important;
 }
 
 .showPrompt {
-  margin: .5em;
-  margin-left:auto;
+  margin: 0.5em;
+  margin-left: auto;
 }
 
 .addMessage {
@@ -347,15 +347,14 @@
 }
 
 .dialogueInput {
-  border:1px solid rgba(0, 0, 0, 0.2) !important;
-  margin-bottom: .5em;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  margin-bottom: 0.5em;
 }
 
 .dialogueOutput {
   width: 100%;
-  border:1px solid rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
 }
-
 
 .dialogPromptView {
   display: inline-block;
@@ -390,16 +389,16 @@
 }
 
 .ReactTags__remove {
-  display: inline!important;
-  margin: .5em;
+  display: inline !important;
+  margin: 0.5em;
 }
 
 .ReactTags__tagInputField {
   border: none;
   width: 10em;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  margin: .25em;
-  padding: .25em;
+  margin: 0.25em;
+  padding: 0.25em;
 }
 
 /* remove all default styling for .ReactTags__tagInputField, which is an input element */
@@ -408,13 +407,13 @@
 }
 
 .tag-wrapper {
-  border:1px solid rgba(0, 0, 0, 0.2);
-  margin: .25em;
-  padding: .25em;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  margin: 0.25em;
+  padding: 0.25em;
 }
 
 .viewButton {
-  margin: .25em;
+  margin: 0.25em;
 }
 
 .viewButton.activeButton {
@@ -423,15 +422,15 @@
 }
 
 .dialogueInputText {
-  width: calc(100% - 16em)!important;
+  width: calc(100% - 16em) !important;
   outline: none;
   box-shadow: none;
   border: 0;
 }
 
 .deleteDialogueMessage {
-  display: inline-block!important;
-  margin-left: .5em;
+  display: inline-block !important;
+  margin-left: 0.5em;
 }
 
 /* create a media query for the mobile view */
@@ -444,26 +443,26 @@
     max-width: 3em;
     float: right;
     text-align: left;
-    font-size:1.4em;
+    font-size: 1.4em;
   }
   .sectionWrapper {
     margin-top: 1em;
     width: 100%;
   }
   .sectionHeader h1 {
-    font-size:1em;
+    font-size: 1em;
     border: 0;
     margin: 0;
     padding: 0;
-    margin-block-start:0;
-    margin-block-end:0;
-    text-align:middle;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    text-align: middle;
   }
 
   .importExportButtons {
     /* position:absolute; */
-    right:1em;
-    top:1em;
+    right: 1em;
+    top: 1em;
   }
   .location_wrapped {
     width: 100% !important;
@@ -498,7 +497,7 @@
     text-align: center;
     box-shadow: none;
     border: 1px solid #ccc;
-    margin: .5em;
+    margin: 0.5em;
   }
 
   .baseButton {
@@ -524,7 +523,7 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   border-radius: 6px;
   background-color: rgb(255, 0, 0);
-  color:rgb(0, 0, 0);
+  color: rgb(0, 0, 0);
   padding: 1rem;
   text-align: center;
   width: 30rem;
@@ -547,4 +546,15 @@
 .photo {
   height: 128px;
   width: 128px;
+}
+
+.wrapper {
+  width: fit-content;
+  max-width: 5000px;
+  height: fit-content;
+  border: 2px solid rgb(134, 133, 133);
+  margin-top: 10px;
+  margin-left: 10px;
+  background: white;
+  text-align: left;
 }
