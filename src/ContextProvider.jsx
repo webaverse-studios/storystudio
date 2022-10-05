@@ -576,9 +576,10 @@ export function ApplicationContextProvider(props) {
     const text = await file.text();
     const json = JSON.parse(text);
 
-    const { entities, dialogue, loreFiles, settings } = json;
-    setEntities(entities);
-    downloadEntities();
+    const { dialogue, loreFiles, settings } = json;
+    const ents = json.entities;
+    setEntities(ents);
+    await downloadEntities(true, ents);
     setDialogue(dialogue);
     setLoreFiles(loreFiles);
 
