@@ -832,11 +832,6 @@ export function ApplicationContextProvider(props) {
       return;
     }
 
-    console.log("d is", d);
-
-    console.log("d.type is", d.type);
-    console.log("dialogue is", dialogue);
-
     const index = dialogue[d.type].findIndex((e) => e.name === d.name);
     if (index === null || index === undefined || index <= -1) {
       return;
