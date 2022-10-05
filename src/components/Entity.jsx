@@ -318,8 +318,9 @@ const Entity = ({
                 element.click();
                 element.remove();
               } else {
-                const json = JSON.stringify(data);
-                json.image = "";
+                const temp = data
+                temp.image = "";
+                const json = JSON.stringify(temp);
                 const element = document.createElement("a");
                 const file = new Blob([json], { type: "application/json" });
                 element.href = URL.createObjectURL(file);

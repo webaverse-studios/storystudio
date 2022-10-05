@@ -502,8 +502,11 @@ const Dialogue = ({ index, _key, type }) => {
 
         objects.push(obj);
       }
-      const dstCharacter = getNPC(_npcs[0]);
-      dstCharacter.bio = dstCharacter.description;
+      let dstCharacter = getNPC(_npcs[0]);
+      if (!dstCharacter) {
+        dstCharacter = { name: "Character", description: "" };
+      }
+      dstCharacter.bio = dstCharacter?.description;
 
       const input = {
         location,
@@ -853,8 +856,11 @@ const Dialogue = ({ index, _key, type }) => {
 
         objects.push(obj);
       }
-      const dstCharacter = getNPC(_npcs[0]);
-      dstCharacter.bio = dstCharacter.description;
+      let dstCharacter = getNPC(_npcs[0]);
+      if (!dstCharacter) {
+        dstCharacter = { name: "Character", description: "" };
+      }
+      dstCharacter.bio = dstCharacter?.description;
 
       const input = {
         location,
@@ -867,7 +873,6 @@ const Dialogue = ({ index, _key, type }) => {
 
       await getPrompt(type, input, forceChange);
     } else if (type === "reactions") {
-      selector = "output.reaction";
       const data = inputs;
       const message = data.messages[0];
       await getPrompt(
