@@ -1131,7 +1131,7 @@ const Dialogue = ({ index, _key, type }) => {
           <div className="dialogPromptViewPreview">
             <label>Prompt Preview</label>
             <textarea
-              rows={1}
+              rows={dialogue[currentDialogueType][_key]["output"]["prompt"]?.split('\n').length}
               value={dialogue[currentDialogueType][_key]["output"]["prompt"]}
               readOnly={false}
               onChange={(e) => {

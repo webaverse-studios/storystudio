@@ -255,7 +255,7 @@ const Entity = ({
                 )}
                 {field === "description" ? (
                   <textarea
-                    rows={1}
+                    rows={data[field]?.split("\n").length}
                     value={data[field]}
                     onChange={(e) =>
                       updateEntity(data, field, e.target.value, index)
@@ -277,7 +277,7 @@ const Entity = ({
         ) : (
           <React.Fragment>
             <textarea
-              rows={20}
+              rows={data?.split("\n").length}
               key={index}
               type="text"
               value={data || ""}
@@ -318,7 +318,7 @@ const Entity = ({
                 element.click();
                 element.remove();
               } else {
-                const temp = data
+                const temp = data;
                 temp.image = "";
                 const json = JSON.stringify(temp);
                 const element = document.createElement("a");
