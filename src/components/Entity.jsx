@@ -361,6 +361,13 @@ const Entity = ({
 
       {generateImages && type !== "loreFiles" && (
         <div className="entityImage">
+          {data["image"] && data["image"].length > 0 ? (
+            <img
+              className="photo"
+              src={`data:image/jpeg;base64,${data["image"]}`}
+              alt={data["name"]}
+            />
+          ) : null}
           {data["image"]?.length > 0 && (
             <div>
               <button onClick={deleteImage}>
@@ -399,14 +406,6 @@ const Entity = ({
               ? "Regenerate Image"
               : "Generate Image"}
           </button>
-          {data["image"] && data["image"].length > 0 ? (
-            <img
-              className="photo"
-              key={i}
-              src={`data:image/jpeg;base64,${data["image"]}`}
-              alt={data["name"]}
-            />
-          ) : null}
         </div>
       )}
     </div>
