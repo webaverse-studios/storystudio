@@ -181,8 +181,13 @@ export function ApplicationContextProvider(props) {
     }, 500);
   }, [loreFiles]);
 
-  const downloadEntities = async () => {
-    const newEntities = { ...entities };
+  const downloadEntities = async (
+    useOtherEntities = false,
+    otherEntities = null
+  ) => {
+    const newEntities = useOtherEntities
+      ? { ...otherEntities }
+      : { ...entities };
     const keys = Object.keys(newEntities);
     for (let i = 0; i < keys.length; i++) {
       for (let j = 0; j < newEntities[keys[i]].length; j++) {
@@ -204,6 +209,7 @@ export function ApplicationContextProvider(props) {
     setEntities(newEntities);
   };
 
+  const [downloaded, setDownloaded] = useState(false);
   useEffect(() => {
     onbeforeunload = (event) => {
       const newEntities = { ...entities };
@@ -215,9 +221,13 @@ export function ApplicationContextProvider(props) {
           }
         }
       }
+      setEntities(newEntities);
       localStorage.setItem("entities", compressObject(newEntities));
     };
-    downloadEntities();
+    if (!downloaded) {
+      downloadEntities();
+      setDownloaded(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -426,6 +436,7 @@ export function ApplicationContextProvider(props) {
       newEntityData[entityType].unshift(entity);
 
       setEntities(newEntityData);
+      console.log("set entities:", newEntityData, entities);
     }
   };
 
@@ -499,7 +510,11 @@ export function ApplicationContextProvider(props) {
       setLoreFiles(newLoreFiles);
     } else {
       const newData = { ...entities };
-      newData[type].splice(index, 1);
+      if (!newData[type]) {
+        newData[type] = [];
+      } else {
+        newData[type].splice(index, 1);
+      }
 
       setEntities(newData);
     }
@@ -519,14 +534,6 @@ export function ApplicationContextProvider(props) {
         ? newData[entity.type].findIndex((e) => e.id === entity.id)
         : newData[entity.type].findIndex((e) => e.name === entity.name);
 
-      console.log(
-        "index:",
-        index,
-        "entityIndex:",
-        entityIndex,
-        "entity.id:",
-        entity.id
-      );
       newData[entity.type][entityIndex] = entity;
 
       setEntities(newData);

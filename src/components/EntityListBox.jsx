@@ -59,26 +59,30 @@ const EntityListBox = ({ header, type }) => {
           Object.keys(
             type === "loreFiles" ? loreFiles : entities[type] || entities
           ).map((key, index) => {
+            if (!entities[type] && type !== "loreFiles") {
+              return null;
+            }
+
             return (
-                <Entity
-                  key={index}
-                  data={
-                    type === "loreFiles"
-                      ? loreFiles[key]
-                      : (entities[type] || entities)[key]
-                  }
-                  editEntityCallback={editEntityCallback}
-                  deleteEntityCallback={() =>
-                    deleteEntityCallback(
-                      (entities[type] || entities)[key],
-                      index,
-                      type
-                    )
-                  }
-                  moveEntityCallback={(entity, up) => moveEntity(entity, up)}
-                  index={index}
-                  type={type}
-                />
+              <Entity
+                key={index}
+                data={
+                  type === "loreFiles"
+                    ? loreFiles[key]
+                    : (entities[type] || entities)[key]
+                }
+                editEntityCallback={editEntityCallback}
+                deleteEntityCallback={() =>
+                  deleteEntityCallback(
+                    (entities[type] || entities)[key],
+                    index,
+                    type
+                  )
+                }
+                moveEntityCallback={(entity, up) => moveEntity(entity, up)}
+                index={index}
+                type={type}
+              />
             );
           })}
       </div>
