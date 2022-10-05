@@ -194,14 +194,21 @@ const Dialogue = ({ index, _key, type }) => {
     }
   }, [currentDialogueType]);
 
-  const getPrompt = async (type, input) => {
-    if (currentPrompt[type]?.length > 0) {
+  const onInputsChange = () => {
+    const newData = { ...currentPrompt };
+    newData[type] = "";
+    setCurrentPrompt(newData);
+    generatePrompt(type, true);
+  };
+
+  const getPrompt = async (type, input, forceChange = false) => {
+    if (currentPrompt[type]?.length > 0 && !forceChange) {
       return currentPrompt[type];
     }
 
     const temp = dialogue[currentDialogueType][_key].output?.prompt;
     let prompt = "";
-    if (temp && temp?.length > 0 && temp !== "Prompt") {
+    if (temp && temp?.length > 0 && temp !== "Prompt" && !forceChange) {
       const newData = { ...currentPrompt };
       newData[type] = temp;
       setCurrentPrompt(newData);
@@ -679,7 +686,7 @@ const Dialogue = ({ index, _key, type }) => {
 
     handleChange(res, selector);
   };
-  const generatePrompt = async (type) => {
+  const generatePrompt = async (type, forceChange = false) => {
     const inputs = dialogue[currentDialogueType][_key].input;
 
     if (type === "objectComment") {
@@ -690,11 +697,15 @@ const Dialogue = ({ index, _key, type }) => {
       }
       const description = obj ? obj.description : "";
 
-      await getPrompt(type, {
-        name: data,
-        description,
-        type: "Object",
-      });
+      await getPrompt(
+        type,
+        {
+          name: data,
+          description,
+          type: "Object",
+        },
+        forceChange
+      );
     } else if (type === "npcComment") {
       const data = inputs.target;
       let obj = getNPC(data);
@@ -703,11 +714,15 @@ const Dialogue = ({ index, _key, type }) => {
       }
       const description = obj ? obj.description : "";
 
-      await getPrompt(type, {
-        name: data,
-        description,
-        type: "Character",
-      });
+      await getPrompt(
+        type,
+        {
+          name: data,
+          description,
+          type: "Character",
+        },
+        forceChange
+      );
     } else if (type === "mobComment") {
       const data = inputs.target;
       let obj = getMob(data);
@@ -716,11 +731,15 @@ const Dialogue = ({ index, _key, type }) => {
       }
       const description = obj ? obj.description : "";
 
-      await getPrompt(type, {
-        name: data,
-        description,
-        type: "Character",
-      });
+      await getPrompt(
+        type,
+        {
+          name: data,
+          description,
+          type: "Character",
+        },
+        forceChange
+      );
     } else if (type === "loadingComment") {
       const data = inputs.target;
       let obj = getSetting(data);
@@ -729,11 +748,15 @@ const Dialogue = ({ index, _key, type }) => {
       }
       const description = obj ? obj.description : "";
 
-      await getPrompt(type, {
-        name: data,
-        description,
-        type: "Location",
-      });
+      await getPrompt(
+        type,
+        {
+          name: data,
+          description,
+          type: "Location",
+        },
+        forceChange
+      );
     } else if (type === "exposition") {
       const data = inputs.target;
       const location =
@@ -744,11 +767,15 @@ const Dialogue = ({ index, _key, type }) => {
           : { name: "Test", Description: "Test" };
 
       const _type = getTypeOfObject(data);
-      await getPrompt(type, {
-        name: data,
-        location: `${location.name}\n${location.description}`,
-        type: _type,
-      });
+      await getPrompt(
+        type,
+        {
+          name: data,
+          location: `${location.name}\n${location.description}`,
+          type: _type,
+        },
+        forceChange
+      );
     } else if (type === "banter") {
       const messages = [];
       const data = inputs;
@@ -788,7 +815,7 @@ const Dialogue = ({ index, _key, type }) => {
       }
 
       const input = { location, characters, objects, messages };
-      await getPrompt(type, input);
+      await getPrompt(type, input, forceChange);
     } else if (type === "rpgDialogue") {
       const messages = [];
       const data = inputs;
@@ -838,15 +865,19 @@ const Dialogue = ({ index, _key, type }) => {
         dstCharacter,
       };
 
-      await getPrompt(type, input);
+      await getPrompt(type, input, forceChange);
     } else if (type === "reactions") {
       selector = "output.reaction";
       const data = inputs;
       const message = data.messages[0];
-      await getPrompt(type, {
-        name: message?.speaker ? message?.speaker : "Scillia",
-        message: message?.message ? message?.message : "Hi there!",
-      });
+      await getPrompt(
+        type,
+        {
+          name: message?.speaker ? message?.speaker : "Scillia",
+          message: message?.message ? message?.message : "Hi there!",
+        },
+        forceChange
+      );
     } else if (type === "cutscenes") {
       const messages = [];
       const data = inputs;
@@ -894,17 +925,20 @@ const Dialogue = ({ index, _key, type }) => {
         objects,
         messages,
       };
-      await getPrompt(type, input);
+      await getPrompt(type, input, forceChange);
     } else if (type === "quests") {
       const data = inputs;
       const location = data.location;
 
       const input = { location: location };
-      await getPrompt(type, input);
+      await getPrompt(type, input, forceChange);
     }
   };
   function handleChange(data, selector) {
     editDialogueCallback(data, selector, _key, index);
+    if (selector.startsWith("input.") || selector.startsWith("target")) {
+      onInputsChange();
+    }
   }
   let audioPlayer = null;
   const [shouldDelete, setShouldDelete] = React.useState(false);

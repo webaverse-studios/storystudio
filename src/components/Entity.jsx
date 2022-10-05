@@ -301,14 +301,12 @@ const Entity = ({
             />
           </React.Fragment>
         )}
-
-        {type === "loreFiles" ? (
-          // ||
-          //   type === "character" ||
-          //   type === "npc" ||
-          //   type === "mob" ||
-          //   type === "location" ||
-          //   type === "object"
+        {type === "loreFiles" ||
+        type === "character" ||
+        type === "npc" ||
+        type === "mob" ||
+        type === "location" ||
+        type === "object" ? (
           <button
             onClick={() => {
               if (type === "loreFiles") {
@@ -321,6 +319,7 @@ const Entity = ({
                 element.remove();
               } else {
                 const json = JSON.stringify(data);
+                json.image = "";
                 const element = document.createElement("a");
                 const file = new Blob([json], { type: "application/json" });
                 element.href = URL.createObjectURL(file);
