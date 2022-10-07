@@ -30,6 +30,9 @@ const Entity = ({
     generateImages,
     web3Storage,
     availableVoices,
+    getEntityImage,
+    setEntityImage,
+    hasEntityImage,
   } = useContext(ApplicationContext);
 
   let audioPlayer = null;
@@ -184,12 +187,12 @@ const Entity = ({
   const deleteImage = async () => {
     console.log("deleting image");
     setCancelingImage(true);
-    if (data["image"]?.length === 59 && !cancelingImage) {
-      await deleteFile(web3Storage, data["image"]);
+    if (data["imageCid"]?.length === 59 && !cancelingImage) {
+      await deleteFile(web3Storage, data["imageCid"]);
     }
 
     let newData = { ...data };
-    newData["image"] = "";
+    setEntityImage(type, index, "");
     newData["imageCid"] = "";
     editEntityCallback(newData, index);
     setCancelingImage(false);
@@ -201,12 +204,12 @@ const Entity = ({
       return;
     }
 
-    if (!data["image"] || data["imageCid"]?.length === 59) {
+    if (!hasEntityImage(type, index) || data["imageCid"]?.length === 59) {
       return;
     }
 
     setSavingImage(true);
-    const cid = await uploadFile(web3Storage, data["image"]);
+    const cid = await uploadFile(web3Storage, getEntityImage(type, index));
     updateEntity(data, "imageCid", cid, index);
     setSavingImage(false);
   };
@@ -362,14 +365,14 @@ const Entity = ({
 
       {generateImages && type !== "loreFiles" && (
         <div className="entityImage">
-          {data["image"] && data["image"].length > 0 ? (
+          {hasEntityImage(type, index) ? (
             <img
               className="photo"
-              src={`data:image/jpeg;base64,${data["image"]}`}
+              src={`data:image/jpeg;base64,${getEntityImage(type, index)}`}
               alt={data["name"]}
             />
           ) : null}
-          {data["image"]?.length > 0 && (
+          {hasEntityImage(type, index) && (
             <div>
               <button onClick={deleteImage}>
                 {cancelingImage ? "Canceling..." : "Cancel"}
@@ -386,24 +389,23 @@ const Entity = ({
               }
 
               setGeneratingImage(true);
-              if (data["image"]?.length > 0 || data["imageCid"]?.length > 0) {
+              if (hasEntityImage(type, index) || data["imageCid"]?.length > 0) {
                 await deleteImage();
               }
-              updateEntity(
-                data,
-                "image",
+              setEntityImage(
+                type,
+                index,
                 await generateImage(
                   imgApi,
                   data["name"] + " " + data["description"]
-                ),
-                index
+                )
               );
               setGeneratingImage(false);
             }}
           >
             {generatingImage
               ? "Generating..."
-              : data["image"]?.length > 0
+              : hasEntityImage(type, index)
               ? "Regenerate Image"
               : "Generate Image"}
           </button>

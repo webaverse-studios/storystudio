@@ -12,8 +12,8 @@
   "dependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
+    "@webaverse/lore-engine": "github:webaverse-studios/lore-engine#webaverse-lore",
     "@monaco-editor/react": "^4.4.5",
-    "@webaverse-studios/lore-engine": "^0.0.1",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
     "dotenv": "^16.0.1",

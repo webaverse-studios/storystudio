@@ -189,10 +189,10 @@ export const DisplayJSONAsEditableForm = ({
           {(
             (type === "exposition"
               ? [
-                  ...entities["character"],
-                  ...entities["object"],
-                  ...entities["location"],
-                  ...entities["npc"],
+                  ...(entities["character"] ? entities["character"] : []),
+                  ...(entities["object"] ? entities["object"] : []),
+                  ...(entities["location"] ? entities["location"] : []),
+                  ...(entities["npc"] ? entities["npc"] : []),
                 ]
               : entities[
                   type.replace("loading", "location").replace("Comment", "")

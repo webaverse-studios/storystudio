@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Route, Routes } from "react-router";
 import { BrowserRouter as Router } from "react-router-dom";
 import DialogueListBox from "./components/DialogueListBox";
@@ -6,16 +6,13 @@ import DialogueSelector from "./components/DialogueSelector";
 import ErrorModal from "./components/ErrorModal";
 import { ApplicationContextProvider } from "./ContextProvider";
 import LoreBase from "./LoreBase";
-import LoreFiles from "./LoreFiles";
 import Setup from "./Setup";
 import "./styles/App.css";
 import { DndProvider } from "react-dnd";
 
 import Header from "./components/Header";
 import EntityListBox from "./components/EntityListBox";
-import { ApplicationContext } from "./Context";
 import "./styles/App.css";
-import { entityTypes } from "./utils/constants";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 export const views = {
@@ -41,7 +38,9 @@ function App() {
               <Route path="Base" element={<LoreBase />} />
               <Route
                 path="Locations"
-                element={<EntityListBox type={"location"} header={"Locations"} />}
+                element={
+                  <EntityListBox type={"location"} header={"Locations"} />
+                }
               />
               <Route
                 path="Characters"
@@ -68,23 +67,23 @@ function App() {
                 }
               />
               <Route
-              path="/Dialogue"
-              element={
-                <React.Fragment>
-                  <DialogueSelector />
-                  <DialogueListBox />
-                </React.Fragment>
-              }
-            />
-            <Route
-              path="/"
-              element={
-                <React.Fragment>
-                  <DialogueSelector />
-                  <DialogueListBox />
-                </React.Fragment>
-              }
-            />
+                path="/Dialogue"
+                element={
+                  <React.Fragment>
+                    <DialogueSelector />
+                    <DialogueListBox />
+                  </React.Fragment>
+                }
+              />
+              <Route
+                path="/"
+                element={
+                  <React.Fragment>
+                    <DialogueSelector />
+                    <DialogueListBox />
+                  </React.Fragment>
+                }
+              />
             </Routes>
           </Router>
           <ErrorModal />

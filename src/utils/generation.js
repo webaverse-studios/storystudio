@@ -2,8 +2,10 @@ import axios from "axios";
 import { Buffer } from "buffer";
 import { defaultOpenAIParams, exampleLoreFiles } from "./constants.js";
 import { getRandomObjectFromArray, makeId } from "./utils.js";
+import { generateLocation, generateCharacter, generateObject, generateLoreFile } from '@webaverse/lore-engine/lore-model'
 
 export const generateImage = async (apiUrl, text) => {
+  console.log('apiUrl:', apiUrl)
   const resp = await axios.get(apiUrl, {
     params: {
       s: text,
@@ -358,29 +360,29 @@ export async function generate(
 
   switch (type) {
     case "location":
-      resp = await module.generateLocation(makeGenerateFn());
+      resp = await generateLocation(makeGenerateFn());
       res.name = resp.description;
       res.description = resp.comment;
       break;
     case "character":
-      resp = await module.generateCharacter(makeGenerateFn());
+      resp = await generateCharacter(makeGenerateFn());
       res.name = resp.description;
       res.description = resp.comment;
       res.inventory = resp.inventory;
       break;
     case "object":
-      resp = await module.generateObject(makeGenerateFn());
+      resp = await generateObject(makeGenerateFn());
       res.name = resp.description;
       res.description = resp.comment;
       break;
     case "npc":
-      resp = await module.generateCharacter(makeGenerateFn());
+      resp = await generateCharacter(makeGenerateFn());
       res.name = resp.description;
       res.description = resp.comment;
       res.inventory = resp.inventory;
       break;
     case "mob":
-      resp = await module.generateCharacter(makeGenerateFn());
+      resp = await generateCharacter(makeGenerateFn());
       res.name = resp.description;
       res.description = resp.comment;
       res.inventory = resp.inventory;
@@ -403,7 +405,7 @@ export async function generate(
         newData.mob[i].bio = newData.mob[i].description;
       }
 
-      resp = await module.generateLoreFile(newData, makeGenerateFn());
+      resp = await generateLoreFile(newData, makeGenerateFn());
       console.log("resp is", resp);
       return resp;
     default:

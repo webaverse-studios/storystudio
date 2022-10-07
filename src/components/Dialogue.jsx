@@ -13,6 +13,29 @@ import {
   DeleteForever,
 } from "../styles/icons/icons";
 import DisplayJSONAsEditableForm from "./DisplayJSONAsEditableForm";
+import {
+  makeCommentPrompt,
+  makeBanterPrompt,
+  makeExpositionPrompt,
+  makeRPGDialoguePrompt,
+  makeReactionPrompt,
+  makeCutscenePrompt,
+  makeQuestPrompt,
+  makeCommentStop,
+  makeExpositionStop,
+  parseExpositionResponse,
+  parseCommentResponse,
+  makeBanterStop,
+  parseBanterResponse,
+  makeRPGDialogueStop,
+  parseRPGDialogueResponse,
+  makeReactionStop,
+  parseReactionResponse,
+  makeCutsceneStop,
+  parseCutsceneResponse,
+  makeQuestStop,
+  parseQuestResponse,
+} from "@webaverse/lore-engine/lore-model";
 
 //field check if image, set source the img, if name change, generate new image
 const Dialogue = ({ index, _key, type }) => {
@@ -216,37 +239,34 @@ const Dialogue = ({ index, _key, type }) => {
     } else {
       switch (type) {
         case "objectComment":
-          prompt = await baseData.module.makeCommentPrompt(input);
+          prompt = await makeCommentPrompt(input);
           break;
         case "npcComment":
-          prompt = await baseData.module.makeCommentPrompt(input);
+          prompt = await makeCommentPrompt(input);
           break;
         case "mobComment":
-          prompt = await baseData.module.makeCommentPrompt(input);
+          prompt = await makeCommentPrompt(input);
           break;
         case "loadingComment":
-          prompt = await baseData.module.makeCommentPrompt(input);
+          prompt = await makeCommentPrompt(input);
           break;
         case "banter":
-          prompt = await baseData.module.makeBanterPrompt(input);
+          prompt = await makeBanterPrompt(input);
           break;
         case "exposition":
-          prompt = await baseData.module.makeExpositionPrompt(input);
+          prompt = await makeExpositionPrompt(input);
           break;
         case "rpgDialogue":
-          prompt = await baseData.module.makeRPGDialoguePrompt(input);
+          prompt = await makeRPGDialoguePrompt(input);
           break;
         case "reactions":
-          prompt = await baseData.module.makeReactionPrompt(
-            input?.name,
-            input?.message
-          );
+          prompt = await makeReactionPrompt(input?.name, input?.message);
           break;
         case "cutscenes":
-          prompt = await baseData.module.makeCutscenePrompt(input);
+          prompt = await makeCutscenePrompt(input);
           break;
         case "quests":
-          prompt = await baseData.module.makeQuestPrompt(input);
+          prompt = await makeQuestPrompt(input);
           break;
         default:
           return "";
@@ -286,9 +306,9 @@ const Dialogue = ({ index, _key, type }) => {
         return;
       }
 
-      const stop = baseData.module.makeCommentStop();
+      const stop = makeCommentStop();
       res = await makeGenerationFn(prompt, stop)();
-      res = baseData.module.parseCommentResponse(res);
+      res = parseCommentResponse(res);
 
       handleChange(res, "output.response");
     } else if (type === "npcComment") {
@@ -309,9 +329,9 @@ const Dialogue = ({ index, _key, type }) => {
         return;
       }
 
-      const stop = baseData.module.makeCommentStop();
+      const stop = makeCommentStop();
       res = await makeGenerationFn(prompt, stop)();
-      res = baseData.module.parseCommentResponse(res);
+      res = parseCommentResponse(res);
 
       handleChange(res, "output.response");
     } else if (type === "mobComment") {
@@ -332,9 +352,9 @@ const Dialogue = ({ index, _key, type }) => {
         return;
       }
 
-      const stop = baseData.module.makeCommentStop();
+      const stop = makeCommentStop();
       res = await makeGenerationFn(prompt, stop)();
-      res = baseData.module.parseCommentResponse(res);
+      res = parseCommentResponse(res);
 
       handleChange(res, "output.response");
     } else if (type === "loadingComment") {
@@ -355,9 +375,9 @@ const Dialogue = ({ index, _key, type }) => {
         return;
       }
 
-      const stop = baseData.module.makeCommentStop();
+      const stop = makeCommentStop();
       res = await makeGenerationFn(prompt, stop)();
-      res = baseData.module.parseCommentResponse(res);
+      res = parseCommentResponse(res);
 
       handleChange(res, "output.response");
     } else if (type === "exposition") {
@@ -380,9 +400,9 @@ const Dialogue = ({ index, _key, type }) => {
         return;
       }
 
-      const stop = baseData.module.makeExpositionStop(type);
+      const stop = makeExpositionStop(type);
       const unparsed = await makeGenerationFn(prompt, stop)();
-      res = baseData.module.parseExpositionResponse(unparsed);
+      res = parseExpositionResponse(unparsed);
 
       handleChange(unparsed, "output.response");
       res = res;
@@ -430,11 +450,11 @@ const Dialogue = ({ index, _key, type }) => {
         return;
       }
 
-      const stop = baseData.module.makeBanterStop();
+      const stop = makeBanterStop();
       let unparsed = "";
       for (let i = 0; i < 3; i++) {
         unparsed = await makeGenerationFn(prompt, stop)();
-        res = baseData.module.parseBanterResponse(unparsed);
+        res = parseBanterResponse(unparsed);
         messages.push(...res);
       }
 
@@ -523,11 +543,11 @@ const Dialogue = ({ index, _key, type }) => {
         return;
       }
 
-      const stop = baseData.module.makeRPGDialogueStop();
+      const stop = makeRPGDialogueStop();
       let unparsed = "";
       for (let i = 0; i < 3; i++) {
         unparsed = await makeGenerationFn(prompt, stop)();
-        const parsed = baseData.module.parseRPGDialogueResponse(unparsed);
+        const parsed = parseRPGDialogueResponse(unparsed);
         messages.push(...parsed);
       }
 
@@ -570,9 +590,9 @@ const Dialogue = ({ index, _key, type }) => {
         return;
       }
 
-      const stop = baseData.module.makeReactionStop(message.speaker);
+      const stop = makeReactionStop(message.speaker);
       const unparsed = await makeGenerationFn(prompt, stop)();
-      res = baseData.module.parseReactionResponse(unparsed);
+      res = parseReactionResponse(unparsed);
 
       handleChange(JSON.stringify(unparsed), "output.response");
     } else if (type === "cutscenes") {
@@ -623,7 +643,7 @@ const Dialogue = ({ index, _key, type }) => {
         messages,
       };
 
-      const stop = baseData.module.makeCutsceneStop();
+      const stop = makeCutsceneStop();
       let unparsed = "";
 
       for (let i = 0; i < 3; i++) {
@@ -634,7 +654,7 @@ const Dialogue = ({ index, _key, type }) => {
         }
 
         unparsed = await makeGenerationFn(prompt, stop)();
-        const parsed = baseData.module.parseCutsceneResponse(unparsed);
+        const parsed = parseCutsceneResponse(unparsed);
         messages.push(...parsed);
       }
 
@@ -676,9 +696,9 @@ const Dialogue = ({ index, _key, type }) => {
         return;
       }
 
-      const stop = baseData.module.makeQuestStop();
+      const stop = makeQuestStop();
       const unparsed = await makeGenerationFn(prompt, stop)();
-      res = baseData.module.parseQuestResponse(unparsed);
+      res = parseQuestResponse(unparsed);
 
       handleChange(res.quest, "output.action");
       handleChange(res.reward, "output.reward");
@@ -1131,7 +1151,11 @@ const Dialogue = ({ index, _key, type }) => {
           <div className="dialogPromptViewPreview">
             <label>Prompt Preview</label>
             <textarea
-              rows={dialogue[currentDialogueType][_key]["output"]["prompt"]?.split('\n').length}
+              rows={
+                dialogue[currentDialogueType][_key]["output"]["prompt"]?.split(
+                  "\n"
+                ).length
+              }
               value={dialogue[currentDialogueType][_key]["output"]["prompt"]}
               readOnly={false}
               onChange={(e) => {

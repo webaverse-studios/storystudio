@@ -22,7 +22,7 @@ import {
 import { generate, makeEmpty, makeDialogue } from "./utils/generation";
 import JSZip from "jszip";
 import { Web3Storage } from "web3.storage";
-import { downloadFile, uploadFile } from "./utils/storageUtils";
+import { downloadFile } from "./utils/storageUtils";
 import axios from "axios";
 
 function setOpenAIKey(newKey) {
@@ -84,6 +84,7 @@ export function ApplicationContextProvider(props) {
       ? decompressObject(localStorage.getItem("entities"))
       : defaultEntities
   );
+  const [entityImages, setEntityImages] = useState([]);
 
   const [dialogue, setDialogue] = useState(
     localStorage.getItem("dialogue")
@@ -181,13 +182,9 @@ export function ApplicationContextProvider(props) {
     }, 500);
   }, [loreFiles]);
 
-  const downloadEntities = async (
-    useOtherEntities = false,
-    otherEntities = null
-  ) => {
-    const newEntities = useOtherEntities
-      ? { ...otherEntities }
-      : { ...entities };
+  const downloadEntities = async () => {
+    const newEntities = { ...entities };
+    const arr = [];
     const keys = Object.keys(newEntities);
     for (let i = 0; i < keys.length; i++) {
       for (let j = 0; j < newEntities[keys[i]].length; j++) {
@@ -195,40 +192,68 @@ export function ApplicationContextProvider(props) {
         if (newEntities[keys[i]][j].imageCid?.length === 59) {
           newEntities[keys[i]][j].image = "loading...";
           try {
-            newEntities[keys[i]][j].image = await downloadFile(
+            const obj = { image: "", type: keys[i], index: j };
+            obj.image = await downloadFile(
               web3Storage,
               newEntities[keys[i]][j].imageCid
             );
+            arr.push(obj);
           } catch (e) {
             console.log(e);
-            newEntities[keys[i]][j].image = "";
           }
         }
       }
     }
-    setEntities(newEntities);
+    setEntityImages(arr);
   };
 
-  const [downloaded, setDownloaded] = useState(false);
-  useEffect(() => {
-    onbeforeunload = (event) => {
-      const newEntities = { ...entities };
-      const keys = Object.keys(newEntities);
-      for (let i = 0; i < keys.length; i++) {
-        for (let j = 0; j < newEntities[keys[i]].length; j++) {
-          if (newEntities[keys[i]][j].image?.length > 0) {
-            newEntities[keys[i]][j].image = "";
-          }
-        }
-      }
-      setEntities(newEntities);
-      localStorage.setItem("entities", compressObject(newEntities));
-    };
-    if (!downloaded) {
-      downloadEntities();
-      setDownloaded(true);
+  const getEntityImage = (type, id) => {
+    const arr = entityImages.filter((e) => e.type === type && e.index === id);
+    if (arr.length > 0) {
+      return arr[0].image;
     }
-  }, []);
+    return "";
+  };
+  const setEntityImage = (type, id, image) => {
+    const imgs = [...entityImages];
+    let found = false;
+
+    for (let i = 0; i < imgs.length; i++) {
+      if (imgs[i].type === type && imgs[i].index === id) {
+        imgs[i].image = image;
+        found = true;
+      }
+    }
+
+    if (!found) {
+      imgs.push({ type, index: id, image });
+    }
+
+    setEntityImages(imgs);
+  };
+  const hasEntityImage = (type, id) => {
+    const arr = entityImages.filter((e) => e.type === type && e.index === id);
+    if (arr.length > 0) {
+      return arr[0].image.length > 0;
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    if (!globalThis.downloaded) {
+      downloadEntities();
+      globalThis.downloaded = true;
+    }
+  });
+
+  useEffect(() => {
+    if (entitiesCommitTimer) {
+      clearTimeout(entitiesCommitTimer);
+    }
+    entitiesCommitTimer = setTimeout(() => {
+      localStorage.setItem("entities", compressObject(entities));
+    }, 500);
+  }, [entities]);
 
   useEffect(() => {
     if (dialogueCommitTimer) {
@@ -1051,6 +1076,9 @@ export function ApplicationContextProvider(props) {
     updateWeb3SApiKey,
     moveDialogue,
     availableVoices,
+    getEntityImage,
+    setEntityImage,
+    hasEntityImage,
   };
 
   return (
